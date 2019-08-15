@@ -22,9 +22,9 @@ class Polyline {
     this.points.splice(position, 1);
   }
 
-  static getPointsCoordinatesArray = (polyline, flat=true) => {
+  getPointsCoordinatesArray = (flat=true) => {
     let flatArray = [];
-    polyline.points.map(point => {
+    this.points.map(point => {
       return flatArray = flatArray.concat(point.getCoordinate(true));
     });
     return flatArray;

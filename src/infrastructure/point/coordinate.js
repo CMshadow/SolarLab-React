@@ -22,12 +22,12 @@ class Coordinate {
 
   /**
    * get the coordinate
-   * @param  {bool} [toArray=null] whether to get the coordinate as an array or
-   *                               Object
-   * @return {number[]}            A array of three number in the order of
-   *                               [lon, lat, height]
+   * @param  {Boolean} [toArray=false] whether to get the coordinate as an array
+   *                                   or Object
+   * @return {number[]}                A array of three number in the order of
+   *                                   [lon, lat, height]
    * or
-   * @return {Object}              An Object in the form {lon, lat, height}
+   * @return {Object}                  An Object in the form {lon, lat, height}
    */
   getCoordinate = (toArray=false) => {
     if (toArray) {
@@ -54,24 +54,6 @@ class Coordinate {
   }
 
   /**
-   * convert degree to radian
-   * @param  {number} deg degree
-   * @return {number}     radian
-   */
-  static degreesToRadians = (deg) => {
-    return deg * (Math.PI/180);
-  }
-
-  /**
-   * convert radian to degree
-   * @param  {number} rad radian
-   * @return {number}     degree
-   */
-  static radiansToDegrees = (rad) => {
-    return rad * 180 / Math.PI;
-  }
-
-  /**
    * Calculate the surface distance between two coordinate !!IGNORING HEIGHT!!
    * @param  {Coordinate} cor1 first coordinate
    * @param  {Coordinate} cor2 second coordinate
@@ -79,10 +61,10 @@ class Coordinate {
    */
   static distance = (cor1, cor2) => {
     const R = 6371e3; // metres
-    const φ1 = this.degreesToRadians(cor1.lat);
-    const φ2 = this.degreesToRadians(cor2.lat);
-    const Δφ = this.degreesToRadians(cor2.lat - cor1.lat);
-    const Δλ = this.degreesToRadians(cor2.lon - cor1.lon);
+    const φ1 = Cesium.Math.toRadians(cor1.lat);
+    const φ2 = Cesium.Math.toRadians(cor2.lat);
+    const Δφ = Cesium.Math.toRadians(cor2.lat - cor1.lat);
+    const Δλ = Cesium.Math.toRadians(cor2.lon - cor1.lon);
 
     const a = Math.sin(Δφ/2) * Math.sin(Δφ/2) + Math.cos(φ1) * Math.cos(φ2) *
               Math.sin(Δλ/2) * Math.sin(Δλ/2);

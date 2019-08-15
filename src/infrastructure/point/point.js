@@ -17,6 +17,8 @@ class Point extends Coordinate {
    *                                    to 12 decimalplaces
    * @param {number}       height       the height of the coordinate, fixed
    *                                    to 12 decimalplaces
+   * @param {number}       [hOffset=0]  the height offset beyond its original
+   *                                    height, default 0
    * @param {string}       [id=null]    unique id of the point, automatic
    *                                    generate one if not provided
    * @param {string}       [name=null]  name of the point, automatic generate
@@ -28,9 +30,11 @@ class Point extends Coordinate {
    * @param {bool}         [show=true]  whether to show the point, default true
    */
   constructor (
-    lon, lat, height, id=null, name=null, color=null, size=null, show=true
+    lon, lat, height, hOffset=0, id=null, name=null, color=null, size=null,
+    show=true
   ) {
     super (lon, lat, height);
+    this.heightOffset = hOffset;
     this.entityId = id ? id : uuid();
     this.name = name ? name : 'vertex';
     this.color = color ? color : Color.WHITE;
@@ -41,6 +45,8 @@ class Point extends Coordinate {
   /**
    * create a Point object from a Coordinate object
    * @param  {Coordinate}    coordinate   the Coordinate object
+   * @param  {number}        [hOffset=0]  the height offset beyond its original
+   *                                      height, default 0
    * @param  {string}        [id=null]    unique id of the point, automatic
    *                                      generate one if not provided
    * @param  {string}        [name=null]  name of the point, automatic generate
@@ -53,11 +59,32 @@ class Point extends Coordinate {
    * @return {Point}                      a Point object
    */
   static fromCoordinate(
-    coordinate, id=null, name=null, color=null, size=null, show=true
+    coordinate, hOffset=0, id=null, name=null, color=null, size=null, show=true
   ) {
     return new Point(
-      coordinate.lon, coordinate.lat, coordinate.height, id, name, color, size,
-      show);
+      coordinate.lon, coordinate.lat, coordinate.height, hOffset, id, name,
+      color, size, show);
+  }
+
+  /**
+   * get the coordinate of the point with heightOffset
+   * @param  {Boolean}  [toArray=false] whether to get the coordinate as an
+   *                                    array or Object
+   * @return {number[]}                 A array of three number in the order of
+   *                                    [lon, lat, height]
+   * or
+   * @return {Object}                   An Object in the form {lon, lat, height}
+   */
+  getCoordinate = (toArray=false) => {
+    if (toArray) {
+      return [this.lon, this.lat, this.height+this.heightOffset];
+    } else {
+      return {
+        lon: this.lon,
+        lat: this.lat,
+        height: this.height+this.heightOffset
+      };
+    }
   }
 
 }

@@ -1,9 +1,9 @@
 import * as Cesium from 'cesium';
 
 import * as actionTypes from '../actions/actionTypes';
-import Coordinate from '../../datastructure/point/coordinate';
-import Point from '../../datastructure/point/point';
-import Polyline from '../../datastructure/line/polyline';
+import Coordinate from '../../infrastructure/point/coordinate';
+import Point from '../../infrastructure/point/point';
+import Polyline from '../../infrastructure/line/polyline';
 
 const initialState = {
   viewer: null,

@@ -2,8 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { ScreenSpaceEventHandler } from 'resium';
 
-import Point from '../../datastructure/point/point';
-import Polyline from '../../datastructure/line/polyline';
 import CustomPoint from '../../components/CesiumComponents/point/point';
 import CustomPolyline from '../../components/CesiumComponents/polyline/polyline';
 

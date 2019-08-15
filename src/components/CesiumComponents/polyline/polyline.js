@@ -2,7 +2,6 @@ import React from 'react';
 import { Entity } from 'resium';
 import * as Cesium from 'cesium';
 
-import Polyline from '../../../datastructure/line/polyline';
 
 const CustomPolyline = (props) => {
   return (
@@ -12,7 +11,7 @@ const CustomPolyline = (props) => {
       polyline={{
         positions: new Cesium.CallbackProperty(() => {
           return new Cesium.Cartesian3.fromDegreesArrayHeights(
-            Polyline.getPointsCoordinatesArray(props)
+            props.getPointsCoordinatesArray()
           );
         }, false),
         clampToGround : true,

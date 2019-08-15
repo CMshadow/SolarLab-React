@@ -12,7 +12,8 @@ const CustomPoint = (props) => {
       }, false)}
       point={{
         pixelSize: props.pixelSize,
-        color: props.color
+        color: props.color,
+        heightReference: Cesium.HeightReference.RELATIVE_TO_GROUND 
       }}
       show={props.show}
     />
