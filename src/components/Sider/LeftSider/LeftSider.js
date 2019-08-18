@@ -12,15 +12,31 @@ const { Sider } = Layout;
 const LeftSider = (props) => {
   return (
     <Sider className={classes.leftSider} width={400}>
-      <Button type="primary">生成点</Button>
+      <div>
+        <Button
+          type="primary"
+          size="large"
+          block
+          loading={props.uiStartDrawing}
+          onClick={props.setStartDrawing}
+        >
+          {props.uiStartDrawing ? '正在画线' : '点击开始画个线'}
+        </Button>
+      </div>
     </Sider>
   )
 }
 
+const mapStateToProps = state => {
+  return {
+    uiStartDrawing: state.uiDrawBuildingReducer.uiStartDrawing
+  };
+};
+
 const mapDispatchToProps = dispatch => {
   return {
-        onAddPoint: () => dispatch(actions.addPoint())
-    }
-}
+        setStartDrawing: () => dispatch(actions.startDrawing())
+    };
+};
 
-export default connect(null, mapDispatchToProps)(LeftSider);
+export default connect(mapStateToProps, mapDispatchToProps)(LeftSider);

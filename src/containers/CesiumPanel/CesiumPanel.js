@@ -7,7 +7,7 @@ import 'antd/dist/antd.css';
 import CustomViewer from '../CustomViewer/CustomViewer';
 import FlyTo from '../../components/CesiumComponents/FlyTo/FlyTo';
 import CesiumEventHandlers from '../CesiumEventHandler/CesiumEventHandler';
-import CesiumRender from '../CesiumRender/CesiumRender';
+import CesiumRender from '../CesiumRenders/CesiumRender';
 
 class CesiumPanel extends Component {
 

@@ -6,7 +6,7 @@ const FlyTo = (props) => {
   return (
     <CameraFlyTo
       destination={
-        Cesium.Cartesian3.fromDegrees(...props.flyTo.getCoordinate(true))
+        Cesium.Cartesian3.fromDegrees(...props.flyTo)
       }
     />
   )

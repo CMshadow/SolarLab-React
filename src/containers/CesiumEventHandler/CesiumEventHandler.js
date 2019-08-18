@@ -7,13 +7,28 @@ import * as actions from '../../store/actions/index';
 
 class CesiumEventHandlers extends Component {
 
+  leftClickActions = (event) => {
+    if (this.props.uiStartDrawing) {
+      this.props.onAddPointOnPolyline(
+        event.position, this.props.viewer
+      );
+    }
+  };
+
+  rightClickActions = (event) => {
+    this.props.onTerminateDrawing();
+    this.props.setStopDrawing();
+  };
+
+  mouseMoveActions = (event) => {
+    this.props.onDragPolyline(event.endPosition, this.props.viewer);
+  };
+
   render () {
     return (
       <ScreenSpaceEventHandler>
          <ScreenSpaceEvent
-            action={(event) => this.props.onAddPoint(
-              event.position, this.props.viewer
-            )}
+            action={(event) => this.leftClickActions(event)}
             type={Cesium.ScreenSpaceEventType.LEFT_CLICK}
           />
           <ScreenSpaceEvent
@@ -22,13 +37,11 @@ class CesiumEventHandlers extends Component {
              modifier={Cesium.KeyboardEventModifier.SHIFT}
           />
           <ScreenSpaceEvent
-             action={(event) => {console.log('RIGHT_CLICK')}}
+             action={(event) => this.rightClickActions(event)}
              type={Cesium.ScreenSpaceEventType.RIGHT_CLICK}
            />
           <ScreenSpaceEvent
-             action={(event) => {
-               this.props.onDragPoint(event.endPosition, this.props.viewer)
-             }}
+             action={(event) => this.mouseMoveActions(event)}
              type={Cesium.ScreenSpaceEventType.MOUSE_MOVE}
           />
           <ScreenSpaceEvent
@@ -43,19 +56,26 @@ class CesiumEventHandlers extends Component {
 
 const mapStateToProps = state => {
   return {
-    viewer: state.cesiumReducer.viewer
+    viewer: state.cesiumReducer.viewer,
+    uiStartDrawing: state.uiDrawBuildingReducer.uiStartDrawing
   };
-}
+};
 
 const mapDispatchToProps = dispatch => {
   return {
-        onAddPoint: (cartesian, viewer) => dispatch(
-          actions.addPoint(cartesian, viewer)
+        onDragPolyline: (cartesian, viewer) => dispatch(
+          actions.dragPolyline(cartesian, viewer)
         ),
-        onDragPoint: (cartesian, viewer) => dispatch(
-          actions.dragPoint(cartesian, viewer)
+        onAddPointOnPolyline: (cartesian, viewer) => dispatch(
+          actions.addPointOnPolyline(cartesian, viewer)
+        ),
+        onTerminateDrawing: () => dispatch(
+          actions.terminateDrawing()
+        ),
+        setStopDrawing: () => dispatch(
+          actions.stopDrawing()
         )
     };
-}
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(CesiumEventHandlers);

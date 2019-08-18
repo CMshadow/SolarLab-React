@@ -8,8 +8,15 @@ import thunk from 'redux-thunk';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+
+/*
+  import Redux reducers
+ */
 import authReducer from './store/reducers/auth';
 import cesiumReducer from './store/reducers/cesium';
+import drawingManagerReducer from './store/reducers/drawingManager';
+import uiDrawBuildingReducer from './store/reducers/uiDrawBuilding';
+// IMPORT MORE REDBUX REDUCERS OVER HERE
 
 /*
   composeEnhancers: Used to build Redux store
@@ -21,7 +28,10 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
  */
 const rootReducer = combineReducers({
   authReducer: authReducer,
-  cesiumReducer: cesiumReducer
+  cesiumReducer: cesiumReducer,
+  drawingManagerReducer: drawingManagerReducer,
+  uiDrawBuildingReducer: uiDrawBuildingReducer
+  // ADD MORE REDUCERS OVER HERE
 });
 
 /*

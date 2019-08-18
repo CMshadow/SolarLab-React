@@ -1,5 +1,14 @@
 export {
-  addPoint,
-  setViewer,
-  dragPoint
+  setViewer
 } from './cesium';
+
+export {
+  addPointOnPolyline,
+  dragPolyline,
+  terminateDrawing
+} from './drawingManager';
+
+export {
+  startDrawing,
+  stopDrawing
+} from './uiDrawBuilding';
