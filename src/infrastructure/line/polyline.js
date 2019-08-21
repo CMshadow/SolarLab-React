@@ -3,6 +3,8 @@ import {
 } from 'cesium';
 import uuid from 'uuid/v1';
 
+import Point from '../point/point';
+
 class Polyline {
 
   /**
@@ -60,7 +62,7 @@ class Polyline {
    * the number of points of the polyline
    * @return {int} the number of points of the polyline
    */
-  get length() {
+  get length () {
     return this.points.length;
   }
 
@@ -70,7 +72,11 @@ class Polyline {
    * @param {Point}   point    the Point object to be added
    */
   addPoint = (position, point) => {
-    this.points.splice(position, 0, point);
+    if (point instanceof Point) {
+      this.points.splice(position, 0, point);
+    } else {
+      throw new Error('Adding object is not a Point object');
+    }
   }
 
   /**
@@ -79,8 +85,12 @@ class Polyline {
    * @return {Point}           the Point object being deleted
    */
   deletePoint = (position) => {
-    const deletedPoint = this.points.splice(position, 1);
-    return deletedPoint[0];
+    if (position < this.length) {
+      const deletedPoint = this.points.splice(position, 1);
+      return deletedPoint[0];
+    } else {
+      throw new Error('The index is beyond Polyline length');
+    }
   }
 
   /**

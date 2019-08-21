@@ -15,7 +15,9 @@ import * as serviceWorker from './serviceWorker';
 import authReducer from './store/reducers/auth';
 import cesiumReducer from './store/reducers/cesium';
 import drawingManagerReducer from './store/reducers/drawingManager';
-import uiDrawBuildingReducer from './store/reducers/uiDrawBuilding';
+import uiStateManagerReducer from './store/reducers/uiStateManager';
+import buildingManagerReducer from './store/reducers/buildingManager';
+import projectManagerReducer from './store/reducers/projectManager';
 // IMPORT MORE REDBUX REDUCERS OVER HERE
 
 /*
@@ -28,9 +30,11 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
  */
 const rootReducer = combineReducers({
   authReducer: authReducer,
+  projectManagerReducer: projectManagerReducer,
   cesiumReducer: cesiumReducer,
   drawingManagerReducer: drawingManagerReducer,
-  uiDrawBuildingReducer: uiDrawBuildingReducer
+  uiStateManagerReducer: uiStateManagerReducer,
+  buildingManagerReducer: buildingManagerReducer,
   // ADD MORE REDUCERS OVER HERE
 });
 

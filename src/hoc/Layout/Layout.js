@@ -14,16 +14,11 @@ class CustomLayout extends Component {
 
   render () {
     return (
-      <Layout>
+      <Layout style={{height:"100vh"}}>
         <Header style={{height:'50px'}}>
           <NavigationBar />
         </Header>
-        <Layout>
-          <Content>
-            {this.props.children}
-            <LeftSider />
-          </Content>
-        </Layout>
+        {this.props.children}
       </Layout>
     )
   }

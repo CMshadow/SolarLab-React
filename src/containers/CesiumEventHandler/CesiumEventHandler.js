@@ -57,7 +57,7 @@ class CesiumEventHandlers extends Component {
 const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
-    uiStartDrawing: state.uiDrawBuildingReducer.uiStartDrawing
+    uiStartDrawing: state.uiStateManagerReducer.uiStartDrawing
   };
 };
 

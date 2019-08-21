@@ -13,7 +13,14 @@ export const DO_NOTHING = 'DO_NOTHING';
 
 
 /*
-  uiDrawBuilding.js
+  uiStateManager.js
  */
 export const UI_START_DRAWING = 'UI_START_DRAWING';
 export const UI_STOP_DRAWING = 'UI_STOP_DRAWING';
+export const SET_UI_STATE_READY_DRAWING = 'SET_UI_STATE_READY_DRAWING';
+
+/*
+  buildingManager.js
+ */
+export const INIT_BUILDING = 'INIT_BUILDING';
+export const RESET_BUILDING = 'RESET_BUILDING';

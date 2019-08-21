@@ -78,7 +78,6 @@ class Point extends Coordinate {
         newColor, newPixelSize, newShow);
     }
 
-
   /**
    * create a Point object from a Coordinate object
    * @param  {Coordinate}    coordinate   the Coordinate object

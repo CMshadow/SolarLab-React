@@ -10,5 +10,11 @@ export {
 
 export {
   startDrawing,
-  stopDrawing
-} from './uiDrawBuilding';
+  stopDrawing,
+  setUIStateReadyDrawing
+} from './uiStateManager';
+
+export {
+  initBuilding,
+  resetBuilding
+} from './buildingManager';
