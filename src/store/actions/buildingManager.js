@@ -41,8 +41,15 @@ export const initBuilding = (values) => (dispatch, getState) => {
     });
   };
 
+export const saveBuildingInfoFields = (values) => {
+  return ({
+    type: actionTypes.SAVE_BUILDING_INFO_FIELDS,
+    values: values
+  });
+};
+
 export const resetBuilding = () => {
   return ({
     type: actionTypes.RESET_BUILDING
-  })
+  });
 };

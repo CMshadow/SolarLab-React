@@ -16,5 +16,6 @@ export {
 
 export {
   initBuilding,
+  saveBuildingInfoFields,
   resetBuilding
 } from './buildingManager';

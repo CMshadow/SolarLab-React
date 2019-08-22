@@ -4,12 +4,11 @@ import { Layout } from 'antd';
 
 import 'antd/dist/antd.css';
 
-import * as classes from './CesiumPanel.module.css';
 import CustomViewer from '../CustomViewer/CustomViewer';
 import FlyTo from '../../components/CesiumComponents/FlyTo/FlyTo';
 import CesiumEventHandlers from '../CesiumEventHandler/CesiumEventHandler';
 import CesiumRender from '../CesiumRenders/CesiumRender';
-import LeftSider from '../../components/Sider/LeftSider/LeftSider';
+import LeftSider from '../ui/LeftSider/LeftSider';
 
 const { Content } = Layout;
 

@@ -3,9 +3,8 @@ import { connect } from 'react-redux';
 import { Layout } from 'antd';
 
 import NavigationBar from '../../components/Navigation/NavigationBar/NavigationBar';
-import LeftSider from '../../components/Sider/LeftSider/LeftSider';
 
-const { Header, Content } = Layout;
+const { Header } = Layout;
 
 class CustomLayout extends Component {
   state = {

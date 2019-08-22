@@ -16,7 +16,7 @@ import {
   AutoComplete,
 } from 'antd';
 
-import * as actions from '../../../store/actions/index';
+import * as actions from '../../../../store/actions/index';
 
 const { Option } = Select;
 
@@ -36,7 +36,7 @@ class DrawBuildingPanel extends Component {
         </Button>
       </div>
     );
-  }
+  };
 }
 
 const mapStateToProps = state => {
