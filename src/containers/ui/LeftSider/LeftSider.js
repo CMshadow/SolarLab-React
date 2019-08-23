@@ -37,15 +37,18 @@ class LeftSider extends Component {
 
     return (
       <Auxiliary>
+      <Layout style={{ minHeight: '100vh' }}>
         <Sider
           className={classes.leftSider}
           width={325}
           collapsedWidth={50}
           collapsible
           onCollapse={this.onCollapse}
+
         >
           {content}
         </Sider>
+        </Layout>
       </Auxiliary>
     );
   }
