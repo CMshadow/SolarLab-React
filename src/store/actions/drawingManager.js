@@ -14,7 +14,7 @@ export const dragPolyline = (mousePosition, viewer) => {
       type: actionTypes.DO_NOTHING
     };
   }
-}
+};
 
 export const addPointOnPolyline = (mousePosition, viewer) => {
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
@@ -28,10 +28,14 @@ export const addPointOnPolyline = (mousePosition, viewer) => {
       type: actionTypes.DO_NOTHING
     };
   }
-}
+};
+
+export const setPickedPoint = () => {
+
+};
 
 export const terminateDrawing = () => {
   return {
     type: actionTypes.TERMINATE_DRAWING
   }
-}
+};

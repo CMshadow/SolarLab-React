@@ -9,6 +9,9 @@ const initialState = {
   drawingPolyline: null,
   fixedPoints : [],
   floatingPoints: null,
+
+  hoverPoint: null,
+  pickedPoint: null
 };
 
 const concatFixedFloating = (state) => {
@@ -21,13 +24,18 @@ const dragPolyline = (state, action) => {
   return {
     ...state,
     drawingPolyline: polyline,
-    floatingPoints: Point.fromCoordinate(Coordinate.fromCartesian(action.cartesian3), 0.1)
+    floatingPoints: Point.fromCoordinate(
+      Coordinate.fromCartesian(action.cartesian3), 0.1
+    )
   };
 }
 
 const addPointOnPolyline = (state, action) => {
   let polyline = new Polyline(concatFixedFloating(state));
-  let newFixedPoints = [...state.fixedPoints, Point.fromCoordinate(Coordinate.fromCartesian(action.cartesian3), 0.1)]
+  let newFixedPoints = [
+    ...state.fixedPoints,
+    Point.fromCoordinate(Coordinate.fromCartesian(action.cartesian3), 0.1)
+  ]
   return {
     ...state,
     drawingPolyline: polyline,
@@ -40,24 +48,59 @@ const terminateDrawing = (state, action) => {
   let fixedPoints = [...state.fixedPoints];
   fixedPoints = fixedPoints.concat(firstPoint);
   let polyline = new Polyline(fixedPoints);
-  console.log({
-    ...state,
-    drawingPolyline: polyline,
-    fixedPoints: fixedPoints
-  })
   return {
     ...state,
     drawingPolyline: polyline,
-    fixedPoints: fixedPoints
+    floatingPoints: null
   };
 }
 
+const setHoverPoint = (state, action) => {
+  return {
+    ...state,
+    hoverPoint: action.hoverPoint
+  };
+};
+
+const releaseHoverPoint = (state, action) => {
+  return {
+    ...state,
+    hoverPoint: null
+  };
+};
+
+const setPickedPoint = (state, action) => {
+  return {
+    ...state,
+    pickedPoint: action.pickedPoint
+  };
+};
+
+const releasePickedPoint = (state, action) => {
+  return {
+    ...state,
+    pickedPoint: null
+  };
+};
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
-    case actionTypes.CLICK_ADD_POINT_ON_POLYLINE: return addPointOnPolyline(state, action);
-    case actionTypes.DRAG_POLYLINE: return dragPolyline(state, action);
-    case actionTypes.TERMINATE_DRAWING: return terminateDrawing(state, action);
-    case actionTypes.DO_NOTHING: return state;
+    case actionTypes.CLICK_ADD_POINT_ON_POLYLINE:
+      return addPointOnPolyline(state, action);
+    case actionTypes.DRAG_POLYLINE:
+      return dragPolyline(state, action);
+    case actionTypes.TERMINATE_DRAWING:
+      return terminateDrawing(state, action);
+    case actionTypes.SET_HOVERPOINT:
+      return setHoverPoint(state, action);
+    case actionTypes.RELEASE_HOVERPOINT:
+      return releaseHoverPoint(state, action);
+    case actionTypes.SET_PICKEDPOINT:
+      return setPickedPoint(state, action);
+    case actionTypes.RELEASE_PICKEDPOINT:
+      return releasePickedPoint(state, action);
+    case actionTypes.DO_NOTHING:
+    return state;
     default: return state;
   }
 };
