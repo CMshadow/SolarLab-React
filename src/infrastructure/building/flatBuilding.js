@@ -6,7 +6,7 @@ class FlatBuilding extends Building {
   constructor (name, serial, foundHt, eaveStb, parapetHt) {
     super(name, serial, foundHt, eaveStb);
     this.type = 'FLAT';
-    this.parapetHeight = parapetHt ? parapetHt : 0;
+    this.parapetHeight = parapetHt;
     this.polyline = null;
   }
 }

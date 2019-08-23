@@ -11,7 +11,7 @@ import {
   Row,
   Col,
   Button,
-  Switch
+  Radio
 } from 'antd';
 
 import * as classes from './createBuildingPanel.module.css';
@@ -21,7 +21,7 @@ const { Option } = Select;
 
 class CreateBuildingPanel extends PureComponent {
   state = {
-    mode3D: this.props.buildingInfoFields.mode3D,
+    mode: this.props.buildingInfoFields.mode,
     type: this.props.buildingInfoFields.type
   }
 
@@ -29,17 +29,16 @@ class CreateBuildingPanel extends PureComponent {
     event.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
+
         this.props.setUIStateReadyDrawing();
         this.props.initBuilding(values);
+        console.log('[Create Building Panel] Your are creating a new building')
       }
     });
   };
 
   componentWillUnmount = () => {
-    this.props.saveBuildingInfoFields({
-      ...this.props.form.getFieldsValue(),
-      mode3D: this.state.mode3D
-    });
+    this.props.saveBuildingInfoFields(this.props.form.getFieldsValue());
   };
 
   numberInputRules = [{
@@ -253,38 +252,30 @@ class CreateBuildingPanel extends PureComponent {
         <Divider />
         <Form.Item>
           <Row>
-            <Col span={16} offset={2}>
-              <Tooltip
-                placement="topLeft"
-                title="Do you plan to draw your building on top of a 3D model ?"
-              >
-                <Row>
-                  <Col span={20}>
-                    <h4>Working on 3D Model</h4>
-                  </Col>
-                  <Col span={4}>
-                    <Icon type="question-circle" />
-                  </Col>
-                </Row>
-              </Tooltip>
+            <Col span={12} offset={2}>
+              <h3>Working on </h3>
             </Col>
-            <Col span={4}>
-              {getFieldDecorator('mode3D', {
+          </Row>
+          <Row type="flex" justify="center">
+            <Col span={20}>
+              {getFieldDecorator('mode', {
+                initialValue: this.state.mode
               })(
-                <Switch
-                  checkedChildren="3D"
-                  unCheckedChildren="2D"
-                  defaultChecked={this.state.mode3D}
-                  onClick={(checked, event) => {
-                    this.setState({mode3D: checked});
+                <Radio.Group
+                  onChange={event => {
+                    this.setState({mode: event.target.value});
                   }}
-                />
+                  buttonStyle='solid'
+                >
+                  <Radio.Button value="2D">Satellite 2D Map</Radio.Button>
+                  <Radio.Button value="3D">Drone 3D Model</Radio.Button>
+                </Radio.Group>
               )}
             </Col>
           </Row>
         </Form.Item>
-        {this.state.mode3D ? null : optionalFoundHtInput}
-        {!this.state.mode3D &&
+        {this.state.mode === '3D' ? null : optionalFoundHtInput}
+        {this.state.mode === '2D' &&
           this.state.type === 'FLAT' ?
           optionalParapetHtInput :
           null
@@ -336,10 +327,10 @@ class CreateBuildingPanel extends PureComponent {
         }
 
         {/*The button to validate & process to create a new building*/}
-        <Row>
-          <Col span={16} offset={4}>
+        <Row type="flex" justify="center">
+          <Col span={16}>
             <Button type='primary' shape='round' icon='plus' size='large'
-              htmlType="submit"
+              htmlType="submit" block
             >
               Create a Building
             </Button>

@@ -6,13 +6,21 @@ const initialState = {
   buildingInfoFields: {
     name: null,
     type: 'FLAT',
-    mode3D: false,
+    mode: '2D',
     foundHt: 5,
     parapetHt: 1,
     eaveStb: 1,
     hipStb: 1,
     ridgeStb: 1
   }
+};
+
+const initBuilding = (state, action) => {
+  console.log(action.buildingObj)
+  return {
+    ...state,
+    workingBuilding: action.buildingObj
+  };
 };
 
 const saveFields = (state, action) => {
@@ -27,8 +35,8 @@ const saveFields = (state, action) => {
 
 const reducer = (state=initialState, action) => {
   switch (action.type) {
-    case actionTypes.INIT_BUILDING: return state;
-    case actionTypes.SAVE_BUILDING_INFO_FIELDS: return saveFields(state, action)
+    case actionTypes.SAVE_BUILDING_INFO_FIELDS: return saveFields(state, action);
+    case actionTypes.INIT_BUILDING: return initBuilding(state, action);
     default: return state;
   }
 };

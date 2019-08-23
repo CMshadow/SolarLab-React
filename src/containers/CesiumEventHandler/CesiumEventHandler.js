@@ -9,6 +9,7 @@ class CesiumEventHandlers extends Component {
 
   leftClickActions = (event) => {
     if (this.props.uiStartDrawing) {
+      this.props.disableRotate();
       this.props.onAddPointOnPolyline(
         event.position, this.props.viewer
       );
@@ -17,11 +18,14 @@ class CesiumEventHandlers extends Component {
 
   rightClickActions = (event) => {
     this.props.onTerminateDrawing();
+    this.props.enableRotate();
     this.props.setStopDrawing();
   };
 
   mouseMoveActions = (event) => {
-    this.props.onDragPolyline(event.endPosition, this.props.viewer);
+    if (this.props.uiStartDrawing) {
+      this.props.onDragPolyline(event.endPosition, this.props.viewer);
+    }
   };
 
   render () {
@@ -74,7 +78,9 @@ const mapDispatchToProps = dispatch => {
         ),
         setStopDrawing: () => dispatch(
           actions.stopDrawing()
-        )
+        ),
+        enableRotate: () => dispatch(actions.enableRotate()),
+        disableRotate: () => dispatch(actions.disableRotate()),
     };
 };
 

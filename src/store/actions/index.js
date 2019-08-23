@@ -1,5 +1,7 @@
 export {
-  setViewer
+  setViewer,
+  enableRotate,
+  disableRotate
 } from './cesium';
 
 export {

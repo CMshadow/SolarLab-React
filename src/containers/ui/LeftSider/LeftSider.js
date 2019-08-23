@@ -1,11 +1,10 @@
 import React, { Component } from 'react';
-import { Layout, Button } from 'antd';
+import { Layout } from 'antd';
 import { connect } from 'react-redux';
 
 import 'antd/dist/antd.css';
 
 import * as classes from './LeftSider.module.css';
-import * as actions from '../../../store/actions/index';
 import CreateBuildingPanel from './individualPanels/createBuildingPanel';
 import DrawBuildingPanel from './individualPanels/drawBuildingPanel';
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary';
@@ -40,7 +39,7 @@ class LeftSider extends Component {
       <Auxiliary>
         <Sider
           className={classes.leftSider}
-          width={300}
+          width={325}
           collapsedWidth={50}
           collapsible
           onCollapse={this.onCollapse}
@@ -54,15 +53,8 @@ class LeftSider extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiStartDrawing: state.uiStateManagerReducer.uiStartDrawing,
     uiState: state.uiStateManagerReducer.uiState
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setStartDrawing: () => dispatch(actions.startDrawing())
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(LeftSider);
+export default connect(mapStateToProps)(LeftSider);

@@ -7,8 +7,10 @@ import 'antd/dist/antd.css';
 import CustomViewer from '../CustomViewer/CustomViewer';
 import FlyTo from '../../components/CesiumComponents/FlyTo/FlyTo';
 import CesiumEventHandlers from '../CesiumEventHandler/CesiumEventHandler';
+import CesiumScreenSpaceCameraController from '../ScreenSpaceCameraController/CesiumScreenSpaceCameraController';
 import CesiumRender from '../CesiumRenders/CesiumRender';
 import LeftSider from '../ui/LeftSider/LeftSider';
+import RightSider from '../ui/RightSider/RightSider';
 
 const { Content } = Layout;
 
@@ -19,12 +21,14 @@ class CesiumPanel extends Component {
       <Layout>
         <Content>
           <CustomViewer enableTerrain={false}>
+            <CesiumScreenSpaceCameraController />
             <FlyTo flyTo={this.props.initialCor} />
             <CesiumEventHandlers />
             <CesiumRender />
           </CustomViewer>
           <LeftSider />
         </Content>
+        <RightSider />
       </Layout>
     );
   }

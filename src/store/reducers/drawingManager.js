@@ -40,6 +40,11 @@ const terminateDrawing = (state, action) => {
   let fixedPoints = [...state.fixedPoints];
   fixedPoints = fixedPoints.concat(firstPoint);
   let polyline = new Polyline(fixedPoints);
+  console.log({
+    ...state,
+    drawingPolyline: polyline,
+    fixedPoints: fixedPoints
+  })
   return {
     ...state,
     drawingPolyline: polyline,
