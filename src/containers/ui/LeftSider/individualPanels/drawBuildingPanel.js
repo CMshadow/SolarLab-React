@@ -25,15 +25,21 @@ class DrawBuildingPanel extends Component {
   render () {
     return (
       <div>
-        <Button
-          type="primary"
-          size="large"
-          block
-          loading={this.props.uiStartDrawing}
-          onClick={this.props.setStartDrawing}
-        >
-          {this.props.uiStartDrawing ? '正在画线' : '点击开始画个线'}
-        </Button>
+        <Divider>Step 1</Divider>
+        <Row>
+          <Col span={16} offset={4}>
+            <Button
+              type="primary"
+              size="large"
+              shape='round'
+              block
+              loading={this.props.uiStartDrawing}
+              onClick={this.props.setStartDrawing}
+            >
+              {this.props.uiStartDrawing ? 'Drawing...' : 'Draw building outline'}
+            </Button>
+          </Col>
+        </Row>
       </div>
     );
   };

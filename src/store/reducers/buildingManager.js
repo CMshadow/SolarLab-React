@@ -16,7 +16,6 @@ const initialState = {
 };
 
 const initBuilding = (state, action) => {
-  console.log(action.buildingObj)
   return {
     ...state,
     workingBuilding: action.buildingObj

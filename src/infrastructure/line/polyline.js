@@ -80,6 +80,19 @@ class Polyline {
   }
 
   /**
+   * update the point at a specific position to a new point
+   * @param {number}  position the index position of the point to be updated
+   * @param {Point}   point    the Point object to be added
+   */
+  updatePoint = (position, point) => {
+    if (point instanceof Point) {
+      this.points.splice(position, 1, point);
+    } else {
+      throw new Error('Adding object is not a Point object');
+    }
+  }
+
+  /**
    * delete a point in a specific position of the polyline
    * @param  {number} position the index position of the point to be deleted
    * @return {Point}           the Point object being deleted

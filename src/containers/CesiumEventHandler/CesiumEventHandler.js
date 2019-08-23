@@ -16,6 +16,15 @@ class CesiumEventHandlers extends Component {
     }
   };
 
+  leftDownActions = (event) => {
+    if (this.props.uiStartDrawing) {
+      this.props.disableRotate();
+      this.props.onAddPointOnPolyline(
+        event.position, this.props.viewer
+      );
+    }
+  };
+
   rightClickActions = (event) => {
     this.props.onTerminateDrawing();
     this.props.enableRotate();
@@ -25,6 +34,13 @@ class CesiumEventHandlers extends Component {
   mouseMoveActions = (event) => {
     if (this.props.uiStartDrawing) {
       this.props.onDragPolyline(event.endPosition, this.props.viewer);
+    } else {
+      if (this.props.viewer.scene.pick(event.endPosition)) {
+        const onTopPoint  = this.props.fixedPoints.find(element => {
+          return element.entityId === this.props.viewer.scene.pick(event.endPosition).id.id
+        })
+        console.log(onTopPoint);
+      }
     }
   };
 
@@ -35,6 +51,10 @@ class CesiumEventHandlers extends Component {
             action={(event) => this.leftClickActions(event)}
             type={Cesium.ScreenSpaceEventType.LEFT_CLICK}
           />
+          <ScreenSpaceEvent
+             action={(event) => this.leftDownActions(event)}
+             type={Cesium.ScreenSpaceEventType.LEFT_DOWN}
+           />
           <ScreenSpaceEvent
              action={(event) => {console.log('LEFT_CLICK + SHIFT')}}
              type={Cesium.ScreenSpaceEventType.LEFT_CLICK}
@@ -61,7 +81,8 @@ class CesiumEventHandlers extends Component {
 const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
-    uiStartDrawing: state.uiStateManagerReducer.uiStartDrawing
+    uiStartDrawing: state.uiStateManagerReducer.uiStartDrawing,
+    fixedPoints: state.drawingManagerReducer.fixedPoints
   };
 };
 
