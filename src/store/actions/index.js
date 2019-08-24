@@ -11,13 +11,15 @@ export {
   setHoverPoint,
   releaseHoverPoint,
   setPickedPoint,
+  movePickedPoint,
   releasePickedPoint
 } from './drawingManager';
 
 export {
   startDrawing,
   stopDrawing,
-  setUIStateReadyDrawing
+  setUIStateReadyDrawing,
+  setUIStateFoundDrew
 } from './uiStateManager';
 
 export {

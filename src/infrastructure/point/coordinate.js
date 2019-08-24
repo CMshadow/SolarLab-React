@@ -54,6 +54,23 @@ class Coordinate {
   }
 
   /**
+   * set coordinate by given cartesian3 coordinate value
+   * @param {Cartesian} [cartesian3=null] a Cartesian3 value of the new
+   *                                      coordinate
+   */
+  setCartesian3Coordinate = (cartesian3=null) => {
+    if (cartesian3) {
+      const cartographic = Cesium.Cartographic.fromCartesian(cartesian3);
+      const lon =
+        parseFloat(Cesium.Math.toDegrees(cartographic.longitude).toFixed(12));
+      const lat =
+        parseFloat(Cesium.Math.toDegrees(cartographic.latitude).toFixed(12));
+      const height = parseFloat(cartographic.height.toFixed(1));
+      this.setCoordinate(lon, lat, height);
+    }
+  }
+
+  /**
    * Calculate the surface distance between two coordinate !!IGNORING HEIGHT!!
    * @param  {Coordinate} cor1 first coordinate
    * @param  {Coordinate} cor2 second coordinate

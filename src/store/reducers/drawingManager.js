@@ -1,5 +1,6 @@
 import * as Cesium from 'cesium';
 
+
 import * as actionTypes from '../actions/actionTypes';
 import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
@@ -61,8 +62,6 @@ const setHoverPoint = (state, action) => {
 };
 
 const releaseHoverPoint = (state, action) => {
-  console.log('release hover point reducers')
-  console.log(state.drawingPolyline.points)
   return {
     ...state,
     drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
@@ -76,6 +75,13 @@ const setPickedPoint = (state, action) => {
     pickedPoint: action.pickedPoint
   };
 };
+
+const movePickedPoint = (state, action) => {
+  return {
+    ...state,
+    drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
+  }
+}
 
 const releasePickedPoint = (state, action) => {
   return {
@@ -98,6 +104,8 @@ const reducer = (state=initialState, action) => {
       return releaseHoverPoint(state, action);
     case actionTypes.SET_PICKEDPOINT:
       return setPickedPoint(state, action);
+    case actionTypes.MOVE_PICKEDPOINT:
+      return movePickedPoint(state, action);
     case actionTypes.RELEASE_PICKEDPOINT:
       return releasePickedPoint(state, action);
     case actionTypes.DO_NOTHING:

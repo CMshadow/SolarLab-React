@@ -18,3 +18,9 @@ export const setUIStateReadyDrawing = () => {
     type: actionTypes.SET_UI_STATE_READY_DRAWING
   };
 }
+
+export const setUIStateFoundDrew = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_FOUND_DREW
+  };
+}
