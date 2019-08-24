@@ -42,7 +42,11 @@ class Point extends Coordinate {
     this.color = color ? color : Color.WHITE;
     this.pixelSize = size ? size : 15;
     this.show = show;
-  }
+  };
+
+  setColor = (newColor) => {
+    this.color = newColor;
+  };
 
   /**
    * A copy constructor from an existing Point object
@@ -76,7 +80,7 @@ class Point extends Coordinate {
       const newPixelSize = size ? size : point.pixelSize;
       return new Point (newLon, newLat, newHeight, newHOffset, id, newName,
         newColor, newPixelSize, newShow);
-    }
+    };
 
   /**
    * create a Point object from a Coordinate object
@@ -101,7 +105,7 @@ class Point extends Coordinate {
     return new Point(
       coordinate.lon, coordinate.lat, coordinate.height, hOffset, id, name,
       color, size, show);
-  }
+  };
 
   /**
    * get the coordinate of the point with heightOffset
@@ -122,7 +126,7 @@ class Point extends Coordinate {
         height: this.height + this.heightOffset
       };
     }
-  }
+  };
 }
 
 export default Point;

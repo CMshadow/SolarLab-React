@@ -30,8 +30,37 @@ export const addPointOnPolyline = (mousePosition, viewer) => {
   }
 };
 
-export const setPickedPoint = () => {
+export const setHoverPoint = (point) => (dispatch, getState) => {
+  console.log(point)
+  console.log(getState().drawingManagerReducer.drawingPolyline.points)
+  point.setColor(Cesium.Color.ORANGE);
+  return dispatch({
+    type: actionTypes.SET_HOVERPOINT,
+    point: point
+  });
+};
 
+export const releaseHoverPoint = () => (dispatch, getState) => {
+  console.log('release hover point action')
+  getState().drawingManagerReducer.drawingPolyline.hoverPoint.setColor(
+    Cesium.Color.WHITE
+  );
+  return dispatch({
+    type: actionTypes.RELEASE_HOVERPOINT
+  });
+};
+
+export const setPickedPoint = (point) => {
+  return ({
+    type: actionTypes.SET_PICKEDPOINT,
+    point: point
+  });
+};
+
+export const releasePickedPoint = () => {
+  return ({
+    type: actionTypes.RELEASE_PICKEDPOINT
+  });
 };
 
 export const terminateDrawing = () => {

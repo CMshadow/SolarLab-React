@@ -7,7 +7,11 @@ export {
 export {
   addPointOnPolyline,
   dragPolyline,
-  terminateDrawing
+  terminateDrawing,
+  setHoverPoint,
+  releaseHoverPoint,
+  setPickedPoint,
+  releasePickedPoint
 } from './drawingManager';
 
 export {

@@ -31,11 +31,8 @@ const dragPolyline = (state, action) => {
 }
 
 const addPointOnPolyline = (state, action) => {
+  const newFixedPoints = concatFixedFloating(state)
   let polyline = new Polyline(concatFixedFloating(state));
-  let newFixedPoints = [
-    ...state.fixedPoints,
-    Point.fromCoordinate(Coordinate.fromCartesian(action.cartesian3), 0.1)
-  ]
   return {
     ...state,
     drawingPolyline: polyline,
@@ -58,13 +55,17 @@ const terminateDrawing = (state, action) => {
 const setHoverPoint = (state, action) => {
   return {
     ...state,
+    drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
     hoverPoint: action.hoverPoint
   };
 };
 
 const releaseHoverPoint = (state, action) => {
+  console.log('release hover point reducers')
+  console.log(state.drawingPolyline.points)
   return {
     ...state,
+    drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
     hoverPoint: null
   };
 };

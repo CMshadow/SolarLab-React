@@ -15,7 +15,7 @@ class DrawingManagerRender extends Component {
         key={this.props.drawingPolyline.entityId}
         {...this.props.drawingPolyline}
       />);
-
+      
       points = this.props.drawingPolyline.points.slice(0,-1).map(elem => (
         <CustomPoint key={elem.entityId} {...elem} />
       ));

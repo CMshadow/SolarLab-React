@@ -36,9 +36,7 @@ class LeftSider extends Component {
     }
 
     return (
-      <Auxiliary>
       <Layout style={{ minHeight: '100vh' }}>
-      <Layout>
         <Sider
           className={classes.leftSider}
           width={325}
@@ -49,9 +47,7 @@ class LeftSider extends Component {
         >
           {content}
         </Sider>
-        </Layout>
-        </Layout>
-      </Auxiliary>
+      </Layout>
     );
   }
 }

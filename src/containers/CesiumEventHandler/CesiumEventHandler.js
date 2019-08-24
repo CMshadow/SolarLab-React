@@ -17,12 +17,12 @@ class CesiumEventHandlers extends Component {
   };
 
   leftDownActions = (event) => {
-    if (this.props.uiStartDrawing) {
-      this.props.disableRotate();
-      this.props.onAddPointOnPolyline(
-        event.position, this.props.viewer
-      );
-    }
+    // if (this.props.uiStartDrawing) {
+    //   this.props.disableRotate();
+    //   this.props.onAddPointOnPolyline(
+    //     event.position, this.props.viewer
+    //   );
+    // }
   };
 
   rightClickActions = (event) => {
@@ -39,7 +39,9 @@ class CesiumEventHandlers extends Component {
         const onTopPoint  = this.props.fixedPoints.find(element => {
           return element.entityId === this.props.viewer.scene.pick(event.endPosition).id.id
         })
-        console.log(onTopPoint);
+        if (onTopPoint) this.props.setHoverPoint(onTopPoint);
+      } else {
+        if (this.props.hoverPoint) this.props.releaseHoverPoint();
       }
     }
   };
@@ -82,7 +84,8 @@ const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
     uiStartDrawing: state.uiStateManagerReducer.uiStartDrawing,
-    fixedPoints: state.drawingManagerReducer.fixedPoints
+    fixedPoints: state.drawingManagerReducer.fixedPoints,
+    hoverPoint: state.drawingManagerReducer.hoverPoint,
   };
 };
 
@@ -102,6 +105,8 @@ const mapDispatchToProps = dispatch => {
         ),
         enableRotate: () => dispatch(actions.enableRotate()),
         disableRotate: () => dispatch(actions.disableRotate()),
+        setHoverPoint: (point) => dispatch(actions.setHoverPoint(point)),
+        releaseHoverPoint: () => dispatch(actions.releaseHoverPoint()),
     };
 };
 
