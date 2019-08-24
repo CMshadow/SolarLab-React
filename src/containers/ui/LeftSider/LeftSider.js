@@ -43,7 +43,6 @@ class LeftSider extends Component {
           collapsedWidth={50}
           collapsible
           onCollapse={this.onCollapse}
-
         >
           {content}
         </Sider>
