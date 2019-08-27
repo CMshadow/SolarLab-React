@@ -9,6 +9,7 @@ const initialState = {
 };
 
 const setViewer = (state, action) => {
+  action.viewer.cesiumWidget.creditContainer.style.display = "none";
   action.viewer.scene.globe.depthTestAgainstTerrain = true;
   action.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
     Cesium.ScreenSpaceEventType.LEFT_CLICK

@@ -42,10 +42,12 @@ class CesiumEventHandlers extends Component {
   };
 
   rightClickActions = (event) => {
-    this.props.onTerminateDrawing();
-    this.props.setUIStateFoundDrew();
-    this.props.enableRotate();
-    this.props.setStopDrawing();
+    if (this.props.uiStartDrawing) {
+      this.props.onTerminateDrawing();
+      this.props.setUIStateFoundDrew();
+      this.props.enableRotate();
+      this.props.setStopDrawing();
+    }
   };
 
   mouseMoveActions = (event) => {

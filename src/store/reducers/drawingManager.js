@@ -26,7 +26,7 @@ const dragPolyline = (state, action) => {
     ...state,
     drawingPolyline: polyline,
     floatingPoints: Point.fromCoordinate(
-      Coordinate.fromCartesian(action.cartesian3), 0.1
+      Coordinate.fromCartesian(action.cartesian3, 0.1)
     )
   };
 }
@@ -42,7 +42,7 @@ const addPointOnPolyline = (state, action) => {
 }
 
 const terminateDrawing = (state, action) => {
-  const firstPoint = Point.fromPoint(state.drawingPolyline.points[0])
+  const firstPoint = state.drawingPolyline.points[0]
   let fixedPoints = [...state.fixedPoints];
   fixedPoints = fixedPoints.concat(firstPoint);
   let polyline = new Polyline(fixedPoints);

@@ -15,6 +15,7 @@
     "cesium": "^1.60.0",
     "craco-cesium": "^1.1.1",
     "react": "^16.9.0",
+    "react-contextmenu": "^2.11.0",
     "react-dom": "^16.9.0",
     "react-redux": "^7.1.0",
     "react-router-dom": "^5.0.1",

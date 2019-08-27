@@ -92,16 +92,26 @@ class Coordinate {
 
   /**
    * Create a Coordinate object from a Carteisan3 value
-   * @param  {Cartesian}  cartesian a Cartesian3 value
-   * @return {Coordinate}           a Coordinate object
+   * @param  {Cartesian}  cartesian3            a Cartesian3 value
+   * @param  {number}     [absoluteHeight=null] a given height to overwrite the
+   *                                            cartesian3 height
+   * @return {Coordinate}                       a Coordinate object
    */
-  static fromCartesian = (cartesian3) => {
+  static fromCartesian = (cartesian3, absoluteHeight = null) => {
     const cartographic = Cesium.Cartographic.fromCartesian(cartesian3);
     const lon =
       parseFloat(Cesium.Math.toDegrees(cartographic.longitude).toFixed(12));
     const lat =
       parseFloat(Cesium.Math.toDegrees(cartographic.latitude).toFixed(12));
-    const height = parseFloat(cartographic.height.toFixed(1));
+    let height = null;
+    if (absoluteHeight) {
+      if (typeof(absoluteHeight) !== 'number') {
+        throw new Error('Given height is not a number');
+      }
+      height = absoluteHeight;
+    } else {
+      height = parseFloat(cartographic.height.toFixed(1));
+    }
     return new Coordinate(lon, lat, height);
   }
 }
