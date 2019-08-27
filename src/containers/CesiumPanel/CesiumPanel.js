@@ -12,6 +12,7 @@ import CesiumScreenSpaceCameraController from '../ScreenSpaceCameraController/Ce
 import CesiumRender from '../CesiumRenders/CesiumRender';
 import LeftSider from '../ui/LeftSider/LeftSider';
 import RightSider from '../ui/RightSider/RightSider';
+import CustomContextMenu from '../ui/CustomContextMenu/CustomContextMenu';
 
 const { Content } = Layout;
 
@@ -29,6 +30,7 @@ class CesiumPanel extends Component {
               <CesiumRender />
             </CustomViewer>
           </ContextMenuTrigger>
+          <CustomContextMenu />
           <LeftSider />
         </Content>
         <RightSider />

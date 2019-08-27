@@ -1,17 +1,29 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { ContextMenu, MenuItem } from "react-contextmenu";
+
+import EditPolylineContextMenu from './individualContextMenu/editPolylineContextMenu';
 
 class CustomContextMenu extends Component {
+
   render () {
+
+    let content = null;
+    if (this.props.hoverPolyline) {
+      content = (<EditPolylineContextMenu />);
+    }
+
     return (
-      <ContextMenu id="cesium_context_menu">
-        <MenuItem>
-          ContextMenu Item 1
-        </MenuItem>
-      </ContextMenu>
+      <div>
+        {content}
+      </div>
     )
   };
 }
 
-export default CustomContextMenu;
+const mapStateToProps = state => {
+  return {
+    hoverPolyline: state.drawingManagerReducer.hoverPolyline
+  };
+};
+
+export default connect(mapStateToProps)(CustomContextMenu);

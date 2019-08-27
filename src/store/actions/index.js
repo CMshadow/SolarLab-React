@@ -8,8 +8,16 @@ export {
   addPointOnPolyline,
   dragPolyline,
   terminateDrawing,
+  complementPointOnPolyline,
+
+  setMouseCartesian3,
+
+  setHoverPolyline,
+  releaseHoverPolyline,
+
   setHoverPoint,
   releaseHoverPoint,
+
   setPickedPoint,
   movePickedPoint,
   releasePickedPoint

@@ -20,7 +20,7 @@ class CesiumEventHandlers extends Component {
     if (this.props.uiState === 'FOUND_DREW') {
       if (this.props.viewer.scene.pick(event.position)) {
         // Find out picked which point
-        const onTopPoint  = this.props.fixedPoints.find(element => {
+        const onTopPoint  = this.props.drawingPolyline.points.find(element => {
           return element.entityId === this.props.viewer.scene.pick(event.position).id.id
         })
         // Set picked point if available
@@ -51,20 +51,37 @@ class CesiumEventHandlers extends Component {
   };
 
   mouseMoveActions = (event) => {
+    this.props.setMouseCartesian3(event.endPosition, this.props.viewer);
     if (this.props.uiStartDrawing) {
       this.props.onDragPolyline(event.endPosition, this.props.viewer);
     } else if (this.props.uiState === 'FOUND_DREW' && this.props.pickedPoint) {
+      // Reposition points on the drawing polyline
       this.props.movePickedPoint(event.endPosition, this.props.viewer);
     }
     else {
-      if (this.props.viewer.scene.pick(event.endPosition)) {
+      const anyPickedObject = this.props.viewer.scene.pick(event.endPosition);
+
+      if(anyPickedObject) {
+        if (anyPickedObject.id.id === this.props.drawingPolyline.entityId) {
+          // Set hover polyline if available
+          this.props.setHoverPolyline();
+          // Release hover point if it exists
+          if (this.props.hoverPoint) this.props.releaseHoverPoint();
+        }
+
         // Find out hover on which point
-        const onTopPoint  = this.props.fixedPoints.find(element => {
-          return element.entityId === this.props.viewer.scene.pick(event.endPosition).id.id
+        const onTopPoint  = this.props.drawingPolyline.points.find(element => {
+          return element.entityId === anyPickedObject.id.id
         })
         // Set hover point if available
-        if (onTopPoint) this.props.setHoverPoint(onTopPoint);
+        if (onTopPoint) {
+          this.props.setHoverPoint(onTopPoint);
+          // Release hover polyline if it exists
+          if (this.props.hoverPolyline) this.props.releaseHoverPolyline();
+        }
       } else {
+        // Release hover polyline if it exists
+        if (this.props.hoverPolyline) this.props.releaseHoverPolyline();
         // Release hover point if it exists
         if (this.props.hoverPoint) this.props.releaseHoverPoint();
       }
@@ -114,9 +131,11 @@ const mapStateToProps = state => {
     viewer: state.cesiumReducer.viewer,
     uiState: state.uiStateManagerReducer.uiState,
     uiStartDrawing: state.uiStateManagerReducer.uiStartDrawing,
+    drawingPolyline: state.drawingManagerReducer.drawingPolyline,
     fixedPoints: state.drawingManagerReducer.fixedPoints,
+    hoverPolyline: state.drawingManagerReducer.hoverPolyline,
     hoverPoint: state.drawingManagerReducer.hoverPoint,
-    pickedPoint: state.drawingManagerReducer.pickedPoint
+    pickedPoint: state.drawingManagerReducer.pickedPoint,
   };
 };
 
@@ -133,6 +152,11 @@ const mapDispatchToProps = dispatch => {
         setUIStateFoundDrew: () => dispatch(actions.setUIStateFoundDrew()),
         enableRotate: () => dispatch(actions.enableRotate()),
         disableRotate: () => dispatch(actions.disableRotate()),
+        setMouseCartesian3: (cartesian, viewer) => dispatch(
+          actions.setMouseCartesian3(cartesian, viewer)
+        ),
+        setHoverPolyline: () => dispatch(actions.setHoverPolyline()),
+        releaseHoverPolyline: () => dispatch(actions.releaseHoverPolyline()),
         setHoverPoint: (point) => dispatch(actions.setHoverPoint(point)),
         releaseHoverPoint: () => dispatch(actions.releaseHoverPoint()),
         setPickedPoint: (point) => dispatch(actions.setPickedPoint(point)),
