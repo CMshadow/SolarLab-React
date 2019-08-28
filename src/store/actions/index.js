@@ -9,6 +9,7 @@ export {
   dragPolyline,
   terminateDrawing,
   complementPointOnPolyline,
+  deletePointOnPolyline,
 
   setMouseCartesian3,
 

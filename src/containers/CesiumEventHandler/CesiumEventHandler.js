@@ -132,7 +132,6 @@ const mapStateToProps = state => {
     uiState: state.uiStateManagerReducer.uiState,
     uiStartDrawing: state.uiStateManagerReducer.uiStartDrawing,
     drawingPolyline: state.drawingManagerReducer.drawingPolyline,
-    fixedPoints: state.drawingManagerReducer.fixedPoints,
     hoverPolyline: state.drawingManagerReducer.hoverPolyline,
     hoverPoint: state.drawingManagerReducer.hoverPoint,
     pickedPoint: state.drawingManagerReducer.pickedPoint,
