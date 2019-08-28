@@ -126,8 +126,15 @@ class Polyline {
    * @return {Point}           the Point object being deleted
    */
   deletePoint = (position) => {
+    if (this.length < 3) {
+      throw new Error('You cannot delete any more points');
+    }
     if (position < this.length) {
       const deletedPoint = this.points.splice(position, 1);
+      if (position === 0) {
+        this.points.splice(this.length-1, 1);
+        this.addPoint(this.length, this.points[0]);
+      }
       return deletedPoint[0];
     } else {
       throw new Error('The index is beyond Polyline length');
