@@ -2,6 +2,7 @@ import {
   Color
 } from 'cesium';
 import uuid from 'uuid/v1';
+import errorNotification from '../../components/ui/Notification/ErrorNotification';
 
 import Point from '../point/point';
 import Coordinate from '../point/coordinate';
@@ -126,8 +127,11 @@ class Polyline {
    * @return {Point}           the Point object being deleted
    */
   deletePoint = (position) => {
-    if (this.length < 3) {
-      throw new Error('You cannot delete any more points');
+    if (this.length <= 4) {
+      return errorNotification(
+        'Invalid Operation',
+        'Cannot delete any more point'
+      )
     }
     if (position < this.length) {
       const deletedPoint = this.points.splice(position, 1);
