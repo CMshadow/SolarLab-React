@@ -23,6 +23,7 @@
     "redux": "^4.0.4",
     "redux-thunk": "^2.3.0",
     "resium": "^1.7.0",
+    "set-value": "2.0.1",
     "uuid": "^3.3.2"
   },
   "scripts": {
@@ -45,5 +46,8 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "eslint-config-react-app": "^5.0.1"
   }
 }
