@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Layout } from 'antd';
+import { ContextMenuTrigger } from "react-contextmenu";
 
 import 'antd/dist/antd.css';
 
@@ -11,6 +12,7 @@ import CesiumScreenSpaceCameraController from '../ScreenSpaceCameraController/Ce
 import CesiumRender from '../CesiumRenders/CesiumRender';
 import LeftSider from '../ui/LeftSider/LeftSider';
 import RightSider from '../ui/RightSider/RightSider';
+import CustomContextMenu from '../ui/CustomContextMenu/CustomContextMenu';
 
 const { Content } = Layout;
 
@@ -20,12 +22,15 @@ class CesiumPanel extends Component {
     return (
       <Layout>
         <Content>
-          <CustomViewer enableTerrain={false}>
-            <CesiumScreenSpaceCameraController />
-            <FlyTo flyTo={this.props.initialCor} />
-            <CesiumEventHandlers />
-            <CesiumRender />
-          </CustomViewer>
+          <ContextMenuTrigger id="cesium_context_menu">
+            <CustomViewer enableTerrain={false}>
+              <CesiumScreenSpaceCameraController />
+              <FlyTo flyTo={this.props.initialCor} />
+              <CesiumEventHandlers />
+              <CesiumRender />
+            </CustomViewer>
+          </ContextMenuTrigger>
+          <CustomContextMenu />
           <LeftSider />
         </Content>
         <RightSider />

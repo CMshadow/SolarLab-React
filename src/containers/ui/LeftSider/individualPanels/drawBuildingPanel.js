@@ -1,5 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPen } from '@fortawesome/pro-light-svg-icons'
 import {
   Form,
   Input,
@@ -27,7 +29,7 @@ class DrawBuildingPanel extends Component {
       <div>
         <Divider>Step 1</Divider>
         <Row>
-          <Col span={16} offset={4}>
+          <Col span={18} offset={3}>
             <Button
               type="primary"
               size="large"
@@ -36,7 +38,12 @@ class DrawBuildingPanel extends Component {
               loading={this.props.uiStartDrawing}
               onClick={this.props.setStartDrawing}
             >
-              {this.props.uiStartDrawing ? 'Drawing...' : 'Draw building outline'}
+              {this.props.uiStartDrawing ?
+                null :
+                <FontAwesomeIcon icon={faPen} />}
+              {this.props.uiStartDrawing ?
+                'Drawing...' :
+                'Draw building outline'}
             </Button>
           </Col>
         </Row>

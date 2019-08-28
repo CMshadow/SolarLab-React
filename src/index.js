@@ -6,6 +6,7 @@ import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
 
 import './index.css';
+import './ContextMenu.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 

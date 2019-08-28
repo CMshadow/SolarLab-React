@@ -9,14 +9,14 @@ import * as actions from '../../store/actions/index';
 class CustomViewer extends Component {
 
   render () {
-    Cesium.Ion.defaultAccessToken = ION_TOKEN;
+    // Cesium.Ion.defaultAccessToken = ION_TOKEN;
 
     const worldTerrain = Cesium.createWorldTerrain();
 
-    const bingMap = Cesium.BingMapsImageryProvider({
+    const bingMap = new Cesium.BingMapsImageryProvider({
       url: 'https://dev.virtualearth.net',
       key: BING_MAP_KEY,
-      mapStyle: Cesium.BingMapsStyle.AERIAL_WITH_LABELS
+      mapStyle: Cesium.BingMapsStyle.AERIAL
     });
 
     return (

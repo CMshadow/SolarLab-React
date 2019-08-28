@@ -30,19 +30,54 @@ export const addPointOnPolyline = (mousePosition, viewer) => {
   }
 };
 
-export const setHoverPoint = (point) => (dispatch, getState) => {
-  console.log(point)
-  console.log(getState().drawingManagerReducer.drawingPolyline.points)
+export const complementPointOnPolyline = () => {
+  return {
+    type: actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,
+  };
+};
+
+export const deletePointOnPolyline = () => {
+  return {
+    type: actionTypes.CLICK_DELETE_POINT_ON_POLYLINE
+  };
+};
+
+export const setMouseCartesian3 = (mousePosition, viewer) => {
+  const cartesian3 = viewer.scene.pickPosition(mousePosition);
+  if (Cesium.defined(cartesian3)) {
+    return {
+      type: actionTypes.SET_MOUSE_CARTESIAN3,
+      cartesian3: cartesian3
+    };
+  } else {
+    return {
+      type: actionTypes.DO_NOTHING
+    };
+  }
+}
+
+export const setHoverPolyline = () => {
+  return ({
+    type: actionTypes.SET_HOVERPOLYLINE
+  });
+};
+
+export const releaseHoverPolyline = () => {
+  return ({
+    type: actionTypes.RELEASE_HOVERPOLYLINE
+  });
+};
+
+export const setHoverPoint = (point) => {
   point.setColor(Cesium.Color.ORANGE);
-  return dispatch({
+  return ({
     type: actionTypes.SET_HOVERPOINT,
-    point: point
+    hoverPoint: point
   });
 };
 
 export const releaseHoverPoint = () => (dispatch, getState) => {
-  console.log('release hover point action')
-  getState().drawingManagerReducer.drawingPolyline.hoverPoint.setColor(
+  getState().drawingManagerReducer.hoverPoint.setColor(
     Cesium.Color.WHITE
   );
   return dispatch({
@@ -53,8 +88,24 @@ export const releaseHoverPoint = () => (dispatch, getState) => {
 export const setPickedPoint = (point) => {
   return ({
     type: actionTypes.SET_PICKEDPOINT,
-    point: point
+    pickedPoint: point
   });
+};
+
+export const movePickedPoint = (mousePosition, viewer) => (dispatch, getState) => {
+  const cartesian3 = viewer.scene.pickPosition(mousePosition);
+  getState().drawingManagerReducer.pickedPoint.setCartesian3Coordinate(
+    cartesian3
+  );
+  if (Cesium.defined(cartesian3)) {
+    return dispatch({
+      type: actionTypes.MOVE_PICKEDPOINT,
+    });
+  } else {
+    return dispatch({
+      type: actionTypes.DO_NOTHING
+    });
+  }
 };
 
 export const releasePickedPoint = () => {

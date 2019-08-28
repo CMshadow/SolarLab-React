@@ -267,7 +267,7 @@ class CreateBuildingPanel extends PureComponent {
                   }}
                   buttonStyle='solid'
                 >
-                  <Radio.Button value="2D">Satellite 2D Map</Radio.Button>
+                  <Radio.Button value="2D">Satellite Map</Radio.Button>
                   <Radio.Button value="3D">Drone 3D Model</Radio.Button>
                 </Radio.Group>
               )}

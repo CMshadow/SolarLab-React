@@ -4,6 +4,7 @@ import {
 import uuid from 'uuid/v1';
 
 import Point from '../point/point';
+import Coordinate from '../point/coordinate';
 
 class Polyline {
 
@@ -80,6 +81,26 @@ class Polyline {
   }
 
   /**
+   * Find the index of the new point to be added according to the mouse click
+   * position
+   * @param  {Carteisan3} cartesian3 mouse click position
+   * @return {Int}                   the index of the new point to be added
+   */
+  determineAddPointPosition = (cartesian3) => {
+    const cor = Coordinate.fromCartesian(cartesian3);
+    const polylineBrngArray = this.getSegmentBearing();
+    const corBrngArray = this.points.slice(0, this.length-1).map(elem => {
+      return Coordinate.bearing(elem, cor);
+    })
+    const brngDiff = polylineBrngArray.map((elem,index) => {
+      return Math.abs(elem-corBrngArray[index]);
+    })
+    const minIndex = brngDiff.reduce((minIndex, elem, index, array) => {
+      return elem < array[minIndex] ? index : minIndex}, 0);
+    return minIndex + 1;
+  }
+
+  /**
    * update the point at a specific position to a new point
    * @param {number}  position the index position of the point to be updated
    * @param {Point}   point    the Point object to be added
@@ -90,6 +111,13 @@ class Polyline {
     } else {
       throw new Error('Adding object is not a Point object');
     }
+  }
+
+  findPointIndex = (point) => {
+    const a = this.points.reduce((p, elem, index, array) => {
+      return elem === p ? index : p
+    }, point);
+    return a;
   }
 
   /**
@@ -130,6 +158,30 @@ class Polyline {
       });
       return CoordinatesArray;
     }
+  }
+
+  /**
+   * get the bearings of each segment in the polyline
+   * @return {Number[]}   the array of bearings of each segment in the polyline
+   */
+  getSegmentBearing = () => {
+    let brngArray = [];
+    for (let i = 0; i < this.length-1; i++) {
+      brngArray.push(Point.bearing(this.points[i], this.points[i+1]));
+    }
+    return brngArray;
+  }
+
+  /**
+   * get the distance of each segment in the polyline
+   * @return {Number[]}   the distance of each segment in the polyline
+   */
+  getSegmentDistance = () => {
+    let distArray = [];
+    for (let i = 0; i < this.length-1; i++) {
+      distArray.push(Point.distance(this.points[i], this.points[i+1]));
+    }
+    return distArray;
   }
 }
 
