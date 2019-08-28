@@ -4,7 +4,7 @@ import { ContextMenu, MenuItem } from "react-contextmenu";
 
 import * as actions from '../../../../store/actions/index';
 
-class EditPolylineContextMenu extends Component {
+class AddPointContextMenu extends Component {
   render () {
     return (
       <ContextMenu
@@ -35,4 +35,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditPolylineContextMenu);
+export default connect(mapStateToProps, mapDispatchToProps)(AddPointContextMenu);

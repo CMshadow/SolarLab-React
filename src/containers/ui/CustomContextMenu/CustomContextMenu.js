@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 
-import EditPolylineContextMenu from './individualContextMenu/editPolylineContextMenu';
+import AddPointContextMenu from './individualContextMenu/addPointContextMenu';
+import DeletePointContextMenu from './individualContextMenu/deletePointContextMenu';
 
 class CustomContextMenu extends Component {
 
@@ -9,7 +10,9 @@ class CustomContextMenu extends Component {
 
     let content = null;
     if (this.props.hoverPolyline) {
-      content = (<EditPolylineContextMenu />);
+      content = (<AddPointContextMenu />);
+    }else if (this.props.hoverPoint) {
+      content = (<DeletePointContextMenu />);
     }
 
     return (
@@ -22,7 +25,8 @@ class CustomContextMenu extends Component {
 
 const mapStateToProps = state => {
   return {
-    hoverPolyline: state.drawingManagerReducer.hoverPolyline
+    hoverPolyline: state.drawingManagerReducer.hoverPolyline,
+    hoverPoint: state.drawingManagerReducer.hoverPoint
   };
 };
 

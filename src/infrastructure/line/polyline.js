@@ -80,6 +80,12 @@ class Polyline {
     }
   }
 
+  /**
+   * Find the index of the new point to be added according to the mouse click
+   * position
+   * @param  {Carteisan3} cartesian3 mouse click position
+   * @return {Int}                   the index of the new point to be added
+   */
   determineAddPointPosition = (cartesian3) => {
     const cor = Coordinate.fromCartesian(cartesian3);
     const polylineBrngArray = this.getSegmentBearing();
@@ -105,6 +111,13 @@ class Polyline {
     } else {
       throw new Error('Adding object is not a Point object');
     }
+  }
+
+  findPointIndex = (point) => {
+    const a = this.points.reduce((p, elem, index, array) => {
+      return elem === p ? index : p
+    }, point);
+    return a;
   }
 
   /**

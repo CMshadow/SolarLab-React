@@ -3,6 +3,37 @@ import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
 import Polyline from '../../infrastructure/line/polyline';
 
+/**
+ * The state manager for drawing and editing polyline
+ * @param {Polyline || null}  drawingPolyline the working on Polyline object;
+ *                                            null by default;
+ *                                            initialized when starting drawing
+ *                                            the Polyline;
+ * @param {Point[] || []} fixedPoints a array of fixed Points in the Polyline
+ *                                    object;
+ *                                    empty array by default;
+ *                                    should only be used while dynamically
+ *                                    drawing the Polyline object;
+ * @param {Point || null} floatingPoints  the floating Point while drawing the
+ *                                        Polyline object;
+ *                                        null by default;
+ *                                        should only be used while dynamically
+ *                                        drawing the Polyline object;
+ * @param {Cartesian3 || null}  mouseCartesian3 mouse realtime position in
+ *                                              Carteisan3
+ * @param {Polyline || null}  hoverPolyline  ref to drawingPolyline while mouse
+ *                                           hover on the Polyline;
+ *                                           null while mouse leaving the
+ *                                           Polyline;
+ * @param {Point || null} hoverPoint  ref to the Point mouse hovering on, it
+ *                                    could be any point in the Polyline;
+ *                                    null while mouse is not hoving on any
+ *                                    point in the Polyline;
+ * @param {Point || null} pickedPoint ref to the Point mouse is clicking on, it
+ *                                    could be any point in the Polyline;
+ *                                    null while mouse is not clicking on any
+ *                                    point in the Polyline;
+ */
 const initialState = {
   drawingPolyline: null,
   fixedPoints : [],
@@ -42,13 +73,13 @@ const addPointOnPolyline = (state, action) => {
 
 const terminateDrawing = (state, action) => {
   const firstPoint = state.drawingPolyline.points[0]
-  let fixedPoints = [...state.fixedPoints];
-  fixedPoints = fixedPoints.concat(firstPoint);
+  const fixedPoints = [...state.fixedPoints].concat(firstPoint);
   let polyline = new Polyline(fixedPoints);
   return {
     ...state,
     drawingPolyline: polyline,
-    floatingPoints: null
+    floatingPoints: null,
+    fixedPoints: []
   };
 };
 
@@ -61,6 +92,16 @@ const complementPointOnPolyline = (state, action) => {
     Coordinate.fromCartesian(state.mouseCartesian3, 0.1)
   );
   newPolyline.addPoint(indexToAdd, newPoint);
+  return {
+    ...state,
+    drawingPolyline: newPolyline
+  };
+};
+
+const deletePointOnPolyline = (state, action) => {
+  const deletePosition = state.drawingPolyline.findPointIndex(state.hoverPoint);
+  state.drawingPolyline.deletePoint(deletePosition)
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
   return {
     ...state,
     drawingPolyline: newPolyline
@@ -135,6 +176,8 @@ const reducer = (state=initialState, action) => {
       return terminateDrawing (state, action);
     case actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE:
       return complementPointOnPolyline (state, action);
+    case actionTypes.CLICK_DELETE_POINT_ON_POLYLINE:
+      return deletePointOnPolyline (state, action);
     case actionTypes.SET_MOUSE_CARTESIAN3:
       return setMouseCartesian3 (state, action);
     case actionTypes.SET_HOVERPOLYLINE:

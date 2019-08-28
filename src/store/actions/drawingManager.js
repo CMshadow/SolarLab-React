@@ -36,6 +36,12 @@ export const complementPointOnPolyline = () => {
   };
 };
 
+export const deletePointOnPolyline = () => {
+  return {
+    type: actionTypes.CLICK_DELETE_POINT_ON_POLYLINE
+  };
+};
+
 export const setMouseCartesian3 = (mousePosition, viewer) => {
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
   if (Cesium.defined(cartesian3)) {
