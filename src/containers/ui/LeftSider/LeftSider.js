@@ -5,6 +5,7 @@ import { connect } from 'react-redux';
 import 'antd/dist/antd.css';
 
 import * as classes from './LeftSider.module.css';
+import UndoRedo from '../../../components/ui/UndoRedo/UndoRedo';
 import CreateBuildingPanel from './individualPanels/createBuildingPanel';
 import DrawBuildingPanel from './individualPanels/drawBuildingPanel';
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary';
@@ -44,6 +45,7 @@ class LeftSider extends Component {
           collapsible
           onCollapse={this.onCollapse}
         >
+          {this.state.siderCollapse ? null : <UndoRedo />}
           {content}
         </Sider>
       </Layout>
@@ -53,7 +55,7 @@ class LeftSider extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.uiStateManagerReducer.uiState
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState
   };
 };
 

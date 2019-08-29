@@ -77,7 +77,7 @@ export const setHoverPoint = (point) => {
 };
 
 export const releaseHoverPoint = () => (dispatch, getState) => {
-  getState().drawingManagerReducer.hoverPoint.setColor(
+  getState().undoableReducer.present.drawingManagerReducer.hoverPoint.setColor(
     Cesium.Color.WHITE
   );
   return dispatch({
@@ -94,7 +94,7 @@ export const setPickedPoint = (point) => {
 
 export const movePickedPoint = (mousePosition, viewer) => (dispatch, getState) => {
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
-  getState().drawingManagerReducer.pickedPoint.setCartesian3Coordinate(
+  getState().undoableReducer.present.drawingManagerReducer.pickedPoint.setCartesian3Coordinate(
     cartesian3
   );
   if (Cesium.defined(cartesian3)) {

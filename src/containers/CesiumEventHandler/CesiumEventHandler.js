@@ -129,12 +129,12 @@ class CesiumEventHandlers extends Component {
 const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
-    uiState: state.uiStateManagerReducer.uiState,
-    uiStartDrawing: state.uiStateManagerReducer.uiStartDrawing,
-    drawingPolyline: state.drawingManagerReducer.drawingPolyline,
-    hoverPolyline: state.drawingManagerReducer.hoverPolyline,
-    hoverPoint: state.drawingManagerReducer.hoverPoint,
-    pickedPoint: state.drawingManagerReducer.pickedPoint,
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    uiStartDrawing: state.undoableReducer.present.uiStateManagerReducer.uiStartDrawing,
+    drawingPolyline: state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+    hoverPolyline: state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
+    hoverPoint: state.undoableReducer.present.drawingManagerReducer.hoverPoint,
+    pickedPoint: state.undoableReducer.present.drawingManagerReducer.pickedPoint,
   };
 };
 

@@ -54,7 +54,7 @@ class DrawBuildingPanel extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiStartDrawing: state.uiStateManagerReducer.uiStartDrawing
+    uiStartDrawing: state.undoableReducer.present.uiStateManagerReducer.uiStartDrawing
   };
 };
 

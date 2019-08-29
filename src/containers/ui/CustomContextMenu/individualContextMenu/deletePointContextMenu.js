@@ -21,11 +21,6 @@ class DeletePointContextMenu extends Component {
   };
 }
 
-const mapStateToProps = state => {
-  return {
-    mouseCartesian3: state.drawingManagerReducer.mouseCartesian3
-  };
-};
 
 const mapDispatchToProps = dispatch => {
   return {
@@ -35,4 +30,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DeletePointContextMenu);
+export default connect(null, mapDispatchToProps)(DeletePointContextMenu);

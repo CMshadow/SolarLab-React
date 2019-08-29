@@ -100,8 +100,9 @@ const complementPointOnPolyline = (state, action) => {
 
 const deletePointOnPolyline = (state, action) => {
   const deletePosition = state.drawingPolyline.findPointIndex(state.hoverPoint);
-  state.drawingPolyline.deletePoint(deletePosition)
+  console.log(deletePosition)
   const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.deletePoint(deletePosition)
   return {
     ...state,
     drawingPolyline: newPolyline

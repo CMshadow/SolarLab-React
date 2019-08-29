@@ -67,8 +67,8 @@ class Point extends Coordinate {
    * @return {Point}               new Point object
    */
   static fromPoint (
-    point, hOffset = null, id = null, name = null, color = null, size = null,
-    show = true
+    point, hOffset = null, id = point.entityId, name = null, color = null,
+    size = null, show = true
   ) {
       const newLon = point.lon;
       const newLat = point.lat;

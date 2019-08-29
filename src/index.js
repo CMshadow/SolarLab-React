@@ -4,11 +4,13 @@ import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import thunk from 'redux-thunk';
+import undoable, { includeAction } from 'redux-undo';
 
 import './index.css';
 import './ContextMenu.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import * as actionTypes from './store/actions/actionTypes';
 
 /*
   import Redux reducers
@@ -33,9 +35,18 @@ const rootReducer = combineReducers({
   authReducer: authReducer,
   projectManagerReducer: projectManagerReducer,
   cesiumReducer: cesiumReducer,
-  drawingManagerReducer: drawingManagerReducer,
-  uiStateManagerReducer: uiStateManagerReducer,
   buildingManagerReducer: buildingManagerReducer,
+  undoableReducer: undoable(combineReducers({
+    drawingManagerReducer: drawingManagerReducer,
+    uiStateManagerReducer: uiStateManagerReducer,
+  }), {
+    filter: includeAction([
+      actionTypes.CLICK_ADD_POINT_ON_POLYLINE,
+      actionTypes.TERMINATE_DRAWING,
+      actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,
+      actionTypes.CLICK_DELETE_POINT_ON_POLYLINE
+    ])
+  }),
   // ADD MORE REDUCERS OVER HERE
 });
 

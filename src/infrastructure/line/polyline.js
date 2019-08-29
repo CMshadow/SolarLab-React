@@ -49,10 +49,12 @@ class Polyline {
    *                                  existing one if not provided
    * @return {Polyline}               new Polyline object
    */
-  static fromPolyline (polyline, id = null, name = null, color = null,
+  static fromPolyline (polyline, id = polyline.entityId, name = null, color = null,
     width = null, show = true
   ) {
-      const newPoints = polyline.points;
+      const newPoints = polyline.points.map(elem => {
+        return Point.fromPoint(elem);
+      });
       const newName = name ? name : polyline.name;
       const newColor = color ? color : polyline.color;
       const newShow = show ? show : polyline.show;
@@ -115,8 +117,10 @@ class Polyline {
   }
 
   findPointIndex = (point) => {
+    console.log(point)
+    console.log(this.points)
     const a = this.points.reduce((p, elem, index, array) => {
-      return elem === p ? index : p
+      return elem.entityId === p.entityId ? index : p
     }, point);
     return a;
   }

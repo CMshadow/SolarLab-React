@@ -25,8 +25,8 @@ class CustomContextMenu extends Component {
 
 const mapStateToProps = state => {
   return {
-    hoverPolyline: state.drawingManagerReducer.hoverPolyline,
-    hoverPoint: state.drawingManagerReducer.hoverPoint
+    hoverPolyline: state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
+    hoverPoint: state.undoableReducer.present.drawingManagerReducer.hoverPoint
   };
 };
 

@@ -23,7 +23,7 @@ class AddPointContextMenu extends Component {
 
 const mapStateToProps = state => {
   return {
-    mouseCartesian3: state.drawingManagerReducer.mouseCartesian3
+    mouseCartesian3: state.undoableReducer.present.drawingManagerReducer.mouseCartesian3
   };
 };
 
