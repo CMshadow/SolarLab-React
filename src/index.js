@@ -44,10 +44,10 @@ const rootReducer = combineReducers({
       actionTypes.CLICK_ADD_POINT_ON_POLYLINE,
       actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,
       actionTypes.CLICK_DELETE_POINT_ON_POLYLINE,
-      // actionTypes.SET_PICKEDPOINT,
       actionTypes.RELEASE_PICKEDPOINT,
       actionTypes.SET_UI_STATE_DRAWING_FOUND,
-      actionTypes.SET_UI_STATE_FOUND_DREW
+      actionTypes.SET_UI_STATE_FOUND_DREW,
+      actionTypes.SET_UI_STATE_EDITING_FOUND
     ])
   })
   // ADD MORE REDUCERS OVER HERE

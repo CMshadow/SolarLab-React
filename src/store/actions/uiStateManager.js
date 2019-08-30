@@ -17,3 +17,9 @@ export const setUIStateFoundDrew = () => {
     type: actionTypes.SET_UI_STATE_FOUND_DREW
   };
 }
+
+export const setUIStateEditingFound = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_EDITING_FOUND
+  };
+};

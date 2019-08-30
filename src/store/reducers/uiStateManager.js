@@ -25,6 +25,13 @@ const setUIStateFoundDrew = (state, action) => {
   }
 }
 
+const setUIStateEditingFound = (state, action) => {
+  return {
+    ...state,
+    uiState: 'EDITING_FOUND'
+  }
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_UI_STATE_READY_DRAWING:
@@ -33,6 +40,8 @@ const reducer = (state=initialState, action) => {
       return setUIStateDrawingFound(state, action);
     case actionTypes.SET_UI_STATE_FOUND_DREW:
       return setUIStateFoundDrew(state, action);
+    case actionTypes.SET_UI_STATE_EDITING_FOUND:
+      return setUIStateEditingFound(state, action);
     default: return state;
   }
 };

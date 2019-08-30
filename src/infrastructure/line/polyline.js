@@ -64,18 +64,6 @@ class Polyline {
       return new Polyline (newPoints, id, newName, newColor, newWidth, newShow);
     }
 
-  static fromPolylineShallow (
-    polyline, id = polyline.entityId, name = null, color = null, width = null,
-    show = true
-  ) {
-      const newPoints = polyline.points;
-      const newName = name ? name : polyline.name;
-      const newColor = color ? color : polyline.color;
-      const newShow = show ? show : polyline.show;
-      const newWidth = width ? width : polyline.width;
-      return new Polyline (newPoints, id, newName, newColor, newWidth, newShow);
-    }
-
   /**
    * the number of points of the polyline
    * @return {int} the number of points of the polyline

@@ -12,37 +12,38 @@ const RightClickHandler = (props) => {
     props.setMouseCartesian3(event.endPosition, props.viewer);
     if (props.uiState === 'DRAWING_FOUND') {
       props.onDragPolyline(event.endPosition, props.viewer);
-    } else if (props.uiState === 'FOUND_DREW' && props.pickedPoint) {
-      // Reposition points on the drawing polyline
-      props.movePickedPoint(event.endPosition, props.viewer);
-    }
-    else {
-      const anyPickedObject = props.viewer.scene.pick(event.endPosition);
+    } else if (props.uiState === 'EDITING_FOUND') {
+      if (props.pickedPointIndex !== null) {
+        // Reposition points on the drawing polyline
+        props.movePickedPoint(event.endPosition, props.viewer);
+      } else {
+        const anyPickedObject = props.viewer.scene.pick(event.endPosition);
 
-      if(anyPickedObject) {
-        if (anyPickedObject.id.id === props.drawingPolyline.entityId) {
-          // Set hover polyline if available
-          props.setHoverPolyline();
-          // Release hover point if it exists
-          if (props.hoverPoint) {
-            props.releaseHoverPoint()};
-        }
+        if(anyPickedObject) {
+          if (anyPickedObject.id.id === props.drawingPolyline.entityId) {
+            // Set hover polyline if available
+            props.setHoverPolyline();
+            // Release hover point if it exists
+            if (props.hoverPointIndex !== null) {
+              props.releaseHoverPointIndex()};
+          }
 
-        // Find out hover on which point
-        const onTopPoint = props.drawingPolyline.points.find(element => {
-          return element.entityId === anyPickedObject.id.id
-        })
-        // Set hover point if available
-        if (onTopPoint) {
-          props.setHoverPoint(onTopPoint);
+          // Find out hover on which point
+          const onTopPoint = props.drawingPolyline.points.find(element => {
+            return element.entityId === anyPickedObject.id.id
+          })
+          // Set hover point if available
+          if (onTopPoint) {
+            props.setHoverPointIndex(onTopPoint);
+            // Release hover polyline if it exists
+            if (props.hoverPolyline) props.releaseHoverPolyline();
+          }
+        } else {
           // Release hover polyline if it exists
           if (props.hoverPolyline) props.releaseHoverPolyline();
+          // Release hover point if it exists
+          if (props.hoverPointIndex !== null) props.releaseHoverPointIndex();
         }
-      } else {
-        // Release hover polyline if it exists
-        if (props.hoverPolyline) props.releaseHoverPolyline();
-        // Release hover point if it exists
-        if (props.hoverPoint) props.releaseHoverPoint();
       }
     }
   };
@@ -62,8 +63,8 @@ const mapStateToProps = state => {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     drawingPolyline: state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
     hoverPolyline: state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
-    hoverPoint: state.undoableReducer.present.drawingManagerReducer.hoverPoint,
-    pickedPoint: state.undoableReducer.present.drawingManagerReducer.pickedPoint,
+    hoverPointIndex: state.undoableReducer.present.drawingManagerReducer.hoverPointIndex,
+    pickedPointIndex: state.undoableReducer.present.drawingManagerReducer.pickedPointIndex,
   };
 };
 
@@ -74,8 +75,8 @@ const mapDispatchToProps = dispatch => {
     ),
     setHoverPolyline: () => dispatch(actions.setHoverPolyline()),
     releaseHoverPolyline: () => dispatch(actions.releaseHoverPolyline()),
-    setHoverPoint: (point) => dispatch(actions.setHoverPoint(point)),
-    releaseHoverPoint: () => dispatch(actions.releaseHoverPoint()),
+    setHoverPointIndex: (point) => dispatch(actions.setHoverPointIndex(point)),
+    releaseHoverPointIndex: () => dispatch(actions.releaseHoverPointIndex()),
     movePickedPoint: (cartesian, viewer) => dispatch(
       actions.movePickedPoint(cartesian, viewer)
     ),

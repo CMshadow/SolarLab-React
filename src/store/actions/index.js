@@ -16,12 +16,12 @@ export {
   setHoverPolyline,
   releaseHoverPolyline,
 
-  setHoverPoint,
-  releaseHoverPoint,
+  setHoverPointIndex,
+  releaseHoverPointIndex,
 
-  setPickedPoint,
+  setPickedPointIndex,
   movePickedPoint,
-  releasePickedPoint,
+  releasePickedPointIndex,
 
   cleanHoverAndColor
 } from './drawingManager';
@@ -29,7 +29,8 @@ export {
 export {
   setUIStateReadyDrawing,
   setUIStateDrawingFound,
-  setUIStateFoundDrew
+  setUIStateFoundDrew,
+  setUIStateEditingFound,
 } from './uiStateManager';
 
 export {

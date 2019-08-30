@@ -34,7 +34,8 @@ class LeftSider extends Component {
       else if (
         this.props.uiState === 'READY_DRAWING' ||
         this.props.uiState === 'DRAWING_FOUND' ||
-        this.props.uiState === 'FOUND_DREW'
+        this.props.uiState === 'FOUND_DREW' ||
+        this.props.uiState === 'EDITING_FOUND'
       ) {
         content = (<DrawBuildingPanel/>);
       }

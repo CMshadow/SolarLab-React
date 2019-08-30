@@ -5,41 +5,14 @@ import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
 import Polyline from '../../infrastructure/line/polyline';
 
-/**
- * The state manager for drawing and editing polyline
- * @param {Polyline || null}  drawingPolyline the working on Polyline object;
- *                                            null by default;
- *                                            initialized when starting drawing
- *                                            the Polyline;
- * @param {Point[] || []} fixedPoints a array of fixed Points in the Polyline
- *                                    object;
- *                                    empty array by default;
- *                                    should only be used while dynamically
- *                                    drawing the Polyline object;
- * @param {Cartesian3 || null} mouseCartesian3  the current Cartesian3
- *                                              coordinate of the mouse;
- *                                              null by default;
- * @param {Polyline || null}  hoverPolyline  ref to drawingPolyline while mouse
- *                                           hover on the Polyline;
- *                                           null while mouse leaving the
- *                                           Polyline;
- * @param {Point || null} hoverPoint  ref to the Point mouse hovering on, it
- *                                    could be any point in the Polyline;
- *                                    null while mouse is not hoving on any
- *                                    point in the Polyline;
- * @param {Point || null} pickedPoint ref to the Point mouse is clicking on, it
- *                                    could be any point in the Polyline;
- *                                    null while mouse is not clicking on any
- *                                    point in the Polyline;
- */
 const initialState = {
   drawingPolyline: null,
   fixedPoints: [],
 
   mouseCartesian3: null,
-  hoverPolyline: null,
-  hoverPoint: null,
-  pickedPoint: null
+  hoverPolyline: false,
+  hoverPointIndex: null,
+  pickedPointIndex: null
 };
 
 const dragPolyline = (state, action) => {
@@ -103,9 +76,8 @@ const complementPointOnPolyline = (state, action) => {
 };
 
 const deletePointOnPolyline = (state, action) => {
-  const deletePosition = state.drawingPolyline.findPointIndex(state.hoverPoint);
   const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
-  newPolyline.deletePoint(deletePosition)
+  newPolyline.deletePoint(state.hoverPointIndex)
   return {
     ...state,
     drawingPolyline: newPolyline,
@@ -120,62 +92,65 @@ const setMouseCartesian3 = (state, action) => {
 };
 
 const setHoverPolyline = (state, action) => {
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.setColor(Cesium.Color.ORANGE);
   return {
     ...state,
-    hoverPolyline: state.drawingPolyline
+    drawingPolyline: newPolyline,
+    hoverPolyline: true
   };
 };
 
 const releaseHoverPolyline = (state, action) => {
-  return {
-    ...state,
-    hoverPolyline: null
-  };
-};
-
-const setHoverPoint = (state, action) => {
-  // const hoverIndex = state.drawingPolyline.findPointIndex(action.hoverPoint);
-  // const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
-  return {
-    ...state,
-    // drawingPolyline: newPolyline,
-    // hoverPoint: newPolyline.points[hoverIndex]
-    drawingPolyline: Polyline.fromPolylineShallow(state.drawingPolyline),
-    hoverPoint: action.hoverPoint
-  };
-};
-
-const releaseHoverPoint = (state, action) => {
-  return {
-    ...state,
-    // drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
-    drawingPolyline: Polyline.fromPolylineShallow(state.drawingPolyline),
-    hoverPoint: null
-  };
-};
-
-const setPickedPoint = (state, action) => {
-  const hoverIndex = state.drawingPolyline.findPointIndex(action.pickedPoint);
   const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.setColor(Cesium.Color.WHITE);
   return {
     ...state,
     drawingPolyline: newPolyline,
-    pickedPoint: newPolyline.points[hoverIndex],
-    hoverPoint: newPolyline.points[hoverIndex],
+    hoverPolyline: false
+  };
+};
+
+const setHoverPointIndex = (state, action) => {
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.points[action.hoverPointIndex].setColor(Cesium.Color.ORANGE);
+  return {
+    ...state,
+    drawingPolyline: newPolyline,
+    hoverPointIndex: action.hoverPointIndex
+  };
+};
+
+const releaseHoverPointIndex = (state, action) => {
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.WHITE);
+  return {
+    ...state,
+    drawingPolyline: newPolyline,
+    hoverPointIndex: null
+  };
+};
+
+const setPickedPointIndex = (state, action) => {
+  return {
+    ...state,
+    pickedPointIndex: action.pickedPointIndex,
   };
 };
 
 const movePickedPoint = (state, action) => {
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.points[state.pickedPointIndex].setCartesian3Coordinate(action.cartesian3);
   return {
     ...state,
+    drawingPolyline: newPolyline
   }
 };
 
-const releasePickedPoint = (state, action) => {
+const releasePickedPointIndex = (state, action) => {
   return {
     ...state,
-    drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
-    pickedPoint: null,
+    pickedPointIndex: null,
   };
 };
 
@@ -185,9 +160,9 @@ const cleanHoverAndColor = (state, action) => {
   });
   return {
     ...state,
-    hoverPolyline: null,
-    hoverPoint: null,
-    pickedPoint: null
+    hoverPolyline: false,
+    hoverPointIndex: null,
+    pickedPointIndex: null
   };
 };
 
@@ -210,15 +185,15 @@ const reducer = (state=initialState, action) => {
     case actionTypes.RELEASE_HOVERPOLYLINE:
       return releaseHoverPolyline (state, action);
     case actionTypes.SET_HOVERPOINT:
-      return setHoverPoint (state, action);
+      return setHoverPointIndex (state, action);
     case actionTypes.RELEASE_HOVERPOINT:
-      return releaseHoverPoint (state, action);
+      return releaseHoverPointIndex (state, action);
     case actionTypes.SET_PICKEDPOINT:
-      return setPickedPoint (state, action);
+      return setPickedPointIndex (state, action);
     case actionTypes.MOVE_PICKEDPOINT:
       return movePickedPoint (state, action);
     case actionTypes.RELEASE_PICKEDPOINT:
-      return releasePickedPoint (state, action);
+      return releasePickedPointIndex (state, action);
     case actionTypes.CLEAN_HOVER_AND_COLOR:
       return cleanHoverAndColor (state, action);
     case actionTypes.DO_NOTHING:

@@ -1,30 +1,28 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import AddPointContextMenu from './individualContextMenu/addPointContextMenu';
 import DeletePointContextMenu from './individualContextMenu/deletePointContextMenu';
 
-class CustomContextMenu extends Component {
-
-  render () {
+const CustomContextMenu = (props) => {
 
     let content = null;
-    if (this.props.hoverPolyline) {
+    if (props.hoverPolyline) {
       content = (<AddPointContextMenu />);
-    }else if (this.props.hoverPoint) {
+    }else if (props.hoverPoint !== null) {
       content = (<DeletePointContextMenu />);
     }
 
     return (
       <div>
-        {content}
+        {props.uiState === 'EDITING_FOUND' ? content : null}
       </div>
-    )
-  };
+    );
 }
 
 const mapStateToProps = state => {
   return {
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     hoverPolyline: state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
     hoverPoint: state.undoableReducer.present.drawingManagerReducer.hoverPoint
   };

@@ -9,7 +9,7 @@ import * as actions from '../../../../../store/actions/index';
 const LeftDownHandler = (props) => {
 
   const leftDownActions = (event) => {
-    if (props.uiState === 'FOUND_DREW') {
+    if (props.uiState === 'EDITING_FOUND') {
       if (props.viewer.scene.pick(event.position)) {
         // Find out picked which point
         const onTopPoint = props.drawingPolyline.points.find(element => {
@@ -19,8 +19,7 @@ const LeftDownHandler = (props) => {
         })
         // Set picked point if available
         if (onTopPoint) {
-          props.setPickedPoint(onTopPoint);
-          props.disableRotate();
+          props.setPickedPointIndex(onTopPoint);
         }
       }
     }
@@ -44,8 +43,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    disableRotate: () => dispatch(actions.disableRotate()),
-    setPickedPoint: (point) => dispatch(actions.setPickedPoint(point)),
+    setPickedPointIndex: (point) => dispatch(actions.setPickedPointIndex(point)),
   };
 };
 

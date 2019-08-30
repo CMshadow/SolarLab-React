@@ -9,12 +9,9 @@ import * as actions from '../../../../../store/actions/index';
 const LeftUpHandler = (props) => {
 
   const leftUpActions = (event) => {
-    if (props.uiState === 'FOUND_DREW') {
-      if (props.pickedPoint) {
-        props.releasePickedPoint();
-        setTimeout(() => {
-          props.enableRotate()
-        }, 250);
+    if (props.uiState === 'EDITING_FOUND') {
+      if (props.pickedPointIndex !== null) {
+        props.releasePickedPointIndex();
       }
     }
   };
@@ -30,14 +27,13 @@ const LeftUpHandler = (props) => {
 const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    pickedPoint: state.undoableReducer.present.drawingManagerReducer.pickedPoint,
+    pickedPointIndex: state.undoableReducer.present.drawingManagerReducer.pickedPointIndex,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    enableRotate: () => dispatch(actions.enableRotate()),
-    releasePickedPoint: (point) => dispatch(actions.releasePickedPoint(point)),
+    releasePickedPointIndex: (point) => dispatch(actions.releasePickedPointIndex(point)),
   };
 };
 
