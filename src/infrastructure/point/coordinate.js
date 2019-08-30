@@ -11,14 +11,14 @@ class Coordinate {
    *                        places
    * @param {number} lat    the latitude of the coordinate, fixed to 12 decimal
    *                        places
-   * @param {number} height the height of the coordinate, fixed to 12 decimal
+   * @param {number} height the height of the coordinate, fixed to 1 decimal
    *                        places
    */
   constructor (lon, lat, height) {
     this.lon = parseFloat(lon.toFixed(12));
     this.lat = parseFloat(lat.toFixed(12));
     this.height = parseFloat(height.toFixed(1));
-  }
+  };
 
   /**
    * Create a Coordinate object from a Carteisan3 value
@@ -27,7 +27,7 @@ class Coordinate {
    *                                            cartesian3 height
    * @return {Coordinate}                       a Coordinate object
    */
-  static fromCartesian = (cartesian3, absoluteHeight = null) => {
+  static fromCartesian = (cartesian3, absoluteHeight=null) => {
     const cartographic = Cesium.Cartographic.fromCartesian(cartesian3);
     const lon =
       parseFloat(Cesium.Math.toDegrees(cartographic.longitude).toFixed(12));
@@ -43,7 +43,7 @@ class Coordinate {
       height = parseFloat(cartographic.height.toFixed(1));
     }
     return new Coordinate(lon, lat, height);
-  }
+  };
 
   /**
    * get the coordinate
@@ -64,7 +64,7 @@ class Coordinate {
         height: this.height
       };
     }
-  }
+  };
 
   /**
    * set coordinate by given lon || lat || height
@@ -80,17 +80,24 @@ class Coordinate {
 
   /**
    * set coordinate by given cartesian3 coordinate value
-   * @param {Cartesian} [cartesian3=null] a Cartesian3 value of the new
-   *                                      coordinate
+   * @param {Cartesian} [cartesian3=null]   a Cartesian3 value of the new
+   *                                        coordinate
+   * @param {number}  [absoluteHeight=null] a given height to overwrite the
+   *                                        cartesian3 height
    */
-  setCartesian3Coordinate = (cartesian3=null) => {
+  setCartesian3Coordinate = (cartesian3=null, absoluteHeight=null) => {
     if (cartesian3) {
       const cartographic = Cesium.Cartographic.fromCartesian(cartesian3);
       const lon =
         parseFloat(Cesium.Math.toDegrees(cartographic.longitude).toFixed(12));
       const lat =
         parseFloat(Cesium.Math.toDegrees(cartographic.latitude).toFixed(12));
-      const height = parseFloat(cartographic.height.toFixed(1));
+      let height = null;
+      if (absoluteHeight) {
+        height = absoluteHeight;
+      } else {
+        height = parseFloat(cartographic.height.toFixed(1));
+      }
       this.setCoordinate(lon, lat, height);
     }
   }
@@ -101,7 +108,7 @@ class Coordinate {
    * @param  {Coordinate} cor2 second coordinate
    * @return {Number}          the surface distance between the two coordinates
    */
-  static distance = (cor1, cor2) => {
+  static surfaceDistance = (cor1, cor2) => {
     const R = 6371e3; // metres
     const φ1 = Cesium.Math.toRadians(cor1.lat);
     const φ2 = Cesium.Math.toRadians(cor2.lat);
@@ -113,6 +120,19 @@ class Coordinate {
     const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
     return R * c;
+  }
+
+  /**
+   * Calculate the linear distance between two coordinate
+   * @param  {Coordinate} cor1 first coordinate
+   * @param  {Coordinate} cor2 second coordinate
+   * @return {Number}          the linear distance between the two coordinates
+   */
+  static linearDistance = (cor1, cor2) => {
+    return Cesium.Cartesian3.distance(
+      Cesium.Cartesian3.fromDegreesArrayHeights(cor1.getCoordinate(true)),
+      Cesium.Cartesian3.fromDegreesArrayHeights(cor2.getCoordinate(true))
+    );
   }
 
   /**

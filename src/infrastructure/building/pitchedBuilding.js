@@ -1,4 +1,3 @@
-import uuid from 'uuid/v1';
 
 import Building from './building';
 

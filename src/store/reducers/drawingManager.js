@@ -19,8 +19,6 @@ import Polyline from '../../infrastructure/line/polyline';
  *                                        null by default;
  *                                        should only be used while dynamically
  *                                        drawing the Polyline object;
- * @param {Cartesian3 || null}  mouseCartesian3 mouse realtime position in
- *                                              Carteisan3
  * @param {Polyline || null}  hoverPolyline  ref to drawingPolyline while mouse
  *                                           hover on the Polyline;
  *                                           null while mouse leaving the
@@ -36,8 +34,7 @@ import Polyline from '../../infrastructure/line/polyline';
  */
 const initialState = {
   drawingPolyline: null,
-  fixedPoints : [],
-  floatingPoints: null,
+  fixedPoints: [],
 
   mouseCartesian3: null,
   hoverPolyline: null,
@@ -45,40 +42,44 @@ const initialState = {
   pickedPoint: null
 };
 
-const concatFixedFloating = (state) => {
-  const concatPoints = [...state.fixedPoints, state.floatingPoints];
-  return concatPoints;
-};
-
 const dragPolyline = (state, action) => {
-  let polyline = new Polyline(concatFixedFloating(state));
+  const existPoints = state.fixedPoints.map(elem => {
+    return Point.fromPoint(elem);
+  });
+  const newPoint = Point.fromCoordinate(
+    Coordinate.fromCartesian(action.cartesian3, 0.1)
+  );
+  const polyline = new Polyline([...existPoints, newPoint]);
   return {
     ...state,
     drawingPolyline: polyline,
-    floatingPoints: Point.fromCoordinate(
-      Coordinate.fromCartesian(action.cartesian3, 0.1)
-    )
+    fixedPoints: existPoints
   };
 };
 
 const addPointOnPolyline = (state, action) => {
-  const newFixedPoints = concatFixedFloating(state)
-  let polyline = new Polyline(concatFixedFloating(state));
+  const existPoints = state.fixedPoints.map(elem => {
+    return Point.fromPoint(elem);
+  });
+  const newPoint = Point.fromCoordinate(
+    Coordinate.fromCartesian(action.cartesian3, 0.1)
+  );
+  const polyline = new Polyline([...existPoints, newPoint]);
   return {
     ...state,
     drawingPolyline: polyline,
-    fixedPoints: newFixedPoints
+    fixedPoints: [...existPoints, newPoint]
   };
 };
 
 const terminateDrawing = (state, action) => {
-  const firstPoint = state.drawingPolyline.points[0]
-  const fixedPoints = [...state.fixedPoints].concat(firstPoint);
-  let polyline = new Polyline(fixedPoints);
+  const existPoints = state.fixedPoints.map(elem => {
+    return Point.fromPoint(elem);
+  });
+  const polyline = new Polyline([...existPoints, existPoints[0]]);
   return {
     ...state,
     drawingPolyline: polyline,
-    floatingPoints: null,
     fixedPoints: []
   };
 };
@@ -87,11 +88,15 @@ const complementPointOnPolyline = (state, action) => {
   const indexToAdd = state.drawingPolyline.determineAddPointPosition(
     state.mouseCartesian3
   );
-  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  console.log(indexToAdd)
+  const existPoints = state.drawingPolyline.points.map(elem => {
+    return Point.fromPoint(elem);
+  });
   const newPoint = Point.fromCoordinate(
     Coordinate.fromCartesian(state.mouseCartesian3, 0.1)
   );
-  newPolyline.addPoint(indexToAdd, newPoint);
+  existPoints.splice(indexToAdd, 0, newPoint)
+  const newPolyline = new Polyline(existPoints);
   return {
     ...state,
     drawingPolyline: newPolyline

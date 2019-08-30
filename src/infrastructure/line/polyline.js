@@ -1,6 +1,4 @@
-import {
-  Color
-} from 'cesium';
+import { Color } from 'cesium';
 import uuid from 'uuid/v1';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 
@@ -22,8 +20,9 @@ class Polyline {
    * @param {Boolean} [show=true]     whether to show the polyline,
    *                                  default true
    */
-  constructor (points = null, id = null, name = null, color = null,
-    width = null, show = true
+  constructor (
+    points = null, id = null, name = null, color = null, width = null,
+    show = true
   ) {
     this.points = points ? points : [];
     this.entityId = id ? id : uuid();
@@ -49,8 +48,9 @@ class Polyline {
    *                                  existing one if not provided
    * @return {Polyline}               new Polyline object
    */
-  static fromPolyline (polyline, id = polyline.entityId, name = null, color = null,
-    width = null, show = true
+  static fromPolyline (
+    polyline, id = polyline.entityId, name = null, color = null, width = null,
+    show = true
   ) {
       const newPoints = polyline.points.map(elem => {
         return Point.fromPoint(elem);
@@ -71,7 +71,7 @@ class Polyline {
   }
 
   /**
-   * A a point in a specific position of the polyline
+   * Add a point in a specific position of the polyline
    * @param {number}  position the index position of the point to be added
    * @param {Point}   point    the Point object to be added
    */
@@ -81,6 +81,14 @@ class Polyline {
     } else {
       throw new Error('Adding object is not a Point object');
     }
+  }
+
+  /**
+   * Add a point at the tail of the polyline
+   * @param {Point}   point    the Point object to be added
+   */
+  addPointTail = (point) => {
+    this.addPoint(this.length, point);
   }
 
   /**
@@ -116,13 +124,19 @@ class Polyline {
     }
   }
 
+  /**
+   * Find the index of the point in the polyline
+   * @param  {Point} point the Point object
+   * @return {number}      the index of the point, -1 if cannot found
+   */
   findPointIndex = (point) => {
-    console.log(point)
-    console.log(this.points)
-    const a = this.points.reduce((p, elem, index, array) => {
+    const i = this.points.reduce((p, elem, index, array) => {
       return elem.entityId === p.entityId ? index : p
     }, point);
-    return a;
+    if (i === point) {
+      return -1;
+    }
+    return i;
   }
 
   /**

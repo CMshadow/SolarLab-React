@@ -30,9 +30,10 @@ export const addPointOnPolyline = (mousePosition, viewer) => {
   }
 };
 
-export const complementPointOnPolyline = () => {
+export const complementPointOnPolyline = (cartesian3) => {
   return {
     type: actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,
+    cartesian3: cartesian3
   };
 };
 

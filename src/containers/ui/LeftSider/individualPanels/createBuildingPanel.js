@@ -29,7 +29,6 @@ class CreateBuildingPanel extends PureComponent {
     event.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-
         this.props.setUIStateReadyDrawing();
         this.props.initBuilding(values);
         console.log('[Create Building Panel] Your are creating a new building')

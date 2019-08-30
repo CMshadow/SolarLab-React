@@ -42,11 +42,9 @@ const rootReducer = combineReducers({
   }), {
     filter: includeAction([
       actionTypes.CLICK_ADD_POINT_ON_POLYLINE,
-      actionTypes.TERMINATE_DRAWING,
-      actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,
-      actionTypes.CLICK_DELETE_POINT_ON_POLYLINE
+      actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE
     ])
-  }),
+  })
   // ADD MORE REDUCERS OVER HERE
 });
 

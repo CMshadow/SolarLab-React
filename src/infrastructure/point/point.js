@@ -1,6 +1,4 @@
-import {
-  Color
-} from 'cesium';
+import { Color } from 'cesium';
 import uuid from 'uuid/v1';
 
 import Coordinate from './coordinate';
@@ -44,6 +42,10 @@ class Point extends Coordinate {
     this.show = show;
   };
 
+  /**
+   * change the color of the point
+   * @param {Color} newColor new Cesium.Color or RGBA color
+   */
   setColor = (newColor) => {
     this.color = newColor;
   };
