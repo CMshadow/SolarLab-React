@@ -1,6 +1,4 @@
-import {
-  Color
-} from 'cesium';
+import { Color } from 'cesium';
 import uuid from 'uuid/v1';
 
 import Coordinate from './coordinate';
@@ -44,6 +42,10 @@ class Point extends Coordinate {
     this.show = show;
   };
 
+  /**
+   * change the color of the point
+   * @param {Color} newColor new Cesium.Color or RGBA color
+   */
   setColor = (newColor) => {
     this.color = newColor;
   };
@@ -67,8 +69,8 @@ class Point extends Coordinate {
    * @return {Point}               new Point object
    */
   static fromPoint (
-    point, hOffset = null, id = null, name = null, color = null, size = null,
-    show = true
+    point, hOffset = null, id = point.entityId, name = null, color = null,
+    size = null, show = true
   ) {
       const newLon = point.lon;
       const newLat = point.lat;

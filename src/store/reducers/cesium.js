@@ -5,7 +5,7 @@ import * as actionTypes from '../actions/actionTypes';
 const initialState = {
   viewer: null,
   enableRotate: true,
-  initialCor: [-117.841416, 33.646859, 1000]
+  initialCor: [-117.841416, 33.646859, 500]
 };
 
 const setViewer = (state, action) => {

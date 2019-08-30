@@ -30,9 +30,10 @@ export const addPointOnPolyline = (mousePosition, viewer) => {
   }
 };
 
-export const complementPointOnPolyline = () => {
+export const complementPointOnPolyline = (cartesian3) => {
   return {
     type: actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,
+    cartesian3: cartesian3
   };
 };
 
@@ -77,7 +78,7 @@ export const setHoverPoint = (point) => {
 };
 
 export const releaseHoverPoint = () => (dispatch, getState) => {
-  getState().drawingManagerReducer.hoverPoint.setColor(
+  getState().undoableReducer.present.drawingManagerReducer.hoverPoint.setColor(
     Cesium.Color.WHITE
   );
   return dispatch({
@@ -94,7 +95,7 @@ export const setPickedPoint = (point) => {
 
 export const movePickedPoint = (mousePosition, viewer) => (dispatch, getState) => {
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
-  getState().drawingManagerReducer.pickedPoint.setCartesian3Coordinate(
+  getState().undoableReducer.present.drawingManagerReducer.pickedPoint.setCartesian3Coordinate(
     cartesian3
   );
   if (Cesium.defined(cartesian3)) {
@@ -119,3 +120,9 @@ export const terminateDrawing = () => {
     type: actionTypes.TERMINATE_DRAWING
   }
 };
+
+export const cleanHoverAndColor = () => {
+  return {
+    type: actionTypes.CLEAN_HOVER_AND_COLOR
+  }
+}

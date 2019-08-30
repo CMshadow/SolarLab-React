@@ -4,7 +4,7 @@ import { ContextMenu, MenuItem } from "react-contextmenu";
 
 import * as actions from '../../../../store/actions/index';
 
-class AddPointContextMenu extends Component {
+class DeletePointContextMenu extends Component {
   render () {
     return (
       <ContextMenu
@@ -12,27 +12,22 @@ class AddPointContextMenu extends Component {
         hideOnLeave={true}
       >
         <MenuItem
-          onClick={this.props.complementPointOnPolyline}
+          onClick={this.props.deletePointOnPolyline}
         >
-          Add Point
+          Delete Point
         </MenuItem>
       </ContextMenu>
     );
   };
 }
 
-const mapStateToProps = state => {
-  return {
-    mouseCartesian3: state.drawingManagerReducer.mouseCartesian3
-  };
-};
 
 const mapDispatchToProps = dispatch => {
   return {
-    complementPointOnPolyline: () => dispatch(
-      actions.complementPointOnPolyline()
+    deletePointOnPolyline: () => dispatch(
+      actions.deletePointOnPolyline()
     ),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(AddPointContextMenu);
+export default connect(null, mapDispatchToProps)(DeletePointContextMenu);

@@ -25,6 +25,16 @@ const { Option } = Select;
 class DrawBuildingPanel extends Component {
 
   render () {
+
+    let text = null;
+    if (this.props.uiState === 'READY_DRAWING') {
+      text = 'Draw Building Outline';
+    } else if (this.props.uiState === 'DRAWING_FOUND') {
+      text = '...Drawing...';
+    } else if (this.props.uiState === 'FOUND_DREW') {
+      text = 'Finished'
+    }
+
     return (
       <div>
         <Divider>Step 1</Divider>
@@ -35,15 +45,10 @@ class DrawBuildingPanel extends Component {
               size="large"
               shape='round'
               block
-              loading={this.props.uiStartDrawing}
-              onClick={this.props.setStartDrawing}
+              loading={this.props.uiState === 'DRAWING_FOUND'}
+              onClick={this.props.setUIStateDrawingFound}
             >
-              {this.props.uiStartDrawing ?
-                null :
-                <FontAwesomeIcon icon={faPen} />}
-              {this.props.uiStartDrawing ?
-                'Drawing...' :
-                'Draw building outline'}
+              {text}
             </Button>
           </Col>
         </Row>
@@ -54,13 +59,13 @@ class DrawBuildingPanel extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiStartDrawing: state.uiStateManagerReducer.uiStartDrawing
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    setStartDrawing: () => dispatch(actions.startDrawing())
+    setUIStateDrawingFound: () => dispatch(actions.setUIStateDrawingFound())
   };
 };
 

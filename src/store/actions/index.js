@@ -21,13 +21,14 @@ export {
 
   setPickedPoint,
   movePickedPoint,
-  releasePickedPoint
+  releasePickedPoint,
+
+  cleanHoverAndColor
 } from './drawingManager';
 
 export {
-  startDrawing,
-  stopDrawing,
   setUIStateReadyDrawing,
+  setUIStateDrawingFound,
   setUIStateFoundDrew
 } from './uiStateManager';
 

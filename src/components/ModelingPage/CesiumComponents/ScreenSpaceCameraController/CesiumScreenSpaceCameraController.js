@@ -1,16 +1,14 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { ScreenSpaceCameraController } from 'resium';
 
-class CesiumScreenSpaceCameraController extends Component {
-  render () {
-    return (
-      <ScreenSpaceCameraController
-        enableRotate={this.props.enableRotate}
-        enableLook={false}
-      />
-    );
-  };
+const CesiumScreenSpaceCameraController = (props) => {
+  return (
+    <ScreenSpaceCameraController
+      enableRotate={props.enableRotate}
+      enableLook={false}
+    />
+  );
 }
 
 const mapStateToProps = state => {
