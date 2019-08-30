@@ -14,11 +14,9 @@ import Polyline from '../../infrastructure/line/polyline';
  *                                    empty array by default;
  *                                    should only be used while dynamically
  *                                    drawing the Polyline object;
- * @param {Point || null} floatingPoints  the floating Point while drawing the
- *                                        Polyline object;
- *                                        null by default;
- *                                        should only be used while dynamically
- *                                        drawing the Polyline object;
+ * @param {Cartesian3 || null} mouseCartesian3  the current Cartesian3
+ *                                              coordinate of the mouse;
+ *                                              null by default;
  * @param {Polyline || null}  hoverPolyline  ref to drawingPolyline while mouse
  *                                           hover on the Polyline;
  *                                           null while mouse leaving the
@@ -88,7 +86,6 @@ const complementPointOnPolyline = (state, action) => {
   const indexToAdd = state.drawingPolyline.determineAddPointPosition(
     state.mouseCartesian3
   );
-  console.log(indexToAdd)
   const existPoints = state.drawingPolyline.points.map(elem => {
     return Point.fromPoint(elem);
   });
@@ -105,12 +102,12 @@ const complementPointOnPolyline = (state, action) => {
 
 const deletePointOnPolyline = (state, action) => {
   const deletePosition = state.drawingPolyline.findPointIndex(state.hoverPoint);
-  console.log(deletePosition)
   const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
   newPolyline.deletePoint(deletePosition)
   return {
     ...state,
-    drawingPolyline: newPolyline
+    drawingPolyline: newPolyline,
+    hoverPoint: null
   };
 };
 
@@ -136,9 +133,13 @@ const releaseHoverPolyline = (state, action) => {
 };
 
 const setHoverPoint = (state, action) => {
+  // const hoverIndex = state.drawingPolyline.findPointIndex(action.hoverPoint);
+  // const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
   return {
     ...state,
-    drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
+    // drawingPolyline: newPolyline,
+    // hoverPoint: newPolyline.points[hoverIndex]
+    drawingPolyline: Polyline.fromPolylineShallow(state.drawingPolyline),
     hoverPoint: action.hoverPoint
   };
 };
@@ -146,29 +147,34 @@ const setHoverPoint = (state, action) => {
 const releaseHoverPoint = (state, action) => {
   return {
     ...state,
-    drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
+    // drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
+    drawingPolyline: Polyline.fromPolylineShallow(state.drawingPolyline),
     hoverPoint: null
   };
 };
 
 const setPickedPoint = (state, action) => {
+  const hoverIndex = state.drawingPolyline.findPointIndex(action.pickedPoint);
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
   return {
     ...state,
-    pickedPoint: action.pickedPoint
+    drawingPolyline: newPolyline,
+    pickedPoint: newPolyline.points[hoverIndex],
+    hoverPoint: newPolyline.points[hoverIndex],
   };
 };
 
 const movePickedPoint = (state, action) => {
   return {
     ...state,
-    drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
   }
 }
 
 const releasePickedPoint = (state, action) => {
   return {
     ...state,
-    pickedPoint: null
+    drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
+    pickedPoint: null,
   };
 };
 

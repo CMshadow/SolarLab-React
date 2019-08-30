@@ -12,7 +12,9 @@ const LeftUpHandler = (props) => {
     if (props.uiState === 'FOUND_DREW') {
       if (props.pickedPoint) {
         props.releasePickedPoint();
-        props.enableRotate();
+        setTimeout(() => {
+          props.enableRotate()
+        }, 250);
       }
     }
   };

@@ -52,9 +52,23 @@ class Polyline {
     polyline, id = polyline.entityId, name = null, color = null, width = null,
     show = true
   ) {
-      const newPoints = polyline.points.map(elem => {
+      const priorPoints = polyline.points.slice(0, polyline.length-1)
+      .map(elem => {
         return Point.fromPoint(elem);
       });
+      const newPoints = [...priorPoints, priorPoints[0]];
+      const newName = name ? name : polyline.name;
+      const newColor = color ? color : polyline.color;
+      const newShow = show ? show : polyline.show;
+      const newWidth = width ? width : polyline.width;
+      return new Polyline (newPoints, id, newName, newColor, newWidth, newShow);
+    }
+
+  static fromPolylineShallow (
+    polyline, id = polyline.entityId, name = null, color = null, width = null,
+    show = true
+  ) {
+      const newPoints = polyline.points;
       const newName = name ? name : polyline.name;
       const newColor = color ? color : polyline.color;
       const newShow = show ? show : polyline.show;
@@ -69,6 +83,14 @@ class Polyline {
   get length () {
     return this.points.length;
   }
+
+  /**
+   * change the color of the polyline
+   * @param {Color} newColor new Cesium.Color or RGBA color
+   */
+  setColor = (newColor) => {
+    this.color = newColor;
+  };
 
   /**
    * Add a point in a specific position of the polyline

@@ -42,7 +42,11 @@ const rootReducer = combineReducers({
   }), {
     filter: includeAction([
       actionTypes.CLICK_ADD_POINT_ON_POLYLINE,
-      actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE
+      actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,
+      actionTypes.CLICK_DELETE_POINT_ON_POLYLINE,
+      actionTypes.RELEASE_PICKEDPOINT,
+      actionTypes.SET_UI_STATE_DRAWING_FOUND,
+      actionTypes.SET_UI_STATE_FOUND_DREW
     ])
   })
   // ADD MORE REDUCERS OVER HERE

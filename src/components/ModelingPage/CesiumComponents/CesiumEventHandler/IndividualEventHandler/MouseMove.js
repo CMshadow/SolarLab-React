@@ -10,7 +10,7 @@ const RightClickHandler = (props) => {
 
   const mouseMoveActions = (event) => {
     props.setMouseCartesian3(event.endPosition, props.viewer);
-    if (props.uiStartDrawing) {
+    if (props.uiState === 'DRAWING_FOUND') {
       props.onDragPolyline(event.endPosition, props.viewer);
     } else if (props.uiState === 'FOUND_DREW' && props.pickedPoint) {
       // Reposition points on the drawing polyline
@@ -24,11 +24,12 @@ const RightClickHandler = (props) => {
           // Set hover polyline if available
           props.setHoverPolyline();
           // Release hover point if it exists
-          if (props.hoverPoint) props.releaseHoverPoint();
+          if (props.hoverPoint) {
+            props.releaseHoverPoint()};
         }
 
         // Find out hover on which point
-        const onTopPoint  = props.drawingPolyline.points.find(element => {
+        const onTopPoint = props.drawingPolyline.points.find(element => {
           return element.entityId === anyPickedObject.id.id
         })
         // Set hover point if available
@@ -59,7 +60,6 @@ const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    uiStartDrawing: state.undoableReducer.present.uiStateManagerReducer.uiStartDrawing,
     drawingPolyline: state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
     hoverPolyline: state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
     hoverPoint: state.undoableReducer.present.drawingManagerReducer.hoverPoint,

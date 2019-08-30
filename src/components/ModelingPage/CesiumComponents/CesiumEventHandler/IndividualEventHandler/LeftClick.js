@@ -9,7 +9,7 @@ import * as actions from '../../../../../store/actions/index';
 const LeftClickHandler = (props) => {
 
   const leftClickActions = (event) => {
-    if (props.uiStartDrawing) {
+    if (props.uiState === 'DRAWING_FOUND') {
       props.disableRotate();
       props.addPointOnPolyline(event.position, props.viewer);
     }
@@ -26,7 +26,7 @@ const LeftClickHandler = (props) => {
 const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
-    uiStartDrawing: state.undoableReducer.present.uiStateManagerReducer.uiStartDrawing,
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
   };
 };
 

@@ -25,9 +25,8 @@ export {
 } from './drawingManager';
 
 export {
-  startDrawing,
-  stopDrawing,
   setUIStateReadyDrawing,
+  setUIStateDrawingFound,
   setUIStateFoundDrew
 } from './uiStateManager';
 

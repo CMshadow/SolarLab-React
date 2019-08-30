@@ -9,11 +9,10 @@ import * as actions from '../../../../../store/actions/index';
 const RightClickHandler = (props) => {
 
   const rightClickActions = (event) => {
-    if (props.uiStartDrawing) {
+    if (props.uiState === 'DRAWING_FOUND') {
       props.terminateDrawing();
       props.setUIStateFoundDrew();
       props.enableRotate();
-      props.setStopDrawing();
     }
   };
 
@@ -27,7 +26,7 @@ const RightClickHandler = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiStartDrawing: state.undoableReducer.present.uiStateManagerReducer.uiStartDrawing,
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
   };
 };
 
@@ -36,7 +35,6 @@ const mapDispatchToProps = dispatch => {
     enableRotate: () => dispatch(actions.enableRotate()),
     terminateDrawing: () => dispatch(actions.terminateDrawing()),
     setUIStateFoundDrew: () => dispatch(actions.setUIStateFoundDrew()),
-    setStopDrawing: () => dispatch(actions.stopDrawing()),
   };
 };
 

@@ -12,11 +12,12 @@ const LeftDownHandler = (props) => {
     if (props.uiState === 'FOUND_DREW') {
       if (props.viewer.scene.pick(event.position)) {
         // Find out picked which point
-        const onTopPoint  = props.drawingPolyline.points.find(element => {
+        const onTopPoint = props.drawingPolyline.points.find(element => {
           return (
             element.entityId === props.viewer.scene.pick(event.position).id.id
           )
         })
+        console.log(onTopPoint)
         // Set picked point if available
         if (onTopPoint) {
           props.setPickedPoint(onTopPoint);
