@@ -120,3 +120,9 @@ export const terminateDrawing = () => {
     type: actionTypes.TERMINATE_DRAWING
   }
 };
+
+export const cleanHoverAndColor = () => {
+  return {
+    type: actionTypes.CLEAN_HOVER_AND_COLOR
+  }
+}

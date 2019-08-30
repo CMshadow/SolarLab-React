@@ -21,7 +21,9 @@ export {
 
   setPickedPoint,
   movePickedPoint,
-  releasePickedPoint
+  releasePickedPoint,
+
+  cleanHoverAndColor
 } from './drawingManager';
 
 export {

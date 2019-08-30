@@ -17,7 +17,6 @@ const LeftDownHandler = (props) => {
             element.entityId === props.viewer.scene.pick(event.position).id.id
           )
         })
-        console.log(onTopPoint)
         // Set picked point if available
         if (onTopPoint) {
           props.setPickedPoint(onTopPoint);

@@ -1,3 +1,5 @@
+import * as Cesium from 'cesium';
+
 import * as actionTypes from '../actions/actionTypes';
 import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
@@ -107,7 +109,6 @@ const deletePointOnPolyline = (state, action) => {
   return {
     ...state,
     drawingPolyline: newPolyline,
-    hoverPoint: null
   };
 };
 
@@ -168,13 +169,25 @@ const movePickedPoint = (state, action) => {
   return {
     ...state,
   }
-}
+};
 
 const releasePickedPoint = (state, action) => {
   return {
     ...state,
     drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
     pickedPoint: null,
+  };
+};
+
+const cleanHoverAndColor = (state, action) => {
+  state.drawingPolyline.points.map(elem => {
+    return elem.setColor(Cesium.Color.WHITE);
+  });
+  return {
+    ...state,
+    hoverPolyline: null,
+    hoverPoint: null,
+    pickedPoint: null
   };
 };
 
@@ -206,6 +219,8 @@ const reducer = (state=initialState, action) => {
       return movePickedPoint (state, action);
     case actionTypes.RELEASE_PICKEDPOINT:
       return releasePickedPoint (state, action);
+    case actionTypes.CLEAN_HOVER_AND_COLOR:
+      return cleanHoverAndColor (state, action);
     case actionTypes.DO_NOTHING:
       return state;
     default: return state;
