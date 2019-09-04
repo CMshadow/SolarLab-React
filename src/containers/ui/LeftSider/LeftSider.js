@@ -8,7 +8,7 @@ import * as classes from './LeftSider.module.css';
 import UndoRedo from '../../../components/ui/UndoRedo/UndoRedo';
 import CreateBuildingPanel from './individualPanels/createBuildingPanel';
 import DrawBuildingPanel from './individualPanels/drawBuildingPanel';
-import Auxiliary from '../../../hoc/Auxiliary/Auxiliary';
+import * as uiStateJudge from '../../../infrastructure/ui/uiStateJudge';
 
 const { Sider } = Layout;
 
@@ -28,15 +28,10 @@ class LeftSider extends Component {
 
     let content = null;
     if (this.state.siderCollapse === false) {
-      if (this.props.uiState === 'IDLE') {
+      if (uiStateJudge.isIdleStates(this.props.uiState)) {
         content = (<CreateBuildingPanel/>);
       }
-      else if (
-        this.props.uiState === 'READY_DRAWING' ||
-        this.props.uiState === 'DRAWING_FOUND' ||
-        this.props.uiState === 'FOUND_DREW' ||
-        this.props.uiState === 'EDITING_FOUND'
-      ) {
+      else if (uiStateJudge.isDrawingStates(this.props.uiState)) {
         content = (<DrawBuildingPanel/>);
       }
     }

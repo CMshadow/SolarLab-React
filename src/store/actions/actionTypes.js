@@ -29,6 +29,12 @@ export const CLEAN_HOVER_AND_COLOR = 'CLEAN_HOVER_AND_COLOR';
 
 export const DO_NOTHING = 'DO_NOTHING';
 
+/*
+  drawingInnerManager.js
+ */
+export const PASS_FOUND_POLYLINE = 'PASS_FOUND_POLYLINE';
+export const ADD_START_POINT = 'ADD_START_POINT';
+export const ADD_END_POINT = 'ADD_END_POINT';
 
 /*
   uiStateManager.js
@@ -37,6 +43,8 @@ export const SET_UI_STATE_READY_DRAWING = 'SET_UI_STATE_READY_DRAWING';
 export const SET_UI_STATE_DRAWING_FOUND = 'SET_UI_STATE_DRAWING_FOUND';
 export const SET_UI_STATE_FOUND_DREW = 'SET_UI_STATE_FOUND_DREW';
 export const SET_UI_STATE_EDITING_FOUND = 'SET_UI_STATE_EDITING_FOUND';
+export const SET_UI_STATE_DRAWING_INNER = 'SET_UI_STATE_DRAWING_INNER';
+export const SET_UI_STATE_INNER_DREW = 'SET_UI_STATE_INNER_DREW';
 
 /*
   buildingManager.js

@@ -27,10 +27,17 @@ export {
 } from './drawingManager';
 
 export {
+  passFoundPolyline,
+  addOrClickPoint
+} from './drawingInnerManager';
+
+export {
   setUIStateReadyDrawing,
   setUIStateDrawingFound,
   setUIStateFoundDrew,
   setUIStateEditingFound,
+  setUIStateDrawingInner,
+  setUIStateInnerDrew
 } from './uiStateManager';
 
 export {
