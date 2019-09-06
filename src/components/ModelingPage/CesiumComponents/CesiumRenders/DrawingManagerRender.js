@@ -21,13 +21,13 @@ const DrawingManagerRender = (props) => {
 
   let drawingInnerPolyline = null;
   let drawingInnerPolylinePoints = null;
-  if (props.drawingInnerPolyline) {
+  if (props.drawingInnerPolyline && props.drawingInnerPolyline.length > 1) {
     drawingInnerPolyline = (<CustomPolyline
       key={props.drawingInnerPolyline.entityId}
       {...props.drawingInnerPolyline}
     />)
 
-    drawingInnerPolylinePoints = props.drawingInnerPolyline.points
+    drawingInnerPolylinePoints = props.drawingInnerPolyline.points.slice(0,-1)
     .map(elem => (
       elem.render ? <CustomPoint key={elem.entityId} {...elem} /> : null
     ));

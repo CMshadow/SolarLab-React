@@ -10,13 +10,16 @@ const RightClickHandler = (props) => {
 
   const mouseMoveActions = (event) => {
     props.setMouseCartesian3(event.endPosition, props.viewer);
-    if (props.uiState === 'DRAWING_FOUND') {
-      props.onDragPolyline(event.endPosition, props.viewer);
-    } else if (props.uiState === 'EDITING_FOUND') {
-      if (props.pickedPointIndex !== null) {
-        // Reposition points on the drawing polyline
-        props.movePickedPoint(event.endPosition, props.viewer);
-      } else {
+    switch(props.uiState) {
+      case 'DRAWING_FOUND':
+        props.onDragPolyline(event.endPosition, props.viewer);
+        break;
+
+      case 'EDITING_FOUND':
+        if (props.pickedPointIndex !== null) {
+          // Reposition points on the drawing polyline
+          props.movePickedPoint(event.endPosition, props.viewer);
+        } else {
         const anyPickedObject = props.viewer.scene.pick(event.endPosition);
 
         if(anyPickedObject) {
@@ -45,6 +48,16 @@ const RightClickHandler = (props) => {
           if (props.hoverPointIndex !== null) props.releaseHoverPointIndex();
         }
       }
+        break;
+
+      case 'DRAWING_INNER':
+        if (props.drawingInnerPolyline) {
+          props.dragDrawingInnerPolyline(event.endPosition, props.viewer);
+        }
+        break;
+
+      default:
+        break;
     }
   };
 
@@ -65,6 +78,7 @@ const mapStateToProps = state => {
     hoverPolyline: state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
     hoverPointIndex: state.undoableReducer.present.drawingManagerReducer.hoverPointIndex,
     pickedPointIndex: state.undoableReducer.present.drawingManagerReducer.pickedPointIndex,
+    drawingInnerPolyline: state.undoableReducer.present.drawingInnerManagerReducer.drawingInnerPolyline,
   };
 };
 
@@ -82,7 +96,10 @@ const mapDispatchToProps = dispatch => {
     ),
     setMouseCartesian3: (cartesian, viewer) => dispatch(
       actions.setMouseCartesian3(cartesian, viewer)
-    )
+    ),
+    dragDrawingInnerPolyline: (cartesian, viewer) => dispatch(
+      actions.dragDrawingInnerPolyline(cartesian, viewer)
+    ),
   };
 };
 

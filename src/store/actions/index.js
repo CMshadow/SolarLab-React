@@ -28,7 +28,11 @@ export {
 
 export {
   passFoundPolyline,
-  addOrClickPoint
+  addOrClickPoint,
+  dragDrawingInnerPolyline,
+  deleteInnerPointOnPolyline,
+  setInnerTypeHip,
+  setInnerTypeRidge
 } from './drawingInnerManager';
 
 export {

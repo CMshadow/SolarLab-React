@@ -12,7 +12,6 @@ const initialState = {
   fixedInnerPolylines: [],
   pointsRelation: {},
 
-  mouseCartesian3: null,
   hoverPolyline: false,
   hoverPointIndex: null,
   pickedPointIndex: null
@@ -74,8 +73,16 @@ const addStartPoint = (state, action) => {
   }
 };
 
-const dragDrawingInnerPolyline = (sstate, action) => {
-
+const dragDrawingInnerPolyline = (state, action) => {
+  const newPolyline = InnerLine.fromPolyline(state.drawingInnerPolyline)
+  const newPoint = Point.fromCoordinate(
+    Coordinate.fromCartesian(action.cartesian3, 0.1)
+  );
+  newPolyline.updatePoint(1, newPoint);
+  return {
+    ...state,
+    drawingInnerPolyline: newPolyline,
+  };
 }
 
 const addEndPoint = (state, action) => {
@@ -89,7 +96,7 @@ const addEndPoint = (state, action) => {
     newPoint = Point.fromCoordinate(
       Coordinate.fromCartesian(action.cartesian3, 0.1)
     );
-    newPolyline.addPointTail(newPoint);
+    newPolyline.updatePoint(1, newPoint);
     return {
       ...state,
       fixedInnerPolylines: [...newFixedInnerPolyline, newPolyline],
@@ -103,10 +110,11 @@ const addEndPoint = (state, action) => {
       }
     };
   } else {
+    console.log('use a existing point')
     newPoint = Point.fromPoint(
       action.point, null, null, null, null, null, null, null, null, null, false
     );
-    newPolyline.addPointTail(newPoint);
+    newPolyline.updatePoint(1, newPoint);
     const pointId = action.point.entityId;
     return {
       ...state,
@@ -125,14 +133,32 @@ const addEndPoint = (state, action) => {
   }
 };
 
+const setTypeHip = (state, action) => {
+  return {
+    ...state
+  };
+};
+
+const setTypeRidge = (state, action) => {
+  return {
+    ...state
+  };
+};
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.PASS_FOUND_POLYLINE:
       return passFoundPolyline (state, action);
     case actionTypes.ADD_START_POINT:
       return addStartPoint (state, action);
+    case actionTypes.DRAG_INNER_POLYLINE:
+      return dragDrawingInnerPolyline (state, action);
     case actionTypes.ADD_END_POINT:
       return addEndPoint (state, action);
+    case actionTypes.SET_TYPE_HIP:
+      return setTypeHip (state, action);
+    case actionTypes.SET_TYPE_RIDGE:
+      return setTypeRidge (state, action);
     default: return state;
   }
 };

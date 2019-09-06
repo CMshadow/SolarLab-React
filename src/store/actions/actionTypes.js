@@ -34,7 +34,10 @@ export const DO_NOTHING = 'DO_NOTHING';
  */
 export const PASS_FOUND_POLYLINE = 'PASS_FOUND_POLYLINE';
 export const ADD_START_POINT = 'ADD_START_POINT';
+export const DRAG_INNER_POLYLINE = 'DRAG_INNER_POLYLINE';
 export const ADD_END_POINT = 'ADD_END_POINT';
+export const SET_TYPE_HIP = 'SET_TYPE_HIP';
+export const SET_TYPE_RIDGE = 'SET_TYPE_RIDGE';
 
 /*
   uiStateManager.js

@@ -13,9 +13,9 @@ const LeftClickHandler = (props) => {
       props.disableRotate();
       props.addPointOnPolyline(event.position, props.viewer);
     } else if (props.uiState === 'DRAWING_INNER') {
-      const anyPickedObject = props.viewer.scene.pick(event.position);
+      const PickedObjectsArray = props.viewer.scene.drillPick(event.position);
       props.disableRotate();
-      props.addOrClickPoint(event.position, props.viewer, anyPickedObject);
+      props.addOrClickPoint(event.position, props.viewer, PickedObjectsArray);
     }
   };
 

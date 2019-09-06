@@ -20,12 +20,15 @@ class InnerLine extends Polyline {
    * @param {int}     [width=null]    width of the polyline, default 4
    * @param {Boolean} [show=true]     whether to show the polyline,
    *                                  default true
+   * @param {string}  [type=null]     the type of inner line, either 'HIP' or
+   *                                  'RIDGE'
    */
   constructor (
     points = null, id = null, name = null, color = null, width = null,
-    show = true
+    show = true, type = null
   ) {
     super(points, id, name, color, width, show)
+    this.type = type;
   }
 
   /**
@@ -46,7 +49,7 @@ class InnerLine extends Polyline {
    */
   static fromPolyline (
     polyline, id = polyline.entityId, name = null, color = null, width = null,
-    show = true
+    show = true, type = null
   ) {
       const newPoints = polyline.points.map(elem => {
         return Point.fromPoint(elem);
@@ -55,7 +58,10 @@ class InnerLine extends Polyline {
       const newColor = color ? color : polyline.color;
       const newShow = show ? show : polyline.show;
       const newWidth = width ? width : polyline.width;
-      return new InnerLine (newPoints, id, newName, newColor, newWidth, newShow);
+      const newType = type ? type : polyline.type;
+      return new InnerLine (
+        newPoints, id, newName, newColor, newWidth, newShow, newType
+      );
     }
 
 }
