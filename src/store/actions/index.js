@@ -32,7 +32,11 @@ export {
   dragDrawingInnerPolyline,
   deleteInnerPointOnPolyline,
   setInnerTypeHip,
-  setInnerTypeRidge
+  setInnerTypeRidge,
+  setHoverInnerLine,
+  releaseHoverInnerLine,
+  setHoverInnerPoint,
+  releaseHoverInnerPoint
 } from './drawingInnerManager';
 
 export {

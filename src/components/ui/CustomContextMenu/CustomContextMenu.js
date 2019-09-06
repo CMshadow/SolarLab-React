@@ -17,9 +17,9 @@ const CustomContextMenu = (props) => {
     }
 
     let drawingInner = null;
-    if (props.hoverInnerPolyline) {
+    if (props.hoverInnerLineIndex !== null) {
       drawingInner = (<SetInnerTypeContextMenu />);
-    } else if (props.hoverInnerPoint !== null) {
+    } else if (props.hoverInnerPointIndex !== null) {
       drawingInner = (<DeleteInnerPointContextMenu />);
     }
 
@@ -36,8 +36,8 @@ const mapStateToProps = state => {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     hoverPolyline: state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
     hoverPoint: state.undoableReducer.present.drawingManagerReducer.hoverPoint,
-    hoverInnerPolyline : state.undoableReducer.present.drawingInnerManagerReducer.hoverPolyline,
-    hoverInnerPoint: state.undoableReducer.present.drawingInnerManagerReducer.hoverPoint
+    hoverInnerLineIndex : state.undoableReducer.present.drawingInnerManagerReducer.hoverInnerLineIndex,
+    hoverInnerPointIndex: state.undoableReducer.present.drawingInnerManagerReducer.hoverInnerPointIndex
   };
 };
 

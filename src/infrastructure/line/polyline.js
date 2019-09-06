@@ -86,11 +86,9 @@ class Polyline {
    * @param {Point}   point    the Point object to be added
    */
   addPoint = (position, point) => {
-    if (point instanceof Point) {
-      this.points.splice(position, 0, point);
-    } else {
-      throw new Error('Adding object is not a Point object');
-    }
+    const newCoordinate = this.preciseAddPointPosition(position, point);
+    const newPoint = Point.fromCoordinate(newCoordinate, 0.1);
+    this.points.splice(position, 0, newPoint);
   }
 
   /**
@@ -119,6 +117,28 @@ class Polyline {
     const minIndex = brngDiff.reduce((minIndex, elem, index, array) => {
       return elem < array[minIndex] ? index : minIndex}, 0);
     return minIndex + 1;
+  }
+
+  preciseAddPointPosition = (index, mouseCoordinate) => {
+    const distToMouse = Coordinate.surfaceDistance(
+      this.points[index - 1],
+      mouseCoordinate
+    );
+    const brngToMouse = Coordinate.bearing(
+      this.points[index - 1],
+      mouseCoordinate
+    );
+    const polylineSegmentBrng = Coordinate.bearing(
+      this.points[index - 1],
+      this.points[index]
+    );
+    const cosine = Math.cos(brngToMouse - polylineSegmentBrng)
+    const trueDist = cosine * distToMouse;
+    return Coordinate.destination(
+      this.points[index - 1],
+      polylineSegmentBrng,
+      trueDist
+    );
   }
 
   /**

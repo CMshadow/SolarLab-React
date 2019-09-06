@@ -12,9 +12,8 @@ const initialState = {
   fixedInnerPolylines: [],
   pointsRelation: {},
 
-  hoverPolyline: false,
+  hoverInnerLineIndex: null,
   hoverPointIndex: null,
-  pickedPointIndex: null
 };
 
 const passFoundPolyline = (state, action) => {
@@ -39,7 +38,9 @@ const addStartPoint = (state, action) => {
     newPoint = Point.fromCoordinate(
       Coordinate.fromCartesian(action.cartesian3, 0.1)
     );
-    const newPolyline = new InnerLine([newPoint]);
+    const newPolyline = new InnerLine(
+      [newPoint], null, null, Cesium.Color.DARKGRAY
+    );
     return {
       ...state,
       drawingInnerPolyline: newPolyline,
@@ -55,7 +56,9 @@ const addStartPoint = (state, action) => {
     newPoint = Point.fromPoint(
       action.point, null, null, null, null, null, null, null, null, null, false
     );
-    const newPolyline = new InnerLine([newPoint]);
+    const newPolyline = new InnerLine(
+      [newPoint], null, null, Cesium.Color.DARKGRAY
+    );
     const pointId = action.point.entityId;
     return {
       ...state,
@@ -110,7 +113,6 @@ const addEndPoint = (state, action) => {
       }
     };
   } else {
-    console.log('use a existing point')
     newPoint = Point.fromPoint(
       action.point, null, null, null, null, null, null, null, null, null, false
     );
@@ -134,14 +136,55 @@ const addEndPoint = (state, action) => {
 };
 
 const setTypeHip = (state, action) => {
+  const newPolyline = InnerLine.fromPolyline(
+    state.fixedInnerPolylines[state.hoverInnerLineIndex]
+  );
+  newPolyline.setTypeHip();
+  const newFixedInnerPolyline = [...state.fixedInnerPolylines];
+  newFixedInnerPolyline[state.hoverInnerLineIndex] = newPolyline;
+  return {
+    ...state,
+    fixedInnerPolylines: newFixedInnerPolyline
+  };
+};
+
+const setTypeRidge = (state, action) => {
+  const newPolyline = InnerLine.fromPolyline(
+    state.fixedInnerPolylines[state.hoverInnerLineIndex]
+  );
+  newPolyline.setTypeRidge();
+  const newFixedInnerPolyline = [...state.fixedInnerPolylines];
+  newFixedInnerPolyline[state.hoverInnerLineIndex] = newPolyline;
+  return {
+    ...state,
+    fixedInnerPolylines: newFixedInnerPolyline
+  };
+};
+
+const setHoverInnerLine = (state, action) => {
+  return {
+    ...state,
+    hoverInnerLineIndex: action.hoverInnerLineIndex
+  };
+};
+
+const releaseHoverInnerLine = (state, action) => {
+  return {
+    ...state,
+    hoverInnerLineIndex: null
+  };
+};
+
+const setHoverInnerPoint = (state, action) => {
   return {
     ...state
   };
 };
 
-const setTypeRidge = (state, action) => {
+const releaseHoverInnerPoint = (state, action) => {
   return {
-    ...state
+    ...state,
+    hoverInnerPointIndex: null
   };
 };
 
@@ -159,6 +202,14 @@ const reducer = (state=initialState, action) => {
       return setTypeHip (state, action);
     case actionTypes.SET_TYPE_RIDGE:
       return setTypeRidge (state, action);
+    case actionTypes.SET_HOVER_INNER_LINE:
+      return setHoverInnerLine (state, action);
+    case actionTypes.RELEASE_HOVER_INNER_LINE:
+      return releaseHoverInnerLine (state, action);
+    case actionTypes.SET_HOVER_INNER_POINT:
+      return setHoverInnerPoint (state, action);
+    case actionTypes.RELEASE_HOVER_INNER_POINT:
+      return releaseHoverInnerPoint (state, action);
     default: return state;
   }
 };

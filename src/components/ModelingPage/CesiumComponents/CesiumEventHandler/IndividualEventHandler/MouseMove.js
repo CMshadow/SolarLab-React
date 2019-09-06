@@ -53,6 +53,42 @@ const RightClickHandler = (props) => {
       case 'DRAWING_INNER':
         if (props.drawingInnerPolyline) {
           props.dragDrawingInnerPolyline(event.endPosition, props.viewer);
+        } else {
+          const anyPickedObject = props.viewer.scene.pick(event.endPosition);
+          if(anyPickedObject) {
+            // Find out hover on which inner line
+            const onTopInnerLine = props.fixedInnerPolylines.find(element => {
+              return element.entityId === anyPickedObject.id.id
+            })
+            if (onTopInnerLine) {
+              props.setHoverInnerLine(onTopInnerLine)
+              if (props.hoverInnerPointIndex !== null) {
+                props.releaseHoverInnerPoint()};
+            }
+
+            // Find out hover on which point
+            const onTopPoint = Object.keys(props.pointsRelation)
+            .find(element => {
+              return element === anyPickedObject.id.id
+            })
+            // Set hover point if available
+            if (onTopPoint) {
+              props.setHoverInnerPoint(onTopPoint);
+              // Release hover polyline if it exists
+              if (props.hoverInnerLineIndex !== null){
+                props.releaseHoverInnerLine();
+              }
+            }
+          } else {
+            // Release hover polyline if it exists
+            if (props.hoverInnerLineIndex !== null) {
+              props.releaseHoverInnerLine();
+            }
+            // Release hover point if it exists
+            if (props.hoverInnerPointIndex !== null) {
+              props.releaseHoverInnerPoint();
+            }
+          }
         }
         break;
 
@@ -78,7 +114,12 @@ const mapStateToProps = state => {
     hoverPolyline: state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
     hoverPointIndex: state.undoableReducer.present.drawingManagerReducer.hoverPointIndex,
     pickedPointIndex: state.undoableReducer.present.drawingManagerReducer.pickedPointIndex,
+
+    pointsRelation: state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
     drawingInnerPolyline: state.undoableReducer.present.drawingInnerManagerReducer.drawingInnerPolyline,
+    fixedInnerPolylines: state.undoableReducer.present.drawingInnerManagerReducer.fixedInnerPolylines,
+    hoverInnerLineIndex: state.undoableReducer.present.drawingInnerManagerReducer.hoverInnerLineIndex,
+    hoverInnerPointIndex: state.undoableReducer.present.drawingInnerManagerReducer.hoverInnerPointIndex,
   };
 };
 
@@ -97,9 +138,14 @@ const mapDispatchToProps = dispatch => {
     setMouseCartesian3: (cartesian, viewer) => dispatch(
       actions.setMouseCartesian3(cartesian, viewer)
     ),
+
     dragDrawingInnerPolyline: (cartesian, viewer) => dispatch(
       actions.dragDrawingInnerPolyline(cartesian, viewer)
     ),
+    setHoverInnerLine: (inner) => dispatch(actions.setHoverInnerLine(inner)),
+    releaseHoverInnerLine: () => dispatch(actions.releaseHoverInnerLine()),
+    setHoverInnerPoint: (point) => dispatch(actions.setHoverInnerPoint(point)),
+    releaseHoverInnerPoint: () => dispatch(actions.releaseHoverInnerPoint()),
   };
 };
 

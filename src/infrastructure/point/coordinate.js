@@ -154,7 +154,38 @@ class Coordinate {
               Math.sin(cor1Lat) * Math.cos(cor2Lat) * Math.cos(cor2Lon-cor1Lon);
     const brng = Cesium.Math.toDegrees(Math.atan2(y, x));
     return (brng+360)%360;
-  }
+  };
+
+  /**
+   * calculate the destination Coordinate from a Coordinate in a specific
+   * bearing and distance
+   * @param  {Coordinate} cor  origin Coordinate
+   * @param  {number}     brng travel bearing
+   * @param  {number}     dist travel distance
+   * @return {Coordinate}      destination Coordinate
+   */
+  destination = (cor, brng, dist) => {
+    const earth_radius = 6371;
+    const angularDist = dist/1000/earth_radius;
+    const cor1Lon = Cesium.Math.toRadians(cor.lon);
+    const cor1Lat = Cesium.Math.toRadians(cor.lat);
+    const angularBrng = Cesium.Math.toRadians(brng);
+
+    const destLat = Math.asin(
+      Math.sin(cor1Lat) * Math.cos(angularDist) + Math.cos(cor1Lat)
+      * Math.sin(angularDist) * Math.cos(angularBrng)
+    );
+    const destLon = cor1Lon + Math.atan2(
+      Math.sin(angularBrng) * Math.sin(angularDist) * Math.cos(cor1Lat),
+      Math.cos(angularDist) - Math.sin(cor1Lat) * Math.sin(destLat)
+    );
+
+    return new Coordinate(
+      Cesium.Math.toDegrees(destLon),
+      Cesium.Math.toDegrees(destLat),
+      cor.height
+    )
+  };
 }
 
 export default Coordinate;

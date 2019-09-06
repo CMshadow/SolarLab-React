@@ -13,21 +13,21 @@ export const passFoundPolyline = () => (dispatch, getState) => {
 
 export const addOrClickPoint =
   (mousePosition, viewer, pickedObjectArray) => (dispatch, getState) => {
+
+  const cartesian3 = viewer.scene.pickPosition(mousePosition);
   const pickedObjectIdArray = pickedObjectArray.map(elem => elem.id.id);
+  const foundPolyline = getState().undoableReducer.present
+  .drawingInnerManagerReducer.foundPolyline;
   const pointsRelation = getState().undoableReducer.present
   .drawingInnerManagerReducer.pointsRelation;
   const drawingInnerPolyline = getState().undoableReducer.present
   .drawingInnerManagerReducer.drawingInnerPolyline;
-  console.log(pickedObjectIdArray)
-  console.log(pickedObjectIdArray !== [])
+
   if (pickedObjectIdArray.length !== 0) {
     const onTopPointId = Object.keys(pointsRelation).filter(
       x => pickedObjectIdArray.includes(x)
     );
-    // const onTopPointId = Object.keys(pointsRelation).find(elem => {
-    //   return elem === pickedObject.id.id
-    // });
-    console.log(onTopPointId)
+    const onTopFoundPolyline = pickedObjectIdArray.includes(foundPolyline.entityId);
     if (onTopPointId.length !== 0) {
       if (drawingInnerPolyline) {
         return dispatch({
@@ -41,8 +41,25 @@ export const addOrClickPoint =
         });
       }
     }
+    else if (onTopFoundPolyline) {
+      const foundAddPointPosition = foundPolyline.determineAddPointPosition(
+        cartesian3
+      );
+      if (drawingInnerPolyline) {
+        return dispatch({
+          type: actionTypes.ADD_END_POINT,
+          cartesian3: cartesian3,
+          foundAddPointPosition: foundAddPointPosition
+        });
+      } else {
+        return dispatch({
+          type: actionTypes.ADD_START_POINT,
+          cartesian3: cartesian3,
+          foundAddPointPosition: foundAddPointPosition
+        });
+      }
+    }
   }
-  const cartesian3 = viewer.scene.pickPosition(mousePosition);
   if (drawingInnerPolyline) {
     return dispatch({
       type: actionTypes.ADD_END_POINT,
@@ -75,9 +92,53 @@ export const deleteInnerPointOnPolyline = () => {
 };
 
 export const setInnerTypeHip = () => {
-
+  return {
+    type: actionTypes.SET_TYPE_HIP
+  };
 };
 
 export const setInnerTypeRidge = () => {
+  return {
+    type: actionTypes.SET_TYPE_RIDGE
+  };
+};
 
+const findInnerLineIndex = (fixedInnerLine, findInnerLine) => {
+  const i = fixedInnerLine.reduce((p, elem, index, array) => {
+    return elem.entityId === p.entityId ? index : p
+  }, findInnerLine);
+  if (i === findInnerLine) {
+    return -1;
+  }
+  return i;
+}
+
+export const setHoverInnerLine = (innerLine) => (dispatch, getState) => {
+  const index = findInnerLineIndex(
+    getState().undoableReducer.present.drawingInnerManagerReducer
+    .fixedInnerPolylines,
+    innerLine
+  );
+  return dispatch({
+    type: actionTypes.SET_HOVER_INNER_LINE,
+    hoverInnerLineIndex: index
+  });
+};
+
+export const releaseHoverInnerLine = () => {
+  return ({
+    type: actionTypes.RELEASE_HOVER_INNER_LINE
+  });
+};
+
+export const setHoverInnerPoint = () => {
+  return ({
+    type: actionTypes.SET_HOVER_INNER_POINT
+  });
+};
+
+export const releaseHoverInnerPoint = () => {
+  return ({
+    type: actionTypes.RELEASE_HOVER_INNER_POINT
+  });
 };

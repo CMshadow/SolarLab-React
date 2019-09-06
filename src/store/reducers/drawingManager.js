@@ -166,6 +166,24 @@ const cleanHoverAndColor = (state, action) => {
   };
 };
 
+const addExtraInnerPoint = (state, action) => {
+  if (action.foundAddPointPosition !== undefined) {
+    const newPoint = Point.fromCoordinate(
+      Coordinate.fromCartesian(state.mouseCartesian3, 0.1)
+    );
+    const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+    newPolyline.addPoint(action.foundAddPointPosition, newPoint);
+    return {
+      ...state,
+      drawingPolyline: newPolyline
+    };
+  } else {
+    return {
+      ...state
+    };
+  }
+};
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.CLICK_ADD_POINT_ON_POLYLINE:
@@ -196,6 +214,10 @@ const reducer = (state=initialState, action) => {
       return releasePickedPointIndex (state, action);
     case actionTypes.CLEAN_HOVER_AND_COLOR:
       return cleanHoverAndColor (state, action);
+    case actionTypes.ADD_START_POINT:
+      return addExtraInnerPoint (state, action);
+    case actionTypes.ADD_END_POINT:
+      return addExtraInnerPoint (state, action);
     case actionTypes.DO_NOTHING:
       return state;
     default: return state;

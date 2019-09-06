@@ -51,19 +51,50 @@ class InnerLine extends Polyline {
     polyline, id = polyline.entityId, name = null, color = null, width = null,
     show = true, type = null
   ) {
-      const newPoints = polyline.points.map(elem => {
-        return Point.fromPoint(elem);
-      });
-      const newName = name ? name : polyline.name;
-      const newColor = color ? color : polyline.color;
-      const newShow = show ? show : polyline.show;
-      const newWidth = width ? width : polyline.width;
-      const newType = type ? type : polyline.type;
-      return new InnerLine (
-        newPoints, id, newName, newColor, newWidth, newShow, newType
-      );
-    }
+    const newPoints = polyline.points.map(elem => {
+      return Point.fromPoint(elem);
+    });
+    const newName = name ? name : polyline.name;
+    const newColor = color ? color : polyline.color;
+    const newShow = show ? show : polyline.show;
+    const newWidth = width ? width : polyline.width;
+    const newType = type ? type : polyline.type;
+    return new InnerLine (
+      newPoints, id, newName, newColor, newWidth, newShow, newType
+    );
+  }
 
+  /**
+   * set the type of the inner line to HIP, and change its color
+   */
+  setTypeHip = () => {
+    this.type = 'HIP';
+    this.setColorbyType();
+  };
+
+  /**
+   * set the type of the inner line to RIDGE, and change its color
+   */
+  setTypeRidge = () => {
+    this.type = 'RIDGE';
+    this.setColorbyType();
+  };
+
+  /**
+   * set inner line color according to the type
+   */
+  setColorbyType = () => {
+    switch (this.type) {
+      case 'HIP':
+        this.setColor(Color.GOLD);
+        break;
+      case 'RIDGE':
+        this.setColor(Color.RED);
+        break;
+      default:
+        this.setColor(Color.DARKGRAY);
+    }
+  }
 }
 
 export default InnerLine;
