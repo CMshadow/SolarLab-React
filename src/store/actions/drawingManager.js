@@ -30,10 +30,9 @@ export const addPointOnPolyline = (mousePosition, viewer) => {
   }
 };
 
-export const complementPointOnPolyline = (cartesian3) => {
+export const complementPointOnPolyline = () => {
   return {
     type: actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,
-    cartesian3: cartesian3
   };
 };
 
@@ -55,7 +54,21 @@ export const setMouseCartesian3 = (mousePosition, viewer) => {
       type: actionTypes.DO_NOTHING
     };
   }
-}
+};
+
+export const setRightClickCartesian3 = (mousePosition, viewer) => {
+  const cartesian3 = viewer.scene.pickPosition(mousePosition);
+  if (Cesium.defined(cartesian3)) {
+    return {
+      type: actionTypes.SET_RIGHT_CLICK_CARTESIAN3,
+      cartesian3: cartesian3
+    };
+  } else {
+    return {
+      type: actionTypes.DO_NOTHING
+    };
+  }
+};
 
 export const setHoverPolyline = () => {
   return ({

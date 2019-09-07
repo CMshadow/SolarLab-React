@@ -1,6 +1,7 @@
 import * as Cesium from 'cesium';
 
 import * as actionTypes from './actionTypes';
+import Coordinate from '../../infrastructure/point/coordinate';
 
 export const passFoundPolyline = () => (dispatch, getState) => {
   const foundPolyline = getState().undoableReducer.present
@@ -17,7 +18,7 @@ export const addOrClickPoint =
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
   const pickedObjectIdArray = pickedObjectArray.map(elem => elem.id.id);
   const foundPolyline = getState().undoableReducer.present
-  .drawingInnerManagerReducer.foundPolyline;
+  .drawingManagerReducer.drawingPolyline;
   const pointsRelation = getState().undoableReducer.present
   .drawingInnerManagerReducer.pointsRelation;
   const drawingInnerPolyline = getState().undoableReducer.present
@@ -45,16 +46,19 @@ export const addOrClickPoint =
       const foundAddPointPosition = foundPolyline.determineAddPointPosition(
         cartesian3
       );
+      const newCoordinate = foundPolyline.preciseAddPointPosition(
+        foundAddPointPosition, Coordinate.fromCartesian(cartesian3, 0.05)
+      );
       if (drawingInnerPolyline) {
         return dispatch({
           type: actionTypes.ADD_END_POINT,
-          cartesian3: cartesian3,
+          cartesian3: Coordinate.toCartesian(newCoordinate),
           foundAddPointPosition: foundAddPointPosition
         });
       } else {
         return dispatch({
           type: actionTypes.ADD_START_POINT,
-          cartesian3: cartesian3,
+          cartesian3: Coordinate.toCartesian(newCoordinate),
           foundAddPointPosition: foundAddPointPosition
         });
       }

@@ -7,7 +7,6 @@ import Polyline from '../../infrastructure/line/polyline';
 import InnerLine from '../../infrastructure/line/innerLine';
 
 const initialState = {
-  foundPolyline: null,
   drawingInnerPolyline: null,
   fixedInnerPolylines: [],
   pointsRelation: {},
@@ -20,7 +19,6 @@ const passFoundPolyline = (state, action) => {
   console.log('[passFoundPolyline]')
   return {
     ...state,
-    foundPolyline: action.foundPolyline,
     pointsRelation: action.foundPolyline.points.reduce((map, obj) => {
       map[obj.entityId] = {
         object: obj,
@@ -35,9 +33,15 @@ const addStartPoint = (state, action) => {
   console.log('[addStartPoint]')
   let newPoint = null;
   if (action.cartesian3) {
-    newPoint = Point.fromCoordinate(
-      Coordinate.fromCartesian(action.cartesian3, 0.1)
-    );
+    if (action.foundAddPointPosition) {
+      newPoint = Point.fromCoordinate(
+        Coordinate.fromCartesian(action.cartesian3, 0.05),null,null,null,null,null,null,false
+      );
+    } else {
+      newPoint = Point.fromCoordinate(
+        Coordinate.fromCartesian(action.cartesian3, 0.05)
+      );
+    }
     const newPolyline = new InnerLine(
       [newPoint], null, null, Cesium.Color.DARKGRAY
     );
@@ -79,7 +83,7 @@ const addStartPoint = (state, action) => {
 const dragDrawingInnerPolyline = (state, action) => {
   const newPolyline = InnerLine.fromPolyline(state.drawingInnerPolyline)
   const newPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(action.cartesian3, 0.1)
+    Coordinate.fromCartesian(action.cartesian3, 0.05)
   );
   newPolyline.updatePoint(1, newPoint);
   return {
@@ -97,7 +101,7 @@ const addEndPoint = (state, action) => {
   let newPoint = null;
   if (action.cartesian3) {
     newPoint = Point.fromCoordinate(
-      Coordinate.fromCartesian(action.cartesian3, 0.1)
+      Coordinate.fromCartesian(action.cartesian3, 0.05)
     );
     newPolyline.updatePoint(1, newPoint);
     return {

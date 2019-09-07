@@ -39,6 +39,7 @@ const DrawInnerButton = (props) => {
         props.setUIStateInnerDrew();
         props.enableRotate();
         console.log(props.test)
+        console.log(props.test2)
       }}
     >
       ...Drawing...
@@ -73,7 +74,8 @@ const DrawInnerButton = (props) => {
 const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    test: state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation
+    test: state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
+    test2: state.undoableReducer.present.drawingManagerReducer.drawingPolyline
   };
 };
 

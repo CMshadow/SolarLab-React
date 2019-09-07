@@ -1,4 +1,4 @@
-import { Color } from 'cesium';
+import * as Cesium from 'cesium';
 import uuid from 'uuid/v1';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 
@@ -27,7 +27,7 @@ class Polyline {
     this.points = points ? points : [];
     this.entityId = id ? id : uuid();
     this.name = name ? name : 'polyline';
-    this.color = color ? color : Color.WHITE;
+    this.color = color ? color : Cesium.Color.WHITE;
     this.show = show;
     this.width = width ? width : 4;
   }
@@ -86,10 +86,14 @@ class Polyline {
    * @param {Point}   point    the Point object to be added
    */
   addPoint = (position, point) => {
+    this.points.splice(position, 0, point);
+  };
+
+  addPointPrecision = (position, point) => {
     const newCoordinate = this.preciseAddPointPosition(position, point);
-    const newPoint = Point.fromCoordinate(newCoordinate, 0.1);
+    const newPoint = Point.fromCoordinate(newCoordinate);
     this.points.splice(position, 0, newPoint);
-  }
+  };
 
   /**
    * Add a point at the tail of the polyline
@@ -132,7 +136,9 @@ class Polyline {
       this.points[index - 1],
       this.points[index]
     );
-    const cosine = Math.cos(brngToMouse - polylineSegmentBrng)
+    const cosine = Math.cos(
+      Cesium.Math.toRadians(brngToMouse - polylineSegmentBrng)
+    );
     const trueDist = cosine * distToMouse;
     return Coordinate.destination(
       this.points[index - 1],

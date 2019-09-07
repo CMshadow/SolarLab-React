@@ -46,6 +46,18 @@ class Coordinate {
   };
 
   /**
+   * Convert a Coordinate to Cartesian3
+   * @param  {Coordinate} coordinate the Coordinate object to be converted
+   * @return {Cartesian3}            the Cartesian3 coordinate corresponding to
+   *                                 the given Coordinate object
+   */
+  static toCartesian = (coordinate) => {
+    return Cesium.Cartesian3.fromDegrees(
+      coordinate.lon, coordinate.lat, coordinate.height
+    );
+  }
+
+  /**
    * get the coordinate
    * @param  {Boolean} [toArray=false] whether to get the coordinate as an array
    *                                   or Object
@@ -164,7 +176,7 @@ class Coordinate {
    * @param  {number}     dist travel distance
    * @return {Coordinate}      destination Coordinate
    */
-  destination = (cor, brng, dist) => {
+  static destination = (cor, brng, dist) => {
     const earth_radius = 6371;
     const angularDist = dist/1000/earth_radius;
     const cor1Lon = Cesium.Math.toRadians(cor.lon);

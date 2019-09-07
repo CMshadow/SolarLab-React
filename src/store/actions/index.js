@@ -12,6 +12,7 @@ export {
   deletePointOnPolyline,
 
   setMouseCartesian3,
+  setRightClickCartesian3,
 
   setHoverPolyline,
   releaseHoverPolyline,
