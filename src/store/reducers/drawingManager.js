@@ -10,6 +10,7 @@ const initialState = {
   fixedPoints: [],
 
   mouseCartesian3: null,
+  rightClickCartesian3: null,
   hoverPolyline: false,
   hoverPointIndex: null,
   pickedPointIndex: null
@@ -20,7 +21,7 @@ const dragPolyline = (state, action) => {
     return Point.fromPoint(elem);
   });
   const newPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(action.cartesian3, 0.1)
+    Coordinate.fromCartesian(action.cartesian3, 0.05)
   );
   const polyline = new Polyline([...existPoints, newPoint]);
   return {
@@ -35,7 +36,7 @@ const addPointOnPolyline = (state, action) => {
     return Point.fromPoint(elem);
   });
   const newPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(action.cartesian3, 0.1)
+    Coordinate.fromCartesian(action.cartesian3, 0.05)
   );
   const polyline = new Polyline([...existPoints, newPoint]);
   return {
@@ -59,16 +60,13 @@ const terminateDrawing = (state, action) => {
 
 const complementPointOnPolyline = (state, action) => {
   const indexToAdd = state.drawingPolyline.determineAddPointPosition(
-    state.mouseCartesian3
+    state.rightClickCartesian3
   );
-  const existPoints = state.drawingPolyline.points.map(elem => {
-    return Point.fromPoint(elem);
-  });
   const newPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(state.mouseCartesian3, 0.1)
+    Coordinate.fromCartesian(state.rightClickCartesian3, 0.05)
   );
-  existPoints.splice(indexToAdd, 0, newPoint)
-  const newPolyline = new Polyline(existPoints);
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.addPoint(indexToAdd, newPoint)
   return {
     ...state,
     drawingPolyline: newPolyline
@@ -88,6 +86,13 @@ const setMouseCartesian3 = (state, action) => {
   return {
     ...state,
     mouseCartesian3: action.cartesian3
+  };
+};
+
+const setRightClickCartesian3 = (state, action) => {
+  return {
+    ...state,
+    rightClickCartesian3: action.cartesian3
   };
 };
 
@@ -140,7 +145,8 @@ const setPickedPointIndex = (state, action) => {
 
 const movePickedPoint = (state, action) => {
   const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
-  newPolyline.points[state.pickedPointIndex].setCartesian3Coordinate(action.cartesian3);
+  newPolyline.points[state.pickedPointIndex]
+  .setCartesian3Coordinate(action.cartesian3, 0.05);
   return {
     ...state,
     drawingPolyline: newPolyline
@@ -166,6 +172,27 @@ const cleanHoverAndColor = (state, action) => {
   };
 };
 
+const addExtraInnerPoint = (state, action) => {
+  console.log('addExtraInnerPoint')
+  if (action.foundAddPointPosition !== undefined) {
+    console.log('yo')
+    const newPoint = Point.fromCoordinate(
+      Coordinate.fromCartesian(state.mouseCartesian3, 0.05)
+    );
+    const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+    newPolyline.addPointPrecision(action.foundAddPointPosition, newPoint);
+    console.log(newPolyline)
+    return {
+      ...state,
+      drawingPolyline: newPolyline
+    };
+  } else {
+    return {
+      ...state
+    };
+  }
+};
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.CLICK_ADD_POINT_ON_POLYLINE:
@@ -180,6 +207,8 @@ const reducer = (state=initialState, action) => {
       return deletePointOnPolyline (state, action);
     case actionTypes.SET_MOUSE_CARTESIAN3:
       return setMouseCartesian3 (state, action);
+    case actionTypes.SET_RIGHT_CLICK_CARTESIAN3:
+      return setRightClickCartesian3 (state, action);
     case actionTypes.SET_HOVERPOLYLINE:
       return setHoverPolyline (state, action);
     case actionTypes.RELEASE_HOVERPOLYLINE:
@@ -196,6 +225,10 @@ const reducer = (state=initialState, action) => {
       return releasePickedPointIndex (state, action);
     case actionTypes.CLEAN_HOVER_AND_COLOR:
       return cleanHoverAndColor (state, action);
+    case actionTypes.ADD_START_POINT:
+      return addExtraInnerPoint (state, action);
+    case actionTypes.ADD_END_POINT:
+      return addExtraInnerPoint (state, action);
     case actionTypes.DO_NOTHING:
       return state;
     default: return state;

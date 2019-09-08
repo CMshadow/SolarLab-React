@@ -1,4 +1,4 @@
-import { Color } from 'cesium';
+import * as Cesium from 'cesium';
 import uuid from 'uuid/v1';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 
@@ -27,7 +27,7 @@ class Polyline {
     this.points = points ? points : [];
     this.entityId = id ? id : uuid();
     this.name = name ? name : 'polyline';
-    this.color = color ? color : Color.WHITE;
+    this.color = color ? color : Cesium.Color.WHITE;
     this.show = show;
     this.width = width ? width : 4;
   }
@@ -86,11 +86,13 @@ class Polyline {
    * @param {Point}   point    the Point object to be added
    */
   addPoint = (position, point) => {
-    if (point instanceof Point) {
-      this.points.splice(position, 0, point);
-    } else {
-      throw new Error('Adding object is not a Point object');
-    }
+    this.points.splice(position, 0, point);
+  }
+
+  addPointPrecision = (position, point) => {
+    const newCoordinate = this.preciseAddPointPosition(position, point);
+    const newPoint = Point.fromCoordinate(newCoordinate);
+    this.points.splice(position, 0, newPoint);
   }
 
   /**
@@ -119,6 +121,30 @@ class Polyline {
     const minIndex = brngDiff.reduce((minIndex, elem, index, array) => {
       return elem < array[minIndex] ? index : minIndex}, 0);
     return minIndex + 1;
+  }
+
+  preciseAddPointPosition = (index, mouseCoordinate) => {
+    const distToMouse = Coordinate.surfaceDistance(
+      this.points[index - 1],
+      mouseCoordinate
+    );
+    const brngToMouse = Coordinate.bearing(
+      this.points[index - 1],
+      mouseCoordinate
+    );
+    const polylineSegmentBrng = Coordinate.bearing(
+      this.points[index - 1],
+      this.points[index]
+    );
+    const cosine = Math.cos(
+      Cesium.Math.toRadians(brngToMouse - polylineSegmentBrng)
+    );
+    const trueDist = cosine * distToMouse;
+    return Coordinate.destination(
+      this.points[index - 1],
+      polylineSegmentBrng,
+      trueDist
+    );
   }
 
   /**
@@ -221,6 +247,14 @@ class Polyline {
       distArray.push(Point.distance(this.points[i], this.points[i+1]));
     }
     return distArray;
+  }
+
+  getSegmentPolyline = () => {
+    let polylineArray = [];
+    for (let i = 0; i < this.length-1; i++) {
+      polylineArray.push(new Polyline([this.points[i], this.points[i+1]]));
+    }
+    return polylineArray;
   }
 }
 

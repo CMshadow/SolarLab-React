@@ -18,6 +18,7 @@ import * as actionTypes from './store/actions/actionTypes';
 import authReducer from './store/reducers/auth';
 import cesiumReducer from './store/reducers/cesium';
 import drawingManagerReducer from './store/reducers/drawingManager';
+import drawingInnerManagerReducer from './store/reducers/drawingInnerManager';
 import uiStateManagerReducer from './store/reducers/uiStateManager';
 import buildingManagerReducer from './store/reducers/buildingManager';
 import projectManagerReducer from './store/reducers/projectManager';
@@ -38,6 +39,7 @@ const rootReducer = combineReducers({
   buildingManagerReducer: buildingManagerReducer,
   undoableReducer: undoable(combineReducers({
     drawingManagerReducer: drawingManagerReducer,
+    drawingInnerManagerReducer: drawingInnerManagerReducer,
     uiStateManagerReducer: uiStateManagerReducer,
   }), {
     filter: includeAction([
