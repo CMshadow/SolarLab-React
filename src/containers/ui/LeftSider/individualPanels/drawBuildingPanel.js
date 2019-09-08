@@ -1,61 +1,38 @@
-import React, {Component} from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPen } from '@fortawesome/pro-light-svg-icons'
 import {
-  Form,
-  Input,
-  InputNumber,
   Divider,
-  Tooltip,
-  Icon,
-  Cascader,
-  Select,
-  Row,
-  Col,
-  Checkbox,
-  Button,
-  AutoComplete,
 } from 'antd';
 
-import * as actions from '../../../../store/actions/index';
+import * as uiStateJudge from '../../../../infrastructure/ui/uiStateJudge';
+import DrawFoundButton from './drawButtons/drawFoundButton';
+import DrawInnerButton from './drawButtons/drawInnerButton';
 
-const { Option } = Select;
+const DrawBuildingPanel = (props) => {
 
-class DrawBuildingPanel extends Component {
+  const step1 = (
+    <div>
+      <Divider>Step 1</Divider>
+        <DrawFoundButton />
+    </div>
+  )
 
-  render () {
+  const step2 = (
+    <div>
+      <Divider>Step 2</Divider>
+        <DrawInnerButton />
+    </div>
+  )
 
-    let text = null;
-    if (this.props.uiState === 'READY_DRAWING') {
-      text = 'Draw Building Outline';
-    } else if (this.props.uiState === 'DRAWING_FOUND') {
-      text = '...Drawing...';
-    } else if (this.props.uiState === 'FOUND_DREW') {
-      text = 'Finished'
-    }
-
-    return (
-      <div>
-        <Divider>Step 1</Divider>
-        <Row>
-          <Col span={18} offset={3}>
-            <Button
-              type="primary"
-              size="large"
-              shape='round'
-              block
-              loading={this.props.uiState === 'DRAWING_FOUND'}
-              onClick={this.props.setUIStateDrawingFound}
-            >
-              {text}
-            </Button>
-          </Col>
-        </Row>
-      </div>
-    );
-  };
-}
+  return (
+    <div>
+      {step1}
+      {uiStateJudge.isFoundDrew(props.uiState) ? step2 : null}
+    </div>
+  );
+};
 
 const mapStateToProps = state => {
   return {
@@ -63,10 +40,4 @@ const mapStateToProps = state => {
   };
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setUIStateDrawingFound: () => dispatch(actions.setUIStateDrawingFound())
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(DrawBuildingPanel);
+export default connect(mapStateToProps)(DrawBuildingPanel);

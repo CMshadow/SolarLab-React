@@ -1,32 +1,44 @@
-import React, { Component } from 'react';
+import React from 'react';
 import { connect } from 'react-redux';
 
 import AddPointContextMenu from './individualContextMenu/addPointContextMenu';
 import DeletePointContextMenu from './individualContextMenu/deletePointContextMenu';
+import InnerLineContextMenu from './individualContextMenu/innerLineContextMenu';
+import DeleteInnerPointContextMenu from './individualContextMenu/deleteInnerPointContextMenu';
 
-class CustomContextMenu extends Component {
 
-  render () {
+const CustomContextMenu = (props) => {
 
-    let content = null;
-    if (this.props.hoverPolyline) {
-      content = (<AddPointContextMenu />);
-    }else if (this.props.hoverPoint) {
-      content = (<DeletePointContextMenu />);
+    let drawingFound = null;
+    if (props.hoverPolyline) {
+      drawingFound = (<AddPointContextMenu />);
+    } else if (props.hoverPointIndex !== null) {
+      drawingFound = (<DeletePointContextMenu />);
+    }
+
+    let drawingInner = null;
+    if (props.hoverInnerLineIndex !== null) {
+      drawingInner = (<InnerLineContextMenu />);
+    }
+    else if (props.hoverInnerPointId !== null) {
+      drawingInner = (<DeleteInnerPointContextMenu />);
     }
 
     return (
       <div>
-        {content}
+        {props.uiState === 'EDITING_FOUND' ? drawingFound : null}
+        {props.uiState === 'DRAWING_INNER' ? drawingInner : null}
       </div>
-    )
-  };
+    );
 }
 
 const mapStateToProps = state => {
   return {
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     hoverPolyline: state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
-    hoverPoint: state.undoableReducer.present.drawingManagerReducer.hoverPoint
+    hoverPointIndex: state.undoableReducer.present.drawingManagerReducer.hoverPointIndex,
+    hoverInnerLineIndex : state.undoableReducer.present.drawingInnerManagerReducer.hoverInnerLineIndex,
+    hoverInnerPointId: state.undoableReducer.present.drawingInnerManagerReducer.hoverInnerPointId
   };
 };
 

@@ -30,10 +30,9 @@ export const addPointOnPolyline = (mousePosition, viewer) => {
   }
 };
 
-export const complementPointOnPolyline = (cartesian3) => {
+export const complementPointOnPolyline = () => {
   return {
     type: actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,
-    cartesian3: cartesian3
   };
 };
 
@@ -55,7 +54,21 @@ export const setMouseCartesian3 = (mousePosition, viewer) => {
       type: actionTypes.DO_NOTHING
     };
   }
-}
+};
+
+export const setRightClickCartesian3 = (mousePosition, viewer) => {
+  const cartesian3 = viewer.scene.pickPosition(mousePosition);
+  if (Cesium.defined(cartesian3)) {
+    return {
+      type: actionTypes.SET_RIGHT_CLICK_CARTESIAN3,
+      cartesian3: cartesian3
+    };
+  } else {
+    return {
+      type: actionTypes.DO_NOTHING
+    };
+  }
+};
 
 export const setHoverPolyline = () => {
   return ({
@@ -69,47 +82,45 @@ export const releaseHoverPolyline = () => {
   });
 };
 
-export const setHoverPoint = (point) => {
-  point.setColor(Cesium.Color.ORANGE);
-  return ({
+export const setHoverPointIndex = (point) => (dispatch, getState) => {
+  const hoverIndex = getState().undoableReducer.present
+  .drawingManagerReducer.drawingPolyline.findPointIndex(point);
+  return dispatch({
     type: actionTypes.SET_HOVERPOINT,
-    hoverPoint: point
+    hoverPointIndex: hoverIndex
   });
 };
 
-export const releaseHoverPoint = () => (dispatch, getState) => {
-  getState().undoableReducer.present.drawingManagerReducer.hoverPoint.setColor(
-    Cesium.Color.WHITE
-  );
+export const releaseHoverPointIndex = () => (dispatch, getState) => {
   return dispatch({
     type: actionTypes.RELEASE_HOVERPOINT
   });
 };
 
-export const setPickedPoint = (point) => {
-  return ({
+export const setPickedPointIndex = (point) => (dispatch, getState) => {
+  const pickedIndex = getState().undoableReducer.present
+  .drawingManagerReducer.drawingPolyline.findPointIndex(point);
+  return dispatch({
     type: actionTypes.SET_PICKEDPOINT,
-    pickedPoint: point
+    pickedPointIndex: pickedIndex
   });
 };
 
-export const movePickedPoint = (mousePosition, viewer) => (dispatch, getState) => {
+export const movePickedPoint = (mousePosition, viewer) => {
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
-  getState().undoableReducer.present.drawingManagerReducer.pickedPoint.setCartesian3Coordinate(
-    cartesian3
-  );
   if (Cesium.defined(cartesian3)) {
-    return dispatch({
+    return ({
       type: actionTypes.MOVE_PICKEDPOINT,
+      cartesian3: cartesian3
     });
   } else {
-    return dispatch({
+    return ({
       type: actionTypes.DO_NOTHING
     });
   }
 };
 
-export const releasePickedPoint = () => {
+export const releasePickedPointIndex = () => {
   return ({
     type: actionTypes.RELEASE_PICKEDPOINT
   });

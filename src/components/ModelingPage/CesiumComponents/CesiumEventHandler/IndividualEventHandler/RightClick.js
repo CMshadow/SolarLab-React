@@ -9,6 +9,7 @@ import * as actions from '../../../../../store/actions/index';
 const RightClickHandler = (props) => {
 
   const rightClickActions = (event) => {
+    props.setRightClickCartesian3(event.position, props.viewer)
     if (props.uiState === 'DRAWING_FOUND') {
       props.terminateDrawing();
       props.setUIStateFoundDrew();
@@ -26,6 +27,7 @@ const RightClickHandler = (props) => {
 
 const mapStateToProps = state => {
   return {
+    viewer: state.cesiumReducer.viewer,
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
   };
 };
@@ -35,6 +37,9 @@ const mapDispatchToProps = dispatch => {
     enableRotate: () => dispatch(actions.enableRotate()),
     terminateDrawing: () => dispatch(actions.terminateDrawing()),
     setUIStateFoundDrew: () => dispatch(actions.setUIStateFoundDrew()),
+    setRightClickCartesian3: (cartesian, viewer) => dispatch(
+      actions.setRightClickCartesian3(cartesian, viewer)
+    ),
   };
 };
 

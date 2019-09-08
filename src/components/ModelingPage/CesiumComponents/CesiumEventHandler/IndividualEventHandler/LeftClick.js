@@ -12,6 +12,10 @@ const LeftClickHandler = (props) => {
     if (props.uiState === 'DRAWING_FOUND') {
       props.disableRotate();
       props.addPointOnPolyline(event.position, props.viewer);
+    } else if (props.uiState === 'DRAWING_INNER') {
+      const PickedObjectsArray = props.viewer.scene.drillPick(event.position);
+      props.disableRotate();
+      props.addOrClickPoint(event.position, props.viewer, PickedObjectsArray);
     }
   };
 
@@ -36,6 +40,9 @@ const mapDispatchToProps = dispatch => {
     addPointOnPolyline: (cartesian, viewer) => dispatch(
       actions.addPointOnPolyline(cartesian, viewer)
     ),
+    addOrClickPoint: (cartesian, viewer, pickedObject) => dispatch(
+      actions.addOrClickPoint(cartesian, viewer, pickedObject)
+    )
   };
 };
 

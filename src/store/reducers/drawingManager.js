@@ -5,41 +5,15 @@ import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
 import Polyline from '../../infrastructure/line/polyline';
 
-/**
- * The state manager for drawing and editing polyline
- * @param {Polyline || null}  drawingPolyline the working on Polyline object;
- *                                            null by default;
- *                                            initialized when starting drawing
- *                                            the Polyline;
- * @param {Point[] || []} fixedPoints a array of fixed Points in the Polyline
- *                                    object;
- *                                    empty array by default;
- *                                    should only be used while dynamically
- *                                    drawing the Polyline object;
- * @param {Cartesian3 || null} mouseCartesian3  the current Cartesian3
- *                                              coordinate of the mouse;
- *                                              null by default;
- * @param {Polyline || null}  hoverPolyline  ref to drawingPolyline while mouse
- *                                           hover on the Polyline;
- *                                           null while mouse leaving the
- *                                           Polyline;
- * @param {Point || null} hoverPoint  ref to the Point mouse hovering on, it
- *                                    could be any point in the Polyline;
- *                                    null while mouse is not hoving on any
- *                                    point in the Polyline;
- * @param {Point || null} pickedPoint ref to the Point mouse is clicking on, it
- *                                    could be any point in the Polyline;
- *                                    null while mouse is not clicking on any
- *                                    point in the Polyline;
- */
 const initialState = {
   drawingPolyline: null,
   fixedPoints: [],
 
   mouseCartesian3: null,
-  hoverPolyline: null,
-  hoverPoint: null,
-  pickedPoint: null
+  rightClickCartesian3: null,
+  hoverPolyline: false,
+  hoverPointIndex: null,
+  pickedPointIndex: null
 };
 
 const dragPolyline = (state, action) => {
@@ -47,7 +21,7 @@ const dragPolyline = (state, action) => {
     return Point.fromPoint(elem);
   });
   const newPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(action.cartesian3, 0.1)
+    Coordinate.fromCartesian(action.cartesian3, 0.05)
   );
   const polyline = new Polyline([...existPoints, newPoint]);
   return {
@@ -62,7 +36,7 @@ const addPointOnPolyline = (state, action) => {
     return Point.fromPoint(elem);
   });
   const newPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(action.cartesian3, 0.1)
+    Coordinate.fromCartesian(action.cartesian3, 0.05)
   );
   const polyline = new Polyline([...existPoints, newPoint]);
   return {
@@ -86,16 +60,13 @@ const terminateDrawing = (state, action) => {
 
 const complementPointOnPolyline = (state, action) => {
   const indexToAdd = state.drawingPolyline.determineAddPointPosition(
-    state.mouseCartesian3
+    state.rightClickCartesian3
   );
-  const existPoints = state.drawingPolyline.points.map(elem => {
-    return Point.fromPoint(elem);
-  });
   const newPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(state.mouseCartesian3, 0.1)
+    Coordinate.fromCartesian(state.rightClickCartesian3, 0.05)
   );
-  existPoints.splice(indexToAdd, 0, newPoint)
-  const newPolyline = new Polyline(existPoints);
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.addPoint(indexToAdd, newPoint)
   return {
     ...state,
     drawingPolyline: newPolyline
@@ -103,9 +74,8 @@ const complementPointOnPolyline = (state, action) => {
 };
 
 const deletePointOnPolyline = (state, action) => {
-  const deletePosition = state.drawingPolyline.findPointIndex(state.hoverPoint);
   const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
-  newPolyline.deletePoint(deletePosition)
+  newPolyline.deletePoint(state.hoverPointIndex)
   return {
     ...state,
     drawingPolyline: newPolyline,
@@ -119,63 +89,74 @@ const setMouseCartesian3 = (state, action) => {
   };
 };
 
-const setHoverPolyline = (state, action) => {
+const setRightClickCartesian3 = (state, action) => {
   return {
     ...state,
-    hoverPolyline: state.drawingPolyline
+    rightClickCartesian3: action.cartesian3
+  };
+};
+
+const setHoverPolyline = (state, action) => {
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.setColor(Cesium.Color.ORANGE);
+  return {
+    ...state,
+    drawingPolyline: newPolyline,
+    hoverPolyline: true
   };
 };
 
 const releaseHoverPolyline = (state, action) => {
-  return {
-    ...state,
-    hoverPolyline: null
-  };
-};
-
-const setHoverPoint = (state, action) => {
-  // const hoverIndex = state.drawingPolyline.findPointIndex(action.hoverPoint);
-  // const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
-  return {
-    ...state,
-    // drawingPolyline: newPolyline,
-    // hoverPoint: newPolyline.points[hoverIndex]
-    drawingPolyline: Polyline.fromPolylineShallow(state.drawingPolyline),
-    hoverPoint: action.hoverPoint
-  };
-};
-
-const releaseHoverPoint = (state, action) => {
-  return {
-    ...state,
-    // drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
-    drawingPolyline: Polyline.fromPolylineShallow(state.drawingPolyline),
-    hoverPoint: null
-  };
-};
-
-const setPickedPoint = (state, action) => {
-  const hoverIndex = state.drawingPolyline.findPointIndex(action.pickedPoint);
   const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.setColor(Cesium.Color.WHITE);
   return {
     ...state,
     drawingPolyline: newPolyline,
-    pickedPoint: newPolyline.points[hoverIndex],
-    hoverPoint: newPolyline.points[hoverIndex],
+    hoverPolyline: false
+  };
+};
+
+const setHoverPointIndex = (state, action) => {
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.points[action.hoverPointIndex].setColor(Cesium.Color.ORANGE);
+  return {
+    ...state,
+    drawingPolyline: newPolyline,
+    hoverPointIndex: action.hoverPointIndex
+  };
+};
+
+const releaseHoverPointIndex = (state, action) => {
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.WHITE);
+  return {
+    ...state,
+    drawingPolyline: newPolyline,
+    hoverPointIndex: null
+  };
+};
+
+const setPickedPointIndex = (state, action) => {
+  return {
+    ...state,
+    pickedPointIndex: action.pickedPointIndex,
   };
 };
 
 const movePickedPoint = (state, action) => {
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.points[state.pickedPointIndex]
+  .setCartesian3Coordinate(action.cartesian3, 0.05);
   return {
     ...state,
+    drawingPolyline: newPolyline
   }
 };
 
-const releasePickedPoint = (state, action) => {
+const releasePickedPointIndex = (state, action) => {
   return {
     ...state,
-    drawingPolyline: Polyline.fromPolyline(state.drawingPolyline),
-    pickedPoint: null,
+    pickedPointIndex: null,
   };
 };
 
@@ -185,10 +166,31 @@ const cleanHoverAndColor = (state, action) => {
   });
   return {
     ...state,
-    hoverPolyline: null,
-    hoverPoint: null,
-    pickedPoint: null
+    hoverPolyline: false,
+    hoverPointIndex: null,
+    pickedPointIndex: null
   };
+};
+
+const addExtraInnerPoint = (state, action) => {
+  console.log('addExtraInnerPoint')
+  if (action.foundAddPointPosition !== undefined) {
+    console.log('yo')
+    const newPoint = Point.fromCoordinate(
+      Coordinate.fromCartesian(state.mouseCartesian3, 0.05)
+    );
+    const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+    newPolyline.addPointPrecision(action.foundAddPointPosition, newPoint);
+    console.log(newPolyline)
+    return {
+      ...state,
+      drawingPolyline: newPolyline
+    };
+  } else {
+    return {
+      ...state
+    };
+  }
 };
 
 const reducer = (state=initialState, action) => {
@@ -205,22 +207,28 @@ const reducer = (state=initialState, action) => {
       return deletePointOnPolyline (state, action);
     case actionTypes.SET_MOUSE_CARTESIAN3:
       return setMouseCartesian3 (state, action);
+    case actionTypes.SET_RIGHT_CLICK_CARTESIAN3:
+      return setRightClickCartesian3 (state, action);
     case actionTypes.SET_HOVERPOLYLINE:
       return setHoverPolyline (state, action);
     case actionTypes.RELEASE_HOVERPOLYLINE:
       return releaseHoverPolyline (state, action);
     case actionTypes.SET_HOVERPOINT:
-      return setHoverPoint (state, action);
+      return setHoverPointIndex (state, action);
     case actionTypes.RELEASE_HOVERPOINT:
-      return releaseHoverPoint (state, action);
+      return releaseHoverPointIndex (state, action);
     case actionTypes.SET_PICKEDPOINT:
-      return setPickedPoint (state, action);
+      return setPickedPointIndex (state, action);
     case actionTypes.MOVE_PICKEDPOINT:
       return movePickedPoint (state, action);
     case actionTypes.RELEASE_PICKEDPOINT:
-      return releasePickedPoint (state, action);
+      return releasePickedPointIndex (state, action);
     case actionTypes.CLEAN_HOVER_AND_COLOR:
       return cleanHoverAndColor (state, action);
+    case actionTypes.ADD_START_POINT:
+      return addExtraInnerPoint (state, action);
+    case actionTypes.ADD_END_POINT:
+      return addExtraInnerPoint (state, action);
     case actionTypes.DO_NOTHING:
       return state;
     default: return state;

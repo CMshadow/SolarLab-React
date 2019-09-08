@@ -18,6 +18,7 @@ import * as actionTypes from './store/actions/actionTypes';
 import authReducer from './store/reducers/auth';
 import cesiumReducer from './store/reducers/cesium';
 import drawingManagerReducer from './store/reducers/drawingManager';
+import drawingInnerManagerReducer from './store/reducers/drawingInnerManager';
 import uiStateManagerReducer from './store/reducers/uiStateManager';
 import buildingManagerReducer from './store/reducers/buildingManager';
 import projectManagerReducer from './store/reducers/projectManager';
@@ -38,16 +39,17 @@ const rootReducer = combineReducers({
   buildingManagerReducer: buildingManagerReducer,
   undoableReducer: undoable(combineReducers({
     drawingManagerReducer: drawingManagerReducer,
+    drawingInnerManagerReducer: drawingInnerManagerReducer,
     uiStateManagerReducer: uiStateManagerReducer,
   }), {
     filter: includeAction([
       actionTypes.CLICK_ADD_POINT_ON_POLYLINE,
       actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,
       actionTypes.CLICK_DELETE_POINT_ON_POLYLINE,
-      // actionTypes.SET_PICKEDPOINT,
       actionTypes.RELEASE_PICKEDPOINT,
       actionTypes.SET_UI_STATE_DRAWING_FOUND,
-      actionTypes.SET_UI_STATE_FOUND_DREW
+      actionTypes.SET_UI_STATE_FOUND_DREW,
+      actionTypes.SET_UI_STATE_EDITING_FOUND
     ])
   })
   // ADD MORE REDUCERS OVER HERE
