@@ -91,6 +91,12 @@ export const dragDrawingInnerPolyline = (mousePosition, viewer) => {
   }
 };
 
+export const deleteInnerLine = () => {
+  return {
+    type: actionTypes.DELETE_INNER_POLYLINE
+  };
+};
+
 export const deleteInnerPointOnPolyline = () => {
 
 };
@@ -135,9 +141,10 @@ export const releaseHoverInnerLine = () => {
   });
 };
 
-export const setHoverInnerPoint = () => {
+export const setHoverInnerPoint = (point) => {
   return ({
-    type: actionTypes.SET_HOVER_INNER_POINT
+    type: actionTypes.SET_HOVER_INNER_POINT,
+    hoverInnerPointId: point
   });
 };
 

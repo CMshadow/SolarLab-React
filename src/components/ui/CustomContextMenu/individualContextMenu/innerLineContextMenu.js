@@ -4,7 +4,7 @@ import { ContextMenu, MenuItem } from "react-contextmenu";
 
 import * as actions from '../../../../store/actions/index';
 
-class SetInnerTypeContextMenu extends Component {
+class InnerLineContextMenu extends Component {
   render () {
     return (
       <ContextMenu
@@ -21,6 +21,12 @@ class SetInnerTypeContextMenu extends Component {
         >
           RIDGE
         </MenuItem>
+        <MenuItem divider />
+        <MenuItem
+          onClick={this.props.deleteInnerLine}
+        >
+          Delete
+        </MenuItem>
       </ContextMenu>
     );
   };
@@ -31,7 +37,8 @@ const mapDispatchToProps = dispatch => {
   return {
     setInnerTypeHip: () => dispatch(actions.setInnerTypeHip()),
     setInnerTypeRidge: () => dispatch(actions.setInnerTypeRidge()),
+    deleteInnerLine: () => dispatch(actions.deleteInnerLine())
   };
 };
 
-export default connect(null, mapDispatchToProps)(SetInnerTypeContextMenu);
+export default connect(null, mapDispatchToProps)(InnerLineContextMenu);

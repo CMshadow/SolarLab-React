@@ -12,7 +12,7 @@ const initialState = {
   pointsRelation: {},
 
   hoverInnerLineIndex: null,
-  hoverPointIndex: null,
+  hoverInnerPointId: null,
 };
 
 const passFoundPolyline = (state, action) => {
@@ -181,14 +181,48 @@ const releaseHoverInnerLine = (state, action) => {
 
 const setHoverInnerPoint = (state, action) => {
   return {
-    ...state
+    ...state,
+    hoverInnerPointId: action.hoverInnerPointId
   };
 };
 
 const releaseHoverInnerPoint = (state, action) => {
   return {
     ...state,
-    hoverInnerPointIndex: null
+    hoverInnerPointId: null
+  };
+};
+
+const deleteInnerLine = (state, action) => {
+  const deleteInnerLineId =
+    state.fixedInnerPolylines[state.hoverInnerLineIndex].entityId;
+  const point1Id =
+    state.fixedInnerPolylines[state.hoverInnerLineIndex].points[0].entityId;
+  const point2Id =
+    state.fixedInnerPolylines[state.hoverInnerLineIndex].points[1].entityId;
+  const newFixedInnerPolylines = [...state.fixedInnerPolylines];
+  newFixedInnerPolylines.splice(state.hoverInnerLineIndex, 1);
+  console.log(point1Id)
+  console.log(point2Id)
+  let newPointsRelation = {
+    ...state.pointsRelation,
+    [point1Id]: {
+      ...state.pointsRelation[point1Id],
+      connectPolyline: state.pointsRelation[point1Id].connectPolyline.filter(
+        elem => elem.entityId !== deleteInnerLineId
+      )
+    },
+    [point2Id]: {
+      ...state.pointsRelation[point2Id],
+      connectPolyline: state.pointsRelation[point2Id].connectPolyline.filter(
+        elem => elem.entityId !== deleteInnerLineId
+      )
+    }
+  };
+  return {
+    ...state,
+    fixedInnerPolylines: newFixedInnerPolylines,
+    pointsRelation: newPointsRelation
   };
 };
 
@@ -214,6 +248,8 @@ const reducer = (state=initialState, action) => {
       return setHoverInnerPoint (state, action);
     case actionTypes.RELEASE_HOVER_INNER_POINT:
       return releaseHoverInnerPoint (state, action);
+    case actionTypes.DELETE_INNER_POLYLINE:
+      return deleteInnerLine (state, action);
     default: return state;
   }
 };
