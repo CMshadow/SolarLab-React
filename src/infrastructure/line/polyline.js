@@ -89,6 +89,11 @@ class Polyline {
     this.points.splice(position, 0, point);
   }
 
+  /**
+   * auto adjust the adding point to be precisly located on the polyline
+   * @param {number} position the index position of the point to be added
+   * @param {Point}  point    the Point object to be added
+   */
   addPointPrecision = (position, point) => {
     const newCoordinate = this.preciseAddPointPosition(position, point);
     const newPoint = Point.fromCoordinate(newCoordinate);
@@ -123,6 +128,15 @@ class Polyline {
     return minIndex + 1;
   }
 
+  /**
+   * auto adjust the coordinate of a point to be addded in the Polyline to
+   * guarantee it locates on the Polyline
+   * @param {number}      position           the index position of the point to
+   *                                         be added
+   * @param {Coordinate}  mouseCoordinate    the original Coordinate
+   * @return {Coordinate}                    a new Coordinate that locates right
+   *                                         on the Polyline
+   */
   preciseAddPointPosition = (index, mouseCoordinate) => {
     const distToMouse = Coordinate.surfaceDistance(
       this.points[index - 1],
@@ -249,6 +263,10 @@ class Polyline {
     return distArray;
   }
 
+  /**
+   * make every segment of the Polyline to be individual Polyline objects
+   * @return {Polyline[]} the Polyline objects of every segment of the Polyline
+   */
   getSegmentPolyline = () => {
     let polylineArray = [];
     for (let i = 0; i < this.length-1; i++) {

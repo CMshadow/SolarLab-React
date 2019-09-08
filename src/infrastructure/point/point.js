@@ -53,11 +53,6 @@ class Point extends Coordinate {
   };
 
   /**
-   *
-   * @param  {Point}  point        the existing Polyline object to be
-   * @return {Point}               new Point object
-   */
-  /**
    * A copy constructor from an existing Point object
    * @param  {Point} point            the existing Point object to be copied
    * @param  {number} [lon=null]      overwrite lontitude value
