@@ -5,9 +5,10 @@ import { connect } from 'react-redux';
 import 'antd/dist/antd.css';
 
 import * as classes from './LeftSider.module.css';
+import UndoRedo from '../../../components/ui/UndoRedo/UndoRedo';
 import CreateBuildingPanel from './individualPanels/createBuildingPanel';
 import DrawBuildingPanel from './individualPanels/drawBuildingPanel';
-import Auxiliary from '../../../hoc/Auxiliary/Auxiliary';
+import * as uiStateJudge from '../../../infrastructure/ui/uiStateJudge';
 
 const { Sider } = Layout;
 
@@ -27,10 +28,10 @@ class LeftSider extends Component {
 
     let content = null;
     if (this.state.siderCollapse === false) {
-      if (this.props.uiState === 'IDLE') {
+      if (uiStateJudge.isIdleStates(this.props.uiState)) {
         content = (<CreateBuildingPanel/>);
       }
-      else if (this.props.uiState === 'READY_DRAWING') {
+      else if (uiStateJudge.isDrawingStates(this.props.uiState)) {
         content = (<DrawBuildingPanel/>);
       }
     }
@@ -44,6 +45,7 @@ class LeftSider extends Component {
           collapsible
           onCollapse={this.onCollapse}
         >
+          {this.state.siderCollapse ? null : <UndoRedo />}
           {content}
         </Sider>
       </Layout>
@@ -53,7 +55,7 @@ class LeftSider extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.uiStateManagerReducer.uiState
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState
   };
 };
 

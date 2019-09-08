@@ -1,7 +1,6 @@
-import {
-  Color
-} from 'cesium';
+import * as Cesium from 'cesium';
 import uuid from 'uuid/v1';
+import errorNotification from '../../components/ui/Notification/ErrorNotification';
 
 import Point from '../point/point';
 import Coordinate from '../point/coordinate';
@@ -21,13 +20,14 @@ class Polyline {
    * @param {Boolean} [show=true]     whether to show the polyline,
    *                                  default true
    */
-  constructor (points = null, id = null, name = null, color = null,
-    width = null, show = true
+  constructor (
+    points = null, id = null, name = null, color = null, width = null,
+    show = true
   ) {
     this.points = points ? points : [];
     this.entityId = id ? id : uuid();
     this.name = name ? name : 'polyline';
-    this.color = color ? color : Color.WHITE;
+    this.color = color ? color : Cesium.Color.WHITE;
     this.show = show;
     this.width = width ? width : 4;
   }
@@ -48,10 +48,15 @@ class Polyline {
    *                                  existing one if not provided
    * @return {Polyline}               new Polyline object
    */
-  static fromPolyline (polyline, id = null, name = null, color = null,
-    width = null, show = true
+  static fromPolyline (
+    polyline, id = polyline.entityId, name = null, color = null, width = null,
+    show = true
   ) {
-      const newPoints = polyline.points;
+      const priorPoints = polyline.points.slice(0, polyline.length-1)
+      .map(elem => {
+        return Point.fromPoint(elem);
+      });
+      const newPoints = [...priorPoints, priorPoints[0]];
       const newName = name ? name : polyline.name;
       const newColor = color ? color : polyline.color;
       const newShow = show ? show : polyline.show;
@@ -68,18 +73,42 @@ class Polyline {
   }
 
   /**
-   * A a point in a specific position of the polyline
+   * change the color of the polyline
+   * @param {Color} newColor new Cesium.Color or RGBA color
+   */
+  setColor = (newColor) => {
+    this.color = newColor;
+  };
+
+  /**
+   * Add a point in a specific position of the polyline
    * @param {number}  position the index position of the point to be added
    * @param {Point}   point    the Point object to be added
    */
   addPoint = (position, point) => {
-    if (point instanceof Point) {
-      this.points.splice(position, 0, point);
-    } else {
-      throw new Error('Adding object is not a Point object');
-    }
+    this.points.splice(position, 0, point);
   }
 
+  addPointPrecision = (position, point) => {
+    const newCoordinate = this.preciseAddPointPosition(position, point);
+    const newPoint = Point.fromCoordinate(newCoordinate);
+    this.points.splice(position, 0, newPoint);
+  }
+
+  /**
+   * Add a point at the tail of the polyline
+   * @param {Point}   point    the Point object to be added
+   */
+  addPointTail = (point) => {
+    this.addPoint(this.length, point);
+  }
+
+  /**
+   * Find the index of the new point to be added according to the mouse click
+   * position
+   * @param  {Carteisan3} cartesian3 mouse click position
+   * @return {Int}                   the index of the new point to be added
+   */
   determineAddPointPosition = (cartesian3) => {
     const cor = Coordinate.fromCartesian(cartesian3);
     const polylineBrngArray = this.getSegmentBearing();
@@ -92,6 +121,30 @@ class Polyline {
     const minIndex = brngDiff.reduce((minIndex, elem, index, array) => {
       return elem < array[minIndex] ? index : minIndex}, 0);
     return minIndex + 1;
+  }
+
+  preciseAddPointPosition = (index, mouseCoordinate) => {
+    const distToMouse = Coordinate.surfaceDistance(
+      this.points[index - 1],
+      mouseCoordinate
+    );
+    const brngToMouse = Coordinate.bearing(
+      this.points[index - 1],
+      mouseCoordinate
+    );
+    const polylineSegmentBrng = Coordinate.bearing(
+      this.points[index - 1],
+      this.points[index]
+    );
+    const cosine = Math.cos(
+      Cesium.Math.toRadians(brngToMouse - polylineSegmentBrng)
+    );
+    const trueDist = cosine * distToMouse;
+    return Coordinate.destination(
+      this.points[index - 1],
+      polylineSegmentBrng,
+      trueDist
+    );
   }
 
   /**
@@ -108,13 +161,38 @@ class Polyline {
   }
 
   /**
+   * Find the index of the point in the polyline
+   * @param  {Point} point the Point object
+   * @return {number}      the index of the point, -1 if cannot found
+   */
+  findPointIndex = (point) => {
+    const i = this.points.reduce((p, elem, index, array) => {
+      return elem.entityId === p.entityId ? index : p
+    }, point);
+    if (i === point) {
+      return -1;
+    }
+    return i;
+  }
+
+  /**
    * delete a point in a specific position of the polyline
    * @param  {number} position the index position of the point to be deleted
    * @return {Point}           the Point object being deleted
    */
   deletePoint = (position) => {
+    if (this.length <= 4) {
+      return errorNotification(
+        'Invalid Operation',
+        'Cannot delete any more point'
+      )
+    }
     if (position < this.length) {
       const deletedPoint = this.points.splice(position, 1);
+      if (position === 0) {
+        this.points.splice(this.length-1, 1);
+        this.addPoint(this.length, this.points[0]);
+      }
       return deletedPoint[0];
     } else {
       throw new Error('The index is beyond Polyline length');
@@ -169,6 +247,14 @@ class Polyline {
       distArray.push(Point.distance(this.points[i], this.points[i+1]));
     }
     return distArray;
+  }
+
+  getSegmentPolyline = () => {
+    let polylineArray = [];
+    for (let i = 0; i < this.length-1; i++) {
+      polylineArray.push(new Polyline([this.points[i], this.points[i+1]]));
+    }
+    return polylineArray;
   }
 }
 

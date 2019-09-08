@@ -3,7 +3,7 @@ import { Route, Switch, withRouter } from 'react-router-dom';
 import { connect } from 'react-redux';
 
 import CustomLayout from './hoc/Layout/Layout';
-import CesiumPanel from './containers/CesiumPanel/CesiumPanel';
+import ModelingPage from './components/ModelingPage/ModelingPage';
 
 
 class App extends Component {
@@ -12,7 +12,7 @@ class App extends Component {
       <div>
         <CustomLayout>
           <Switch>
-            <Route path="/" exact component={CesiumPanel} />
+            <Route path="/" exact component={ModelingPage} />
           </Switch>
         </CustomLayout>
       </div>

@@ -9,25 +9,45 @@ export {
   dragPolyline,
   terminateDrawing,
   complementPointOnPolyline,
+  deletePointOnPolyline,
 
   setMouseCartesian3,
+  setRightClickCartesian3,
 
   setHoverPolyline,
   releaseHoverPolyline,
 
-  setHoverPoint,
-  releaseHoverPoint,
+  setHoverPointIndex,
+  releaseHoverPointIndex,
 
-  setPickedPoint,
+  setPickedPointIndex,
   movePickedPoint,
-  releasePickedPoint
+  releasePickedPointIndex,
+
+  cleanHoverAndColor
 } from './drawingManager';
 
 export {
-  startDrawing,
-  stopDrawing,
+  passFoundPolyline,
+  addOrClickPoint,
+  dragDrawingInnerPolyline,
+  deleteInnerLine,
+  deleteInnerPointOnPolyline,
+  setInnerTypeHip,
+  setInnerTypeRidge,
+  setHoverInnerLine,
+  releaseHoverInnerLine,
+  setHoverInnerPoint,
+  releaseHoverInnerPoint
+} from './drawingInnerManager';
+
+export {
   setUIStateReadyDrawing,
-  setUIStateFoundDrew
+  setUIStateDrawingFound,
+  setUIStateFoundDrew,
+  setUIStateEditingFound,
+  setUIStateDrawingInner,
+  setUIStateInnerDrew
 } from './uiStateManager';
 
 export {

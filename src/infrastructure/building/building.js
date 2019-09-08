@@ -1,6 +1,3 @@
-import {
-  Color
-} from 'cesium';
 
 class Building {
 

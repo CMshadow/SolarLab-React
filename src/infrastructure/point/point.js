@@ -1,6 +1,4 @@
-import {
-  Color
-} from 'cesium';
+import { Color } from 'cesium';
 import uuid from 'uuid/v1';
 
 import Coordinate from './coordinate';
@@ -30,10 +28,11 @@ class Point extends Coordinate {
    * @param {int}     [size=null]   the size of the point, 15 if not
    *                                provided
    * @param {bool}    [show=true]   whether to show the point, default true
+   * @param {bool}    [render=true] whether to render the point, default true
    */
   constructor(
     lon, lat, height, hOffset = null, id = null, name = null, color = null,
-    size = null, show = true
+    size = null, show = true, render = true
   ) {
     super(lon, lat, height);
     this.heightOffset = hOffset ? hOffset : 0;
@@ -42,44 +41,53 @@ class Point extends Coordinate {
     this.color = color ? color : Color.WHITE;
     this.pixelSize = size ? size : 15;
     this.show = show;
+    this.render = render;
   };
 
+  /**
+   * change the color of the point
+   * @param {Color} newColor new Cesium.Color or RGBA color
+   */
   setColor = (newColor) => {
     this.color = newColor;
   };
 
   /**
-   * A copy constructor from an existing Point object
+   *
    * @param  {Point}  point        the existing Polyline object to be
-   *                               copied
-   * @param  {Number} [hOffset=0]  the height offset beyond its original height,
-   *                               copy the existing one if not provided
-   * @param  {string} [id=null]    unique id of the polyline, automatic
-   *                               generate one if not provided
-   * @param  {string} [name=null]  name of the polyline, copy the existing
-   *                               one if not provided
-   * @param  {Color}  [color=null] GRBA color, copy the existing one if
-   *                               not provided
-   * @param  {int}    [size=null]  size of the point, copy the
-   *                               existing one if not provided
-   * @param  {Boolean}[show=true]  whether to show the polyline, copy the
-   *                               existing one if not provided
    * @return {Point}               new Point object
    */
+  /**
+   * A copy constructor from an existing Point object
+   * @param  {Point} point            the existing Point object to be copied
+   * @param  {number} [lon=null]      overwrite lontitude value
+   * @param  {number} [lat=null]      overwrite latitude value
+   * @param  {number} [height=null]   overwrite height value
+   * @param  {number} [offset=null]   overwrite offset value
+   * @param  {string} [id=null]       overwrite id value
+   * @param  {string} [name=null]     overwrite name value
+   * @param  {Color} [color=null]     overwrite color value
+   * @param  {bool} [show=null]       overwrite show/hide value
+   * @param  {int} [pixelSize=null]   overwrite point size value
+   * @param  {bool} [render=null]     overwrite render/no render value
+   * @return {Point}                  new Point object
+   */
   static fromPoint (
-    point, hOffset = null, id = null, name = null, color = null, size = null,
-    show = true
+    point, lon = null, lat = null, height = null, offset = null, id = null,
+    name = null, color = null, show = null, pixelSize = null, render = null
   ) {
-      const newLon = point.lon;
-      const newLat = point.lat;
-      const newHeight = point.height;
-      const newHOffset = hOffset ? hOffset : point.heightOffset;
+      const newLon = lon ? lon : point.lon;
+      const newLat = lat ? lat : point.lat;
+      const newHeight = height ? height : point.height;
+      const newHOffset = offset ? offset : point.heightOffset;
+      const newId = id ? id : point.entityId
       const newName = name ? name : point.name;
       const newColor = color ? color : point.color;
-      const newShow = show ? show : point.show;
-      const newPixelSize = size ? size : point.pixelSize;
-      return new Point (newLon, newLat, newHeight, newHOffset, id, newName,
-        newColor, newPixelSize, newShow);
+      const newShow = render !== null ? show : point.show;
+      const newPixelSize = pixelSize ? pixelSize : point.pixelSize;
+      const newRender = render !== null ? render : point.render;
+      return new Point (newLon, newLat, newHeight, newHOffset, newId, newName,
+        newColor, newPixelSize, newShow, newRender);
     };
 
   /**
@@ -97,14 +105,16 @@ class Point extends Coordinate {
    *                                      provided
    * @param  {bool}          [show=true]  whether to show the point, default
    *                                      true
+   * @param {bool}    [render=true] whether to render the point, default true
    * @return {Point}                      a Point object
    */
   static fromCoordinate(
-    coordinate, hOffset = null, id = null, name = null, color = null, size = null, show = true
+    coordinate, hOffset = null, id = null, name = null, color = null,
+    size = null, show = true, render = true
   ) {
     return new Point(
       coordinate.lon, coordinate.lat, coordinate.height, hOffset, id, name,
-      color, size, show);
+      color, size, show, render);
   };
 
   /**
