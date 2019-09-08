@@ -17,12 +17,21 @@ const initialState = {
 
 const passFoundPolyline = (state, action) => {
   console.log('[passFoundPolyline]')
+  const polylineArray = action.foundPolyline.getSegmentPolyline();
   return {
     ...state,
-    pointsRelation: action.foundPolyline.points.reduce((map, obj) => {
-      map[obj.entityId] = {
-        object: obj,
-        connectPolyline: []
+    pointsRelation: action.foundPolyline.points.reduce((map, point) => {
+      map[point.entityId] = {
+        object: point,
+        connectPolyline: polylineArray.reduce((acc, line) => {
+          if (
+            line.points[0].entityId === point.entityId ||
+            line.points[1].entityId === point.entityId
+          ) {
+            acc.push(line)
+          }
+          return acc;
+        }, [])
       };
       return map;
     }, {})
@@ -202,9 +211,7 @@ const deleteInnerLine = (state, action) => {
     state.fixedInnerPolylines[state.hoverInnerLineIndex].points[1].entityId;
   const newFixedInnerPolylines = [...state.fixedInnerPolylines];
   newFixedInnerPolylines.splice(state.hoverInnerLineIndex, 1);
-  console.log(point1Id)
-  console.log(point2Id)
-  let newPointsRelation = {
+  const newPointsRelation = {
     ...state.pointsRelation,
     [point1Id]: {
       ...state.pointsRelation[point1Id],
@@ -219,10 +226,17 @@ const deleteInnerLine = (state, action) => {
       )
     }
   };
+  const cleanedPointsRelation = Object.keys(newPointsRelation).reduce((object, key) => {
+    if (newPointsRelation[key].connectPolyline.length !== 0) {
+      object[key] = newPointsRelation[key]
+    }
+    return object
+  }, {})
+  console.log(cleanedPointsRelation)
   return {
     ...state,
     fixedInnerPolylines: newFixedInnerPolylines,
-    pointsRelation: newPointsRelation
+    pointsRelation: cleanedPointsRelation
   };
 };
 

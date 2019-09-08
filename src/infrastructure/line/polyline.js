@@ -87,13 +87,13 @@ class Polyline {
    */
   addPoint = (position, point) => {
     this.points.splice(position, 0, point);
-  };
+  }
 
   addPointPrecision = (position, point) => {
     const newCoordinate = this.preciseAddPointPosition(position, point);
     const newPoint = Point.fromCoordinate(newCoordinate);
     this.points.splice(position, 0, newPoint);
-  };
+  }
 
   /**
    * Add a point at the tail of the polyline
@@ -247,6 +247,14 @@ class Polyline {
       distArray.push(Point.distance(this.points[i], this.points[i+1]));
     }
     return distArray;
+  }
+
+  getSegmentPolyline = () => {
+    let polylineArray = [];
+    for (let i = 0; i < this.length-1; i++) {
+      polylineArray.push(new Polyline([this.points[i], this.points[i+1]]));
+    }
+    return polylineArray;
   }
 }
 
