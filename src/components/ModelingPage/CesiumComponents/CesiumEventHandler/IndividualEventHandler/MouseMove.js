@@ -6,7 +6,7 @@ import * as Cesium from 'cesium';
 
 import * as actions from '../../../../../store/actions/index';
 
-const RightClickHandler = (props) => {
+const MouseMoveHandler = (props) => {
 
   const mouseMoveActions = (event) => {
     props.setMouseCartesian3(event.endPosition, props.viewer);
@@ -97,7 +97,6 @@ const RightClickHandler = (props) => {
     }
   };
 
-
   return (
     <ScreenSpaceEvent
       action={(event) => mouseMoveActions(event)}
@@ -149,4 +148,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(RightClickHandler);
+export default connect(mapStateToProps, mapDispatchToProps)(MouseMoveHandler);

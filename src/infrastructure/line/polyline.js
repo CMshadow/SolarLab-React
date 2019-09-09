@@ -256,6 +256,21 @@ class Polyline {
     }
     return polylineArray;
   }
+
+  getHelpLineBearings = () => {
+    let brngSet = new Set();
+    for (let i = 0; i < this.length-1; i++) {
+      const brng = Point.bearing(this.points[i], this.points[i+1]);
+      const brng1 = (brng-180)%360 > 0 ? (brng-180)%360 : (brng-180)%360+360;
+      const brng2 = (brng+90)%360 > 0 ? (brng+90)%360 : (brng+90)%360+360;
+      const brng3 = (brng-90)%360 > 0 ? (brng-90)%360 : (brng-90)%360+360;
+      brngSet.add(parseFloat(brng.toFixed(5)));
+      brngSet.add(parseFloat(brng1.toFixed(5)));
+      brngSet.add(parseFloat(brng2.toFixed(5)));
+      brngSet.add(parseFloat(brng3.toFixed(5)));
+    }
+    return brngSet;
+  }
 }
 
 export default Polyline;

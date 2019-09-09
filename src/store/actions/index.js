@@ -7,6 +7,7 @@ export {
 export {
   addPointOnPolyline,
   dragPolyline,
+  dragPolylineFixedMode,
   terminateDrawing,
   complementPointOnPolyline,
   deletePointOnPolyline,

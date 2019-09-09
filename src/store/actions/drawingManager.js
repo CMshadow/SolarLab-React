@@ -16,11 +16,26 @@ export const dragPolyline = (mousePosition, viewer) => {
   }
 };
 
-export const addPointOnPolyline = (mousePosition, viewer) => {
+export const dragPolylineFixedMode = (mousePosition, viewer) => {
+  const cartesian3 = viewer.scene.pickPosition(mousePosition);
+  if (Cesium.defined(cartesian3)) {
+    return {
+      type: actionTypes.DRAG_POLYLINE_FIXED_MODE,
+      cartesian3: cartesian3
+    };
+  } else {
+    return {
+      type: actionTypes.DO_NOTHING
+    };
+  }
+};
+
+export const addPointOnPolyline = (mousePosition, viewer, fixedMode=false) => {
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
   if (Cesium.defined(cartesian3)) {
     return {
       type: actionTypes.CLICK_ADD_POINT_ON_POLYLINE,
+      fixedMode: fixedMode,
       cartesian3: cartesian3
     };
   } else {

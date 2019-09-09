@@ -1,6 +1,6 @@
 import * as Cesium from 'cesium';
 
-import Polyline from '.polyline';
+import Polyline from './polyline';
 
 class DashedLine extends Polyline {
   constructor (points = null, id = null, name = null, color = null,

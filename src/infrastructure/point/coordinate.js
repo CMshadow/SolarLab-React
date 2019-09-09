@@ -1,5 +1,14 @@
 import * as Cesium from 'cesium';
 
+import {
+  coordinateToVector,
+  vectorToCoordinate,
+  greatCircle,
+  cross,
+  dot,
+  plus
+} from '../math/math';
+
 /**
  * A coordinate class
  */
@@ -198,6 +207,43 @@ class Coordinate {
       cor.height
     )
   };
+
+  static intersection = (cor1, brng1, cor2, brng2) => {
+    const avgHeight = cor1.height + cor2.height / 2;
+
+    const p1 = coordinateToVector(cor1);
+    const p2 = coordinateToVector(cor2);
+
+    const c1 = greatCircle(cor1, brng1);
+    const c2 = greatCircle(cor2, brng2);
+
+    let i1 = cross(c1,c2);
+    let i2 = cross(c2,c1);
+
+    let intersection=null;
+    const dir1 = Math.sign(dot(cross(c1,p1), i1));
+    const dir2 = Math.sign(dot(cross(c2,p2), i1));
+
+    switch (dir1+dir2) {
+      case  2:
+        intersection = i1;
+        break;
+      case -2:
+        intersection = i2;
+        break;
+      case  0:
+        intersection = dot(plus(p1,p2), i1) > 0 ? i2 : i1;
+        break;
+      default:
+        break;
+    }
+
+    if (intersection){
+      return vectorToCoordinate(intersection, avgHeight);
+    }
+    return undefined;
+  }
+
 }
 
 export default Coordinate;
