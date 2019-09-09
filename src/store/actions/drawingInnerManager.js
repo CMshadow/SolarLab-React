@@ -6,9 +6,12 @@ import Coordinate from '../../infrastructure/point/coordinate';
 export const passFoundPolyline = () => (dispatch, getState) => {
   const foundPolyline = getState().undoableReducer.present
   .drawingManagerReducer.drawingPolyline;
+  const brngCollection = getState().undoableReducer.present
+  .drawingManagerReducer.brngCollection;
   return dispatch({
     type: actionTypes.PASS_FOUND_POLYLINE,
-    foundPolyline: foundPolyline
+    foundPolyline: foundPolyline,
+    brngCollection: brngCollection
   });
 };
 

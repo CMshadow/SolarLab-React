@@ -10,6 +10,7 @@ const initialState = {
   drawingInnerPolyline: null,
   fixedInnerPolylines: [],
   pointsRelation: {},
+  brngCollection: null,
 
   hoverInnerLineIndex: null,
   hoverInnerPointId: null,
@@ -18,8 +19,10 @@ const initialState = {
 const passFoundPolyline = (state, action) => {
   console.log('[passFoundPolyline]')
   const polylineArray = action.foundPolyline.getSegmentPolyline();
+  console.log(action.brngCollection)
   return {
     ...state,
+    brngCollection: action.brngCollection,
     pointsRelation: action.foundPolyline.points.reduce((map, point) => {
       map[point.entityId] = {
         object: point,

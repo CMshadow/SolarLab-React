@@ -10,7 +10,7 @@ import BearingCollection from '../../infrastructure/math/bearingCollection';
 const initialState = {
   drawingPolyline: null,
   fixedPoints: [],
-  brngCollection: [],
+  brngCollection: null,
   auxPolyline: null,
   startPointAuxPolyline: null,
 
@@ -75,6 +75,7 @@ const dragPolyline = (state, action) => {
     drawingPolyline: polyline,
     fixedPoints: existPoints,
     auxPolyline: auxPolyline,
+    startPointAuxPolyline: null
   };
 };
 
