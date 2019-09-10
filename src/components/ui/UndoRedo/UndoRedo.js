@@ -17,7 +17,6 @@ const UndoRedo = (props) => {
           icon='undo'
           onClick={() => {
             props.onUndo();
-            props.cleanHoverAndColor();
           }}
           disabled={!props.canUndo}
         >Undo</Button>

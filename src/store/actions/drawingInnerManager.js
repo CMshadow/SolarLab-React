@@ -1,17 +1,27 @@
 import * as Cesium from 'cesium';
+import uuid from 'uuid/v1';
 
 import * as actionTypes from './actionTypes';
 import Coordinate from '../../infrastructure/point/coordinate';
 
 export const passFoundPolyline = () => (dispatch, getState) => {
   const foundPolyline = getState().undoableReducer.present
-  .drawingManagerReducer.drawingPolyline;
+    .drawingManagerReducer.drawingPolyline;
   const brngCollection = getState().undoableReducer.present
-  .drawingManagerReducer.brngCollection;
+    .drawingManagerReducer.brngCollection;
   return dispatch({
     type: actionTypes.PASS_FOUND_POLYLINE,
     foundPolyline: foundPolyline,
     brngCollection: brngCollection
+  });
+};
+
+export const updatePointsRelation = () => (dispatch, getState) => {
+  const foundPolyline = getState().undoableReducer.present
+    .drawingManagerReducer.drawingPolyline;
+  return dispatch({
+    type: actionTypes.UPDATE_POINTS_RELATION,
+    foundPolyline: foundPolyline,
   });
 };
 
@@ -31,7 +41,6 @@ export const addOrClickPoint =
     const onTopPointId = Object.keys(pointsRelation).filter(
       x => pickedObjectIdArray.includes(x)
     );
-    console.log(onTopPointId)
     const onTopFoundPolyline = pickedObjectIdArray.includes(foundPolyline.entityId);
     if (onTopPointId.length !== 0) {
       if (drawingInnerPolyline) {
@@ -53,17 +62,20 @@ export const addOrClickPoint =
       const newCoordinate = foundPolyline.preciseAddPointPosition(
         foundAddPointPosition, Coordinate.fromCartesian(cartesian3, 0.05)
       );
+      const uniqueId = uuid();
       if (drawingInnerPolyline) {
         return dispatch({
-          type: actionTypes.ADD_END_POINT,
+          type: actionTypes.ADD_END_POINT_ON_FOUND,
           cartesian3: Coordinate.toCartesian(newCoordinate),
-          foundAddPointPosition: foundAddPointPosition
+          foundAddPointPosition: foundAddPointPosition,
+          uniqueId: uniqueId
         });
       } else {
         return dispatch({
-          type: actionTypes.ADD_START_POINT,
+          type: actionTypes.ADD_START_POINT_ON_FOUND,
           cartesian3: Coordinate.toCartesian(newCoordinate),
-          foundAddPointPosition: foundAddPointPosition
+          foundAddPointPosition: foundAddPointPosition,
+          uniqueId: uniqueId
         });
       }
     }

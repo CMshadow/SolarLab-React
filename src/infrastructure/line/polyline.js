@@ -91,7 +91,7 @@ class Polyline {
 
   addPointPrecision = (position, point) => {
     const newCoordinate = this.preciseAddPointPosition(position, point);
-    const newPoint = Point.fromCoordinate(newCoordinate);
+    const newPoint = Point.fromCoordinate(newCoordinate, null, point.entityId);
     this.points.splice(position, 0, newPoint);
   }
 

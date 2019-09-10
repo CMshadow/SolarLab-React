@@ -30,6 +30,7 @@ export {
 
 export {
   passFoundPolyline,
+  updatePointsRelation,
   addOrClickPoint,
   dragDrawingInnerPolyline,
   dragDrawingInnerPolylineFixedMode,

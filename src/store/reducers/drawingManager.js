@@ -97,6 +97,7 @@ const dragPolylineFixedMode = (state, action) => {
     Math.cos(Cesium.Math.toRadians(closestBrng-mouseBrng)) *
     Coordinate.surfaceDistance(existPoints[existPoints.length - 1], newPoint)
   ) : newPoint;
+
   let polyline = new Polyline(
     [...existPoints, Point.fromCoordinate(fixedDest)]
   );
@@ -284,24 +285,15 @@ const cleanHoverAndColor = (state, action) => {
 };
 
 const addExtraInnerPoint = (state, action) => {
-  console.log('addExtraInnerPoint')
-  if (action.foundAddPointPosition !== undefined) {
-    console.log('yo')
-    const newPoint = Point.fromCoordinate(
-      Coordinate.fromCartesian(state.mouseCartesian3, 0.05)
-    );
-    const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
-    newPolyline.addPointPrecision(action.foundAddPointPosition, newPoint);
-    console.log(newPolyline)
-    return {
-      ...state,
-      drawingPolyline: newPolyline
-    };
-  } else {
-    return {
-      ...state
-    };
-  }
+  const newPoint = Point.fromCoordinate(
+    Coordinate.fromCartesian(state.mouseCartesian3, 0.05), null, action.uniqueId
+  );
+  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  newPolyline.addPointPrecision(action.foundAddPointPosition, newPoint);
+  return {
+    ...state,
+    drawingPolyline: newPolyline
+  };
 };
 
 const reducer = (state=initialState, action) => {
@@ -338,9 +330,9 @@ const reducer = (state=initialState, action) => {
       return releasePickedPointIndex (state, action);
     case actionTypes.CLEAN_HOVER_AND_COLOR:
       return cleanHoverAndColor (state, action);
-    case actionTypes.ADD_START_POINT:
+    case actionTypes.ADD_START_POINT_ON_FOUND:
       return addExtraInnerPoint (state, action);
-    case actionTypes.ADD_END_POINT:
+    case actionTypes.ADD_END_POINT_ON_FOUND:
       return addExtraInnerPoint (state, action);
     case actionTypes.DO_NOTHING:
       return state;

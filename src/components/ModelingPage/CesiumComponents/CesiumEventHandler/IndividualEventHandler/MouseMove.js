@@ -50,56 +50,62 @@ const MouseMoveHandler = (props) => {
         break;
 
       case 'DRAWING_INNER':
-        if (props.drawingInnerPolyline) {
-          const pickedObjectIdArray =
-            props.viewer.scene.drillPick(event.endPosition).map(
-              elem => elem.id.id
-            );
-          if (pickedObjectIdArray.includes(props.drawingPolyline.entityId)) {
-            // Set hover polyline if available
-            props.setHoverPolyline();
-          } else {
-            if (props.hoverPolyline) {
-              props.releaseHoverPolyline();
-            }
-          }
-          props.dragDrawingInnerPolyline(event.endPosition, props.viewer);
-        } else {
-          const anyPickedObject = props.viewer.scene.pick(event.endPosition);
-          if(anyPickedObject) {
-            // Find out hover on which inner line
-            const onTopInnerLine = props.fixedInnerPolylines.find(element => {
-              return element.entityId === anyPickedObject.id.id
-            })
-            if (onTopInnerLine) {
-              props.setHoverInnerLine(onTopInnerLine)
-              if (props.hoverInnerPointIndex !== null) {
-                props.releaseHoverInnerPoint()};
-            }
+        const anyPickedObject = props.viewer.scene.pick(event.endPosition);
+        const pickedObjectIdArray =
+          props.viewer.scene.drillPick(event.endPosition).map(
+            elem => elem.id.id
+          );
 
-            // Find out hover on which point
-            const onTopPoint = Object.keys(props.pointsRelation)
-            .find(element => {
-              return element === anyPickedObject.id.id
-            })
-            // Set hover point if available
-            if (onTopPoint) {
-              props.setHoverInnerPoint(onTopPoint);
-              // Release hover polyline if it exists
-              if (props.hoverInnerLineIndex !== null){
-                props.releaseHoverInnerLine();
-              }
-            }
-          } else {
+        if (
+          pickedObjectIdArray.includes(props.drawingPolyline.entityId) &&
+          props.hoverInnerPointId === null &&
+          props.hoverInnerLineIndex === null
+        ) {
+          // Set hover foundation polyline if available
+          props.setHoverPolyline();
+        } else {
+          // Release hover foundation polyline
+          if (props.hoverPolyline) {
+            props.releaseHoverPolyline();
+          }
+        }
+
+        if(anyPickedObject) {
+          // Find out hover on which inner line
+          const onTopInnerLine = props.fixedInnerPolylines.find(element => {
+            return element.entityId === anyPickedObject.id.id
+          })
+          if (onTopInnerLine) {
+            props.setHoverInnerLine(onTopInnerLine)
+            if (props.hoverInnerPointId !== null) {
+              props.releaseHoverInnerPoint()};
+          }
+          // Find out hover on which point
+          const onTopPoint = Object.keys(props.pointsRelation)
+          .find(element => {
+            return element === anyPickedObject.id.id
+          })
+          // Set hover point if available
+          if (onTopPoint) {
+            props.setHoverInnerPoint(onTopPoint);
             // Release hover polyline if it exists
-            if (props.hoverInnerLineIndex !== null) {
+            if (props.hoverInnerLineIndex !== null){
               props.releaseHoverInnerLine();
             }
-            // Release hover point if it exists
-            if (props.hoverInnerPointIndex !== null) {
-              props.releaseHoverInnerPoint();
-            }
           }
+        } else {
+          // Release hover polyline if it exists
+          if (props.hoverInnerLineIndex !== null) {
+            props.releaseHoverInnerLine();
+          }
+          // Release hover point if it exists
+          if (props.hoverInnerPointId !== null) {
+            props.releaseHoverInnerPoint();
+          }
+        }
+
+        if (props.drawingInnerPolyline) {
+          props.dragDrawingInnerPolyline(event.endPosition, props.viewer);
         }
         break;
 
@@ -129,7 +135,7 @@ const mapStateToProps = state => {
     drawingInnerPolyline: state.undoableReducer.present.drawingInnerManagerReducer.drawingInnerPolyline,
     fixedInnerPolylines: state.undoableReducer.present.drawingInnerManagerReducer.fixedInnerPolylines,
     hoverInnerLineIndex: state.undoableReducer.present.drawingInnerManagerReducer.hoverInnerLineIndex,
-    hoverInnerPointIndex: state.undoableReducer.present.drawingInnerManagerReducer.hoverInnerPointIndex,
+    hoverInnerPointId: state.undoableReducer.present.drawingInnerManagerReducer.hoverInnerPointId,
   };
 };
 

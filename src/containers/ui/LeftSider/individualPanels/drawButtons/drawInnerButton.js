@@ -36,10 +36,10 @@ const DrawInnerButton = (props) => {
       shape='round'
       block
       onClick={() => {
+        props.updatePointsRelation();
         props.setUIStateInnerDrew();
         props.enableRotate();
         console.log(props.test)
-        console.log(props.test2)
       }}
     >
       ...Drawing...
@@ -75,7 +75,6 @@ const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     test: state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
-    test2: state.undoableReducer.present.drawingManagerReducer.drawingPolyline
   };
 };
 
@@ -84,6 +83,7 @@ const mapDispatchToProps = dispatch => {
     enableRotate: () => dispatch(actions.enableRotate()),
     disableRotate: () => dispatch(actions.disableRotate()),
     passFoundPolyline: () => dispatch(actions.passFoundPolyline()),
+    updatePointsRelation: () => dispatch(actions.updatePointsRelation()),
     setUIStateDrawingInner: () => dispatch(actions.setUIStateDrawingInner()),
     setUIStateInnerDrew: () => dispatch(actions.setUIStateInnerDrew()),
   };

@@ -26,7 +26,7 @@ class Coordinate {
   constructor (lon, lat, height) {
     this.lon = parseFloat(lon.toFixed(12));
     this.lat = parseFloat(lat.toFixed(12));
-    this.height = parseFloat(height.toFixed(1));
+    this.height = parseFloat(height.toFixed(3));
   };
 
   /**
@@ -49,7 +49,7 @@ class Coordinate {
       }
       height = absoluteHeight;
     } else {
-      height = parseFloat(cartographic.height.toFixed(1));
+      height = parseFloat(cartographic.height.toFixed(3));
     }
     return new Coordinate(lon, lat, height);
   };
@@ -96,7 +96,7 @@ class Coordinate {
   setCoordinate = (lon=null, lat=null, height=null) => {
     if (lon) this.lon = parseFloat(lon.toFixed(12));
     if (lat) this.lat = parseFloat(lat.toFixed(12));
-    if (height) this.height = parseFloat(height.toFixed(1));
+    if (height) this.height = parseFloat(height.toFixed(3));
   }
 
   /**
@@ -117,7 +117,7 @@ class Coordinate {
       if (absoluteHeight) {
         height = absoluteHeight;
       } else {
-        height = parseFloat(cartographic.height.toFixed(1));
+        height = parseFloat(cartographic.height.toFixed(3));
       }
       this.setCoordinate(lon, lat, height);
     }
@@ -209,7 +209,7 @@ class Coordinate {
   };
 
   static intersection = (cor1, brng1, cor2, brng2) => {
-    const avgHeight = cor1.height + cor2.height / 2;
+    const avgHeight = (cor1.height + cor2.height) / 2;
 
     const p1 = coordinateToVector(cor1);
     const p2 = coordinateToVector(cor2);
