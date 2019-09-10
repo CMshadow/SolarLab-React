@@ -21,7 +21,7 @@ const initialState = {
   pickedPointIndex: null
 };
 
-const createAuxPolyline = (state, originPoint, mousePoint) => {
+export const createAuxPolyline = (state, originPoint, mousePoint) => {
   const mouseBrng = Coordinate.bearing(
     originPoint, mousePoint
   );

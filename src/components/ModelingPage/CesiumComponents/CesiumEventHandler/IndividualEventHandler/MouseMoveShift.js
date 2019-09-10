@@ -15,6 +15,15 @@ const MouseMoveShiftHandler = (props) => {
         props.dragPolylineFixedMode(event.endPosition, props.viewer);
         break;
 
+      case 'DRAWING_INNER':
+        if (props.drawingInnerPolyline) {
+          console.log('mouse_move_shift')
+          props.dragDrawingInnerPolylineFixedMode(
+            event.endPosition, props.viewer
+          );
+        }
+        break;
+
       default:
         break;
     }
@@ -34,6 +43,9 @@ const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    drawingInnerPolyline:
+      state.undoableReducer.present.drawingInnerManagerReducer
+      .drawingInnerPolyline,
   };
 };
 
@@ -41,6 +53,9 @@ const mapDispatchToProps = dispatch => {
   return {
     dragPolylineFixedMode: (cartesian, viewer) => dispatch(
       actions.dragPolylineFixedMode(cartesian, viewer)
+    ),
+    dragDrawingInnerPolylineFixedMode: (cartesian, viewer) => dispatch(
+      actions.dragDrawingInnerPolylineFixedMode(cartesian, viewer)
     ),
     setMouseCartesian3: (cartesian, viewer) => dispatch(
       actions.setMouseCartesian3(cartesian, viewer)

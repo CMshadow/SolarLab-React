@@ -20,6 +20,14 @@ const DrawingInnerManagerRender = (props) => {
     ));
   }
 
+  let auxPolyline = null;
+  if (props.auxPolyline) {
+    auxPolyline = (<CustomPolyline
+      key={props.auxPolyline.entityId}
+      {...props.auxPolyline}
+    />);
+  }
+
   const fixedInnerPolylines = props.fixedInnerPolylines.map(elem => {
     return (<CustomPolyline
       key={elem.entityId}
@@ -36,6 +44,7 @@ const DrawingInnerManagerRender = (props) => {
     <div>
       {drawingInnerPolyline}
       {drawingInnerPolylinePoints}
+      {auxPolyline}
       {fixedInnerPolylines}
       {fixedInnerPolylinePoints}
     </div>
@@ -47,6 +56,8 @@ const mapStateToProps = state => {
     drawingInnerPolyline:
       state.undoableReducer.present.drawingInnerManagerReducer
       .drawingInnerPolyline,
+    auxPolyline:
+      state.undoableReducer.present.drawingInnerManagerReducer.auxPolyline,
     fixedInnerPolylines:
       state.undoableReducer.present.drawingInnerManagerReducer
       .fixedInnerPolylines

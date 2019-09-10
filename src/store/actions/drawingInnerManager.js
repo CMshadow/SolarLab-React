@@ -94,6 +94,20 @@ export const dragDrawingInnerPolyline = (mousePosition, viewer) => {
   }
 };
 
+export const dragDrawingInnerPolylineFixedMode = (mousePosition, viewer) => {
+  const cartesian3 = viewer.scene.pickPosition(mousePosition);
+  if (Cesium.defined(cartesian3)) {
+    return {
+      type: actionTypes.DRAG_INNER_POLYLINE_FIXED_MODE,
+      cartesian3: cartesian3
+    };
+  } else {
+    return {
+      type: actionTypes.DO_NOTHING
+    };
+  }
+};
+
 export const deleteInnerLine = () => {
   return {
     type: actionTypes.DELETE_INNER_POLYLINE

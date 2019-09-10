@@ -32,6 +32,7 @@ export {
   passFoundPolyline,
   addOrClickPoint,
   dragDrawingInnerPolyline,
+  dragDrawingInnerPolylineFixedMode,
   deleteInnerLine,
   deleteInnerPointOnPolyline,
   setInnerTypeHip,

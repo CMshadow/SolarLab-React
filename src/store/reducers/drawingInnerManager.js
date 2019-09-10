@@ -5,12 +5,14 @@ import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
 import Polyline from '../../infrastructure/line/polyline';
 import InnerLine from '../../infrastructure/line/innerLine';
+import { createAuxPolyline } from './drawingManager';
 
 const initialState = {
   drawingInnerPolyline: null,
   fixedInnerPolylines: [],
   pointsRelation: {},
   brngCollection: null,
+  auxPolyline: null,
 
   hoverInnerLineIndex: null,
   hoverInnerPointId: null,
@@ -98,9 +100,39 @@ const dragDrawingInnerPolyline = (state, action) => {
     Coordinate.fromCartesian(action.cartesian3, 0.05)
   );
   newPolyline.updatePoint(1, newPoint);
+  // Create Aux polyline
+  const auxPolyline =
+    createAuxPolyline(state, newPolyline.points[0], newPoint);
   return {
     ...state,
     drawingInnerPolyline: newPolyline,
+    auxPolyline: auxPolyline
+  };
+}
+
+const dragDrawingInnerPolylineFixedMode = (state, action) => {
+  const newPolyline = InnerLine.fromPolyline(state.drawingInnerPolyline)
+  const newPoint = Point.fromCoordinate(
+    Coordinate.fromCartesian(action.cartesian3, 0.05)
+  );
+  const mouseBrng = Coordinate.bearing(
+    newPolyline.points[0], newPoint
+  );
+  const closestBrng = state.brngCollection.findClosestBrng(mouseBrng);
+  const fixedDest = Coordinate.destination(
+    newPolyline.points[0],
+    closestBrng,
+    Math.cos(Cesium.Math.toRadians(closestBrng-mouseBrng)) *
+    Coordinate.surfaceDistance(newPolyline.points[0], newPoint)
+  );
+  newPolyline.updatePoint(1, Point.fromCoordinate(fixedDest));
+  // Create Aux polyline
+  const auxPolyline =
+    createAuxPolyline(state, newPolyline.points[0], newPoint);
+  return {
+    ...state,
+    drawingInnerPolyline: newPolyline,
+    auxPolyline: auxPolyline
   };
 }
 
@@ -120,6 +152,7 @@ const addEndPoint = (state, action) => {
       ...state,
       fixedInnerPolylines: [...newFixedInnerPolyline, newPolyline],
       drawingInnerPolyline: null,
+      auxPolyline: null,
       pointsRelation: {
         ...state.pointsRelation,
         [newPoint.entityId]: {
@@ -251,6 +284,8 @@ const reducer = (state=initialState, action) => {
       return addStartPoint (state, action);
     case actionTypes.DRAG_INNER_POLYLINE:
       return dragDrawingInnerPolyline (state, action);
+      case actionTypes.DRAG_INNER_POLYLINE_FIXED_MODE:
+        return dragDrawingInnerPolylineFixedMode (state, action);
     case actionTypes.ADD_END_POINT:
       return addEndPoint (state, action);
     case actionTypes.SET_TYPE_HIP:
