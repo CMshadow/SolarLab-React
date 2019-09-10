@@ -17,7 +17,6 @@ const MouseMoveShiftHandler = (props) => {
 
       case 'DRAWING_INNER':
         if (props.drawingInnerPolyline) {
-          console.log('mouse_move_shift')
           props.dragDrawingInnerPolylineFixedMode(
             event.endPosition, props.viewer
           );

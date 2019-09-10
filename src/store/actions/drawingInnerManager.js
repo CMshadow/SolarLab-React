@@ -31,6 +31,7 @@ export const addOrClickPoint =
     const onTopPointId = Object.keys(pointsRelation).filter(
       x => pickedObjectIdArray.includes(x)
     );
+    console.log(onTopPointId)
     const onTopFoundPolyline = pickedObjectIdArray.includes(foundPolyline.entityId);
     if (onTopPointId.length !== 0) {
       if (drawingInnerPolyline) {

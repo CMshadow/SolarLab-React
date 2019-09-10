@@ -20,38 +20,49 @@ const MouseMoveHandler = (props) => {
           // Reposition points on the drawing polyline
           props.movePickedPoint(event.endPosition, props.viewer);
         } else {
-        const anyPickedObject = props.viewer.scene.pick(event.endPosition);
+          const anyPickedObject = props.viewer.scene.pick(event.endPosition);
+          if(anyPickedObject) {
+            if (anyPickedObject.id.id === props.drawingPolyline.entityId) {
+              // Set hover polyline if available
+              props.setHoverPolyline();
+              // Release hover point if it exists
+              if (props.hoverPointIndex !== null) {
+                props.releaseHoverPointIndex()};
+            }
 
-        if(anyPickedObject) {
-          if (anyPickedObject.id.id === props.drawingPolyline.entityId) {
-            // Set hover polyline if available
-            props.setHoverPolyline();
-            // Release hover point if it exists
-            if (props.hoverPointIndex !== null) {
-              props.releaseHoverPointIndex()};
-          }
-
-          // Find out hover on which point
-          const onTopPoint = props.drawingPolyline.points.find(element => {
-            return element.entityId === anyPickedObject.id.id
-          })
-          // Set hover point if available
-          if (onTopPoint) {
-            props.setHoverPointIndex(onTopPoint);
+            // Find out hover on which point
+            const onTopPoint = props.drawingPolyline.points.find(element => {
+              return element.entityId === anyPickedObject.id.id
+            })
+            // Set hover point if available
+            if (onTopPoint) {
+              props.setHoverPointIndex(onTopPoint);
+              // Release hover polyline if it exists
+              if (props.hoverPolyline) props.releaseHoverPolyline();
+            }
+          } else {
             // Release hover polyline if it exists
             if (props.hoverPolyline) props.releaseHoverPolyline();
+            // Release hover point if it exists
+            if (props.hoverPointIndex !== null) props.releaseHoverPointIndex();
           }
-        } else {
-          // Release hover polyline if it exists
-          if (props.hoverPolyline) props.releaseHoverPolyline();
-          // Release hover point if it exists
-          if (props.hoverPointIndex !== null) props.releaseHoverPointIndex();
         }
-      }
         break;
 
       case 'DRAWING_INNER':
         if (props.drawingInnerPolyline) {
+          const pickedObjectIdArray =
+            props.viewer.scene.drillPick(event.endPosition).map(
+              elem => elem.id.id
+            );
+          if (pickedObjectIdArray.includes(props.drawingPolyline.entityId)) {
+            // Set hover polyline if available
+            props.setHoverPolyline();
+          } else {
+            if (props.hoverPolyline) {
+              props.releaseHoverPolyline();
+            }
+          }
           props.dragDrawingInnerPolyline(event.endPosition, props.viewer);
         } else {
           const anyPickedObject = props.viewer.scene.pick(event.endPosition);

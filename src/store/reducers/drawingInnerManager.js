@@ -71,6 +71,7 @@ const addStartPoint = (state, action) => {
       }
     };
   } else {
+    console.log('here')
     newPoint = Point.fromPoint(
       action.point, null, null, null, null, null, null, null, null, null, false
     );
@@ -144,9 +145,13 @@ const addEndPoint = (state, action) => {
   const newPolyline = InnerLine.fromPolyline(state.drawingInnerPolyline);
   let newPoint = null;
   if (action.cartesian3) {
-    newPoint = Point.fromCoordinate(
-      Coordinate.fromCartesian(action.cartesian3, 0.05)
-    );
+    if (action.foundAddPointPosition) {
+      newPoint = Point.fromCoordinate(
+        Coordinate.fromCartesian(action.cartesian3, 0.05),null,null,null,null,null,null,false
+      );
+    } else {
+      newPoint = Point.fromPoint(newPolyline.points[1]);
+    }
     newPolyline.updatePoint(1, newPoint);
     return {
       ...state,
@@ -171,6 +176,7 @@ const addEndPoint = (state, action) => {
       ...state,
       fixedInnerPolylines: [...newFixedInnerPolyline, newPolyline],
       drawingInnerPolyline: null,
+      auxPolyline: null,
       pointsRelation: {
         ...state.pointsRelation,
         [pointId]:{

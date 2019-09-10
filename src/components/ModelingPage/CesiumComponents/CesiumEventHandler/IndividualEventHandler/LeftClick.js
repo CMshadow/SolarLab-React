@@ -16,6 +16,9 @@ const LeftClickHandler = (props) => {
       const PickedObjectsArray = props.viewer.scene.drillPick(event.position);
       props.disableRotate();
       props.addOrClickPoint(event.position, props.viewer, PickedObjectsArray);
+      if (props.hoverPolyline) {
+        props.releaseHoverPolyline();
+      }
     }
   };
 
@@ -31,12 +34,14 @@ const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    hoverPolyline: state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     disableRotate: () => dispatch(actions.disableRotate()),
+    releaseHoverPolyline: () => dispatch(actions.releaseHoverPolyline()),
     addPointOnPolyline: (cartesian, viewer) => dispatch(
       actions.addPointOnPolyline(cartesian, viewer)
     ),
