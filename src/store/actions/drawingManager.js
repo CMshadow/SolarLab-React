@@ -152,3 +152,9 @@ export const cleanHoverAndColor = () => {
     type: actionTypes.CLEAN_HOVER_AND_COLOR
   }
 }
+
+export const exitCurrentDrawing = () => {
+  return {
+    type: actionTypes.EXIT_CURRENT_DRAWING
+  };
+};

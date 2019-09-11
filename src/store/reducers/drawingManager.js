@@ -296,6 +296,10 @@ const addExtraInnerPoint = (state, action) => {
   };
 };
 
+const exitCurrentDrawing = (state, action) => {
+  return initialState;
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.CLICK_ADD_POINT_ON_POLYLINE:
@@ -334,6 +338,8 @@ const reducer = (state=initialState, action) => {
       return addExtraInnerPoint (state, action);
     case actionTypes.ADD_END_POINT_ON_FOUND:
       return addExtraInnerPoint (state, action);
+    case actionTypes.EXIT_CURRENT_DRAWING:
+      return exitCurrentDrawing (state, action);
     case actionTypes.DO_NOTHING:
       return state;
     default: return state;

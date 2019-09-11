@@ -25,7 +25,8 @@ export {
   movePickedPoint,
   releasePickedPointIndex,
 
-  cleanHoverAndColor
+  cleanHoverAndColor,
+  exitCurrentDrawing
 } from './drawingManager';
 
 export {
