@@ -35,8 +35,8 @@ const UndoRedo = (props) => {
 
 const mapStateToProps = state => {
   return {
-    canUndo: state.undoableReducer.past.length > 0,
-    canRedo: state.undoableReducer.future.length > 0
+    canUndo: state.undoableReducer.past && state.undoableReducer.past.length > 0,
+    canRedo: state.undoableReducer.future && state.undoableReducer.future.length > 0
   };
 };
 
