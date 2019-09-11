@@ -50,7 +50,6 @@ const MouseMoveHandler = (props) => {
         break;
 
       case 'DRAWING_INNER':
-        const anyPickedObject = props.viewer.scene.pick(event.endPosition);
         const pickedObjectIdArray =
           props.viewer.scene.drillPick(event.endPosition).map(
             elem => elem.id.id
@@ -65,43 +64,28 @@ const MouseMoveHandler = (props) => {
           props.setHoverPolyline();
         } else {
           // Release hover foundation polyline
-          if (props.hoverPolyline) {
-            props.releaseHoverPolyline();
-          }
+          if (props.hoverPolyline) props.releaseHoverPolyline();
         }
 
-        if(anyPickedObject) {
-          // Find out hover on which inner line
-          const onTopInnerLine = props.fixedInnerPolylines.find(element => {
-            return element.entityId === anyPickedObject.id.id
-          })
-          if (onTopInnerLine) {
-            props.setHoverInnerLine(onTopInnerLine)
-            if (props.hoverInnerPointId !== null) {
-              props.releaseHoverInnerPoint()};
-          }
-          // Find out hover on which point
-          const onTopPoint = Object.keys(props.pointsRelation)
-          .find(element => {
-            return element === anyPickedObject.id.id
-          })
-          // Set hover point if available
-          if (onTopPoint) {
-            props.setHoverInnerPoint(onTopPoint);
-            // Release hover polyline if it exists
-            if (props.hoverInnerLineIndex !== null){
-              props.releaseHoverInnerLine();
-            }
-          }
+        const mouseOnInnerPoint = Object.keys(props.pointsRelation).find(element => {
+          return pickedObjectIdArray.includes(element);
+        })
+        if (mouseOnInnerPoint) {
+          props.setHoverInnerPoint(mouseOnInnerPoint);
         } else {
-          // Release hover polyline if it exists
-          if (props.hoverInnerLineIndex !== null) {
-            props.releaseHoverInnerLine();
-          }
-          // Release hover point if it exists
-          if (props.hoverInnerPointId !== null) {
-            props.releaseHoverInnerPoint();
-          }
+          if (props.hoverInnerPointId) props.releaseHoverInnerPoint();
+        }
+
+        const mouseOnInnerLine = props.fixedInnerPolylines.find(element => {
+          return pickedObjectIdArray.includes(element.entityId);
+        })
+        if (
+          mouseOnInnerLine &&
+          props.hoverInnerPointId === null
+        ) {
+          props.setHoverInnerLine(mouseOnInnerLine);
+        } else {
+          if (props.hoverInnerLineIndex !== null) props.releaseHoverInnerLine();
         }
 
         if (props.drawingInnerPolyline) {

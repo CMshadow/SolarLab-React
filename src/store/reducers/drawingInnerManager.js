@@ -26,9 +26,7 @@ const passFoundPolyline = (state, action) => {
     brngCollection: action.brngCollection,
     pointsRelation: action.foundPolyline.points.reduce((map, point) => {
       map[point.entityId] = {
-        object: Point.fromPoint(
-          point, null, null, null, null, null, null, null, null, null, false
-        ),
+        object: Point.fromPoint(point),
         connectPolyline: polylineArray.reduce((acc, line) => {
           if (
             line.points[0].entityId === point.entityId ||
@@ -48,9 +46,7 @@ const updatePointsRelation = (state, action) => {
   const polylineArray = action.foundPolyline.getSegmentPolyline();
   const newPointsRelation = action.foundPolyline.points.reduce((map, point) => {
     map[point.entityId] = {
-      object: Point.fromPoint(
-        point, null, null, null, null, null, null, null, null, null, false
-      ),
+      object: Point.fromPoint(point),
       connectPolyline: polylineArray.reduce((acc, line) => {
         if (
           line.points[0].entityId === point.entityId ||
@@ -134,8 +130,7 @@ const addStartPointOnNew = (state, action) => {
 
 const addStartPointOnFoundPolyline = (state, action) => {
   const newPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(action.cartesian3, 0.05), null, action.uniqueId,
-    null, null, null, null, false
+    Coordinate.fromCartesian(action.cartesian3, 0.05), null, action.uniqueId
   );
   const newPolyline = new InnerLine(
     [newPoint], null, null, Cesium.Color.DARKGRAY
@@ -258,8 +253,7 @@ const addEndPointOnFoundPolyline = (state, action) => {
   })
   const newPolyline = InnerLine.fromPolyline(state.drawingInnerPolyline);
   const newPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(action.cartesian3, 0.05), null, action.uniqueId,
-    null, null, null, null, false
+    Coordinate.fromCartesian(action.cartesian3, 0.05), null, action.uniqueId
   );
   newPolyline.updatePoint(1, newPoint);
   return {
@@ -313,21 +307,34 @@ const setTypeRidge = (state, action) => {
 };
 
 const setHoverInnerLine = (state, action) => {
+  const newPolyline = InnerLine.fromPolyline(
+    state.fixedInnerPolylines[action.hoverInnerLineIndex]
+  );
+  newPolyline.setColor(Cesium.Color.ORANGE);
+  const newFixedInnerPolylines = [...state.fixedInnerPolylines];
+  newFixedInnerPolylines.splice(action.hoverInnerLineIndex, 1, newPolyline);
   return {
     ...state,
+    fixedInnerPolylines: newFixedInnerPolylines,
     hoverInnerLineIndex: action.hoverInnerLineIndex
   };
 };
 
 const releaseHoverInnerLine = (state, action) => {
+  const newPolyline = InnerLine.fromPolyline(
+    state.fixedInnerPolylines[state.hoverInnerLineIndex]
+  );
+  newPolyline.setColorbyType();
+  const newFixedInnerPolylines = [...state.fixedInnerPolylines];
+  newFixedInnerPolylines.splice(state.hoverInnerLineIndex, 1, newPolyline);
   return {
     ...state,
+    fixedInnerPolylines: newFixedInnerPolylines,
     hoverInnerLineIndex: null
   };
 };
 
 const setHoverInnerPoint = (state, action) => {
-  console.log(state.pointsRelation[action.hoverInnerPointId])
   const newPoint = Point.fromPoint(
     state.pointsRelation[action.hoverInnerPointId].object
   );
@@ -336,7 +343,7 @@ const setHoverInnerPoint = (state, action) => {
     ...state,
     pointsRelation:{
       ...state.pointsRelation,
-      [state.pointsRelation[action.hoverInnerPointId]]: {
+      [action.hoverInnerPointId]: {
         ...state.pointsRelation[action.hoverInnerPointId],
         object: newPoint
       }
@@ -346,8 +353,19 @@ const setHoverInnerPoint = (state, action) => {
 };
 
 const releaseHoverInnerPoint = (state, action) => {
+  const newPoint = Point.fromPoint(
+    state.pointsRelation[state.hoverInnerPointId].object
+  );
+  newPoint.setColor(Cesium.Color.WHITE);
   return {
     ...state,
+    pointsRelation:{
+      ...state.pointsRelation,
+      [state.hoverInnerPointId]: {
+        ...state.pointsRelation[state.hoverInnerPointId],
+        object: newPoint
+      }
+    },
     hoverInnerPointId: null
   };
 };
@@ -385,7 +403,8 @@ const deleteInnerLine = (state, action) => {
   return {
     ...state,
     fixedInnerPolylines: newFixedInnerPolylines,
-    pointsRelation: cleanedPointsRelation
+    pointsRelation: cleanedPointsRelation,
+    hoverInnerLineIndex: null,
   };
 };
 

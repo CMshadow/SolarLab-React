@@ -6,18 +6,17 @@ import CustomPolyline from '../polyline/polyline';
 
 const DrawingInnerManagerRender = (props) => {
 
+  const foundPolyline = (<CustomPolyline
+    key={props.drawingPolyline.entityId}
+    {...props.drawingPolyline}
+  />);
+
   let drawingInnerPolyline = null;
-  let drawingInnerPolylinePoints = null;
   if (props.drawingInnerPolyline && props.drawingInnerPolyline.length > 1) {
     drawingInnerPolyline = (<CustomPolyline
       key={props.drawingInnerPolyline.entityId}
       {...props.drawingInnerPolyline}
     />)
-
-    drawingInnerPolylinePoints = props.drawingInnerPolyline.points.slice(0,-1)
-    .map(elem => (
-      elem.render ? <CustomPoint key={elem.entityId} {...elem} /> : null
-    ));
   }
 
   let auxPolyline = null;
@@ -37,15 +36,15 @@ const DrawingInnerManagerRender = (props) => {
   const fixedInnerPolylinePoints = Object.keys(props.pointsRelation).map(
     p => (
       props.pointsRelation[p].object.render ?
-      <CustomPoint key={p} {...props.pointsRelation[p].object} /> : 
+      <CustomPoint key={p} {...props.pointsRelation[p].object} /> :
       null
     )
   );
 
   return (
     <div>
+      {foundPolyline}
       {drawingInnerPolyline}
-      {drawingInnerPolylinePoints}
       {auxPolyline}
       {fixedInnerPolylines}
       {fixedInnerPolylinePoints}
@@ -55,6 +54,8 @@ const DrawingInnerManagerRender = (props) => {
 
 const mapStateToProps = state => {
   return {
+    drawingPolyline:
+      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
     drawingInnerPolyline:
       state.undoableReducer.present.drawingInnerManagerReducer
       .drawingInnerPolyline,
