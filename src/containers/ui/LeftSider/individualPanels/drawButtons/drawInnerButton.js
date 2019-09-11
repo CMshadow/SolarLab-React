@@ -35,6 +35,7 @@ const DrawInnerButton = (props) => {
       size='large'
       shape='round'
       block
+      loading={props.drawingInnerPolyline}
       onClick={() => {
         props.updatePointsRelation();
         props.setUIStateInnerDrew();
@@ -74,7 +75,11 @@ const DrawInnerButton = (props) => {
 const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    test: state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
+    test:
+      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
+    drawingInnerPolyline:
+      state.undoableReducer.present.drawingInnerManagerReducer
+      .drawingInnerPolyline,
   };
 };
 

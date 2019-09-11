@@ -67,7 +67,8 @@ const MouseMoveHandler = (props) => {
           if (props.hoverPolyline) props.releaseHoverPolyline();
         }
 
-        const mouseOnInnerPoint = Object.keys(props.pointsRelation).find(element => {
+        const mouseOnInnerPoint = Object.keys(props.pointsRelation)
+        .find(element => {
           return pickedObjectIdArray.includes(element);
         })
         if (mouseOnInnerPoint) {
@@ -110,16 +111,29 @@ const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    drawingPolyline: state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
-    hoverPolyline: state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
-    hoverPointIndex: state.undoableReducer.present.drawingManagerReducer.hoverPointIndex,
-    pickedPointIndex: state.undoableReducer.present.drawingManagerReducer.pickedPointIndex,
+    drawingPolyline:
+      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+    hoverPolyline:
+      state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
+    hoverPointIndex:
+      state.undoableReducer.present.drawingManagerReducer.hoverPointIndex,
+    pickedPointIndex:
+      state.undoableReducer.present.drawingManagerReducer.pickedPointIndex,
 
-    pointsRelation: state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
-    drawingInnerPolyline: state.undoableReducer.present.drawingInnerManagerReducer.drawingInnerPolyline,
-    fixedInnerPolylines: state.undoableReducer.present.drawingInnerManagerReducer.fixedInnerPolylines,
-    hoverInnerLineIndex: state.undoableReducer.present.drawingInnerManagerReducer.hoverInnerLineIndex,
-    hoverInnerPointId: state.undoableReducer.present.drawingInnerManagerReducer.hoverInnerPointId,
+    pointsRelation:
+      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
+    drawingInnerPolyline:
+      state.undoableReducer.present.drawingInnerManagerReducer
+      .drawingInnerPolyline,
+    fixedInnerPolylines:
+      state.undoableReducer.present.drawingInnerManagerReducer
+      .fixedInnerPolylines,
+    hoverInnerLineIndex:
+      state.undoableReducer.present.drawingInnerManagerReducer
+      .hoverInnerLineIndex,
+    hoverInnerPointId:
+      state.undoableReducer.present.drawingInnerManagerReducer
+      .hoverInnerPointId,
   };
 };
 
