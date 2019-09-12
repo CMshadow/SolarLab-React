@@ -6,12 +6,10 @@ import {
   InputNumber,
   Divider,
   Tooltip,
-  Icon,
   Select,
   Row,
   Col,
   Button,
-  Radio
 } from 'antd';
 
 import * as actions from '../../../../../store/actions/index';
@@ -20,16 +18,29 @@ const { Option } = Select;
 
 class CreateKeepoutForm extends PureComponent {
   state = {
-    type: null
+    type: 'KEEPOUT'
   }
 
   handleSubmit = (event) => {
     event.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        console.log('create a keepout')
+        this.props.createKeepout(values);
       }
     });
+  };
+
+  generateTypeText = () => {
+    switch (this.state.type) {
+      case 'TREE':
+        return 'Tree';
+      case 'VENT':
+        return 'Vent';
+      case 'ENV':
+        return 'Obstacle';
+      default:
+        return 'Keepout';
+    }
   };
 
   numberInputRules = [{
@@ -48,7 +59,7 @@ class CreateKeepoutForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4> Keepout Height </h4>
+            <h4> {this.generateTypeText()} Height </h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('height', {
@@ -58,6 +69,30 @@ class CreateKeepoutForm extends PureComponent {
               <InputNumber
                 min={0}
                 max={100}
+                step={0.1}
+                formatter={value => `${value}m`}
+                parser={value => value.replace('m', '')}
+              />
+            )}
+          </Col>
+        </Row>
+      </Form.Item>
+    );
+
+    const keepoutSetback = (
+      <Form.Item>
+        <Row>
+          <Col span={12} offset={1}>
+            <h4> Keepout Setback </h4>
+          </Col>
+          <Col span={10}>
+            {getFieldDecorator('setback', {
+              rules: [...this.numberInputRules],
+              initialValue: 1
+            })(
+              <InputNumber
+                min={0}
+                max={5}
                 step={0.1}
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
@@ -90,7 +125,7 @@ class CreateKeepoutForm extends PureComponent {
           </Col>
         </Row>
       </Form.Item>
-    )
+    );
 
     return (
       <Form onSubmit={this.handleSubmit}>
@@ -102,7 +137,7 @@ class CreateKeepoutForm extends PureComponent {
             </Col>
             <Col span={10}>
               {getFieldDecorator('type', {
-                initialValue: 'KEEPOUT'
+                initialValue: this.state.type
               })(
                 <Select
                   onChange={(value,option) => {
@@ -112,7 +147,9 @@ class CreateKeepoutForm extends PureComponent {
                   <Option value='PASSAGE'>Passage</Option>
                   <Option value='VENT'>Vent</Option>
                   <Option value='TREE'>Tree</Option>
-                  <Option value='ENV'>Environmental</Option>
+                  <Option value='ENV' title='Environmental Obstacle'>
+                    Env Obstacle
+                  </Option>
                 </Select>
               )}
             </Col>
@@ -120,6 +157,10 @@ class CreateKeepoutForm extends PureComponent {
         </Form.Item>
 
         {this.state.type !== 'PASSAGE' ? keepoutHeight : null}
+        {
+          this.state.type === 'KEEPOUT' || this.state.type === 'VENT' ?
+          keepoutSetback : null
+        }
         {this.state.type === 'PASSAGE' ? passageWidth : null}
 
         {/*The button to validate & process to create a new building*/}
@@ -142,6 +183,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
+    createKeepout: (values) => dispatch(actions.createKeepout(values))
   };
 };
 

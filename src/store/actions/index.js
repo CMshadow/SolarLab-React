@@ -42,6 +42,12 @@ export {
 } from './drawingInnerManager';
 
 export {
+  setInitialFormTrue,
+  setInitialFormFalse,
+  createKeepout,
+} from './drawingKeepoutManager';
+
+export {
   setUIStateReadyDrawing,
   setUIStateDrawingFound,
   setUIStateFoundDrew,

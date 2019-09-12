@@ -13,10 +13,11 @@ import {
 } from 'antd';
 
 import * as actions from '../../../../../store/actions/index';
+import * as classes from './drawingkeepoutList.module.css';
 import { emptyListTemplate } from '../../../../../components/ui/EmptyTemplate/emptyListTemplate';
 import CreateKeepoutForm from './createKeepoutForm';
 
-const DrawFoundButton = (props) => {
+const DrawKeepoutList = (props) => {
 
   const createNewKeepoutCard = (
     <Card
@@ -26,45 +27,61 @@ const DrawFoundButton = (props) => {
     </Card>
   )
 
+  const keepoutCard = (keepoutProps) => {
+    console.log(keepoutProps)
+    return (
+      <Card
+        className={classes.keepoutCard}
+        hoverable
+        bordered={true}
+        actions={[
+          <Button type="primary" icon='setting' shape='circle' size='small' ghost />,
+          <Button type="primary" icon='edit' shape='circle' size='small' ghost />,
+          <Button type='danger' icon='delete' shape='circle' size='small' ghost />,
+        ]}
+      >
+        {keepoutProps.type}
+      </Card>
+    );
+  };
+
   const header = (
     <Layout>
     <Row>
       <Col span={22}>
-        <h3>Keepout</h3>
+        <h3>Keepouts</h3>
       </Col>
       <Col span={2}>
-        <Button type='primary' size='small'shape='circle' icon='plus' ghost />
+        <Button
+          type='primary'
+          size='small'
+          shape='circle'
+          icon={props.initialForm ? 'minus' : 'plus'}
+          onClick={
+            props.initialForm ?
+            props.setInitialFormFalse :
+            props.setInitialFormTrue
+          }
+          ghost
+        />
       </Col>
     </Row>
     <Row>
-      {createNewKeepoutCard}
+      {props.initialForm ? createNewKeepoutCard : null}
     </Row>
     </Layout>
   )
-
-  const data = [
-    'Racing car sprays burning fuel into crowd.',
-    'Japanese princess to wed commoner.',
-    'Australian walks 100km after outback crash.',
-    'Man charged over missing wedding girl.',
-    'Los Angeles battles huge wildfires.',
-    'Racing car sprays burning fuel into crowd.',
-    'Japanese princess to wed commoner.',
-    'Australian walks 100km after outback crash.',
-    'Man charged over missing wedding girl.',
-    'Los Angeles battles huge wildfires.',
-    'Racing car sprays burning fuel into crowd.',
-    'Japanese princess to wed commoner.',
-    'Australian walks 100km after outback crash.',
-    'Man charged over missing wedding girl.',
-    'Los Angeles battles huge wildfires.',
-  ];
 
   const list = (
     <ConfigProvider renderEmpty={() => emptyListTemplate({type: 'Keepout'})}>
       <List
         header={header}
-        renderItem={item => <List.Item>{item}</List.Item>}
+        dataSource={props.keepoutList}
+        renderItem={item => (
+          <List.Item className={classes.keepoutListItem}>
+            {keepoutCard(item)}
+          </List.Item>
+        )}
       >
       </List>
     </ConfigProvider>
@@ -81,18 +98,18 @@ const DrawFoundButton = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState
+    initialForm:
+      state.undoableReducer.present.drawingKeepoutManagerReducer.initialForm,
+    keepoutList:
+      state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    enableRotate: () => dispatch(actions.enableRotate()),
-    disableRotate: () => dispatch(actions.disableRotate()),
-    setUIStateDrawingFound: () => dispatch(actions.setUIStateDrawingFound()),
-    setUIStateFoundDrew: () => dispatch(actions.setUIStateFoundDrew()),
-    setUIStateEditingFound: () => dispatch(actions.setUIStateEditingFound())
+    setInitialFormTrue: () => dispatch(actions.setInitialFormTrue()),
+    setInitialFormFalse: () => dispatch(actions.setInitialFormFalse()),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DrawFoundButton);
+export default connect(mapStateToProps, mapDispatchToProps)(DrawKeepoutList);
