@@ -30,7 +30,7 @@ const DrawBuildingPanel = (props) => {
   if (uiStateJudge.isFoundDrew(props.uiState)) {
     PolygonTest = (
       <div>
-        <Divider>Final Step</Divider>
+        <Divider>Building Modeling</Divider>
           <DrawBuilding3DPolygon />
       </div>
     );

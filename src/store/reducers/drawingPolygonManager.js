@@ -7,16 +7,7 @@ import Polygon from '../../infrastructure/Polygon/Polygon';
 
 const initialState = {
     PolygonReadyEnable: false,
-    BuildingFoundation: {
-        id: null, 
-        name: 'Polygon_Foundation', 
-        height: null,
-        hierarchy: null,
-        material: Cesium.Color.WHITE,
-        perPosition: true,
-        extrudeHeight: null,
-        show: true
-    }
+    BuildingFoundation: new Polygon()
 };
 
 /**
@@ -36,9 +27,7 @@ const enableToBuild = (state, action) => {
  *  CREATE 3D Building Foundation Polygon 
  */
 const createBuildingFoundationPolygon = (state, action) => {
-    let newFoundation = {
-        ...state.BuildingFoundation
-    }
+    let newFoundation = Polygon.CopyPolygon(state.BuildingFoundation);
     newFoundation.height = action.height;
     newFoundation.hierarchy = [...action.coordinatesArray];
     newFoundation.hierarchy.map( (_,index) => {
@@ -46,12 +35,9 @@ const createBuildingFoundationPolygon = (state, action) => {
             newFoundation.hierarchy[index] = newFoundation.height;
         }
     });
-    console.log('new array: ' + newFoundation.hierarchy);
     return{
         ...state,
-        BuildingFoundation: {
-            ...newFoundation
-        }
+        BuildingFoundation: newFoundation
     };
 };
 

@@ -8,6 +8,14 @@ class FlatBuilding extends Building {
     this.type = 'FLAT';
     this.parapetHeight = parapetHt;
     this.polyline = null;
+    this.foundationPolygon = null;
+  }
+
+/**
+ *  Bind the building foudantion Polygon to the building currently working on
+ */
+  bindFoundPolygon = (Polygon) => {
+    this.foundationPolygon = Polygon;
   }
 }
 

@@ -7,20 +7,22 @@ import * as Cesium from 'cesium';
 */
 
 
-const polygonVisualize = (props) => {
-    console.log("hahhahahaha: "+ props.id + ' ' + props.show );
+const polygonVisualize = (props) => {  
     return (
         <Entity 
             id = {props.id}
             name = {props.name}
             polygon={{
-                hierarchy: new Cesium.Cartesian3.fromDegreesArrayHeights(props.hierarchy),
-                perPositionHeight: props.perPositionHeight,
-                extrudedHeight: props.extrudedHeight,
-                material: props.material,
-                shadows: Cesium.ShadowMode.ENABLED//props.shadowsEnable
+                hierarchy : Cesium.Cartesian3.fromDegreesArrayHeights(props.hierarchy),
+                perPositionHeight : props.perPositionHeight,
+                extrudedHeight : props.extrudedHeight,
+                outline : true,
+                outlineColor : props.outlineColor,
+                outlineWidth : props.outlineWidth,
+                material : props.material,
+                shadows : Cesium.ShadowMode.ENABLED
             }}
-            show={props.show}
+            show={true}
         />
     )
 };

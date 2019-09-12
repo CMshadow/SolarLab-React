@@ -13,12 +13,8 @@ import * as actions from '../../../../../store/actions/index';
 
 
 const draw3DBuildingButton = (props) => { 
-  let buildingFoundationHeight = null;
+
   let buildingCoordinatesArray = null;
-  let buildingFoundation = null;
-  let drawingBuildingFoundation = null;
-
-
   const DrawBuildingPolygon = (
     <Button
         type = 'primary'
@@ -28,12 +24,11 @@ const draw3DBuildingButton = (props) => {
         onClick = {() => {
             console.log('[Button]: Test Polygon: ');
             props.EnablePolygon();
-            buildingFoundationHeight = props.BuildingInfoFields.foundHt;
             buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
             let buildingCoordinatesSize = buildingCoordinatesArray.length;
-            buildingCoordinatesArray.splice(buildingCoordinatesSize - 2,3);
-            props.CreateBuildingFoundationPolygon(buildingFoundationHeight, buildingCoordinatesArray);
-
+            buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
+            props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
+            
         }}
     >Test: Draw Foundation</Button>
 
@@ -49,11 +44,10 @@ const draw3DBuildingButton = (props) => {
 
 const mapStateToProps = state => {
   return {
-      BuildingInfoFields: state.buildingManagerReducer.buildingInfoFields,
-      BuildFoundation: state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+      CurrentBuilding: state.buildingManagerReducer.workingBuilding,
+      BuildFoundation: state.undoableReducer.present.drawingManagerReducer.drawingPolyline
   };
 };
-
 
 const mapDispatchToProps = dispatch => {
   return {

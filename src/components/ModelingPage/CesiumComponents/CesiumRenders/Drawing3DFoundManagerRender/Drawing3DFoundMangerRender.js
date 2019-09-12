@@ -8,23 +8,21 @@ import * as actions from '../../../../../store/actions/index';
 
 
 const drawing3DFoundManagerRender = (props) => {
-
     let drawingBuildingFoundation = null;
     if (props.EnableToBuild) {
         drawingBuildingFoundation = (<PolygonVisualize 
-            {...props.DrawingBuidingFoundation}
-        />);
+        {...props.DrawingBuidingFoundation}/>);
+        props.CurrentBuilding.bindFoundPolygon(props.DrawingBuidingFoundation);
     }
     
-
-    return <div>{drawingBuildingFoundation}</div>
-        
+    return <div>{drawingBuildingFoundation}</div>    
 };
 
 const mapStateToProps = state => {
     return{
         EnableToBuild: state.undoableReducer.present.drawingPolygonManagerReducer.PolygonReadyEnable,
-        DrawingBuidingFoundation: state.undoableReducer.present.drawingPolygonManagerReducer.BuildingFoundation
+        DrawingBuidingFoundation: state.undoableReducer.present.drawingPolygonManagerReducer.BuildingFoundation,
+        CurrentBuilding: state.buildingManagerReducer.workingBuilding
     };
 };
 
