@@ -9,6 +9,7 @@ import {
 import * as uiStateJudge from '../../../../infrastructure/ui/uiStateJudge';
 import DrawFoundButton from './drawButtons/drawFoundButton';
 import DrawInnerButton from './drawButtons/drawInnerButton';
+import DrawKeepoutList from './drawKeepout/drawKeepoutList';
 
 const DrawBuildingPanel = (props) => {
 
@@ -26,10 +27,18 @@ const DrawBuildingPanel = (props) => {
     </div>
   )
 
+  const step3 = (
+    <div>
+      <Divider>Step 3</Divider>
+        <DrawKeepoutList />
+    </div>
+  )
+
   return (
     <div>
       {step1}
       {uiStateJudge.isFoundDrew(props.uiState) ? step2 : null}
+      {step3}
     </div>
   );
 };
