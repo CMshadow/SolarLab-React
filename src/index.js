@@ -22,6 +22,7 @@ import drawingInnerManagerReducer from './store/reducers/drawingInnerManager';
 import uiStateManagerReducer from './store/reducers/uiStateManager';
 import buildingManagerReducer from './store/reducers/buildingManager';
 import projectManagerReducer from './store/reducers/projectManager';
+import drawingPolygonManagerReducer from './store/reducers/drawingPolygonManager';
 // IMPORT MORE REDBUX REDUCERS OVER HERE
 
 /*
@@ -41,6 +42,7 @@ const rootReducer = combineReducers({
     drawingManagerReducer: drawingManagerReducer,
     drawingInnerManagerReducer: drawingInnerManagerReducer,
     uiStateManagerReducer: uiStateManagerReducer,
+    drawingPolygonManagerReducer: drawingPolygonManagerReducer
   }), {
     filter: includeAction([
       actionTypes.CLICK_ADD_POINT_ON_POLYLINE,
