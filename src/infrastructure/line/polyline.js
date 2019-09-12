@@ -52,16 +52,14 @@ class Polyline {
     polyline, id = polyline.entityId, name = null, color = null, width = null,
     show = true
   ) {
-      const priorPoints = polyline.points.slice(0, polyline.length-1)
-      .map(elem => {
-        return Point.fromPoint(elem);
-      });
-      const newPoints = [...priorPoints, priorPoints[0]];
-      const newName = name ? name : polyline.name;
-      const newColor = color ? color : polyline.color;
-      const newShow = show ? show : polyline.show;
-      const newWidth = width ? width : polyline.width;
-      return new Polyline (newPoints, id, newName, newColor, newWidth, newShow);
+    const newPoints = polyline.points.map(elem => {
+      return Point.fromPoint(elem);
+    });
+    const newName = name ? name : polyline.name;
+    const newColor = color ? color : polyline.color;
+    const newShow = show ? show : polyline.show;
+    const newWidth = width ? width : polyline.width;
+    return new Polyline (newPoints, id, newName, newColor, newWidth, newShow);
     }
 
   /**
@@ -117,7 +115,7 @@ class Polyline {
   determineAddPointPosition = (cartesian3) => {
     const cor = Coordinate.fromCartesian(cartesian3);
     const polylineBrngArray = this.getSegmentBearing();
-    const corBrngArray = this.points.slice(0, this.length-1).map(elem => {
+    const corBrngArray = this.points.map(elem => {
       return Coordinate.bearing(elem, cor);
     })
     const brngDiff = polylineBrngArray.map((elem,index) => {
@@ -195,7 +193,7 @@ class Polyline {
    * @return {Point}           the Point object being deleted
    */
   deletePoint = (position) => {
-    if (this.length <= 4) {
+    if (this.length <= 2) {
       return errorNotification(
         'Invalid Operation',
         'Cannot delete any more point'
@@ -203,10 +201,6 @@ class Polyline {
     }
     if (position < this.length) {
       const deletedPoint = this.points.splice(position, 1);
-      if (position === 0) {
-        this.points.splice(this.length-1, 1);
-        this.addPoint(this.length, this.points[0]);
-      }
       return deletedPoint[0];
     } else {
       throw new Error('The index is beyond Polyline length');

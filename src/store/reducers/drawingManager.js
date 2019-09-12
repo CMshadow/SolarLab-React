@@ -3,7 +3,7 @@ import * as Cesium from 'cesium';
 import * as actionTypes from '../actions/actionTypes';
 import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
-import Polyline from '../../infrastructure/line/polyline';
+import FoundLine from '../../infrastructure/line/foundLine';
 import DashedLine from '../../infrastructure/line/dashedLine';
 import BearingCollection from '../../infrastructure/math/bearingCollection';
 
@@ -61,7 +61,7 @@ const dragPolyline = (state, action) => {
   const newPoint = Point.fromCoordinate(
     Coordinate.fromCartesian(action.cartesian3, 0.05)
   );
-  const polyline = new Polyline([...existPoints, newPoint]);
+  const polyline = new FoundLine([...existPoints, newPoint]);
 
   let auxPolyline = null;
   if (existPoints.length >= 2) {
@@ -98,7 +98,7 @@ const dragPolylineFixedMode = (state, action) => {
     Coordinate.surfaceDistance(existPoints[existPoints.length - 1], newPoint)
   ) : newPoint;
 
-  let polyline = new Polyline(
+  let polyline = new FoundLine(
     [...existPoints, Point.fromCoordinate(fixedDest)]
   );
 
@@ -120,7 +120,7 @@ const dragPolylineFixedMode = (state, action) => {
         [existPoints[0], Point.fromCoordinate(intersection)]
       );
       //update polyline to stick on intersection
-      polyline = new Polyline(
+      polyline = new FoundLine(
         [...existPoints, Point.fromCoordinate(intersection)]
       );
     } else {
@@ -147,7 +147,7 @@ const addPointOnPolyline = (state, action) => {
     return Point.fromPoint(elem);
   });
   let newPoint = state.drawingPolyline.points[state.drawingPolyline.length-1];
-  const polyline = new Polyline([...existPoints, newPoint]);
+  const polyline = new FoundLine([...existPoints, newPoint]);
   return {
     ...state,
     drawingPolyline: polyline,
@@ -160,7 +160,7 @@ const terminateDrawing = (state, action) => {
   const existPoints = state.fixedPoints.map(elem => {
     return Point.fromPoint(elem);
   });
-  const polyline = new Polyline([...existPoints, existPoints[0]]);
+  const polyline = new FoundLine([...existPoints, existPoints[0]]);
   return {
     ...state,
     drawingPolyline: polyline,
@@ -177,7 +177,7 @@ const complementPointOnPolyline = (state, action) => {
   const newPoint = Point.fromCoordinate(
     Coordinate.fromCartesian(state.rightClickCartesian3, 0.05)
   );
-  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
   newPolyline.addPoint(indexToAdd, newPoint)
   return {
     ...state,
@@ -186,7 +186,7 @@ const complementPointOnPolyline = (state, action) => {
 };
 
 const deletePointOnPolyline = (state, action) => {
-  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
   newPolyline.deletePoint(state.hoverPointIndex)
   return {
     ...state,
@@ -209,7 +209,7 @@ const setRightClickCartesian3 = (state, action) => {
 };
 
 const setHoverPolyline = (state, action) => {
-  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
   newPolyline.setColor(Cesium.Color.ORANGE);
   return {
     ...state,
@@ -219,7 +219,7 @@ const setHoverPolyline = (state, action) => {
 };
 
 const releaseHoverPolyline = (state, action) => {
-  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
   newPolyline.setColor(Cesium.Color.WHITE);
   return {
     ...state,
@@ -229,7 +229,7 @@ const releaseHoverPolyline = (state, action) => {
 };
 
 const setHoverPointIndex = (state, action) => {
-  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
   newPolyline.points[action.hoverPointIndex].setColor(Cesium.Color.ORANGE);
   return {
     ...state,
@@ -239,7 +239,7 @@ const setHoverPointIndex = (state, action) => {
 };
 
 const releaseHoverPointIndex = (state, action) => {
-  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
   newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.WHITE);
   return {
     ...state,
@@ -256,7 +256,7 @@ const setPickedPointIndex = (state, action) => {
 };
 
 const movePickedPoint = (state, action) => {
-  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
   newPolyline.points[state.pickedPointIndex]
   .setCartesian3Coordinate(action.cartesian3, 0.05);
   return {
@@ -269,6 +269,8 @@ const releasePickedPointIndex = (state, action) => {
   return {
     ...state,
     pickedPointIndex: null,
+    brngCollection:
+      new BearingCollection(state.drawingPolyline.getHelpLineBearings())
   };
 };
 
@@ -288,7 +290,7 @@ const addExtraInnerPoint = (state, action) => {
   const newPoint = Point.fromCoordinate(
     Coordinate.fromCartesian(state.mouseCartesian3, 0.05), null, action.uniqueId
   );
-  const newPolyline = Polyline.fromPolyline(state.drawingPolyline);
+  const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
   newPolyline.addPointPrecision(action.foundAddPointPosition, newPoint);
   return {
     ...state,
