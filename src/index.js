@@ -42,15 +42,27 @@ const rootReducer = combineReducers({
     drawingInnerManagerReducer: drawingInnerManagerReducer,
     uiStateManagerReducer: uiStateManagerReducer,
   }), {
+    initTypes: [actionTypes.SET_VIEWER],
     filter: includeAction([
       actionTypes.CLICK_ADD_POINT_ON_POLYLINE,
       actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,
       actionTypes.CLICK_DELETE_POINT_ON_POLYLINE,
       actionTypes.RELEASE_PICKEDPOINT,
+
+      actionTypes.ADD_START_POINT,
+      actionTypes.ADD_START_POINT_ON_FOUND,
+      actionTypes.ADD_END_POINT,
+      actionTypes.ADD_END_POINT_ON_FOUND,
+      actionTypes.SET_TYPE_HIP,
+      actionTypes.SET_TYPE_RIDGE,
+      actionTypes.DELETE_INNER_POLYLINE,
+
       actionTypes.SET_UI_STATE_DRAWING_FOUND,
       actionTypes.SET_UI_STATE_FOUND_DREW,
-      actionTypes.SET_UI_STATE_EDITING_FOUND
-    ])
+      actionTypes.SET_UI_STATE_EDITING_FOUND,
+      actionTypes.SET_UI_STATE_DRAWING_INNER,
+      actionTypes.SET_UI_STATE_INNER_DREW,
+    ]),
   })
   // ADD MORE REDUCERS OVER HERE
 });
@@ -59,7 +71,7 @@ const rootReducer = combineReducers({
   store: global Redux store
  */
 const store = createStore(rootReducer, composeEnhancers(
-    applyMiddleware(thunk)
+  applyMiddleware(thunk)
 ));
 
 /*
