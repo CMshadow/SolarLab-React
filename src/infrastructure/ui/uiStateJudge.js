@@ -5,7 +5,8 @@ export const isDrawingStates = (uiState) => {
     uiState === 'FOUND_DREW' ||
     uiState === 'EDITING_FOUND' ||
     uiState === 'DRAWING_INNER' ||
-    uiState === 'INNER_DREW'
+    uiState === 'INNER_DREW' ||
+    uiState === 'DRAWING_KEEPOUT'
   ) {
     return true;
   } else {

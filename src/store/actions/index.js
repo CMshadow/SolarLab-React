@@ -52,6 +52,12 @@ export {
 } from './keepoutManager';
 
 export {
+  addPointOnKeepoutPolyline,
+  dragKeepoutPolyline,
+  terminateKeepoutDrawing,
+} from './drawingKeepoutManager'
+
+export {
   createPolygonFoundation,
   setUpPolygonFoundation,
   enableToBuildFoundation
@@ -63,7 +69,9 @@ export {
   setUIStateFoundDrew,
   setUIStateEditingFound,
   setUIStateDrawingInner,
-  setUIStateInnerDrew
+  setUIStateInnerDrew,
+  setUIStateDrawingKeepout,
+  setPreviousUIState
 } from './uiStateManager';
 
 export {
@@ -71,4 +79,3 @@ export {
   saveBuildingInfoFields,
   resetBuilding
 } from './buildingManager';
-

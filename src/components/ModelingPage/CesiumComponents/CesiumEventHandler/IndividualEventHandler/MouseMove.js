@@ -94,6 +94,10 @@ const MouseMoveHandler = (props) => {
         }
         break;
 
+      case 'DRAWING_KEEPOUT':
+        props.dragKeepoutPolyline(event.endPosition, props.viewer);
+        break;
+
       default:
         break;
     }
@@ -160,6 +164,10 @@ const mapDispatchToProps = dispatch => {
     releaseHoverInnerLine: () => dispatch(actions.releaseHoverInnerLine()),
     setHoverInnerPoint: (point) => dispatch(actions.setHoverInnerPoint(point)),
     releaseHoverInnerPoint: () => dispatch(actions.releaseHoverInnerPoint()),
+
+    dragKeepoutPolyline: (cartesian, viewer) => dispatch(
+      actions.dragKeepoutPolyline(cartesian, viewer)
+    ),
   };
 };
 

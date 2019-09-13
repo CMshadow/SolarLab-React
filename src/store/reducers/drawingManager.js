@@ -34,7 +34,7 @@ export const createAuxPolyline = (state, originPoint, mousePoint) => {
   );
 }
 
-const findTwoAuxPolylineIntersect = (state, existPoints, mousePoint) => {
+export const findTwoAuxPolylineIntersect = (state, existPoints, mousePoint) => {
   const startPoint = existPoints[0];
   const startPointMouseBrng = Coordinate.bearing(
     startPoint, mousePoint

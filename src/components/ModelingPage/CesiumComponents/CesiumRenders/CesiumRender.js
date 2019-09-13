@@ -5,6 +5,7 @@ import * as uiStateJudge from '../../../../infrastructure/ui/uiStateJudge';
 import DrawingManagerRender from './DrawingManagerRender';
 import Drawing3DFoundManagerRender from './Drawing3DFoundManagerRender/Drawing3DFoundMangerRender';
 import DrawingInnerManagerRender from './DrawingInnerManagerRender';
+import DrawingKeepoutManagerRender from './drawingKeepoutManagerRender';
 
 const CesiumRender = (props) => {
   return (
@@ -20,6 +21,7 @@ const CesiumRender = (props) => {
         null
       }
       <Drawing3DFoundManagerRender />
+      <DrawingKeepoutManagerRender />
     </div>
   );
 };

@@ -28,6 +28,11 @@ class NormalKeepoutListItem extends Component {
     this.setState({
       enableDrawing: !this.state.enableDrawing
     });
+    if (this.props.uiState === 'DRAWING_KEEPOUT') {
+      this.props.setPreviousUIState();
+    } else {
+      this.props.setUIStateDrawingKeepout();
+    }
   };
 
   render() {
@@ -49,6 +54,7 @@ class NormalKeepoutListItem extends Component {
             type="primary"
             shape='circle'
             size='small'
+            disabled={this.props.uiState === 'DRAWING_KEEPOUT'}
             onClick={this.toggleEdit}
             ghost={!this.state.enableEdit}
           >
@@ -58,6 +64,10 @@ class NormalKeepoutListItem extends Component {
             type="primary"
             shape='circle'
             size='small'
+            disabled={
+              this.props.uiState === 'DRAWING_KEEPOUT' &&
+              !this.state.enableDrawing
+            }
             onClick={this.toggleDrawing}
             ghost={!this.state.enableDrawing}
           >
@@ -67,6 +77,7 @@ class NormalKeepoutListItem extends Component {
             type='danger'
             shape='circle'
             size='small'
+            disabled={this.props.uiState === 'DRAWING_KEEPOUT'}
             onClick={() => this.props.deleteKeepout(this.props.id)}
             ghost
           >
@@ -82,12 +93,15 @@ class NormalKeepoutListItem extends Component {
 
 const mapStateToProps = state => {
   return {
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    deleteKeepout: (id) => dispatch(actions.deleteKeepout(id))
+    deleteKeepout: (id) => dispatch(actions.deleteKeepout(id)),
+    setPreviousUIState: () => dispatch(actions.setPreviousUIState()),
+    setUIStateDrawingKeepout: () => dispatch(actions.setUIStateDrawingKeepout())
   };
 };
 
