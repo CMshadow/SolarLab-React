@@ -46,6 +46,12 @@ export {
 } from './drawingInnerManager';
 
 export {
+  createPolygonFoundation,
+  setUpPolygonFoundation,
+  enableToBuildFoundation
+} from './drawingPolygonManager'
+
+export {
   setUIStateReadyDrawing,
   setUIStateDrawingFound,
   setUIStateFoundDrew,
@@ -59,3 +65,4 @@ export {
   saveBuildingInfoFields,
   resetBuilding
 } from './buildingManager';
+

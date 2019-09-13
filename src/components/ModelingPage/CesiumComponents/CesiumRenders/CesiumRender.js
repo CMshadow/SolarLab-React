@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import * as uiStateJudge from '../../../../infrastructure/ui/uiStateJudge';
 import DrawingManagerRender from './DrawingManagerRender';
+import Drawing3DFoundManagerRender from './Drawing3DFoundManagerRender/Drawing3DFoundMangerRender';
 import DrawingInnerManagerRender from './DrawingInnerManagerRender';
 
 const CesiumRender = (props) => {
@@ -18,6 +19,7 @@ const CesiumRender = (props) => {
         <DrawingInnerManagerRender /> :
         null
       }
+      <Drawing3DFoundManagerRender />
     </div>
   );
 };

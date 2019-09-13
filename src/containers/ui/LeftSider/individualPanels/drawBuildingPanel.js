@@ -9,7 +9,7 @@ import {
 import * as uiStateJudge from '../../../../infrastructure/ui/uiStateJudge';
 import DrawFoundButton from './drawButtons/drawFoundButton';
 import DrawInnerButton from './drawButtons/drawInnerButton';
-
+import DrawBuilding3DPolygon from './drawButtons/Draw3DBuildingButton';
 const DrawBuildingPanel = (props) => {
 
   const step1 = (
@@ -26,10 +26,21 @@ const DrawBuildingPanel = (props) => {
     </div>
   )
 
+  let PolygonTest = null;
+  if (uiStateJudge.isFoundDrew(props.uiState)) {
+    PolygonTest = (
+      <div>
+        <Divider>Building Modeling</Divider>
+          <DrawBuilding3DPolygon />
+      </div>
+    );
+  }
+
   return (
     <div>
       {step1}
       {uiStateJudge.isFoundDrew(props.uiState) ? step2 : null}
+      {PolygonTest}
     </div>
   );
 };

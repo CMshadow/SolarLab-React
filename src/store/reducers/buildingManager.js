@@ -32,6 +32,7 @@ const saveFields = (state, action) => {
   };
 };
 
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SAVE_BUILDING_INFO_FIELDS: return saveFields(state, action);
