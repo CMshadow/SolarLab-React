@@ -21,6 +21,29 @@ export const isIdleStates = (uiState) => {
   }
 };
 
+export const isWorkingFound = (uiState) => {
+  if (
+    uiState === 'DRAWING_FOUND' ||
+    uiState === 'FOUND_DREW' ||
+    uiState === 'EDITING_FOUND'
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const isWorkingInner = (uiState) => {
+  if (
+    uiState === 'DRAWING_INNER' ||
+    uiState === 'INNER_DREW'
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export const isFoundDrew = (uiState) => {
   if (uiState === 'FOUND_DREW' ||
     uiState === 'EDITING_FOUND' ||

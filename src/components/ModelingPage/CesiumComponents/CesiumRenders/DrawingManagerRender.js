@@ -8,7 +8,7 @@ const DrawingManagerRender = (props) => {
   let foundPolyline = null;
   let foundPoints = null;
   if (props.drawingPolyline && props.drawingPolyline.length > 1) {
-
+    
     foundPolyline = (<CustomPolyline
       key={props.drawingPolyline.entityId}
       {...props.drawingPolyline}
@@ -19,40 +19,28 @@ const DrawingManagerRender = (props) => {
     ));
   }
 
-  let drawingInnerPolyline = null;
-  let drawingInnerPolylinePoints = null;
-  if (props.drawingInnerPolyline && props.drawingInnerPolyline.length > 1) {
-    drawingInnerPolyline = (<CustomPolyline
-      key={props.drawingInnerPolyline.entityId}
-      {...props.drawingInnerPolyline}
-    />)
-
-    drawingInnerPolylinePoints = props.drawingInnerPolyline.points.slice(0,-1)
-    .map(elem => (
-      elem.render ? <CustomPoint key={elem.entityId} {...elem} /> : null
-    ));
+  let auxPolyline = null;
+  if (props.auxPolyline) {
+    auxPolyline = (<CustomPolyline
+      key={props.auxPolyline.entityId}
+      {...props.auxPolyline}
+    />);
   }
 
-  const fixedInnerPolylines = props.fixedInnerPolylines.map(elem => {
-    return (<CustomPolyline
-      key={elem.entityId}
-      {...elem}
-    />)
-  });
-  const fixedInnerPolylinePoints = props.fixedInnerPolylines.flatMap(
-    elem => elem.points.map(p => {
-      return (p.render ? <CustomPoint key={p.entityId} {...p} /> : null)
-    })
-  );
+  let startPointAuxPolyline = null;
+  if (props.startPointAuxPolyline) {
+    startPointAuxPolyline = (<CustomPolyline
+      key={props.startPointAuxPolyline.entityId}
+      {...props.startPointAuxPolyline}
+    />);
+  }
 
   return (
     <div>
       {foundPoints}
       {foundPolyline}
-      {drawingInnerPolyline}
-      {drawingInnerPolylinePoints}
-      {fixedInnerPolylines}
-      {fixedInnerPolylinePoints}
+      {auxPolyline}
+      {startPointAuxPolyline}
     </div>
   );
 };
@@ -61,12 +49,10 @@ const mapStateToProps = state => {
   return {
     drawingPolyline:
       state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
-    drawingInnerPolyline:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .drawingInnerPolyline,
-    fixedInnerPolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .fixedInnerPolylines
+    auxPolyline:
+      state.undoableReducer.present.drawingManagerReducer.auxPolyline,
+    startPointAuxPolyline:
+      state.undoableReducer.present.drawingManagerReducer.startPointAuxPolyline,
   };
 }
 
