@@ -46,6 +46,12 @@ export {
 } from './drawingInnerManager';
 
 export {
+  createKeepout,
+  updateKeepout,
+  deleteKeepout,
+} from './keepoutManager';
+
+export {
   createPolygonFoundation,
   setUpPolygonFoundation,
   enableToBuildFoundation

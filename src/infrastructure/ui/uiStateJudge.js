@@ -56,6 +56,17 @@ export const isFoundDrew = (uiState) => {
   }
 };
 
+export const isInnerDrew = (uiState) => {
+  if (
+    uiState === 'DRAWING_INNER' ||
+    uiState === 'INNER_DREW'
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
 export const showDrawInner = (uiState) => {
   if (uiState === 'FOUND_DREW' ||
     uiState === 'EDITING_FOUND'

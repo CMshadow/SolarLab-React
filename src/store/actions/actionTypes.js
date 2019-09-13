@@ -53,6 +53,13 @@ export const RELEASE_HOVER_INNER_LINE = 'RELEASE_HOVER_INNER_LINE';
 export const DELETE_INNER_POLYLINE = 'DELETE_INNER_POLYLINE';
 
 /*
+  drawingKeepoutManager.js
+ */
+export const CREATE_KEEPOUT = 'CREATE_KEEPOUT';
+export const UPDATE_KEEPOUT = 'UPDATE_KEEPOUT';
+export const DELETE_KEEPOUT = 'DELETE_KEEPOUT';
+
+/*
   uiStateManager.js
  */
 export const SET_UI_STATE_READY_DRAWING = 'SET_UI_STATE_READY_DRAWING';
