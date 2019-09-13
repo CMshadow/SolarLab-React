@@ -13,23 +13,21 @@ import * as actions from '../../../../../store/actions/index';
 
 
 const draw3DBuildingButton = (props) => { 
-
-  let buildingCoordinatesArray = null;
   const DrawBuildingPolygon = (
     <Button
-        type = 'primary'
-        size = 'large'
-        shape = 'round'
-        block
-        onClick = {() => {
-            console.log('[Button]: Test Polygon: ');
-            props.EnablePolygon();
-            buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
-            let buildingCoordinatesSize = buildingCoordinatesArray.length;
-            buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
-            props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
-            
-        }}
+      type = 'primary'
+      size = 'large'
+      shape = 'round'
+      block
+      onClick = {() => {
+        console.log('[Button]: Test Polygon: ');
+        props.EnablePolygon();
+        let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
+        let buildingCoordinatesSize = buildingCoordinatesArray.length;
+        buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
+        props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
+          
+      }}
     >Test: Draw Foundation</Button>
 
   );
@@ -44,16 +42,16 @@ const draw3DBuildingButton = (props) => {
 
 const mapStateToProps = state => {
   return {
-      CurrentBuilding: state.buildingManagerReducer.workingBuilding,
-      BuildFoundation: state.undoableReducer.present.drawingManagerReducer.drawingPolyline
+    CurrentBuilding: state.buildingManagerReducer.workingBuilding,
+    BuildFoundation: state.undoableReducer.present.drawingManagerReducer.drawingPolyline
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-      EnablePolygon: () => dispatch(actions.enableToBuildFoundation()),
-      CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
-              dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray))
+    EnablePolygon: () => dispatch(actions.enableToBuildFoundation()),
+    CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
+      dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray))
   };
 };
 

@@ -14,7 +14,7 @@ const CustomPolyline = (props) => {
             props.getPointsCoordinatesArray()
           );
         }, false),
-        clampToGround : true,
+        clampToGround: true,
         width: props.width,
         material: props.color
       }}
