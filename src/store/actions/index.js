@@ -42,9 +42,9 @@ export {
 } from './drawingInnerManager';
 
 export {
-  setInitialFormTrue,
-  setInitialFormFalse,
   createKeepout,
+  updateKeepout,
+  deleteKeepout,
 } from './drawingKeepoutManager';
 
 export {

@@ -8,41 +8,44 @@ import InnerLine from '../../infrastructure/line/innerLine';
 
 
 const initialState = {
-  initialForm: false,
   drawingKeepout: null,
   keepoutList: []
 };
 
-const setInitialFormTrue = (state, action) => {
-  return {
-    ...state,
-    initialForm: true
-  };
-};
-
-const setInitialFormFalse = (state, action) => {
-  return {
-    ...state,
-    initialForm: false
-  };
-};
-
 const createKeepout = (state, action) => {
   return {
+    ...state,
     initialForm: false,
-    drawingKeepout: action.drawingKeepout,
-    keepoutList: [...state.keepoutList, action.drawingKeepout]
+    keepoutList: [...state.keepoutList, action.newKeepout]
   };
+};
+
+const updateKeepout = (state, action) => {
+  const newKeepoutList = [...state.keepoutList];
+  newKeepoutList.splice(action.updateIndex, 1, action.updateKeepout);
+  return {
+    ...state,
+    keepoutList: newKeepoutList
+  }
+};
+
+const deleteKeepout = (state, action) => {
+  const newKeepoutList = [...state.keepoutList];
+  newKeepoutList.splice(action.deleteIndex, 1);
+  return {
+    ...state,
+    keepoutList: newKeepoutList
+  }
 };
 
 const reducer = (state=initialState, action) => {
   switch (action.type) {
-    case actionTypes.SET_INITIALFORM_TRUE:
-      return setInitialFormTrue (state, action);
-    case actionTypes.SET_INITIALFORM_FALSE:
-      return setInitialFormFalse (state, action);
     case actionTypes.CREATE_KEEPOUT:
       return createKeepout (state, action);
+    case actionTypes.UPDATE_KEEPOUT:
+      return updateKeepout (state, action);
+    case actionTypes.DELETE_KEEPOUT:
+      return deleteKeepout (state, action);
     default: return state;
   }
 };

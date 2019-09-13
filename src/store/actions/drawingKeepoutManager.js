@@ -7,47 +7,63 @@ import Tree from '../../infrastructure/keepout/tree';
 import Passage from '../../infrastructure/keepout/passage';
 import NormalKeepout from '../../infrastructure/keepout/normalKeepout';
 
-export const setInitialFormTrue = () => {
-  return {
-    type: actionTypes.SET_INITIALFORM_TRUE
-  };
-} ;
-
-export const setInitialFormFalse = () => {
-  return {
-    type: actionTypes.SET_INITIALFORM_FALSE
-  };
-} ;
-
 export const createKeepout = (values) => {
-  let drawingKeepout = null;
+  let newKeepout = null;
   switch (values.type) {
     case 'KEEPOUT':
-      drawingKeepout = new NormalKeepout(
+      newKeepout = new NormalKeepout(
         null, values.type, values.height, values.setback
       );
       break;
     case 'PASSAGE':
-      drawingKeepout = new Passage(null, values.type, values.passageWidth);
+      newKeepout = new Passage(null, values.type, values.passageWidth);
       break;
     case 'VENT':
-      drawingKeepout = new Vent(
+      newKeepout = new Vent(
         null, values.type, values.height, values.setback
       );
       break;
     case 'TREE':
-      drawingKeepout = new Tree(null, values.type, values.height);
+      newKeepout = new Tree(null, values.type, values.height);
       break;
     case 'ENV':
-      drawingKeepout = new Env(null, values.type, values.height);
+      newKeepout = new Env(null, values.type, values.height);
       break;
     default:
-      drawingKeepout = new NormalKeepout(
+      newKeepout = new NormalKeepout(
         null, 'KEEPOUT', values.height, values.setback
       );
   }
   return {
     type: actionTypes.CREATE_KEEPOUT,
-    drawingKeepout: drawingKeepout
+    newKeepout: newKeepout
   }
+};
+
+export const updateKeepout = (id, values) => (dispatch, getState) => {
+  const keepoutList =
+    getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+  const updateIndex = keepoutList.findIndex(elem => elem.id === id);
+  let updateKeepout = null;
+  switch (keepoutList[updateIndex].type) {
+    default:
+      updateKeepout = NormalKeepout.fromKeepout(
+        keepoutList[updateIndex], values.height, values.setback
+      );
+  }
+  return dispatch({
+    type: actionTypes.UPDATE_KEEPOUT,
+    updateKeepout: updateKeepout,
+    updateIndex: updateIndex
+  });
+};
+
+export const deleteKeepout = (id) => (dispatch, getState) => {
+  const keepoutList =
+    getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+  const deleteIndex = keepoutList.findIndex(elem => elem.id === id);
+  return dispatch({
+    type: actionTypes.DELETE_KEEPOUT,
+    deleteIndex: deleteIndex
+  });
 };

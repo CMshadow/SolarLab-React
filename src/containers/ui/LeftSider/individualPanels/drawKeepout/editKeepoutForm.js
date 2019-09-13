@@ -14,25 +14,25 @@ import {
 
 import * as actions from '../../../../../store/actions/index';
 
-const { Option } = Select;
-
-class CreateKeepoutForm extends PureComponent {
+class EditKeepoutForm extends PureComponent {
   state = {
-    type: 'KEEPOUT'
+    height: this.props.height ? this.props.height : 0,
+    setback: this.props.setback ? this.props.setback : 0,
+    width: this.props.width ? this.props.width: 0,
   }
 
   handleSubmit = (event) => {
     event.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.props.createKeepout(values);
-        this.props.toggoleInitialForm();
+        this.props.updateKeepout(this.props.id, values);
+        this.props.toggleEdit();
       }
     });
   };
 
   generateTypeText = () => {
-    switch (this.state.type) {
+    switch (this.props.type) {
       case 'TREE':
         return 'Tree';
       case 'VENT':
@@ -51,7 +51,6 @@ class CreateKeepoutForm extends PureComponent {
     required: true,
     message: 'Cannot be empty'
   }];
-  rowLayout = {label: {span: 12, offset: 2}, field: {span: 8}};
 
   render () {
     const { getFieldDecorator } = this.props.form;
@@ -59,13 +58,13 @@ class CreateKeepoutForm extends PureComponent {
     const keepoutHeight = (
       <Form.Item>
         <Row>
-          <Col span={12} offset={1}>
+          <Col span={12} offset={2}>
             <h4> {this.generateTypeText()} Height </h4>
           </Col>
-          <Col span={10}>
+          <Col span={8}>
             {getFieldDecorator('height', {
               rules: [...this.numberInputRules],
-              initialValue: 1
+              initialValue: this.state.height
             })(
               <InputNumber
                 min={0}
@@ -83,13 +82,13 @@ class CreateKeepoutForm extends PureComponent {
     const keepoutSetback = (
       <Form.Item>
         <Row>
-          <Col span={12} offset={1}>
+          <Col span={12} offset={2}>
             <h4> Keepout Setback </h4>
           </Col>
-          <Col span={10}>
+          <Col span={8}>
             {getFieldDecorator('setback', {
               rules: [...this.numberInputRules],
-              initialValue: 1
+              initialValue: this.state.setback
             })(
               <InputNumber
                 min={0}
@@ -107,13 +106,13 @@ class CreateKeepoutForm extends PureComponent {
     const passageWidth = (
       <Form.Item>
         <Row>
-          <Col span={12} offset={1}>
+          <Col span={12} offset={2}>
             <h4> Passage Width </h4>
           </Col>
-          <Col span={10}>
+          <Col span={8}>
             {getFieldDecorator('passageWidth', {
               rules: [...this.numberInputRules],
-              initialValue: 1
+              initialValue: this.state.width
             })(
               <InputNumber
                 min={0}
@@ -130,45 +129,18 @@ class CreateKeepoutForm extends PureComponent {
 
     return (
       <Form onSubmit={this.handleSubmit}>
-        {/*Keepout type Select*/}
-        <Form.Item>
-          <Row>
-            <Col span={12} offset={1}>
-              <h4> Keepout Type </h4>
-            </Col>
-            <Col span={10}>
-              {getFieldDecorator('type', {
-                initialValue: this.state.type
-              })(
-                <Select
-                  onChange={(value,option) => {
-                    this.setState({type:value});
-                  }}>
-                  <Option value='KEEPOUT'>Keepout</Option>
-                  <Option value='PASSAGE'>Passage</Option>
-                  <Option value='VENT'>Vent</Option>
-                  <Option value='TREE'>Tree</Option>
-                  <Option value='ENV' title='Environmental Obstacle'>
-                    Env Obstacle
-                  </Option>
-                </Select>
-              )}
-            </Col>
-          </Row>
-        </Form.Item>
-
-        {this.state.type !== 'PASSAGE' ? keepoutHeight : null}
+        {this.props.type !== 'PASSAGE' ? keepoutHeight : null}
         {
-          this.state.type === 'KEEPOUT' || this.state.type === 'VENT' ?
+          this.props.type === 'KEEPOUT' || this.props.type === 'VENT' ?
           keepoutSetback : null
         }
-        {this.state.type === 'PASSAGE' ? passageWidth : null}
+        {this.props.type === 'PASSAGE' ? passageWidth : null}
 
         {/*The button to validate & process to create a new building*/}
         <Row type="flex" justify="center">
           <Col span={16}>
-            <Button type='primary' shape='round' htmlType="submit" block>
-              Create Keepout
+            <Button type='default' shape='round' htmlType="submit" block>
+              Update
             </Button>
           </Col>
         </Row>
@@ -184,8 +156,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    createKeepout: (values) => dispatch(actions.createKeepout(values))
+    updateKeepout: (id, values) => dispatch(actions.updateKeepout(id,values))
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'createKeepout' })(CreateKeepoutForm));
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'editKeepout' })(EditKeepoutForm));

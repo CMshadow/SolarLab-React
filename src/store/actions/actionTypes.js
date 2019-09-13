@@ -48,9 +48,9 @@ export const DELETE_INNER_POLYLINE = 'DELETE_INNER_POLYLINE';
 /*
   drawingKeepoutManager.js
  */
-export const SET_INITIALFORM_TRUE = 'SET_INITIALFORM_TRUE';
-export const SET_INITIALFORM_FALSE = 'SET_INITIALFORM_FALSE';
 export const CREATE_KEEPOUT = 'CREATE_KEEPOUT';
+export const UPDATE_KEEPOUT = 'UPDATE_KEEPOUT';
+export const DELETE_KEEPOUT = 'DELETE_KEEPOUT';
 
 /*
   uiStateManager.js

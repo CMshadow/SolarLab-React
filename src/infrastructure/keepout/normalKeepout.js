@@ -9,6 +9,14 @@ class NormalKeepout extends Keepout {
     this.height = keepoutHt ? keepoutHt : 0;
     this.setback = keepoutStb ? keepoutStb : 0;
   }
+
+  static fromKeepout (normalKeepout, keepoutHt, keepoutStb) {
+    const newId = normalKeepout.id;
+    const newType = normalKeepout.type;
+    const newKeepoutHt = keepoutHt ? keepoutHt : normalKeepout.height;
+    const newKeepoutStb = keepoutStb ? keepoutStb : normalKeepout.setback;
+    return new NormalKeepout(newId, newType, newKeepoutHt, newKeepoutStb);
+  }
 }
 
 export default NormalKeepout;
