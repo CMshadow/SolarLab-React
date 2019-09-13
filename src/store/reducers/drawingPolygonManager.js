@@ -30,11 +30,12 @@ const createBuildingFoundationPolygon = (state, action) => {
 	let newFoundation = Polygon.CopyPolygon(state.BuildingFoundation);
 	newFoundation.height = action.height;
 	newFoundation.hierarchy = [...action.coordinatesArray];
-	newFoundation.hierarchy.map( (_,index) => {
-		if ((index + 1) % 3 === 0) {
-			newFoundation.hierarchy[index] = newFoundation.height;
+	for (let i = 0; i < newFoundation.hierarchy.length; ++i) {
+		if ((i + 1) % 3 === 0) {
+			newFoundation.hierarchy[i] = newFoundation.height;
 		}
-	});
+	}
+
 	return{
 		...state,
 		BuildingFoundation: newFoundation

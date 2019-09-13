@@ -19,7 +19,7 @@ import Coordinate from '../point/coordinate';
    * @param {Boolean} [perPositionHeight=null]  whether to adjust each point
    * @param {Double} [extrudeHeight=true] The distance between the foudation and the ground
    *                                  default true
-   * @param {Color}   [materia=null]  GRBA color, Cesium.Color.WHITE if not
+   * @param {Color}   [material=null]  GRBA color, Cesium.Color.WHITE if not
    *                                  provided
    * @param {Color}   [outlineColor=null]  GRBA color, Cesium.Color.Black if not
    *                                  provided
@@ -91,7 +91,7 @@ static CopyPolygon (polygon,
     let newID = id ? id : polygon.id;
     let newName = name ? name : polygon.name;
     let newHeight = height ? height: polygon.height;
-    let newHierarchy = [...hierarchy] ? hierarchy: polygon.hierarchy;
+    let newHierarchy = hierarchy ? hierarchy: polygon.hierarchy;
     let newPerPositionHeight = perPositionHeight ? perPositionHeight: polygon.perPositionHeight;
     let newExtrudedHeight = extrudedHeight ? extrudedHeight: polygon.extrudedHeight;
     let newMaterial = material ? material: polygon.material;
