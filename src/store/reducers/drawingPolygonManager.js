@@ -27,6 +27,7 @@ const enableToBuild = (state, action) => {
  *  CREATE 3D Building Foundation Polygon 
  */
 const createBuildingFoundationPolygon = (state, action) => {
+	console.log('create building');
 	let newFoundation = Polygon.CopyPolygon(state.BuildingFoundation);
 	newFoundation.height = action.height;
 	newFoundation.hierarchy = [...action.coordinatesArray];
