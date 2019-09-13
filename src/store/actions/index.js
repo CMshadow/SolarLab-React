@@ -45,7 +45,7 @@ export {
   createKeepout,
   updateKeepout,
   deleteKeepout,
-} from './drawingKeepoutManager';
+} from './keepoutManager';
 
 export {
   setUIStateReadyDrawing,

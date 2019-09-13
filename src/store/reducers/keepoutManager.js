@@ -1,14 +1,8 @@
 import * as Cesium from 'cesium';
 
 import * as actionTypes from '../actions/actionTypes';
-import Coordinate from '../../infrastructure/point/coordinate';
-import Point from '../../infrastructure/point/point';
-import Polyline from '../../infrastructure/line/polyline';
-import InnerLine from '../../infrastructure/line/innerLine';
-
 
 const initialState = {
-  drawingKeepout: null,
   keepoutList: []
 };
 

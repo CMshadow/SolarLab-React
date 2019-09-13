@@ -88,7 +88,7 @@ class DrawKeepoutList extends Component {
 const mapStateToProps = state => {
   return {
     keepoutList:
-      state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
+      state.undoableReducer.present.keepoutManagerReducer.keepoutList,
   };
 };
 

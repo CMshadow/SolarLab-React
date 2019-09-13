@@ -42,7 +42,7 @@ export const createKeepout = (values) => {
 
 export const updateKeepout = (id, values) => (dispatch, getState) => {
   const keepoutList =
-    getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+    getState().undoableReducer.present.keepoutManagerReducer.keepoutList;
   const updateIndex = keepoutList.findIndex(elem => elem.id === id);
   let updateKeepout = null;
   switch (keepoutList[updateIndex].type) {
@@ -60,7 +60,7 @@ export const updateKeepout = (id, values) => (dispatch, getState) => {
 
 export const deleteKeepout = (id) => (dispatch, getState) => {
   const keepoutList =
-    getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+    getState().undoableReducer.present.keepoutManagerReducer.keepoutList;
   const deleteIndex = keepoutList.findIndex(elem => elem.id === id);
   return dispatch({
     type: actionTypes.DELETE_KEEPOUT,
