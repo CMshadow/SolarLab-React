@@ -23,6 +23,10 @@ const MouseMoveShiftHandler = (props) => {
         }
         break;
 
+      case 'DRAWING_KEEPOUT':
+        props.dragKeepoutPolylineFixedMode(event.endPosition, props.viewer);
+        break;
+
       default:
         break;
     }
@@ -58,6 +62,9 @@ const mapDispatchToProps = dispatch => {
     ),
     setMouseCartesian3: (cartesian, viewer) => dispatch(
       actions.setMouseCartesian3(cartesian, viewer)
+    ),
+    dragKeepoutPolylineFixedMode: (cartesian, viewer) => dispatch(
+      actions.dragKeepoutPolylineFixedMode(cartesian, viewer)
     ),
   };
 };

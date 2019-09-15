@@ -49,12 +49,21 @@ export {
   createKeepout,
   updateKeepout,
   deleteKeepout,
-} from './keepoutManager';
-
-export {
+  initLinkedKeepoutIndex,
+  releaseLinkedKeepoutIndex,
   addPointOnKeepoutPolyline,
   dragKeepoutPolyline,
+  dragKeepoutPolylineFixedMode,
   terminateKeepoutDrawing,
+  setKeepoutHoverPolyline,
+  releaseKeepoutHoverPolyline,
+  setKeepoutHoverPointIndex,
+  releaseKeepoutHoverPointIndex,
+  complementPointOnKeepoutPolyline,
+  deletePointOnKeepoutPolyline,
+  setKeepoutPickedPointIndex,
+  moveKeepoutPickedPoint,
+  releaseKeepoutPickedPointIndex
 } from './drawingKeepoutManager'
 
 export {
@@ -71,6 +80,7 @@ export {
   setUIStateDrawingInner,
   setUIStateInnerDrew,
   setUIStateDrawingKeepout,
+  setUIStateEditingKeepout,
   setPreviousUIState
 } from './uiStateManager';
 

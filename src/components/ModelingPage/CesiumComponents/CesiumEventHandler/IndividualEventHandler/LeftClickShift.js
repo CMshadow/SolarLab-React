@@ -9,13 +9,25 @@ import * as actions from '../../../../../store/actions/index';
 const LeftClickShiftHandler = (props) => {
 
   const leftClickActions = (event) => {
-    if (props.uiState === 'DRAWING_FOUND') {
+    switch (props.uiState) {
+      case 'DRAWING_FOUND':
+        props.disableRotate();
+        props.addPointOnPolyline(event.position, props.viewer, true);
+        break;
+
+      case 'DRAWING_INNER':
+        const PickedObjectsArray = props.viewer.scene.drillPick(event.position);
+        props.disableRotate();
+        props.addOrClickPoint(event.position, props.viewer, PickedObjectsArray);
+        break;
+
+      case 'DRAWING_KEEPOUT':
       props.disableRotate();
-      props.addPointOnPolyline(event.position, props.viewer, true);
-    } else if (props.uiState === 'DRAWING_INNER') {
-      const PickedObjectsArray = props.viewer.scene.drillPick(event.position);
-      props.disableRotate();
-      props.addOrClickPoint(event.position, props.viewer, PickedObjectsArray);
+      props.addPointOnKeepoutPolyline(event.position, props.viewer, true);
+      break;
+
+      default:
+        break;
     }
   };
 
@@ -38,8 +50,11 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     disableRotate: () => dispatch(actions.disableRotate()),
-    addPointOnPolyline: (cartesian, viewer) => dispatch(
-      actions.addPointOnPolyline(cartesian, viewer)
+    addPointOnPolyline: (cartesian, viewer, fixedMode) => dispatch(
+      actions.addPointOnPolyline(cartesian, viewer, fixedMode)
+    ),
+    addPointOnKeepoutPolyline: (cartesian, viewer, fixedMode) => dispatch(
+      actions.addPointOnKeepoutPolyline(cartesian, viewer, fixedMode)
     ),
     addOrClickPoint: (cartesian, viewer, pickedObject) => dispatch(
       actions.addOrClickPoint(cartesian, viewer, pickedObject)

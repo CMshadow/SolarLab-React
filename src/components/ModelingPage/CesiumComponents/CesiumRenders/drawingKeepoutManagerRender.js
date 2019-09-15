@@ -5,16 +5,16 @@ import CustomPoint from '../point/point';
 import CustomPolyline from '../polyline/polyline';
 
 const DrawingKeepoutManagerRender = (props) => {
-  let foundPolyline = null;
-  let foundPoints = null;
+  let drawingFoundPolyline = null;
+  let drawingFoundPoints = null;
   if (props.drawingKeepoutPolyline && props.drawingKeepoutPolyline.length > 1) {
 
-    foundPolyline = (<CustomPolyline
+    drawingFoundPolyline = (<CustomPolyline
       key={props.drawingKeepoutPolyline.entityId}
       {...props.drawingKeepoutPolyline}
     />);
 
-    foundPoints = props.drawingKeepoutPolyline.points.slice(0,-1).map(elem => (
+    drawingFoundPoints = props.drawingKeepoutPolyline.points.slice(0,-1).map(elem => (
       <CustomPoint key={elem.entityId} {...elem} />
     ));
   }
@@ -35,12 +35,23 @@ const DrawingKeepoutManagerRender = (props) => {
     />);
   }
 
+  const fixedKeepoutPolylines = props.keepoutList.map(keepout => {
+    if (keepout.finishedDrawing && !keepout.isEditing) {
+      return <CustomPolyline
+        key={keepout.id}
+        {...keepout.outlinePolyline}
+      />
+    }
+    return null;
+  });
+
   return (
     <div>
-      {foundPoints}
-      {foundPolyline}
+      {drawingFoundPoints}
+      {drawingFoundPolyline}
       {auxPolyline}
       {startPointAuxPolyline}
+      {fixedKeepoutPolylines}
     </div>
   );
 };
@@ -54,6 +65,8 @@ const mapStateToProps = state => {
       state.undoableReducer.present.drawingKeepoutManagerReducer.auxPolyline,
     startPointAuxPolyline:
       state.undoableReducer.present.drawingKeepoutManagerReducer.startPointAuxPolyline,
+    keepoutList:
+      state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList
   };
 }
 

@@ -178,7 +178,7 @@ const complementPointOnPolyline = (state, action) => {
     Coordinate.fromCartesian(state.rightClickCartesian3, 0.05)
   );
   const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
-  newPolyline.addPoint(indexToAdd, newPoint)
+  newPolyline.addPointPrecision(indexToAdd, newPoint)
   return {
     ...state,
     drawingPolyline: newPolyline

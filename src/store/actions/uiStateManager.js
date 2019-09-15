@@ -42,6 +42,12 @@ export const setUIStateDrawingKeepout = () => {
   };
 };
 
+export const setUIStateEditingKeepout = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_EDITING_KEEPOUT
+  };
+};
+
 export const setPreviousUIState = () => {
   return {
     type: actionTypes.SET_PREVIOUS_UI_STATE

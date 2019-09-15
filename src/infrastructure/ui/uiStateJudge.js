@@ -6,7 +6,8 @@ export const isDrawingStates = (uiState) => {
     uiState === 'EDITING_FOUND' ||
     uiState === 'DRAWING_INNER' ||
     uiState === 'INNER_DREW' ||
-    uiState === 'DRAWING_KEEPOUT'
+    uiState === 'DRAWING_KEEPOUT' ||
+    uiState === 'EDITING_KEEPOUT'
   ) {
     return true;
   } else {
@@ -38,6 +39,17 @@ export const isWorkingInner = (uiState) => {
   if (
     uiState === 'DRAWING_INNER' ||
     uiState === 'INNER_DREW'
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const isWorkingKeepout = (uiState) => {
+  if (
+    uiState === 'DRAWING_KEEPOUT' ||
+    uiState === 'EDITING_KEEPOUT'
   ) {
     return true;
   } else {

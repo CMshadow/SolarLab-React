@@ -55,6 +55,14 @@ const setUIStateDrawingKeepout = (state,action) => {
   };
 };
 
+const setUIStateEditingKeepout = (state,action) => {
+  return {
+    ...state,
+    lastUIState: state.uiState,
+    uiState: 'EDITING_KEEPOUT'
+  };
+};
+
 const setPreviousUIState = (state, action) => {
   if (state.lastUIState === 'INNER_DREW') {
     return {
@@ -87,6 +95,8 @@ const reducer = (state=initialState, action) => {
       return setUIStateInnerDrew(state, action);
     case actionTypes.SET_UI_STATE_DRAWING_KEEPOUT:
       return setUIStateDrawingKeepout(state, action);
+    case actionTypes.SET_UI_STATE_EDITING_KEEPOUT:
+      return setUIStateEditingKeepout(state, action);
     case actionTypes.SET_PREVIOUS_UI_STATE:
       return setPreviousUIState(state, action);
     default: return state;

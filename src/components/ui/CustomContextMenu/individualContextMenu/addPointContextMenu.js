@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { ContextMenu, MenuItem } from "react-contextmenu";
-
-import * as actions from '../../../../store/actions/index';
 
 class AddPointContextMenu extends Component {
   render () {
@@ -12,7 +9,7 @@ class AddPointContextMenu extends Component {
         hideOnLeave={true}
       >
         <MenuItem
-          onClick={this.props.complementPointOnPolyline}
+          onClick={this.props.complementFunction}
         >
           Add Point
         </MenuItem>
@@ -21,18 +18,4 @@ class AddPointContextMenu extends Component {
   };
 }
 
-const mapStateToProps = state => {
-  return {
-    mouseCartesian3: state.undoableReducer.present.drawingManagerReducer.mouseCartesian3
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    complementPointOnPolyline: () => dispatch(
-      actions.complementPointOnPolyline()
-    ),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(AddPointContextMenu);
+export default AddPointContextMenu;

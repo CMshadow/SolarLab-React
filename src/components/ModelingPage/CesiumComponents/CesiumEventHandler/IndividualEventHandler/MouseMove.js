@@ -10,6 +10,7 @@ const MouseMoveHandler = (props) => {
 
   const mouseMoveActions = (event) => {
     props.setMouseCartesian3(event.endPosition, props.viewer);
+    const anyPickedObject = props.viewer.scene.pick(event.endPosition);
     switch(props.uiState) {
       case 'DRAWING_FOUND':
         props.onDragPolyline(event.endPosition, props.viewer);
@@ -20,7 +21,6 @@ const MouseMoveHandler = (props) => {
           // Reposition points on the drawing polyline
           props.movePickedPoint(event.endPosition, props.viewer);
         } else {
-          const anyPickedObject = props.viewer.scene.pick(event.endPosition);
           if(anyPickedObject) {
             if (anyPickedObject.id.id === props.drawingPolyline.entityId) {
               // Set hover polyline if available
@@ -98,6 +98,39 @@ const MouseMoveHandler = (props) => {
         props.dragKeepoutPolyline(event.endPosition, props.viewer);
         break;
 
+      case 'EDITING_KEEPOUT':
+        if (props.pickedKeepoutPointIndex !== null) {
+          // Reposition points on the drawing polyline
+          props.moveKeepoutPickedPoint(event.endPosition, props.viewer);
+        } else {
+          if(anyPickedObject) {
+            if (anyPickedObject.id.id === props.drawingKeepoutPolyline.entityId) {
+              // Set hover polyline if available
+              props.setKeepoutHoverPolyline();
+              // Release hover point if it exists
+              if (props.hoverKeepoutPointIndex !== null) {
+                props.releaseKeepoutHoverPointIndex()};
+            }
+
+            // Find out hover on which point
+            const onTopPoint = props.drawingKeepoutPolyline.points.find(element => {
+              return element.entityId === anyPickedObject.id.id
+            })
+            // Set hover point if available
+            if (onTopPoint) {
+              props.setKeepoutHoverPointIndex(onTopPoint);
+              // Release hover polyline if it exists
+              if (props.hoverKeepoutPolyline) props.releaseKeepoutHoverPolyline();
+            }
+          } else {
+            // Release hover polyline if it exists
+            if (props.hoverKeepoutPolyline) props.releaseKeepoutHoverPolyline();
+            // Release hover point if it exists
+            if (props.hoverKeepoutPointIndex !== null) props.releaseKeepoutHoverPointIndex();
+          }
+        }
+        break;
+
       default:
         break;
     }
@@ -115,6 +148,7 @@ const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+
     drawingPolyline:
       state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
     hoverPolyline:
@@ -138,6 +172,19 @@ const mapStateToProps = state => {
     hoverInnerPointId:
       state.undoableReducer.present.drawingInnerManagerReducer
       .hoverInnerPointId,
+
+    drawingKeepoutPolyline:
+      state.undoableReducer.present.drawingKeepoutManagerReducer
+      .drawingKeepoutPolyline,
+    hoverKeepoutPointIndex:
+      state.undoableReducer.present.drawingKeepoutManagerReducer
+      .hoverPointIndex,
+    hoverKeepoutPolyline:
+      state.undoableReducer.present.drawingKeepoutManagerReducer
+      .hoverPolyline,
+    pickedKeepoutPointIndex:
+      state.undoableReducer.present.drawingKeepoutManagerReducer
+      .pickedPointIndex,
   };
 };
 
@@ -167,6 +214,19 @@ const mapDispatchToProps = dispatch => {
 
     dragKeepoutPolyline: (cartesian, viewer) => dispatch(
       actions.dragKeepoutPolyline(cartesian, viewer)
+    ),
+    setKeepoutHoverPolyline: () => dispatch(actions.setKeepoutHoverPolyline()),
+    releaseKeepoutHoverPolyline: () => dispatch(
+      actions.releaseKeepoutHoverPolyline()
+    ),
+    setKeepoutHoverPointIndex: (point) => dispatch(
+      actions.setKeepoutHoverPointIndex(point)
+    ),
+    releaseKeepoutHoverPointIndex: () => dispatch(
+      actions.releaseKeepoutHoverPointIndex()
+    ),
+    moveKeepoutPickedPoint: (cartesian, viewer) => dispatch(
+      actions.moveKeepoutPickedPoint(cartesian, viewer)
     ),
   };
 };

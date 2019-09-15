@@ -40,6 +40,7 @@ const LeftClickHandler = (props) => {
           pickedObjectIdArray.includes(props.drawingKeepoutPolyline.points[0].entityId)
         ) {
           props.terminateKeepoutDrawing();
+          props.setUIStateEditingKeepout();
         } else {
           props.disableRotate();
           props.addPointOnKeepoutPolyline(event.position, props.viewer);
@@ -78,9 +79,13 @@ const mapDispatchToProps = dispatch => {
     disableRotate: () => dispatch(actions.disableRotate()),
     enableRotate: () => dispatch(actions.enableRotate()),
     setUIStateFoundDrew: () => dispatch(actions.setUIStateFoundDrew()),
+    setUIStateEditingKeepout: () => dispatch(actions.setUIStateEditingKeepout()),
     terminateDrawing: () => dispatch(actions.terminateDrawing()),
     terminateKeepoutDrawing: () => dispatch(actions.terminateKeepoutDrawing()),
     releaseHoverPolyline: () => dispatch(actions.releaseHoverPolyline()),
+    addPointOnPolyline: (cartesian, viewer) => dispatch(
+      actions.addPointOnPolyline(cartesian, viewer)
+    ),
     addPointOnKeepoutPolyline: (cartesian, viewer) => dispatch(
       actions.addPointOnKeepoutPolyline(cartesian, viewer)
     ),

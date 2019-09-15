@@ -19,7 +19,6 @@ import authReducer from './store/reducers/auth';
 import cesiumReducer from './store/reducers/cesium';
 import drawingManagerReducer from './store/reducers/drawingManager';
 import drawingInnerManagerReducer from './store/reducers/drawingInnerManager';
-import keepoutManagerReducer from './store/reducers/keepoutManager';
 import drawingKeepoutManagerReducer from './store/reducers/drawingKeepoutManager';
 import uiStateManagerReducer from './store/reducers/uiStateManager';
 import buildingManagerReducer from './store/reducers/buildingManager';
@@ -44,7 +43,6 @@ const rootReducer = combineReducers({
     drawingManagerReducer: drawingManagerReducer,
     drawingInnerManagerReducer: drawingInnerManagerReducer,
     uiStateManagerReducer: uiStateManagerReducer,
-    keepoutManagerReducer: keepoutManagerReducer,
     drawingKeepoutManagerReducer: drawingKeepoutManagerReducer,
     drawingPolygonManagerReducer: drawingPolygonManagerReducer
   }), {

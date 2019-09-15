@@ -10,10 +10,20 @@ const RightClickHandler = (props) => {
 
   const rightClickActions = (event) => {
     props.setRightClickCartesian3(event.position, props.viewer)
-    if (props.uiState === 'DRAWING_FOUND') {
-      props.terminateDrawing();
-      props.setUIStateFoundDrew();
-      props.enableRotate();
+    switch (props.uiState) {
+      case 'DRAWING_FOUND':
+        props.terminateDrawing();
+        props.setUIStateFoundDrew();
+        props.enableRotate();
+        break;
+
+      case 'DRAWING_KEEPOUT':
+        props.terminateKeepoutDrawing();
+        props.setUIStateEditingKeepout();
+        break;
+
+      default:
+        break;
     }
   };
 
@@ -36,7 +46,10 @@ const mapDispatchToProps = dispatch => {
   return {
     enableRotate: () => dispatch(actions.enableRotate()),
     terminateDrawing: () => dispatch(actions.terminateDrawing()),
+    terminateKeepoutDrawing: () => dispatch(actions.terminateKeepoutDrawing()),
     setUIStateFoundDrew: () => dispatch(actions.setUIStateFoundDrew()),
+    setUIStateEditingKeepout: () => dispatch(actions.setUIStateEditingKeepout()),
+    setPreviousUIState: () => dispatch(actions.setPreviousUIState()),
     setRightClickCartesian3: (cartesian, viewer) => dispatch(
       actions.setRightClickCartesian3(cartesian, viewer)
     ),

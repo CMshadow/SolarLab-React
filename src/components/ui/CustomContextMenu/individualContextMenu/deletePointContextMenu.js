@@ -1,8 +1,5 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { ContextMenu, MenuItem } from "react-contextmenu";
-
-import * as actions from '../../../../store/actions/index';
 
 class DeletePointContextMenu extends Component {
   render () {
@@ -12,7 +9,7 @@ class DeletePointContextMenu extends Component {
         hideOnLeave={true}
       >
         <MenuItem
-          onClick={this.props.deletePointOnPolyline}
+          onClick={this.props.deleteFunction}
         >
           Delete Point
         </MenuItem>
@@ -21,13 +18,4 @@ class DeletePointContextMenu extends Component {
   };
 }
 
-
-const mapDispatchToProps = dispatch => {
-  return {
-    deletePointOnPolyline: () => dispatch(
-      actions.deletePointOnPolyline()
-    ),
-  };
-};
-
-export default connect(null, mapDispatchToProps)(DeletePointContextMenu);
+export default DeletePointContextMenu;

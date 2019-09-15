@@ -9,10 +9,21 @@ import * as actions from '../../../../../store/actions/index';
 const LeftUpHandler = (props) => {
 
   const leftUpActions = (event) => {
-    if (props.uiState === 'EDITING_FOUND') {
-      if (props.pickedPointIndex !== null) {
-        props.releasePickedPointIndex();
-      }
+    switch (props.uiState) {
+      case 'EDITING_FOUND':
+        if (props.pickedPointIndex !== null) {
+          props.releasePickedPointIndex();
+        }
+        break;
+
+      case 'EDITING_KEEPOUT':
+        if (props.pickedKeepoutPointIndex !== null) {
+          props.releaseKeepoutPickedPointIndex();
+        }
+        break;
+
+      default:
+        break;
     }
   };
 
@@ -27,13 +38,22 @@ const LeftUpHandler = (props) => {
 const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    pickedPointIndex: state.undoableReducer.present.drawingManagerReducer.pickedPointIndex,
+    pickedPointIndex:
+      state.undoableReducer.present.drawingManagerReducer.pickedPointIndex,
+    pickedKeepoutPointIndex:
+      state.undoableReducer.present.drawingKeepoutManagerReducer
+      .pickedPointIndex,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    releasePickedPointIndex: (point) => dispatch(actions.releasePickedPointIndex(point)),
+    releasePickedPointIndex: (point) => dispatch(
+      actions.releasePickedPointIndex(point)
+    ),
+    releaseKeepoutPickedPointIndex: (point) => dispatch(
+      actions.releaseKeepoutPickedPointIndex(point)
+    ),
   };
 };
 
