@@ -128,6 +128,78 @@ class CreateKeepoutForm extends PureComponent {
       </Form.Item>
     );
 
+    const keepoutRadius = (
+      <Form.Item>
+        <Row>
+          <Col span={12} offset={1}>
+            <h4> Radius </h4>
+          </Col>
+          <Col span={10}>
+            {getFieldDecorator('radius', {
+              rules: [...this.numberInputRules],
+              initialValue: 2
+            })(
+              <InputNumber
+                min={1}
+                max={50}
+                step={1}
+                formatter={value => `${value}m`}
+                parser={value => value.replace('m', '')}
+              />
+            )}
+          </Col>
+        </Row>
+      </Form.Item>
+    );
+
+    const keepoutAngle = (
+      <Form.Item>
+        <Row>
+          <Col span={12} offset={1}>
+            <h4> Angle </h4>
+          </Col>
+          <Col span={10}>
+            {getFieldDecorator('angle', {
+              rules: [...this.numberInputRules],
+              initialValue: 120
+            })(
+              <InputNumber
+                min={1}
+                max={360}
+                step={1}
+                formatter={value => `${value}\xB0`}
+                parser={value => value.replace('\xB0', '')}
+              />
+            )}
+          </Col>
+        </Row>
+      </Form.Item>
+    );
+
+    const keepoutHeading = (
+      <Form.Item>
+        <Row>
+          <Col span={12} offset={1}>
+            <h4> Vent Heading </h4>
+          </Col>
+          <Col span={10}>
+            {getFieldDecorator('heading', {
+              rules: [...this.numberInputRules],
+              initialValue: 0
+            })(
+              <InputNumber
+                min={0}
+                max={359}
+                step={1}
+                formatter={value => `${value}\xB0`}
+                parser={value => value.replace('\xB0', '')}
+              />
+            )}
+          </Col>
+        </Row>
+      </Form.Item>
+    );
+
     return (
       <Form onSubmit={this.handleSubmit}>
         {/*Keepout type Select*/}
@@ -157,12 +229,20 @@ class CreateKeepoutForm extends PureComponent {
           </Row>
         </Form.Item>
 
-        {this.state.type !== 'PASSAGE' ? keepoutHeight : null}
         {
-          this.state.type === 'KEEPOUT' || this.state.type === 'VENT' ?
-          keepoutSetback : null
+          this.state.type !== 'PASSAGE' && this.state.type !== 'VENT' ?
+          keepoutHeight :
+          null
         }
+        {this.state.type === 'KEEPOUT' ? keepoutSetback : null}
         {this.state.type === 'PASSAGE' ? passageWidth : null}
+        {this.state.type === 'VENT' ? keepoutHeading : null}
+        {this.state.type === 'VENT' ? keepoutAngle : null}
+        {
+          this.state.type === 'VENT' || this.state.type === 'TREE' ?
+          keepoutRadius :
+          null
+        }
 
         {/*The button to validate & process to create a new building*/}
         <Row type="flex" justify="center">

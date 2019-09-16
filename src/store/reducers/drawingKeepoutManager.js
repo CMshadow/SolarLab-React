@@ -27,6 +27,8 @@ const initialState = {
   hoverPolyline: false,
   hoverPointIndex: null,
   pickedPointIndex: null
+
+
 };
 
 const createKeepout = (state, action) => {
@@ -403,6 +405,10 @@ const addPointOnKeepoutPolyline = (state, action) => {
   }
 };
 
+const addVentTemplate = (state, action) => {
+
+}
+
 const terminateKeepoutDrawing = (state, action) => {
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
     case 'KEEPOUT': {
@@ -441,7 +447,6 @@ const terminateKeepoutDrawing = (state, action) => {
         state.keepoutList[state.linkedKeepoutIndex]
       );
       updateKeepout.setFinishedDrawing();
-      console.log(polyline)
       const newKeepoutList = [...state.keepoutList];
       newKeepoutList.splice(state.linkedKeepoutIndex, 1, updateKeepout)
       return {
@@ -712,6 +717,8 @@ const reducer = (state=initialState, action) => {
       return releaseLinkedKeepoutIndex (state, action);
     case actionTypes.KEEPOUT_ADD_POINT:
       return addPointOnKeepoutPolyline (state, action);
+    case actionTypes.KEEPOUT_ADD_VENT_TEMPLATE:
+      return addVentTemplate (state, action);
     case actionTypes.KEEPOUT_DRAG_POLYLINE:
       return dragKeepoutPolyline (state, action);
     case actionTypes.KEEPOUT_DRAG_POLYLINE_FIXED_MODE:

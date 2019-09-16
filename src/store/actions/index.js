@@ -52,6 +52,7 @@ export {
   initLinkedKeepoutIndex,
   releaseLinkedKeepoutIndex,
   addPointOnKeepoutPolyline,
+  addVentTemplate,
   dragKeepoutPolyline,
   dragKeepoutPolylineFixedMode,
   terminateKeepoutDrawing,

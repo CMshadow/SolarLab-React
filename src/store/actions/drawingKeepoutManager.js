@@ -23,8 +23,10 @@ export const createKeepout = (values) => {
       break;
     case 'VENT':
       newKeepout = new Vent(
-        null, values.type, values.height, values.setback
+        null, values.type, false, false, values.heading, values.radius,
+        values.angle
       );
+      console.log(newKeepout)
       break;
     case 'TREE':
       newKeepout = new Tree(null, values.type, values.height);
@@ -50,9 +52,24 @@ export const updateKeepout = (id, values) => (dispatch, getState) => {
   let updateKeepout = null;
   switch (keepoutList[updateIndex].type) {
     default:
+    case 'KEEPOUT':
       updateKeepout = NormalKeepout.fromKeepout(
         keepoutList[updateIndex], values.height, values.setback
       );
+      break;
+
+    case 'PASSAGE':
+      updateKeepout = Passage.fromKeepout(
+        keepoutList[updateIndex], values.width
+      );
+      break;
+
+    case 'VENT':
+    console.log(values)
+      updateKeepout = Vent.fromKeepout(
+        keepoutList[updateIndex], values.heading, values.radius, values.angle
+      );
+      break;
   }
   return dispatch({
     type: actionTypes.UPDATE_KEEPOUT,
@@ -101,6 +118,10 @@ export const addPointOnKeepoutPolyline = (mousePosition, viewer, fixedMode=false
     };
   }
 };
+
+export const addVentTemplate = (mousePosition, viewer) => {
+
+}
 
 export const dragKeepoutPolyline = (mousePosition, viewer) => {
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
