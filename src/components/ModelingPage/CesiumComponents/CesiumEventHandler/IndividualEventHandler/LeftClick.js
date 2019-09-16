@@ -36,14 +36,25 @@ const LeftClickHandler = (props) => {
         break;
 
       case 'DRAWING_KEEPOUT':
-        if (
-          pickedObjectIdArray.includes(props.drawingKeepoutPolyline.points[0].entityId)
-        ) {
-          props.terminateKeepoutDrawing();
-          props.setUIStateEditingKeepout();
-        } else {
-          props.disableRotate();
-          props.addPointOnKeepoutPolyline(event.position, props.viewer);
+        switch (props.linkedKeepoutType) {
+          default:
+          case 'KEEPOUT':
+          case 'PASSAGE':
+            if (
+              pickedObjectIdArray.includes(
+                props.drawingKeepoutPolyline.points[0].entityId
+              )
+            ) {
+              props.terminateKeepoutDrawing();
+              props.setUIStateEditingKeepout();
+            } else {
+              props.disableRotate();
+              props.addPointOnKeepoutPolyline(event.position, props.viewer);
+            }
+            break;
+
+          case 'VENT':
+            props.addVentTemplate(event.position, props.viewer)
         }
         break;
 
@@ -66,11 +77,15 @@ const mapStateToProps = state => {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     drawingFoundPolyline:
       state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+    hoverPolyline:
+      state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
+
     drawingKeepoutPolyline:
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .drawingKeepoutPolyline,
-    hoverPolyline:
-      state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
+    linkedKeepoutType:
+      state.undoableReducer.present.drawingKeepoutManagerReducer
+      .linkedKeepoutType,
   };
 };
 
@@ -88,6 +103,9 @@ const mapDispatchToProps = dispatch => {
     ),
     addPointOnKeepoutPolyline: (cartesian, viewer) => dispatch(
       actions.addPointOnKeepoutPolyline(cartesian, viewer)
+    ),
+    addVentTemplate: (cartesian, viewer) => dispatch(
+      actions.addVentTemplate(cartesian, viewer)
     ),
     addOrClickPoint: (cartesian, viewer, pickedObject) => dispatch(
       actions.addOrClickPoint(cartesian, viewer, pickedObject)

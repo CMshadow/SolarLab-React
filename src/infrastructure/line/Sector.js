@@ -19,7 +19,11 @@ class Sector extends Polyline {
     for (
       let direction = brng - angle/2; direction < brng + angle/2; direction+=5
     ) {
-      points.push(Point.destination(originCor, direction, radius));
+      points.push(
+        Point.fromCoordinate(
+          Point.destination(originCor, direction, radius)
+        )
+      );
     }
     return points;
   }

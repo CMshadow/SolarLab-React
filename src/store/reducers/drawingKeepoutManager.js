@@ -8,14 +8,18 @@ import {
 import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
 import Polyline from '../../infrastructure/line/polyline';
+import Sector from '../../infrastructure/line/sector';
 import FoundLine from '../../infrastructure/line/foundLine';
 import DashedLine from '../../infrastructure/line/dashedLine';
 import BearingCollection from '../../infrastructure/math/bearingCollection';
 import NormalKeepout from '../../infrastructure/keepout/normalKeepout';
+import Passage from '../../infrastructure/keepout/passage';
+import Vent from '../../infrastructure/keepout/vent';
 
 const initialState = {
   keepoutList: [],
   linkedKeepoutIndex: null,
+  linkedKeepoutType: null,
   drawingKeepoutPolyline: null,
   fixedPoints: [],
   brngCollection: null,
@@ -59,19 +63,38 @@ const deleteKeepout = (state, action) => {
 
 const initLinkedKeepoutIndex = (state, action) => {
   const newKeepoutList = [...state.keepoutList];
-  const newKeepout = NormalKeepout.fromKeepout(
-    newKeepoutList[action.keepoutIndex]
-  );
+  let newKeepout = null;
+  switch (action.keepoutType) {
+    default:
+    case 'KEEPOUT':
+      newKeepout = NormalKeepout.fromKeepout(
+        newKeepoutList[action.keepoutIndex]
+      );
+      break;
+
+    case 'PASSAGE':
+      newKeepout = Passage.fromKeepout(
+        newKeepoutList[action.keepoutIndex]
+      );
+      break;
+
+    case 'VENT':
+      newKeepout = Vent.fromKeepout(
+        newKeepoutList[action.keepoutIndex]
+      );
+      break;
+  }
+
   newKeepout.setIsEditing();
   newKeepoutList.splice(action.keepoutIndex, 1, newKeepout);
-
   const readPolyline =
     newKeepout.finishedDrawing ? newKeepout.outlinePolyline : null;
   return {
     ...state,
     drawingKeepoutPolyline: readPolyline,
     keepoutList: newKeepoutList,
-    linkedKeepoutIndex: action.keepoutIndex
+    linkedKeepoutIndex: action.keepoutIndex,
+    linkedKeepoutType: action.keepoutType
   };
 };
 
@@ -96,6 +119,7 @@ const releaseLinkedKeepoutIndex = (state, action) => {
         ...state,
         keepoutList: newKeepoutList,
         linkedKeepoutIndex: null,
+        linkedKeepoutType: null,
         drawingKeepoutPolyline: null,
         fixedPoints: [],
         auxPolyline: null,
@@ -107,12 +131,12 @@ const releaseLinkedKeepoutIndex = (state, action) => {
       const newKeepoutList = [...state.keepoutList];
       let newKeepout = null;
       if (newKeepoutList[state.linkedKeepoutIndex].finishedDrawing) {
-        newKeepout = NormalKeepout.fromKeepout(
-          newKeepoutList[state.linkedKeepoutIndex], null, null,
+        newKeepout = Passage.fromKeepout(
+          newKeepoutList[state.linkedKeepoutIndex], null,
           Polyline.fromPolyline(state.drawingKeepoutPolyline)
         );
       } else {
-        newKeepout = NormalKeepout.fromKeepout(
+        newKeepout = Passage.fromKeepout(
           newKeepoutList[state.linkedKeepoutIndex]
         );
       }
@@ -122,6 +146,7 @@ const releaseLinkedKeepoutIndex = (state, action) => {
         ...state,
         keepoutList: newKeepoutList,
         linkedKeepoutIndex: null,
+        linkedKeepoutType: null,
         drawingKeepoutPolyline: null,
         fixedPoints: [],
         auxPolyline: null,
@@ -406,7 +431,18 @@ const addPointOnKeepoutPolyline = (state, action) => {
 };
 
 const addVentTemplate = (state, action) => {
-
+  console.log('add vent reducer')
+  const sectorPolyline = new Sector(
+    Coordinate.fromCartesian(action.cartesian3),
+    state.keepoutList[state.linkedKeepoutIndex].bearing,
+    state.keepoutList[state.linkedKeepoutIndex].radius,
+    state.keepoutList[state.linkedKeepoutIndex].angle,
+  );
+  console.log(sectorPolyline)
+  return {
+    ...state,
+    drawingKeepoutPolyline: sectorPolyline
+  }
 }
 
 const terminateKeepoutDrawing = (state, action) => {
@@ -443,7 +479,7 @@ const terminateKeepoutDrawing = (state, action) => {
       const polyline = new Polyline(
         [...existPoints], null, null, Cesium.Color.WHEAT
       );
-      const updateKeepout = NormalKeepout.fromKeepout(
+      const updateKeepout = Passage.fromKeepout(
         state.keepoutList[state.linkedKeepoutIndex]
       );
       updateKeepout.setFinishedDrawing();

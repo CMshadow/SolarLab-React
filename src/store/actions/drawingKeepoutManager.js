@@ -1,7 +1,6 @@
 import * as Cesium from 'cesium';
 
 import * as actionTypes from './actionTypes';
-import Coordinate from '../../infrastructure/point/coordinate';
 import Env from '../../infrastructure/keepout/env';
 import Vent from '../../infrastructure/keepout/vent';
 import Tree from '../../infrastructure/keepout/tree';
@@ -26,7 +25,6 @@ export const createKeepout = (values) => {
         null, values.type, false, false, values.heading, values.radius,
         values.angle
       );
-      console.log(newKeepout)
       break;
     case 'TREE':
       newKeepout = new Tree(null, values.type, values.height);
@@ -92,9 +90,14 @@ export const initLinkedKeepoutIndex = (keepoutId) => (dispatch, getState) => {
   const keepoutIndex =
     getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList
     .findIndex(elem => elem.id === keepoutId);
+  const keepoutType =
+    getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList[
+      keepoutIndex
+    ].type;
   return dispatch({
     type: actionTypes.INIT_LINKED_KEEPOUT_INDEX,
-    keepoutIndex: keepoutIndex
+    keepoutIndex: keepoutIndex,
+    keepoutType: keepoutType
   });
 };
 
@@ -120,7 +123,17 @@ export const addPointOnKeepoutPolyline = (mousePosition, viewer, fixedMode=false
 };
 
 export const addVentTemplate = (mousePosition, viewer) => {
-
+  const cartesian3 = viewer.scene.pickPosition(mousePosition);
+  if (Cesium.defined(cartesian3)) {
+    return {
+      type: actionTypes.KEEPOUT_ADD_VENT_TEMPLATE,
+      cartesian3: cartesian3
+    };
+  } else {
+    return {
+      type: actionTypes.DO_NOTHING
+    };
+  }
 }
 
 export const dragKeepoutPolyline = (mousePosition, viewer) => {
