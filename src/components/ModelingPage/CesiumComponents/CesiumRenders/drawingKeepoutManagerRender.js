@@ -1,22 +1,32 @@
 import React from 'react';
 import { connect } from 'react-redux';
 
+import FoundLine from '../../../../infrastructure/line/foundLine';
 import CustomPoint from '../point/point';
 import CustomPolyline from '../polyline/polyline';
 
 const DrawingKeepoutManagerRender = (props) => {
-  let drawingFoundPolyline = null;
-  let drawingFoundPoints = null;
+  let drawingKeepoutPolyline = null;
+  let drawingKeepoutPoints = null;
   if (props.drawingKeepoutPolyline && props.drawingKeepoutPolyline.length > 1) {
 
-    drawingFoundPolyline = (<CustomPolyline
+    drawingKeepoutPolyline = (<CustomPolyline
       key={props.drawingKeepoutPolyline.entityId}
       {...props.drawingKeepoutPolyline}
     />);
 
-    drawingFoundPoints = props.drawingKeepoutPolyline.points.slice(0,-1).map(elem => (
-      <CustomPoint key={elem.entityId} {...elem} />
-    ));
+    if (props.drawingKeepoutPolyline instanceof FoundLine) {
+      drawingKeepoutPoints =
+        props.drawingKeepoutPolyline.points.slice(0, -1).map(elem => (
+        <CustomPoint key={elem.entityId} {...elem} />
+      ));
+    } else {
+      drawingKeepoutPoints =
+        props.drawingKeepoutPolyline.points.map(elem => (
+        <CustomPoint key={elem.entityId} {...elem} />
+      ));
+    }
+
   }
 
   let auxPolyline = null;
@@ -47,8 +57,8 @@ const DrawingKeepoutManagerRender = (props) => {
 
   return (
     <div>
-      {drawingFoundPoints}
-      {drawingFoundPolyline}
+      {drawingKeepoutPoints}
+      {drawingKeepoutPolyline}
       {auxPolyline}
       {startPointAuxPolyline}
       {fixedKeepoutPolylines}
@@ -61,6 +71,10 @@ const mapStateToProps = state => {
     drawingKeepoutPolyline:
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .drawingKeepoutPolyline,
+    drawingKeepoutObject:
+      state.undoableReducer.present.drawingKeepoutManagerReducer
+      .keepoutList[state.undoableReducer.present.drawingKeepoutManagerReducer
+      .linkedKeepoutIndex],
     auxPolyline:
       state.undoableReducer.present.drawingKeepoutManagerReducer.auxPolyline,
     startPointAuxPolyline:

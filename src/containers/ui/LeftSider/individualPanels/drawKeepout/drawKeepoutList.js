@@ -15,7 +15,7 @@ import {
   emptyListTemplate
 } from '../../../../../components/ui/EmptyTemplate/emptyListTemplate';
 import CreateKeepoutForm from './createKeepoutForm';
-import NormalKeepoutListItem from './normalKeepoutListItem';
+import KeepoutListItem from './keepoutListItem';
 
 class DrawKeepoutList extends Component {
   state = {
@@ -31,10 +31,10 @@ class DrawKeepoutList extends Component {
   generateListItems = (item) => {
     switch (item.type) {
       case 'Keepout':
-        return <NormalKeepoutListItem {...item} />
+        return <KeepoutListItem {...item} />
 
       default:
-        return <NormalKeepoutListItem {...item} />
+        return <KeepoutListItem {...item} />
     }
   };
 

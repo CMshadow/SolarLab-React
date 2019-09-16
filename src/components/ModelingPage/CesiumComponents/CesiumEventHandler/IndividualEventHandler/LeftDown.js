@@ -25,6 +25,7 @@ const LeftDownHandler = (props) => {
         break;
 
       case 'EDITING_KEEPOUT':
+        props.disableRotate();
         if (pickedObject) {
           // Find out picked which point
           const onTopPoint = props.drawingKeepoutPolyline.points.find(element =>
@@ -64,6 +65,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
+    disableRotate: (point) => dispatch(actions.disableRotate(point)),
     setPickedPointIndex: (point) => dispatch(actions.setPickedPointIndex(point)),
     setKeepoutPickedPointIndex: (point) => dispatch(
       actions.setKeepoutPickedPointIndex(point)

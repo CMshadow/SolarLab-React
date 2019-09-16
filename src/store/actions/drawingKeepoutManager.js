@@ -17,7 +17,9 @@ export const createKeepout = (values) => {
       );
       break;
     case 'PASSAGE':
-      newKeepout = new Passage(null, values.type, values.passageWidth);
+      newKeepout = new Passage(
+        null, values.type, false, false, values.passageWidth
+      );
       break;
     case 'VENT':
       newKeepout = new Vent(

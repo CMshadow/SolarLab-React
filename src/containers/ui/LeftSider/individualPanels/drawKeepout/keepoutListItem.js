@@ -14,11 +14,11 @@ import {
 } from 'antd';
 
 import * as actions from '../../../../../store/actions/index';
-import * as classes from './normalKeepoutListItem.module.css';
+import * as classes from './keepoutListItem.module.css';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import EditKeepoutForm from './editKeepoutForm';
 
-class NormalKeepoutListItem extends Component {
+class KeepoutListItem extends Component {
   state = {
     enableEdit: false,
     enableDrawing: false,
@@ -100,7 +100,7 @@ class NormalKeepoutListItem extends Component {
           </Button>,
         ]}
       >
-        Keepout
+        {this.props.type}
       </List.Item>
     );
   }
@@ -129,4 +129,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(NormalKeepoutListItem);
+export default connect(mapStateToProps, mapDispatchToProps)(KeepoutListItem);
