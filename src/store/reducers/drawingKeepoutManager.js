@@ -433,7 +433,7 @@ const addPointOnKeepoutPolyline = (state, action) => {
 const addVentTemplate = (state, action) => {
   console.log('add vent reducer')
   const sectorPolyline = new Sector(
-    Coordinate.fromCartesian(action.cartesian3),
+    Coordinate.fromCartesian(action.cartesian3, 0.05),
     state.keepoutList[state.linkedKeepoutIndex].bearing,
     state.keepoutList[state.linkedKeepoutIndex].radius,
     state.keepoutList[state.linkedKeepoutIndex].angle,

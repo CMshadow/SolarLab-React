@@ -25,6 +25,7 @@ class Sector extends Polyline {
         )
       );
     }
+    points.push(this.points[0]);
     return points;
   }
 }

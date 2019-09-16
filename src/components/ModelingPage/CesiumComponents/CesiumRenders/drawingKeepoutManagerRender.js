@@ -2,6 +2,7 @@ import React from 'react';
 import { connect } from 'react-redux';
 
 import FoundLine from '../../../../infrastructure/line/foundLine';
+import Sector from '../../../../infrastructure/line/sector';
 import CustomPoint from '../point/point';
 import CustomPolyline from '../polyline/polyline';
 
@@ -20,7 +21,22 @@ const DrawingKeepoutManagerRender = (props) => {
         props.drawingKeepoutPolyline.points.slice(0, -1).map(elem => (
         <CustomPoint key={elem.entityId} {...elem} />
       ));
-    } else {
+    } else if (props.drawingKeepoutPolyline instanceof Sector) {
+      const showPoints = [
+        props.drawingKeepoutPolyline.points[0],
+        props.drawingKeepoutPolyline.points[1],
+        props.drawingKeepoutPolyline.points[
+          Math.trunc(props.drawingKeepoutPolyline.points.length/2)
+        ],
+        props.drawingKeepoutPolyline.points[
+          props.drawingKeepoutPolyline.points.length-2
+        ],
+      ]
+      drawingKeepoutPoints =
+        showPoints.map(elem => (
+        <CustomPoint key={elem.entityId} {...elem} />
+      ));
+    }else {
       drawingKeepoutPoints =
         props.drawingKeepoutPolyline.points.map(elem => (
         <CustomPoint key={elem.entityId} {...elem} />
