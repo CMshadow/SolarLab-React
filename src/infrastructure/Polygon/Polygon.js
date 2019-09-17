@@ -45,7 +45,7 @@ class Polygon {
     this.entityId = id ? id : uuid();
     this.name = name ? name: 'Polygon_Foundation';
     this.height = height ? height : 0.0;
-    this.hierarchy = [...hierarchy] ? hierarchy : [];
+    this.hierarchy = hierarchy ? [...hierarchy] : [];
     this.perPositionHeight = perPositionHeight ? perPositionHeight: true;
     this.extrudedHeight = extrudedHeight ? extrudedHeight: 0.0;
     this.materia = materia ? materia: Cesium.Color.WHITE;
