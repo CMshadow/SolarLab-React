@@ -2,11 +2,7 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import {
   Form,
-  Input,
   InputNumber,
-  Divider,
-  Tooltip,
-  Select,
   Row,
   Col,
   Button,
@@ -36,12 +32,12 @@ class EditKeepoutForm extends PureComponent {
 
   generateTypeText = () => {
     switch (this.props.type) {
-      case 'TREE':
-        return 'Tree';
       case 'VENT':
         return 'Vent';
       case 'ENV':
         return 'Obstacle';
+      case 'TREE':
+        return 'Tree';
       default:
         return 'Keepout';
     }
@@ -61,10 +57,10 @@ class EditKeepoutForm extends PureComponent {
     const keepoutHeight = (
       <Form.Item>
         <Row>
-          <Col span={12} offset={2}>
-            <h4> {this.generateTypeText()} Height </h4>
+          <Col span={12} offset={1}>
+            <h4>{this.generateTypeText()} Height</h4>
           </Col>
-          <Col span={8}>
+          <Col span={10}>
             {getFieldDecorator('height', {
               rules: [...this.numberInputRules],
               initialValue: this.state.height
@@ -85,10 +81,10 @@ class EditKeepoutForm extends PureComponent {
     const keepoutSetback = (
       <Form.Item>
         <Row>
-          <Col span={12} offset={2}>
+          <Col span={12} offset={1}>
             <h4> Keepout Setback </h4>
           </Col>
-          <Col span={8}>
+          <Col span={10}>
             {getFieldDecorator('setback', {
               rules: [...this.numberInputRules],
               initialValue: this.state.setback
@@ -109,10 +105,10 @@ class EditKeepoutForm extends PureComponent {
     const passageWidth = (
       <Form.Item>
         <Row>
-          <Col span={12} offset={2}>
+          <Col span={12} offset={1}>
             <h4> Passage Width </h4>
           </Col>
-          <Col span={8}>
+          <Col span={10}>
             {getFieldDecorator('passageWidth', {
               rules: [...this.numberInputRules],
               initialValue: this.state.width

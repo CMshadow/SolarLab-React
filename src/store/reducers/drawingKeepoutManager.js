@@ -9,12 +9,15 @@ import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
 import Polyline from '../../infrastructure/line/polyline';
 import Sector from '../../infrastructure/line/sector';
+import Circle from '../../infrastructure/line/circle';
 import FoundLine from '../../infrastructure/line/foundLine';
 import DashedLine from '../../infrastructure/line/dashedLine';
 import BearingCollection from '../../infrastructure/math/bearingCollection';
 import NormalKeepout from '../../infrastructure/keepout/normalKeepout';
 import Passage from '../../infrastructure/keepout/passage';
 import Vent from '../../infrastructure/keepout/vent';
+import Tree from '../../infrastructure/keepout/tree';
+import Env from '../../infrastructure/keepout/env';
 
 const initialState = {
   keepoutList: [],
@@ -80,6 +83,18 @@ const initLinkedKeepoutIndex = (state, action) => {
 
     case 'VENT':
       newKeepout = Vent.fromKeepout(
+        newKeepoutList[action.keepoutIndex]
+      );
+      break;
+
+    case 'TREE':
+      newKeepout = Tree.fromKeepout(
+        newKeepoutList[action.keepoutIndex]
+      );
+      break;
+
+    case 'Env':
+      newKeepout = Env.fromKeepout(
         newKeepoutList[action.keepoutIndex]
       );
       break;
@@ -184,6 +199,63 @@ const releaseLinkedKeepoutIndex = (state, action) => {
       };
     }
 
+    case 'TREE' : {
+      const newKeepoutList = [...state.keepoutList];
+      let newKeepout = null;
+      if (newKeepoutList[state.linkedKeepoutIndex].finishedDrawing) {
+        newKeepout = Tree.fromKeepout(
+          newKeepoutList[state.linkedKeepoutIndex],
+          null,
+          parseFloat(state.drawingKeepoutPolyline.radius.toFixed(1)),
+          Circle.fromPolyline(state.drawingKeepoutPolyline)
+        );
+      } else {
+        newKeepout = Tree.fromKeepout(
+          newKeepoutList[state.linkedKeepoutIndex]
+        );
+      }
+      newKeepout.unsetIsEditing();
+      newKeepoutList.splice(state.linkedKeepoutIndex, 1, newKeepout);
+      return {
+        ...state,
+        keepoutList: newKeepoutList,
+        linkedKeepoutIndex: null,
+        linkedKeepoutType: null,
+        drawingKeepoutPolyline: null,
+        fixedPoints: [],
+        auxPolyline: null,
+        startPointAuxPolyline: null,
+      };
+    }
+
+    case 'ENV': {
+      const newKeepoutList = [...state.keepoutList];
+      let newKeepout = null;
+      if (newKeepoutList[state.linkedKeepoutIndex].finishedDrawing) {
+        newKeepout = Env.fromKeepout(
+          newKeepoutList[state.linkedKeepoutIndex], null,
+          FoundLine.fromPolyline(state.drawingKeepoutPolyline)
+        );
+      } else {
+        newKeepout = NormalKeepout.fromKeepout(
+          newKeepoutList[state.linkedKeepoutIndex]
+        );
+      }
+      newKeepout.unsetIsEditing();
+      newKeepoutList.splice(state.linkedKeepoutIndex, 1, newKeepout);
+      return {
+        ...state,
+        keepoutList: newKeepoutList,
+        linkedKeepoutIndex: null,
+        linkedKeepoutType: null,
+        drawingKeepoutPolyline: null,
+        fixedPoints: [],
+        auxPolyline: null,
+        startPointAuxPolyline: null,
+      };
+    }
+
+
     default: {
       return {
         ...state
@@ -194,6 +266,7 @@ const releaseLinkedKeepoutIndex = (state, action) => {
 
 const dragKeepoutPolyline = (state, action) => {
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+    case 'ENV':
     case 'KEEPOUT': {
       // Create Foundation Polyline
       const existPoints = state.fixedPoints.map(elem => {
@@ -258,6 +331,7 @@ const dragKeepoutPolyline = (state, action) => {
 
 const dragPolylineFixedMode = (state, action) => {
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+    case 'ENV':
     case 'KEEPOUT': {
       // Create Foundation Polyline
       const existPoints = state.fixedPoints.map(elem => {
@@ -428,6 +502,7 @@ const addPointOnKeepoutPolyline = (state, action) => {
     state.drawingKeepoutPolyline.length-1
   ];
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+    case 'ENV':
     case 'KEEPOUT': {
       const polyline = new Polyline(
         [...existPoints, newPoint], null, null, Cesium.Color.YELLOW
@@ -481,7 +556,28 @@ const addVentTemplate = (state, action) => {
     keepoutList: newKeepoutList,
     drawingKeepoutPolyline: sectorPolyline
   }
-}
+};
+
+const addTreeTemplate = (state, action) => {
+  const circlePolyline = Circle.fromProps(
+    Coordinate.fromCartesian(action.cartesian3, 0.05),
+    state.keepoutList[state.linkedKeepoutIndex].radius,
+    null,
+    null,
+    Cesium.Color.FORESTGREEN
+  );
+  const updateKeepout = Tree.fromKeepout(
+    state.keepoutList[state.linkedKeepoutIndex]
+  );
+  updateKeepout.setFinishedDrawing();
+  const newKeepoutList = [...state.keepoutList];
+  newKeepoutList.splice(state.linkedKeepoutIndex, 1, updateKeepout)
+  return {
+    ...state,
+    keepoutList: newKeepoutList,
+    drawingKeepoutPolyline: circlePolyline
+  }
+};
 
 const terminateKeepoutDrawing = (state, action) => {
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
@@ -533,16 +629,42 @@ const terminateKeepoutDrawing = (state, action) => {
       };
     }
 
+    case 'ENV': {
+      const existPoints = state.fixedPoints.map(elem => {
+        return Point.fromPoint(elem);
+      });
+      const polyline = new FoundLine(
+        [...existPoints, existPoints[0]], null, null, Cesium.Color.YELLOW
+      );
+
+      const updateKeepout = Env.fromKeepout(
+        state.keepoutList[state.linkedKeepoutIndex]
+      );
+      updateKeepout.setFinishedDrawing();
+
+      const newKeepoutList = [...state.keepoutList];
+      newKeepoutList.splice(state.linkedKeepoutIndex, 1, updateKeepout)
+      return {
+        ...state,
+        keepoutList: newKeepoutList,
+        drawingKeepoutPolyline: polyline,
+        fixedPoints: [],
+        auxPolyline: null,
+        startPointAuxPolyline: null
+      };
+    }
+
     default: {
       return {
         ...state
       };
     }
   }
-}
+};
 
 const setHoverPolyline = (state, action) => {
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+    case 'ENV':
     case 'KEEPOUT': {
       const newPolyline = FoundLine.fromPolyline(state.drawingKeepoutPolyline);
       newPolyline.setColor(Cesium.Color.ORANGE);
@@ -573,6 +695,16 @@ const setHoverPolyline = (state, action) => {
       };
     }
 
+    case 'TREE': {
+      const newPolyline = Circle.fromPolyline(state.drawingKeepoutPolyline);
+      newPolyline.setColor(Cesium.Color.ORANGE);
+      return {
+        ...state,
+        drawingKeepoutPolyline: newPolyline,
+        hoverPolyline: true
+      };
+    }
+
     default: {
       return {
         ...state
@@ -584,6 +716,7 @@ const setHoverPolyline = (state, action) => {
 
 const releaseHoverPolyline = (state, action) => {
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+    case 'ENV':
     case 'KEEPOUT': {
       const newPolyline = FoundLine.fromPolyline(state.drawingKeepoutPolyline);
       newPolyline.setColor(Cesium.Color.YELLOW);
@@ -614,6 +747,16 @@ const releaseHoverPolyline = (state, action) => {
       };
     }
 
+    case 'TREE': {
+      const newPolyline = Circle.fromPolyline(state.drawingKeepoutPolyline);
+      newPolyline.setColor(Cesium.Color.FORESTGREEN);
+      return {
+        ...state,
+        drawingKeepoutPolyline: newPolyline,
+        hoverPolyline: false
+      };
+    }
+
     default: {
       return {
         ...state
@@ -624,6 +767,7 @@ const releaseHoverPolyline = (state, action) => {
 
 const setHoverPointIndex = (state, action) => {
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+    case 'ENV':
     case 'KEEPOUT': {
       const newPolyline = FoundLine.fromPolyline(state.drawingKeepoutPolyline);
       newPolyline.points[action.hoverPointIndex].setColor(Cesium.Color.ORANGE);
@@ -654,6 +798,20 @@ const setHoverPointIndex = (state, action) => {
       };
     }
 
+    case 'TREE': {
+      const newPolyline = Circle.fromPolyline(state.drawingKeepoutPolyline);
+      if (action.hoverPointIndex === 'centerPoint') {
+        newPolyline.centerPoint.setColor(Cesium.Color.ORANGE);
+      } else {
+        newPolyline.points[action.hoverPointIndex].setColor(Cesium.Color.ORANGE);
+      }
+      return {
+        ...state,
+        drawingKeepoutPolyline: newPolyline,
+        hoverPointIndex: action.hoverPointIndex
+      };
+    }
+
     default: {
       return {
         ...state
@@ -664,6 +822,7 @@ const setHoverPointIndex = (state, action) => {
 
 const releaseHoverPointIndex = (state, action) => {
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+    case 'ENV':
     case 'KEEPOUT': {
       const newPolyline = FoundLine.fromPolyline(state.drawingKeepoutPolyline);
       newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.YELLOW);
@@ -694,6 +853,20 @@ const releaseHoverPointIndex = (state, action) => {
       };
     }
 
+    case 'TREE': {
+      const newPolyline = Circle.fromPolyline(state.drawingKeepoutPolyline);
+      if (state.hoverPointIndex === 'centerPoint') {
+        newPolyline.centerPoint.setColor(Cesium.Color.FORESTGREEN);
+      } else {
+        newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.FORESTGREEN);
+      }
+      return {
+        ...state,
+        drawingKeepoutPolyline: newPolyline,
+        hoverPointIndex: null
+      };
+    }
+
     default: {
       return {
         ...state
@@ -707,6 +880,7 @@ const complementPointOnPolyline = (state, action) => {
     action.rightClickCartesian3
   );
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+    case 'ENV':
     case 'KEEPOUT': {
       const newPoint = Point.fromCoordinate(
         Coordinate.fromCartesian(action.rightClickCartesian3, 0.05), null, null, null,
@@ -743,6 +917,7 @@ const complementPointOnPolyline = (state, action) => {
 
 const deletePointOnPolyline = (state, action) => {
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+    case 'ENV':
     case 'KEEPOUT': {
       const newPolyline = FoundLine.fromPolyline(state.drawingKeepoutPolyline);
       newPolyline.deletePoint(state.hoverPointIndex)
@@ -778,6 +953,7 @@ const setKeepoutPickedPointIndex = (state, action) => {
 
 const moveKeepoutPickedPoint = (state, action) => {
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+    case 'ENV':
     case 'KEEPOUT': {
       const newPolyline = FoundLine.fromPolyline(state.drawingKeepoutPolyline);
       newPolyline.points[state.pickedPointIndex].setCartesian3Coordinate(
@@ -846,6 +1022,33 @@ const moveKeepoutPickedPoint = (state, action) => {
       }
     }
 
+    case 'TREE': {
+      let newPolyline = null;
+      switch (state.pickedPointIndex) {
+        case 0:
+          const newRadius = Coordinate.surfaceDistance(
+            state.drawingKeepoutPolyline.centerPoint,
+            Coordinate.fromCartesian(action.cartesian3, 0.05)
+          );
+          newPolyline = Circle.fromPolyline(state.drawingKeepoutPolyline);
+          newPolyline.updateRadius(newRadius);
+          break;
+
+
+        default:
+        case 'centerPoint':
+          newPolyline = Circle.fromPolyline(state.drawingKeepoutPolyline);
+          newPolyline.updateCenterPoint(
+            Coordinate.fromCartesian(action.cartesian3, 0.05)
+          );
+          break;
+      }
+      return {
+        ...state,
+        drawingKeepoutPolyline: newPolyline
+      }
+    }
+
     default: {
       return {
         ...state
@@ -879,6 +1082,8 @@ const reducer = (state=initialState, action) => {
       return addPointOnKeepoutPolyline (state, action);
     case actionTypes.KEEPOUT_ADD_VENT_TEMPLATE:
       return addVentTemplate (state, action);
+    case actionTypes.KEEPOUT_ADD_TREE_TEMPLATE:
+      return addTreeTemplate (state, action);
     case actionTypes.KEEPOUT_DRAG_POLYLINE:
       return dragKeepoutPolyline (state, action);
     case actionTypes.KEEPOUT_DRAG_POLYLINE_FIXED_MODE:

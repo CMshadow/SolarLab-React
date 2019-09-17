@@ -29,7 +29,11 @@ const CustomContextMenu = (props) => {
     }
 
     let drawingKeepout = null;
-    if (props.hoverKeepoutPolyline && props.linkedKeepoutType !== 'VENT') {
+    if (
+      props.hoverKeepoutPolyline &&
+      props.linkedKeepoutType !== 'VENT' &&
+      props.linkedKeepoutType !== 'TREE'
+    ) {
       drawingKeepout = (
         <AddPointContextMenu
           complementFunction={props.complementPointOnKeepoutPolyline}
@@ -37,7 +41,8 @@ const CustomContextMenu = (props) => {
       );
     } else if (
       props.hoverKeepoutPointIndex !== null &&
-      props.linkedKeepoutType !== 'VENT'
+      props.linkedKeepoutType !== 'VENT' &&
+      props.linkedKeepoutType !== 'TREE'
     ) {
       drawingKeepout = (
         <DeletePointContextMenu

@@ -5,7 +5,7 @@ import  * as Cesium from 'cesium';
 import Coordinate from '../point/coordinate';
 
 
-/* 
+/*
     Polygon: Basic 3D-foundations of both Flat/Pitched Roof
 */
 
@@ -15,7 +15,7 @@ import Coordinate from '../point/coordinate';
    *                                  generate one if not provided
    * @param {string}  [name=null]     name of the polygon, using default name if not provided
    * @param {Double}  [height=0.0]     the height of the fouddation, using default value, 0.0,  if not provided
-   * @param {Coordinate}   [hierarchy= [] ]   A list of Point Coordinate object, default empty list                               
+   * @param {Coordinate}   [hierarchy= [] ]   A list of Point Coordinate object, default empty list
    * @param {Boolean} [perPositionHeight=null]  whether to adjust each point
    * @param {Double} [extrudeHeight=true] The distance between the foudation and the ground
    *                                  default true
@@ -46,7 +46,7 @@ class Polygon {
     this.entityId = id ? id : uuid();
     this.name = name ? name: 'Polygon_Foundation';
     this.height = height ? height : 0.0;
-    this.hierarchy = [...hierarchy] ? hierarchy : [];
+    this.hierarchy = hierarchy ? hierarchy : [];
     this.perPositionHeight = perPositionHeight ? perPositionHeight: true;
     this.extrudedHeight = extrudedHeight ? extrudedHeight: 0.0;
     this.material = material ? material: Cesium.Color.WHITE;
@@ -64,7 +64,7 @@ class Polygon {
   *                                  generate one if not provided
   * @param {string}  [name=null]     name of the polygon, using default name if not provided
   * @param {Double}  [height=0.0]     the height of the fouddation, using default value, 0.0,  if not provided
-  * @param {Coordinate}   [hierarchy= [] ]   A list of Point Coordinate object, default empty list                               
+  * @param {Coordinate}   [hierarchy= [] ]   A list of Point Coordinate object, default empty list
   * @param {Color}   [materia=null]  GRBA color, Cesium.Color.WHITE if not
   *                                  provided
   * @param {Boolean} [perPositionHeight=true]  whether to adjust each point
@@ -72,10 +72,10 @@ class Polygon {
   *                                  default true
   * @param {Boolean} [show=true]     whether to show the polygon,
   *                                  default true
-* 
+*
  */
 
-static CopyPolygon (polygon, 
+static CopyPolygon (polygon,
   id = null,
   name = null,
   height= null,
@@ -86,7 +86,7 @@ static CopyPolygon (polygon,
   outlineColor= null,
   outlineWidth= null,
   shadow=null,
-  show=null) 
+  show=null)
   {
     let newID = id ? id : polygon.id;
     let newName = name ? name : polygon.name;
@@ -105,7 +105,7 @@ static CopyPolygon (polygon,
 
 /**
    * get the coordinates array of the foudation polygon
-   * @return {Number[lon1, lat1, height1, lon2, lat2, height2 ...]} An array of coordinates that represents, 
+   * @return {Number[lon1, lat1, height1, lon2, lat2, height2 ...]} An array of coordinates that represents,
    *                                                                must be at least 3 mor multiples of 3
    * all positions of points the foundaion polgon contains
    */

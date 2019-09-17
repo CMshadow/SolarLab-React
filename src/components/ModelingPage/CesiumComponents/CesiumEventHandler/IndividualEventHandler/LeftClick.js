@@ -38,6 +38,7 @@ const LeftClickHandler = (props) => {
       case 'DRAWING_KEEPOUT':
         switch (props.linkedKeepoutType) {
           default:
+          case 'ENV':
           case 'KEEPOUT':
           case 'PASSAGE':
             if (
@@ -55,6 +56,11 @@ const LeftClickHandler = (props) => {
 
           case 'VENT':
             props.addVentTemplate(event.position, props.viewer);
+            props.setUIStateEditingKeepout();
+            break;
+
+          case 'TREE':
+            props.addTreeTemplate(event.position, props.viewer);
             props.setUIStateEditingKeepout();
         }
         break;
@@ -107,6 +113,9 @@ const mapDispatchToProps = dispatch => {
     ),
     addVentTemplate: (cartesian, viewer) => dispatch(
       actions.addVentTemplate(cartesian, viewer)
+    ),
+    addTreeTemplate: (cartesian, viewer) => dispatch(
+      actions.addTreeTemplate(cartesian, viewer)
     ),
     addOrClickPoint: (cartesian, viewer, pickedObject) => dispatch(
       actions.addOrClickPoint(cartesian, viewer, pickedObject)

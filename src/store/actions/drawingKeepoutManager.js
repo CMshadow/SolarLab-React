@@ -2,6 +2,7 @@ import * as Cesium from 'cesium';
 
 import * as actionTypes from './actionTypes';
 import Sector from '../../infrastructure/line/sector';
+import Circle from '../../infrastructure/line/circle';
 import Env from '../../infrastructure/keepout/env';
 import Vent from '../../infrastructure/keepout/vent';
 import Tree from '../../infrastructure/keepout/tree';
@@ -11,6 +12,7 @@ import NormalKeepout from '../../infrastructure/keepout/normalKeepout';
 export const createKeepout = (values) => {
   let newKeepout = null;
   switch (values.type) {
+    default:
     case 'KEEPOUT':
       newKeepout = new NormalKeepout(
         null, values.type, false, false, values.height, values.setback
@@ -28,15 +30,12 @@ export const createKeepout = (values) => {
       );
       break;
     case 'TREE':
-      newKeepout = new Tree(null, values.type, values.height);
+      newKeepout = new Tree(null, values.type, false, false, values.height,
+      values.radius);
       break;
     case 'ENV':
-      newKeepout = new Env(null, values.type, values.height);
+      newKeepout = new Env(null, values.type, false, false, values.height);
       break;
-    default:
-      newKeepout = new NormalKeepout(
-        null, 'KEEPOUT', false, false, values.height, values.setback
-      );
   }
   return {
     type: actionTypes.CREATE_KEEPOUT,
@@ -81,6 +80,30 @@ export const updateKeepout = (id, values) => (dispatch, getState) => {
           keepoutList[updateIndex], values.heading, values.radius, values.angle
         );
       }
+      break;
+
+    case 'TREE':
+      if (keepoutList[updateIndex].finishedDrawing) {
+        const newPolyline = Circle.fromProps(
+          keepoutList[updateIndex].outlinePolyline.centerPoint,
+          values.radius,
+          null, null, Cesium.Color.FORESTGREEN
+        );
+        updateKeepout = Tree.fromKeepout(
+          keepoutList[updateIndex], values.height, values.radius,
+          newPolyline
+        );
+      } else {
+        updateKeepout = Tree.fromKeepout(
+          keepoutList[updateIndex], values.height, values.radius
+        );
+      }
+      break;
+
+    case 'ENV':
+      updateKeepout = Env.fromKeepout(
+        keepoutList[updateIndex], values.height
+      );
       break;
   }
   return dispatch({
@@ -150,6 +173,20 @@ export const addVentTemplate = (mousePosition, viewer) => {
   }
 }
 
+export const addTreeTemplate = (mousePosition, viewer) => {
+  const cartesian3 = viewer.scene.pickPosition(mousePosition);
+  if (Cesium.defined(cartesian3)) {
+    return {
+      type: actionTypes.KEEPOUT_ADD_TREE_TEMPLATE,
+      cartesian3: cartesian3
+    };
+  } else {
+    return {
+      type: actionTypes.DO_NOTHING
+    };
+  }
+}
+
 export const dragKeepoutPolyline = (mousePosition, viewer) => {
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
   if (Cesium.defined(cartesian3)) {
@@ -199,10 +236,20 @@ export const releaseKeepoutHoverPolyline = () => {
 export const setKeepoutHoverPointIndex = (point) => (dispatch, getState) => {
   const hoverIndex = getState().undoableReducer.present
   .drawingKeepoutManagerReducer.drawingKeepoutPolyline.findPointIndex(point);
-  return dispatch({
-    type: actionTypes.SET_KEEPOUT_HOVERPOINT,
-    hoverPointIndex: hoverIndex
-  });
+  if (hoverIndex >= 0) {
+    return dispatch({
+      type: actionTypes.SET_KEEPOUT_HOVERPOINT,
+      hoverPointIndex: hoverIndex
+    });
+  } else if (
+    getState().undoableReducer.present.drawingKeepoutManagerReducer
+    .drawingKeepoutPolyline.centerPoint.entityId === point.entityId
+  ) {
+    return dispatch({
+      type: actionTypes.SET_KEEPOUT_HOVERPOINT,
+      hoverPointIndex: 'centerPoint'
+    });
+  }
 };
 
 export const releaseKeepoutHoverPointIndex = () => (dispatch, getState) => {
@@ -229,10 +276,20 @@ export const deletePointOnKeepoutPolyline = () => {
 export const setKeepoutPickedPointIndex = (point) => (dispatch, getState) => {
   const pickedIndex = getState().undoableReducer.present
   .drawingKeepoutManagerReducer.drawingKeepoutPolyline.findPointIndex(point);
-  return dispatch({
-    type: actionTypes.SET_KEEPOUT_PICKEDPOINT,
-    pickedPointIndex: pickedIndex
-  });
+  if (pickedIndex >= 0) {
+    return dispatch({
+      type: actionTypes.SET_KEEPOUT_PICKEDPOINT,
+      pickedPointIndex: pickedIndex
+    });
+  } else if (
+    getState().undoableReducer.present.drawingKeepoutManagerReducer
+    .drawingKeepoutPolyline.centerPoint.entityId === point.entityId
+  ) {
+    return dispatch({
+      type: actionTypes.SET_KEEPOUT_PICKEDPOINT,
+      pickedPointIndex: 'centerPoint'
+    });
+  }
 };
 
 export const moveKeepoutPickedPoint = (mousePosition, viewer) => {

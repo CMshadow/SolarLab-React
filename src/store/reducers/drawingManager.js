@@ -146,8 +146,13 @@ const addPointOnPolyline = (state, action) => {
   const existPoints = state.fixedPoints.map(elem => {
     return Point.fromPoint(elem);
   });
-  let newPoint = state.drawingPolyline.points[state.drawingPolyline.length-1];
-  const polyline = new FoundLine([...existPoints, newPoint]);
+  const newPoint = Point.fromCoordinate(
+    state.drawingPolyline.points[state.drawingPolyline.length-1]
+  );
+  const trailingPoint = Point.fromCoordinate(
+    state.drawingPolyline.points[state.drawingPolyline.length-1]
+  );
+  const polyline = new FoundLine([...existPoints, newPoint, trailingPoint]);
   return {
     ...state,
     drawingPolyline: polyline,

@@ -122,6 +122,17 @@ const MouseMoveHandler = (props) => {
               // Release hover polyline if it exists
               if (props.hoverKeepoutPolyline) props.releaseKeepoutHoverPolyline();
             }
+            // If hover on tree's center point
+            else if (
+              props.drawingKeepoutPolyline.centerPoint && 
+              anyPickedObject.id.id ===
+              props.drawingKeepoutPolyline.centerPoint.entityId
+            ) {
+              props.setKeepoutHoverPointIndex(
+                props.drawingKeepoutPolyline.centerPoint
+              );
+              if (props.hoverKeepoutPolyline) props.releaseKeepoutHoverPolyline();
+            }
           } else {
             // Release hover polyline if it exists
             if (props.hoverKeepoutPolyline) props.releaseKeepoutHoverPolyline();

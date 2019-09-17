@@ -34,6 +34,14 @@ const LeftDownHandler = (props) => {
           // Set picked point if available
           if (onTopPoint) {
             props.setKeepoutPickedPointIndex(onTopPoint);
+          } else if (
+            props.drawingKeepoutPolyline.centerPoint && 
+            pickedObject.id.id ===
+            props.drawingKeepoutPolyline.centerPoint.entityId
+          ) {
+            props.setKeepoutPickedPointIndex(
+              props.drawingKeepoutPolyline.centerPoint
+            );
           }
         }
         break;
