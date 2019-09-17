@@ -88,7 +88,7 @@ static CopyPolygon (polygon,
     let newID = id ? id : polygon.id;
     let newName = name ? name : polygon.name;
     let newHeight = height ? height: polygon.height;
-    let newHierarchy = [...hierarchy] ? hierarchy: polygon.hierarchy;
+    let newHierarchy = hierarchy ? [...hierarchy]: polygon.hierarchy;
     let newPerPositionHeight = perPositionHeight ? perPositionHeight: polygon.perPositionHeight;
     let newExtrudedHeight = extrudedHeight ? extrudedHeight: polygon.extrudedHeight;
     let newMaterial = material ? material: polygon.material;
