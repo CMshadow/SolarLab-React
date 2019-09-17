@@ -7,6 +7,7 @@ export {
 export {
   addPointOnPolyline,
   dragPolyline,
+  dragPolylineFixedMode,
   terminateDrawing,
   complementPointOnPolyline,
   deletePointOnPolyline,
@@ -24,13 +25,16 @@ export {
   movePickedPoint,
   releasePickedPointIndex,
 
-  cleanHoverAndColor
+  cleanHoverAndColor,
+  exitCurrentDrawing
 } from './drawingManager';
 
 export {
   passFoundPolyline,
+  updatePointsRelation,
   addOrClickPoint,
   dragDrawingInnerPolyline,
+  dragDrawingInnerPolylineFixedMode,
   deleteInnerLine,
   deleteInnerPointOnPolyline,
   setInnerTypeHip,
@@ -40,6 +44,12 @@ export {
   setHoverInnerPoint,
   releaseHoverInnerPoint
 } from './drawingInnerManager';
+
+export {
+  createKeepout,
+  updateKeepout,
+  deleteKeepout,
+} from './keepoutManager';
 
 export {
   createPolygonFoundation,

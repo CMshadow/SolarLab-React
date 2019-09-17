@@ -4,8 +4,6 @@ import { connect } from 'react-redux';
 import AddPointContextMenu from './individualContextMenu/addPointContextMenu';
 import DeletePointContextMenu from './individualContextMenu/deletePointContextMenu';
 import InnerLineContextMenu from './individualContextMenu/innerLineContextMenu';
-import DeleteInnerPointContextMenu from './individualContextMenu/deleteInnerPointContextMenu';
-
 
 const CustomContextMenu = (props) => {
 
@@ -19,9 +17,6 @@ const CustomContextMenu = (props) => {
     let drawingInner = null;
     if (props.hoverInnerLineIndex !== null) {
       drawingInner = (<InnerLineContextMenu />);
-    }
-    else if (props.hoverInnerPointId !== null) {
-      drawingInner = (<DeleteInnerPointContextMenu />);
     }
 
     return (

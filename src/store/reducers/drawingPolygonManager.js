@@ -6,8 +6,8 @@ import Polygon from '../../infrastructure/Polygon/Polygon';
 
 
 const initialState = {
-    PolygonReadyEnable: false,
-    BuildingFoundation: new Polygon()
+	PolygonReadyEnable: false,
+	BuildingFoundation: new Polygon()
 };
 
 /**
@@ -15,11 +15,11 @@ const initialState = {
  * Toggle Handler: To Enable To Generate 3D Polygon
  */
 const enableToBuild = (state, action) => {
-    console.log('[Found Checked]: Ready to Build');
-    return{
-        ...state,
-        PolygonReadyEnable: true
-    }
+	console.log('[Found Checked]: Ready to Build');
+	return{
+		...state,
+		PolygonReadyEnable: true
+	}
 }
 
 /**
@@ -27,18 +27,20 @@ const enableToBuild = (state, action) => {
  *  CREATE 3D Building Foundation Polygon 
  */
 const createBuildingFoundationPolygon = (state, action) => {
-    let newFoundation = Polygon.CopyPolygon(state.BuildingFoundation);
-    newFoundation.height = action.height;
-    newFoundation.hierarchy = [...action.coordinatesArray];
-    newFoundation.hierarchy.map( (_,index) => {
-        if ((index + 1) % 3 === 0) {
-            newFoundation.hierarchy[index] = newFoundation.height;
-        }
-    });
-    return{
-        ...state,
-        BuildingFoundation: newFoundation
-    };
+	console.log('create building');
+	let newFoundation = Polygon.CopyPolygon(state.BuildingFoundation);
+	newFoundation.height = action.height;
+	newFoundation.hierarchy = [...action.coordinatesArray];
+	for (let i = 0; i < newFoundation.hierarchy.length; ++i) {
+		if ((i + 1) % 3 === 0) {
+			newFoundation.hierarchy[i] = newFoundation.height;
+		}
+	}
+
+	return{
+		...state,
+		BuildingFoundation: newFoundation
+	};
 };
 
 /**
@@ -47,21 +49,21 @@ const createBuildingFoundationPolygon = (state, action) => {
  */
 
 const setUpBuildingFoundationPolygon = (state, action) => {
-    return null;
+	return null;
 };
-    
+	
 
  const reducer = (state=initialState, action) => {
-    switch(action.type){
-        case actionTypes.ENABLE_TO_BUILD_FOUNDATION:
-            return enableToBuild(state, action);
-        case actionTypes.CREATE_POLYGON_FOUNDATION:
-            return createBuildingFoundationPolygon(state, action);
-        case actionTypes.SET_POLYGON_FOUNDATION:
-            return setUpBuildingFoundationPolygon(state, action);
-        default:
-            return state;
-    }
+	switch(action.type){
+		case actionTypes.ENABLE_TO_BUILD_FOUNDATION:
+			return enableToBuild(state, action);
+		case actionTypes.CREATE_POLYGON_FOUNDATION:
+			return createBuildingFoundationPolygon(state, action);
+		case actionTypes.SET_POLYGON_FOUNDATION:
+			return setUpBuildingFoundationPolygon(state, action);
+		default:
+			return state;
+	}
  };
 
  export default reducer;

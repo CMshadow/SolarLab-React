@@ -54,38 +54,38 @@ class CreateBuildingPanel extends PureComponent {
 
     const optionalFoundHtInput = (
       <Form.Item>
+        <Row>
+          <Col {...this.rowLayout.label}>
+            <Tooltip
+              placement="topLeft"
+              title="The height of the building foundation"
+            >
               <Row>
-                <Col {...this.rowLayout.label}>
-                  <Tooltip
-                    placement="topLeft"
-                    title="The height of the building foundation"
-                  >
-                    <Row>
-                      <Col span={20}>
-                        <h4>Building Height</h4>
-                      </Col>
-                      <Col span={4}>
-                        <Icon type="question-circle" />
-                      </Col>
-                    </Row>
-                  </Tooltip>
+                <Col span={20}>
+                  <h4>Building Height</h4>
                 </Col>
-                <Col {...this.rowLayout.field}>
-                  {getFieldDecorator('foundHt', {
-                    rules: [...this.numberInputRules],
-                    initialValue: this.props.buildingInfoFields.foundHt
-                  })(
-                    <InputNumber
-                      className={classes.inputArea}
-                      min={0}
-                      max={500}
-                      step={0.1}
-                      formatter={value => `${value}m`}
-                      parser={value => value.replace('m', '')}
-                    />
-                  )}
+                <Col span={4}>
+                  <Icon type="question-circle" />
                 </Col>
               </Row>
+            </Tooltip>
+          </Col>
+          <Col {...this.rowLayout.field}>
+            {getFieldDecorator('foundHt', {
+              rules: [...this.numberInputRules],
+              initialValue: this.props.buildingInfoFields.foundHt
+            })(
+              <InputNumber
+                className={classes.inputArea}
+                min={0}
+                max={500}
+                step={0.1}
+                formatter={value => `${value}m`}
+                parser={value => value.replace('m', '')}
+              />
+            )}
+          </Col>
+        </Row>
       </Form.Item>
     );
     const optionalParapetHtInput = (
@@ -125,7 +125,7 @@ class CreateBuildingPanel extends PureComponent {
       </Form.Item>
     );
     const optionalHipStbInput = (
-        <Form.Item>
+      <Form.Item>
         <Row>
           <Col {...this.rowLayout.label}>
             <Tooltip
@@ -158,44 +158,44 @@ class CreateBuildingPanel extends PureComponent {
             )}
           </Col>
         </Row>
-        </Form.Item>
-      );
+      </Form.Item>
+    );
     const optionalRidgeStbInput = (
-        <Form.Item>
-          <Row>
-            <Col {...this.rowLayout.label}>
-              <Tooltip
-                placement="topLeft"
-                title="The setback distance from ridges towards fields of the roof"
-              >
-                <Row>
-                  <Col span={20}>
-                    <h4>Ridge Setback</h4>
-                  </Col>
-                  <Col span={4}>
-                    <Icon type="question-circle" />
-                  </Col>
-                </Row>
-              </Tooltip>
-            </Col>
-            <Col {...this.rowLayout.field}>
-              {getFieldDecorator('ridgeStb', {
-                rules: [...this.numberInputRules],
-                initialValue: this.props.buildingInfoFields.ridgeStb
-              })(
-                <InputNumber
-                  className={classes.inputArea}
-                  min={0}
-                  max={5}
-                  step={0.1}
-                  formatter={value => `${value}m`}
-                  parser={value => value.replace('m', '')}
-                />
-              )}
-            </Col>
-          </Row>
-        </Form.Item>
-      );
+      <Form.Item>
+        <Row>
+          <Col {...this.rowLayout.label}>
+            <Tooltip
+              placement="topLeft"
+              title="The setback distance from ridges towards fields of the roof"
+            >
+              <Row>
+                <Col span={20}>
+                  <h4>Ridge Setback</h4>
+                </Col>
+                <Col span={4}>
+                  <Icon type="question-circle" />
+                </Col>
+              </Row>
+            </Tooltip>
+          </Col>
+          <Col {...this.rowLayout.field}>
+            {getFieldDecorator('ridgeStb', {
+              rules: [...this.numberInputRules],
+              initialValue: this.props.buildingInfoFields.ridgeStb
+            })(
+              <InputNumber
+                className={classes.inputArea}
+                min={0}
+                max={5}
+                step={0.1}
+                formatter={value => `${value}m`}
+                parser={value => value.replace('m', '')}
+              />
+            )}
+          </Col>
+        </Row>
+      </Form.Item>
+    );
 
     return (
       <Form onSubmit={this.handleSubmit}>
