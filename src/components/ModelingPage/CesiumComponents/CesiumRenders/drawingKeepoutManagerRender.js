@@ -22,16 +22,23 @@ const DrawingKeepoutManagerRender = (props) => {
         <CustomPoint key={elem.entityId} {...elem} />
       ));
     } else if (props.drawingKeepoutPolyline instanceof Sector) {
-      const showPoints = [
-        props.drawingKeepoutPolyline.points[0],
-        props.drawingKeepoutPolyline.points[1],
-        props.drawingKeepoutPolyline.points[
-          Math.trunc(props.drawingKeepoutPolyline.points.length/2)
-        ],
-        props.drawingKeepoutPolyline.points[
-          props.drawingKeepoutPolyline.points.length-2
-        ],
-      ]
+      let showPoints = [];
+      if (props.drawingKeepoutPolyline.points.length > 4) {
+        showPoints = [
+          props.drawingKeepoutPolyline.points[0],
+          props.drawingKeepoutPolyline.points[1],
+          props.drawingKeepoutPolyline.points[
+            Math.trunc(props.drawingKeepoutPolyline.points.length/2)
+          ],
+          props.drawingKeepoutPolyline.points[
+            props.drawingKeepoutPolyline.points.length-2
+          ],
+        ]
+      } else {
+        showPoints = [
+          props.drawingKeepoutPolyline.points[1]
+        ]
+      }
       drawingKeepoutPoints =
         showPoints.map(elem => (
         <CustomPoint key={elem.entityId} {...elem} />
@@ -63,6 +70,7 @@ const DrawingKeepoutManagerRender = (props) => {
 
   const fixedKeepoutPolylines = props.keepoutList.map(keepout => {
     if (keepout.finishedDrawing && !keepout.isEditing) {
+      console.log(keepout.outlinePolyline)
       return <CustomPolyline
         key={keepout.id}
         {...keepout.outlinePolyline}

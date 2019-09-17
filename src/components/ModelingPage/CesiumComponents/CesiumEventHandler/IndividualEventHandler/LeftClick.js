@@ -54,7 +54,8 @@ const LeftClickHandler = (props) => {
             break;
 
           case 'VENT':
-            props.addVentTemplate(event.position, props.viewer)
+            props.addVentTemplate(event.position, props.viewer);
+            props.setUIStateEditingKeepout();
         }
         break;
 

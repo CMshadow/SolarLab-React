@@ -1,6 +1,7 @@
 import * as Cesium from 'cesium';
 
 import * as actionTypes from './actionTypes';
+import Sector from '../../infrastructure/line/sector';
 import Env from '../../infrastructure/keepout/env';
 import Vent from '../../infrastructure/keepout/vent';
 import Tree from '../../infrastructure/keepout/tree';
@@ -63,10 +64,23 @@ export const updateKeepout = (id, values) => (dispatch, getState) => {
       break;
 
     case 'VENT':
-    console.log(values)
-      updateKeepout = Vent.fromKeepout(
-        keepoutList[updateIndex], values.heading, values.radius, values.angle
-      );
+      if (keepoutList[updateIndex].finishedDrawing) {
+        const newPolyline = Sector.fromProps(
+          keepoutList[updateIndex].outlinePolyline.originCor,
+          values.heading,
+          values.radius,
+          values.angle,
+          null, null, Cesium.Color.CADETBLUE
+        );
+        updateKeepout = Vent.fromKeepout(
+          keepoutList[updateIndex], values.heading, values.radius, values.angle,
+          newPolyline
+        );
+      } else {
+        updateKeepout = Vent.fromKeepout(
+          keepoutList[updateIndex], values.heading, values.radius, values.angle
+        );
+      }
       break;
   }
   return dispatch({

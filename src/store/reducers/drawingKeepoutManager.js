@@ -154,6 +154,36 @@ const releaseLinkedKeepoutIndex = (state, action) => {
       };
     }
 
+    case 'VENT' : {
+      const newKeepoutList = [...state.keepoutList];
+      let newKeepout = null;
+      if (newKeepoutList[state.linkedKeepoutIndex].finishedDrawing) {
+        newKeepout = Vent.fromKeepout(
+          newKeepoutList[state.linkedKeepoutIndex],
+          parseFloat(state.drawingKeepoutPolyline.brng.toFixed(1)),
+          parseFloat(state.drawingKeepoutPolyline.radius.toFixed(1)),
+          parseFloat(state.drawingKeepoutPolyline.angle.toFixed(1)),
+          Sector.fromPolyline(state.drawingKeepoutPolyline)
+        );
+      } else {
+        newKeepout = Vent.fromKeepout(
+          newKeepoutList[state.linkedKeepoutIndex]
+        );
+      }
+      newKeepout.unsetIsEditing();
+      newKeepoutList.splice(state.linkedKeepoutIndex, 1, newKeepout);
+      return {
+        ...state,
+        keepoutList: newKeepoutList,
+        linkedKeepoutIndex: null,
+        linkedKeepoutType: null,
+        drawingKeepoutPolyline: null,
+        fixedPoints: [],
+        auxPolyline: null,
+        startPointAuxPolyline: null,
+      };
+    }
+
     default: {
       return {
         ...state
@@ -431,16 +461,24 @@ const addPointOnKeepoutPolyline = (state, action) => {
 };
 
 const addVentTemplate = (state, action) => {
-  console.log('add vent reducer')
-  const sectorPolyline = new Sector(
+  const sectorPolyline = Sector.fromProps(
     Coordinate.fromCartesian(action.cartesian3, 0.05),
     state.keepoutList[state.linkedKeepoutIndex].bearing,
     state.keepoutList[state.linkedKeepoutIndex].radius,
     state.keepoutList[state.linkedKeepoutIndex].angle,
+    null,
+    null,
+    Cesium.Color.CADETBLUE
   );
-  console.log(sectorPolyline)
+  const updateKeepout = Vent.fromKeepout(
+    state.keepoutList[state.linkedKeepoutIndex]
+  );
+  updateKeepout.setFinishedDrawing();
+  const newKeepoutList = [...state.keepoutList];
+  newKeepoutList.splice(state.linkedKeepoutIndex, 1, updateKeepout)
   return {
     ...state,
+    keepoutList: newKeepoutList,
     drawingKeepoutPolyline: sectorPolyline
   }
 }
@@ -525,6 +563,16 @@ const setHoverPolyline = (state, action) => {
       };
     }
 
+    case 'VENT': {
+      const newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
+      newPolyline.setColor(Cesium.Color.ORANGE);
+      return {
+        ...state,
+        drawingKeepoutPolyline: newPolyline,
+        hoverPolyline: true
+      };
+    }
+
     default: {
       return {
         ...state
@@ -549,6 +597,16 @@ const releaseHoverPolyline = (state, action) => {
     case 'PASSAGE': {
       const newPolyline = Polyline.fromPolyline(state.drawingKeepoutPolyline);
       newPolyline.setColor(Cesium.Color.WHEAT);
+      return {
+        ...state,
+        drawingKeepoutPolyline: newPolyline,
+        hoverPolyline: false
+      };
+    }
+
+    case 'VENT': {
+      const newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
+      newPolyline.setColor(Cesium.Color.CADETBLUE);
       return {
         ...state,
         drawingKeepoutPolyline: newPolyline,
@@ -586,6 +644,16 @@ const setHoverPointIndex = (state, action) => {
       };
     }
 
+    case 'VENT': {
+      const newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
+      newPolyline.points[action.hoverPointIndex].setColor(Cesium.Color.ORANGE);
+      return {
+        ...state,
+        drawingKeepoutPolyline: newPolyline,
+        hoverPointIndex: action.hoverPointIndex
+      };
+    }
+
     default: {
       return {
         ...state
@@ -609,6 +677,16 @@ const releaseHoverPointIndex = (state, action) => {
     case 'PASSAGE': {
       const newPolyline = Polyline.fromPolyline(state.drawingKeepoutPolyline);
       newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.WHEAT);
+      return {
+        ...state,
+        drawingKeepoutPolyline: newPolyline,
+        hoverPointIndex: null
+      };
+    }
+
+    case 'VENT': {
+      const newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
+      newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.CADETBLUE);
       return {
         ...state,
         drawingKeepoutPolyline: newPolyline,
@@ -716,6 +794,52 @@ const moveKeepoutPickedPoint = (state, action) => {
       newPolyline.points[state.pickedPointIndex].setCartesian3Coordinate(
         action.cartesian3, 0.05
       );
+      return {
+        ...state,
+        drawingKeepoutPolyline: newPolyline
+      }
+    }
+
+    case 'VENT': {
+      let newPolyline = null;
+      switch (state.pickedPointIndex) {
+        case 1: {
+          const bearing = Coordinate.bearing(
+            state.drawingKeepoutPolyline.points[0],
+            Coordinate.fromCartesian(action.cartesian3, 0.05)
+          );
+          newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
+          newPolyline.updateAngle(bearing);
+          break;
+        }
+
+        default:
+        case 0:
+          newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
+          newPolyline.updateOriginCor(
+            Coordinate.fromCartesian(action.cartesian3, 0.05)
+          );
+          break;
+
+        case Math.trunc(state.drawingKeepoutPolyline.points.length/2):
+          const newRadius = Coordinate.surfaceDistance(
+            state.drawingKeepoutPolyline.points[0],
+            Coordinate.fromCartesian(action.cartesian3, 0.05)
+          );
+          newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
+          newPolyline.updateRadius(newRadius);
+          break;
+
+        case state.drawingKeepoutPolyline.points.length-2: {
+          const bearing = Coordinate.bearing(
+            state.drawingKeepoutPolyline.points[0],
+            Coordinate.fromCartesian(action.cartesian3, 0.05)
+          );
+          newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
+          newPolyline.updateBearing(bearing);
+          break;
+        }
+      }
       return {
         ...state,
         drawingKeepoutPolyline: newPolyline

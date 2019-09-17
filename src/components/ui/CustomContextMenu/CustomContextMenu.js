@@ -29,13 +29,16 @@ const CustomContextMenu = (props) => {
     }
 
     let drawingKeepout = null;
-    if (props.hoverKeepoutPolyline) {
+    if (props.hoverKeepoutPolyline && props.linkedKeepoutType !== 'VENT') {
       drawingKeepout = (
         <AddPointContextMenu
           complementFunction={props.complementPointOnKeepoutPolyline}
         />
       );
-    } else if (props.hoverKeepoutPointIndex !== null) {
+    } else if (
+      props.hoverKeepoutPointIndex !== null &&
+      props.linkedKeepoutType !== 'VENT'
+    ) {
       drawingKeepout = (
         <DeletePointContextMenu
           deleteFunction={props.deletePointOnKeepoutPolyline}
@@ -73,7 +76,8 @@ const mapStateToProps = state => {
       .hoverPolyline,
     hoverKeepoutPointIndex:
       state.undoableReducer.present.drawingKeepoutManagerReducer.hoverPointIndex,
-
+    linkedKeepoutType:
+      state.undoableReducer.present.drawingKeepoutManagerReducer.linkedKeepoutType,
   };
 };
 

@@ -58,7 +58,7 @@ class FoundLine extends Polyline {
     const newShow = show ? show : polyline.show;
     const newWidth = width ? width : polyline.width;
     return new FoundLine (newPoints, id, newName, newColor, newWidth, newShow);
-    }
+  }
 
   /**
    * delete a point in a specific position of the polyline

@@ -25,8 +25,8 @@ const LeftDownHandler = (props) => {
         break;
 
       case 'EDITING_KEEPOUT':
-        props.disableRotate();
         if (pickedObject) {
+          props.disableRotate();
           // Find out picked which point
           const onTopPoint = props.drawingKeepoutPolyline.points.find(element =>
             element.entityId === pickedObject.id.id
