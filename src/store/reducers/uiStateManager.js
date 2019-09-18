@@ -58,7 +58,7 @@ const setUIStateDrawingKeepout = (state,action) => {
 const setUIStateEditingKeepout = (state,action) => {
   return {
     ...state,
-    lastUIState: state.uiState,
+    lastUIState: state.lastUIState ? state.lastUIState : state.uiState,
     uiState: 'EDITING_KEEPOUT'
   };
 };

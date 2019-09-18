@@ -60,9 +60,29 @@ export const isWorkingFound = (uiState) => {
   }
 };
 
+export const isFinishedFound = (uiState) => {
+  if (
+    uiState === 'FOUND_DREW'
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
 export const isWorkingInner = (uiState) => {
   if (
     uiState === 'DRAWING_INNER' ||
+    uiState === 'INNER_DREW'
+  ) {
+    return true;
+  } else {
+    return false;
+  }
+};
+
+export const isFinishedInner = (uiState) => {
+  if (
     uiState === 'INNER_DREW'
   ) {
     return true;

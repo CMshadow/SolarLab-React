@@ -61,7 +61,7 @@ const DrawBuildingPanel = (props) => {
       {uiStateJudge.isInnerDrew(props.uiState) ? generate3D : null}
     </div>
   );
-
+  console.log(props.uiState)
   return (
     <div>
       {

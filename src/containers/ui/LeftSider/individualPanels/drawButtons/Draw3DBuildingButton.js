@@ -21,10 +21,9 @@ const draw3DBuildingButton = (props) => {
       shape = 'round'
       block
       disabled = {
-        uiStateJudge.isWorkingKeepout(props.uiState) ||
-        uiStateJudge.isWorkingInner(props.uiState) ?
-        true :
-        false
+        props.CurrentBuilding.type === 'FLAT' ?
+        !uiStateJudge.isFinishedFound(props.uiState) :
+        !uiStateJudge.isFinishedInner(props.uiState)
       }
       onClick = {() => {
         console.log('[Button]: Test Polygon: ');
