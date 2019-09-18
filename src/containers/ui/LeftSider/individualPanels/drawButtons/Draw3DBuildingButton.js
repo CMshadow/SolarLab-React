@@ -10,15 +10,22 @@ import {
 } from 'antd';
 
 import * as actions from '../../../../../store/actions/index';
+import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 
 
-const draw3DBuildingButton = (props) => { 
+const draw3DBuildingButton = (props) => {
   const DrawBuildingPolygon = (
     <Button
       type = 'primary'
       size = 'large'
       shape = 'round'
       block
+      disabled = {
+        uiStateJudge.isWorkingKeepout(props.uiState) ||
+        uiStateJudge.isWorkingInner(props.uiState) ?
+        true :
+        false
+      }
       onClick = {() => {
         console.log('[Button]: Test Polygon: ');
         props.EnablePolygon();
@@ -26,7 +33,7 @@ const draw3DBuildingButton = (props) => {
         let buildingCoordinatesSize = buildingCoordinatesArray.length;
         buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
         props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
-          
+
       }}
     >Test: Draw Foundation</Button>
 
@@ -42,6 +49,7 @@ const draw3DBuildingButton = (props) => {
 
 const mapStateToProps = state => {
   return {
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     CurrentBuilding: state.buildingManagerReducer.workingBuilding,
     BuildFoundation: state.undoableReducer.present.drawingManagerReducer.drawingPolyline
   };
@@ -50,7 +58,7 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     EnablePolygon: () => dispatch(actions.enableToBuildFoundation()),
-    CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
+    CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) =>
       dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray))
   };
 };

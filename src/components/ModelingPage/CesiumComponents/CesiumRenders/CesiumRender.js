@@ -11,12 +11,12 @@ const CesiumRender = (props) => {
   return (
     <div>
       {
-        uiStateJudge.isWorkingFound(props.uiState) ?
+        uiStateJudge.useFoundManagerRender(props.uiState) ?
         <DrawingManagerRender /> :
         null
       }
       {
-        uiStateJudge.isWorkingInner(props.uiState) ?
+        uiStateJudge.useInnerManagerRender(props.uiState) ?
         <DrawingInnerManagerRender /> :
         null
       }
