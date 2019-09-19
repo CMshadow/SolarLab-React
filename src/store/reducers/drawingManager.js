@@ -34,7 +34,7 @@ export const createAuxPolyline = (state, originPoint, mousePoint) => {
   );
 }
 
-const findTwoAuxPolylineIntersect = (state, existPoints, mousePoint) => {
+export const findTwoAuxPolylineIntersect = (state, existPoints, mousePoint) => {
   const startPoint = existPoints[0];
   const startPointMouseBrng = Coordinate.bearing(
     startPoint, mousePoint
@@ -146,8 +146,13 @@ const addPointOnPolyline = (state, action) => {
   const existPoints = state.fixedPoints.map(elem => {
     return Point.fromPoint(elem);
   });
-  let newPoint = state.drawingPolyline.points[state.drawingPolyline.length-1];
-  const polyline = new FoundLine([...existPoints, newPoint]);
+  const newPoint = Point.fromCoordinate(
+    state.drawingPolyline.points[state.drawingPolyline.length-1]
+  );
+  const trailingPoint = Point.fromCoordinate(
+    state.drawingPolyline.points[state.drawingPolyline.length-1]
+  );
+  const polyline = new FoundLine([...existPoints, newPoint, trailingPoint]);
   return {
     ...state,
     drawingPolyline: polyline,
@@ -178,7 +183,7 @@ const complementPointOnPolyline = (state, action) => {
     Coordinate.fromCartesian(state.rightClickCartesian3, 0.05)
   );
   const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
-  newPolyline.addPoint(indexToAdd, newPoint)
+  newPolyline.addPointPrecision(indexToAdd, newPoint)
   return {
     ...state,
     drawingPolyline: newPolyline

@@ -35,3 +35,21 @@ export const setUIStateInnerDrew = () => {
     type: actionTypes.SET_UI_STATE_INNER_DREW
   };
 };
+
+export const setUIStateDrawingKeepout = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_DRAWING_KEEPOUT
+  };
+};
+
+export const setUIStateEditingKeepout = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_EDITING_KEEPOUT
+  };
+};
+
+export const setPreviousUIState = () => {
+  return {
+    type: actionTypes.SET_PREVIOUS_UI_STATE
+  };
+};

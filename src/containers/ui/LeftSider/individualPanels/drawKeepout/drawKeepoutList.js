@@ -10,9 +10,12 @@ import {
 } from 'antd';
 
 import * as actions from '../../../../../store/actions/index';
-import { emptyListTemplate } from '../../../../../components/ui/EmptyTemplate/emptyListTemplate';
+import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
+import {
+  emptyListTemplate
+} from '../../../../../components/ui/EmptyTemplate/emptyListTemplate';
 import CreateKeepoutForm from './createKeepoutForm';
-import NormalKeepoutListItem from './normalKeepoutListItem';
+import KeepoutListItem from './keepoutListItem';
 
 class DrawKeepoutList extends Component {
   state = {
@@ -28,10 +31,10 @@ class DrawKeepoutList extends Component {
   generateListItems = (item) => {
     switch (item.type) {
       case 'Keepout':
-        return <NormalKeepoutListItem {...item} />
+        return <KeepoutListItem {...item} />
 
       default:
-        return <NormalKeepoutListItem {...item} />
+        return <KeepoutListItem {...item} />
     }
   };
 
@@ -56,6 +59,7 @@ class DrawKeepoutList extends Component {
             type='primary'
             size='small'
             shape='circle'
+            disabled={uiStateJudge.isWorkingKeepout(this.props.uiState)}
             icon={this.state.initialForm ? 'minus' : 'plus'}
             onClick={this.toggoleInitialForm}
             ghost
@@ -87,8 +91,9 @@ class DrawKeepoutList extends Component {
 
 const mapStateToProps = state => {
   return {
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     keepoutList:
-      state.undoableReducer.present.keepoutManagerReducer.keepoutList,
+      state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
   };
 };
 

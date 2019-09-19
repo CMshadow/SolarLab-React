@@ -49,7 +49,24 @@ export {
   createKeepout,
   updateKeepout,
   deleteKeepout,
-} from './keepoutManager';
+  initLinkedKeepoutIndex,
+  releaseLinkedKeepoutIndex,
+  addPointOnKeepoutPolyline,
+  addVentTemplate,
+  addTreeTemplate,
+  dragKeepoutPolyline,
+  dragKeepoutPolylineFixedMode,
+  terminateKeepoutDrawing,
+  setKeepoutHoverPolyline,
+  releaseKeepoutHoverPolyline,
+  setKeepoutHoverPointIndex,
+  releaseKeepoutHoverPointIndex,
+  complementPointOnKeepoutPolyline,
+  deletePointOnKeepoutPolyline,
+  setKeepoutPickedPointIndex,
+  moveKeepoutPickedPoint,
+  releaseKeepoutPickedPointIndex
+} from './drawingKeepoutManager'
 
 export {
   createPolygonFoundation,
@@ -63,7 +80,10 @@ export {
   setUIStateFoundDrew,
   setUIStateEditingFound,
   setUIStateDrawingInner,
-  setUIStateInnerDrew
+  setUIStateInnerDrew,
+  setUIStateDrawingKeepout,
+  setUIStateEditingKeepout,
+  setPreviousUIState
 } from './uiStateManager';
 
 export {
@@ -71,4 +91,3 @@ export {
   saveBuildingInfoFields,
   resetBuilding
 } from './buildingManager';
-
