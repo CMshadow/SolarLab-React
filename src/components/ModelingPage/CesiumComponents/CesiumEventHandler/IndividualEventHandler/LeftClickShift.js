@@ -22,9 +22,9 @@ const LeftClickShiftHandler = (props) => {
         break;
 
       case 'DRAWING_KEEPOUT':
-      props.disableRotate();
-      props.addPointOnKeepoutPolyline(event.position, props.viewer, true);
-      break;
+        props.disableRotate();
+        props.addPointOnKeepoutPolyline(event.position, props.viewer, true);
+        break;
 
       default:
         break;
