@@ -46,7 +46,7 @@ class Polygon {
     this.entityId = id ? id : uuid();
     this.name = name ? name: 'Polygon_Foundation';
     this.height = height ? height : 0.0;
-    this.hierarchy = hierarchy ? hierarchy : [];
+    this.hierarchy = hierarchy ? [...hierarchy] : [];
     this.perPositionHeight = perPositionHeight ? perPositionHeight: true;
     this.extrudedHeight = extrudedHeight ? extrudedHeight: 0.0;
     this.material = material ? material: Cesium.Color.WHITE;
@@ -91,7 +91,7 @@ static CopyPolygon (polygon,
     let newID = id ? id : polygon.id;
     let newName = name ? name : polygon.name;
     let newHeight = height ? height: polygon.height;
-    let newHierarchy = hierarchy ? hierarchy: polygon.hierarchy;
+    let newHierarchy = hierarchy ? [...hierarchy]: polygon.hierarchy;
     let newPerPositionHeight = perPositionHeight ? perPositionHeight: polygon.perPositionHeight;
     let newExtrudedHeight = extrudedHeight ? extrudedHeight: polygon.extrudedHeight;
     let newMaterial = material ? material: polygon.material;
