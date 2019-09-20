@@ -28,11 +28,13 @@ const draw3DBuildingButton = (props) => {
       onClick = {() => {
         console.log('[Button]: Test Polygon: ');
         props.EnablePolygon();
-        let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
-        let buildingCoordinatesSize = buildingCoordinatesArray.length;
-        buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
-        props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
-
+        let buildingCoordinatesArray =
+          props.BuildFoundation.getPointsCoordinatesArray();
+        buildingCoordinatesArray.splice(buildingCoordinatesArray.length - 3, 3);
+        props.CreateBuildingFoundationPolygon(
+          props.CurrentBuilding.foundationHeight,
+          buildingCoordinatesArray
+        );
       }}
     >Test: Draw Foundation</Button>
 
