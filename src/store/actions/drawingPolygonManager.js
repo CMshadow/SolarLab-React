@@ -28,9 +28,3 @@ export const setUpPolygonFoundation = () => {
     type: actionTypes.SET_POLYGON_FOUNDATION
   });
 };
-
-export const enableToBuildFoundation = () => {
-  return ({
-    type: actionTypes.ENABLE_TO_BUILD_FOUNDATION
-  });
-};

@@ -27,7 +27,6 @@ const draw3DBuildingButton = (props) => {
       }
       onClick = {() => {
         console.log('[Button]: Test Polygon: ');
-        props.EnablePolygon();
         let buildingCoordinatesArray =
           props.BuildFoundation.getPointsCoordinatesArray();
         buildingCoordinatesArray.splice(buildingCoordinatesArray.length - 3, 3);
@@ -58,7 +57,6 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    EnablePolygon: () => dispatch(actions.enableToBuildFoundation()),
     CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) =>
       dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray))
   };

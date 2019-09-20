@@ -6,31 +6,18 @@ import Polygon from '../../infrastructure/Polygon/Polygon';
 
 
 const initialState = {
-	PolygonReadyEnable: false,
-	BuildingFoundation: new Polygon()
+	BuildingFoundation: null
 };
 
 /**
- * 
- * Toggle Handler: To Enable To Generate 3D Polygon
- */
-const enableToBuild = (state, action) => {
-	console.log('[Found Checked]: Ready to Build');
-	return{
-		...state,
-		PolygonReadyEnable: true
-	}
-}
-
-/**
- * 
- *  CREATE 3D Building Foundation Polygon 
+ *
+ *  CREATE 3D Building Foundation Polygon
  */
 const createBuildingFoundationPolygon = (state, action) => {
 	console.log('create building');
-	let newFoundation = Polygon.CopyPolygon(state.BuildingFoundation);
-	newFoundation.height = action.height;
-	newFoundation.hierarchy = [...action.coordinatesArray];
+	let newFoundation = new Polygon()
+	newFoundation.setHeight(action.height);
+	newFoundation.setHierarchy([...action.coordinatesArray]);
 	for (let i = 0; i < newFoundation.hierarchy.length; ++i) {
 		if ((i + 1) % 3 === 0) {
 			newFoundation.hierarchy[i] = newFoundation.height;
@@ -44,19 +31,17 @@ const createBuildingFoundationPolygon = (state, action) => {
 };
 
 /**
- * 
+ *
  *  Set Up The Props of 3D Building Foundation Polygon
  */
 
 const setUpBuildingFoundationPolygon = (state, action) => {
 	return null;
 };
-	
+
 
  const reducer = (state=initialState, action) => {
 	switch(action.type){
-		case actionTypes.ENABLE_TO_BUILD_FOUNDATION:
-			return enableToBuild(state, action);
 		case actionTypes.CREATE_POLYGON_FOUNDATION:
 			return createBuildingFoundationPolygon(state, action);
 		case actionTypes.SET_POLYGON_FOUNDATION:

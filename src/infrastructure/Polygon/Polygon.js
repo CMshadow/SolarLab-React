@@ -57,25 +57,23 @@ class Polygon {
   }
 
 
-/**
- *  A copy constructor from an existing Polyline object
-  * @param {Polygon}  polygon       the existing polygon object to be deep copied
-  * @param {string}  [id=null]       unique id of the polygon, automatic
-  *                                  generate one if not provided
-  * @param {string}  [name=null]     name of the polygon, using default name if not provided
-  * @param {Double}  [height=0.0]     the height of the fouddation, using default value, 0.0,  if not provided
-  * @param {Coordinate}   [hierarchy= [] ]   A list of Point Coordinate object, default empty list
-  * @param {Color}   [materia=null]  GRBA color, Cesium.Color.WHITE if not
-  *                                  provided
-  * @param {Boolean} [perPositionHeight=true]  whether to adjust each point
-  * @param {Double} [extrudeHeight=0.0] The distance between the foudation and the ground
-  *                                  default true
-  * @param {Boolean} [show=true]     whether to show the polygon,
-  *                                  default true
-*
- */
-
-static CopyPolygon (polygon,
+  /**
+   *  A copy constructor from an existing Polyline object
+    * @param {Polygon}  polygon       the existing polygon object to be deep copied
+    * @param {string}  [id=null]       unique id of the polygon, automatic
+    *                                  generate one if not provided
+    * @param {string}  [name=null]     name of the polygon, using default name if not provided
+    * @param {Double}  [height=0.0]     the height of the fouddation, using default value, 0.0,  if not provided
+    * @param {Coordinate}   [hierarchy= [] ]   A list of Point Coordinate object, default empty list
+    * @param {Color}   [materia=null]  GRBA color, Cesium.Color.WHITE if not
+    *                                  provided
+    * @param {Boolean} [perPositionHeight=true]  whether to adjust each point
+    * @param {Double} [extrudeHeight=0.0] The distance between the foudation and the ground
+    *                                  default true
+    * @param {Boolean} [show=true]     whether to show the polygon,
+    *                                  default true
+  */
+  static CopyPolygon (polygon,
   id = null,
   name = null,
   height= null,
@@ -86,33 +84,32 @@ static CopyPolygon (polygon,
   outlineColor= null,
   outlineWidth= null,
   shadow=null,
-  show=null)
-  {
-    let newID = id ? id : polygon.id;
-    let newName = name ? name : polygon.name;
-    let newHeight = height ? height: polygon.height;
-    let newHierarchy = hierarchy ? [...hierarchy]: polygon.hierarchy;
-    let newPerPositionHeight = perPositionHeight ? perPositionHeight: polygon.perPositionHeight;
-    let newExtrudedHeight = extrudedHeight ? extrudedHeight: polygon.extrudedHeight;
-    let newMaterial = material ? material: polygon.material;
-    let newOutLineColor = outlineColor ? outlineColor : polygon.outlineColor;
-    let newOutLineWidth = outlineWidth ? outlineWidth : polygon.outlineWidth;
-    let newShadow = shadow? shadow: true;
-    let newShow = show? show: true;
-    return new Polygon(newID, newName, newHeight, newHierarchy, newPerPositionHeight, newExtrudedHeight,
-      newMaterial, newOutLineColor, newOutLineWidth, newShadow, newShow);
+  show=null
+){
+  let newID = id ? id : polygon.id;
+  let newName = name ? name : polygon.name;
+  let newHeight = height ? height: polygon.height;
+  let newHierarchy = hierarchy ? [...hierarchy]: polygon.hierarchy;
+  let newPerPositionHeight = perPositionHeight ? perPositionHeight: polygon.perPositionHeight;
+  let newExtrudedHeight = extrudedHeight ? extrudedHeight: polygon.extrudedHeight;
+  let newMaterial = material ? material: polygon.material;
+  let newOutLineColor = outlineColor ? outlineColor : polygon.outlineColor;
+  let newOutLineWidth = outlineWidth ? outlineWidth : polygon.outlineWidth;
+  let newShadow = shadow? shadow: true;
+  let newShow = show? show: true;
+  return new Polygon(newID, newName, newHeight, newHierarchy, newPerPositionHeight, newExtrudedHeight,
+    newMaterial, newOutLineColor, newOutLineWidth, newShadow, newShow);
 };
 
-/**
+  /**
    * get the coordinates array of the foudation polygon
    * @return {Number[lon1, lat1, height1, lon2, lat2, height2 ...]} An array of coordinates that represents,
    *                                                                must be at least 3 mor multiples of 3
    * all positions of points the foundaion polgon contains
    */
-
   getFoundationCoordinatesArray = () => (this.hierarchy);
 
- /**
+  /**
    * set the height of polygon foundatoin
    * @param {Float} newHeight the height of the foundation polygon
    */
@@ -120,6 +117,9 @@ static CopyPolygon (polygon,
     this.height = newHeight;
   };
 
+  setHierarchy = (newHierarchy) => {
+    this.hierarchy = newHierarchy;
+  }
 
   /**
    * change the color of the polygon

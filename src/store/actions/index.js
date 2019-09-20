@@ -71,7 +71,6 @@ export {
 export {
   createPolygonFoundation,
   setUpPolygonFoundation,
-  enableToBuildFoundation
 } from './drawingPolygonManager'
 
 export {
