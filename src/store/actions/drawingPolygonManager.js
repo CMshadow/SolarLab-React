@@ -3,11 +3,9 @@ import axios from '../../axios-setup';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 
 export const createPolygonFoundation = (newHeight, coordinatesArray) => {
-  console.log('action')
   return dispatch => {
-    axios.get('/test')
+    axios.get('/calculate-setback-coordinate')
     .then(response => {
-      console.log(response)
       dispatch({
         type: actionTypes.CREATE_POLYGON_FOUNDATION,
         height: newHeight,

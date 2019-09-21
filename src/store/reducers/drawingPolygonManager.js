@@ -14,16 +14,7 @@ const initialState = {
  *  CREATE 3D Building Foundation Polygon
  */
 const createBuildingFoundationPolygon = (state, action) => {
-	console.log('create building');
-	let newFoundation = new Polygon()
-	newFoundation.setHeight(action.height);
-	newFoundation.setHierarchy([...action.coordinatesArray]);
-	for (let i = 0; i < newFoundation.hierarchy.length; ++i) {
-		if ((i + 1) % 3 === 0) {
-			newFoundation.hierarchy[i] = newFoundation.height;
-		}
-	}
-
+	let newFoundation = new Polygon(null, null, action.height, action.coordinatesArray)
 	return{
 		...state,
 		BuildingFoundation: newFoundation
