@@ -166,6 +166,7 @@ const terminateDrawing = (state, action) => {
     return Point.fromPoint(elem);
   });
   const polyline = new FoundLine([...existPoints, existPoints[0]]);
+  polyline.isSelfIntersection()
   return {
     ...state,
     drawingPolyline: polyline,

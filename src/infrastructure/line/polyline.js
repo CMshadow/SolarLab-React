@@ -1,7 +1,8 @@
 import * as Cesium from 'cesium';
 import uuid from 'uuid/v1';
-import errorNotification from '../../components/ui/Notification/ErrorNotification';
+import gpsi from 'geojson-polygon-self-intersections';
 
+import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Point from '../point/point';
 import Coordinate from '../point/coordinate';
 
@@ -298,6 +299,30 @@ class Polyline {
       brngSet.add(parseFloat(brng7.toFixed(5)));
     }
     return brngSet;
+  }
+
+  makeGeoJSON = () => {
+    const coordinates = this.getPointsCoordinatesArray(false);
+    const geoJSON = {
+      geometry: {
+        type: "Polygon",
+        coordinates: [
+          coordinates
+        ]
+      }
+    }
+    return geoJSON;
+  };
+
+  isSelfIntersection = () => {
+    const geoJson = this.makeGeoJSON();
+    const selfIntersectionDetect = gpsi(geoJson);
+    if (selfIntersectionDetect.geometry.coordinates.length === 0) {
+      return false;
+    } else {
+      console.log(selfIntersectionDetect.geometry.coordinates)
+      console.log(selfIntersectionDetect.geometry.coordinates[0] === selfIntersectionDetect.geometry.coordinates[1])
+    }
   }
 }
 
