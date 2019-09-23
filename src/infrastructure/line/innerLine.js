@@ -21,7 +21,7 @@ class InnerLine extends Polyline {
    * @param {Boolean} [show=true]     whether to show the polyline,
    *                                  default true
    * @param {string}  [type=null]     the type of inner line, either 'HIP' or
-   *                                  'RIDGE'
+   *                                  'RIDGE', default null
    */
   constructor (
     points = null, id = null, name = null, color = null, width = null,
@@ -35,8 +35,9 @@ class InnerLine extends Polyline {
    * A copy constructor from an existing InnerLine object
    * @param  {InnerLine} polyline     the existing polyline object to be
    *                                  copied
-   * @param  {string}   [id=null]     unique id of the polyline, automatic
-   *                                  generate one if not provided
+   * @param  {string}   [id=polyline.entityId] unique id of the polyline,
+   *                                           copy the existing one if not
+   *                                           provided
    * @param  {string}   [name=null]   name of the polyline, copy the existing
    *                                  one if not provided
    * @param  {.Color}   [color=null]  GRBA color, copy the existing one if

@@ -272,6 +272,11 @@ class Polyline {
     return polylineArray;
   }
 
+  /**
+   * get the bearings for aux lines according to the bearing of every segment of
+   * the polyline
+   * @return {Number[]} a set of bearings
+   */
   getHelpLineBearings = () => {
     let brngSet = new Set();
     for (let i = 0; i < this.length-1; i++) {
