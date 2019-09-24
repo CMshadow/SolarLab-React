@@ -13,7 +13,23 @@ const drawing3DFoundManagerRender = (props) => {
 		props.CurrentBuilding.bindFoundPolygon(props.DrawingBuidingFoundation);
 	}
 
-	return <div>{drawingBuildingFoundation}</div>
+	let drawingBuildingFoundationExcludeStb = null;
+	if (props.DrawingBuildingFoundationExcludeStb !== []) {
+		drawingBuildingFoundationExcludeStb =
+			props.DrawingBuildingFoundationExcludeStb.map(individual => (
+				<PolygonVisualize
+					key={individual.entityId}
+					{...individual}
+				/>
+			));
+	}
+
+	return (
+		<div>
+			{drawingBuildingFoundation}
+			{drawingBuildingFoundationExcludeStb}
+		</div>
+	);
 };
 
 const mapStateToProps = state => {
@@ -21,6 +37,9 @@ const mapStateToProps = state => {
 		DrawingBuidingFoundation:
 			state.undoableReducer.present.drawingPolygonManagerReducer
 			.BuildingFoundation,
+		DrawingBuildingFoundationExcludeStb:
+			state.undoableReducer.present.drawingPolygonManagerReducer
+			.BuildingFoundationExcludeStb,
 		CurrentBuilding: state.buildingManagerReducer.workingBuilding
 	};
 };

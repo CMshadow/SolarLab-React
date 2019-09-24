@@ -26,7 +26,6 @@ const draw3DBuildingButton = (props) => {
         !uiStateJudge.isFinishedInner(props.uiState)
       }
       onClick = {() => {
-        props.createPolygonFoundation();
         props.createPolygonFoundationExcludeStb();
       }}
     >Test: Draw Foundation</Button>

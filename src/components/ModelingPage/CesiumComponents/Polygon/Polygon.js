@@ -3,7 +3,7 @@ import { Entity } from 'resium';
 import * as Cesium from 'cesium';
 
 
-/* 
+/*
     Polygon: Create Basic 3D-foundations of both Flat/Pitched Roof
 */
 
@@ -16,7 +16,7 @@ const polygonVisualize = (props) => {
 				hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(props.hierarchy),
 				perPositionHeight: props.perPositionHeight,
 				extrudedHeight: props.extrudedHeight,
-				outline: true,
+				outline: false,
 				outlineColor: props.outlineColor,
 				outlineWidth: props.outlineWidth,
 				material: props.material,

@@ -50,7 +50,7 @@ class FoundLine extends Polyline {
     polyline, id = polyline.entityId, name = null, color = null, width = null,
     show = true
   ) {
-    const priorPoints = polyline.points.slice(0, polyline.length-1)
+    const priorPoints = polyline.points.slice(0, polyline.points.length-1)
     .map(elem => {
       return Point.fromPoint(elem);
     });

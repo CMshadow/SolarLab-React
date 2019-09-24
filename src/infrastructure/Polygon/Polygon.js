@@ -139,12 +139,18 @@ class Polygon {
   };
 
   /**
-   * [makeHierarchyFromPolyline description]
-   * @param  {[type]} polyline               [description]
-   * @param  {[type]} [overwriteHeight=null] [description]
-   * @return {[type]}                        [description]
+   * create the hierarchy for a Polygon object by a given Polyline object
+   * @param  {Polyline} polyline             the given Polyline object
+   * @param  {NUmber} [overwriteHeight=null] overwriteheight to overwirte the
+   *                                         height of the points on the polyline
+   * @param  {Number} [heightOffset=0] heightoffset addition to overwriteHeight
+   * @return {Number[]}                      the array can be used as the hierarchy
+   *                                         of a Polygon object.
+   *                                         i.e. [lon, lat, height, lon, lat, height ...]
    */
-  static makeHierarchyFromPolyline = (polyline, overwriteHeight = null) => {
+  static makeHierarchyFromPolyline = (
+    polyline, overwriteHeight = null, heightOffset = 0
+  ) => {
     let polylineHierarchy = null;
 
     if (polyline instanceof FoundLine) {
@@ -156,7 +162,7 @@ class Polygon {
     }
     if (overwriteHeight) {
       for (let i = 0; i < polylineHierarchy.length; i+=3){
-        polylineHierarchy[i+2] = overwriteHeight;
+        polylineHierarchy[i+2] = overwriteHeight + heightOffset;
       }
     }
     return polylineHierarchy;
