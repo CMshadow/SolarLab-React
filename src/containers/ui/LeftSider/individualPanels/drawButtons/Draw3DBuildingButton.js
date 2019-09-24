@@ -9,7 +9,6 @@ import {
   Button,
 } from 'antd';
 
-import Polygon from '../../../../../infrastructure/Polygon/Polygon';
 import * as actions from '../../../../../store/actions/index';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 
@@ -27,14 +26,8 @@ const draw3DBuildingButton = (props) => {
         !uiStateJudge.isFinishedInner(props.uiState)
       }
       onClick = {() => {
-        const buildingCoordinatesArray =
-          Polygon.makeHierarchyFromPolyline(
-            props.BuildFoundation, props.CurrentBuilding.foundationHeight
-          );
-        props.CreateBuildingFoundationPolygon(
-          props.CurrentBuilding.foundationHeight,
-          buildingCoordinatesArray
-        );
+        props.createPolygonFoundation();
+        props.createPolygonFoundationExcludeStb();
       }}
     >Test: Draw Foundation</Button>
 
@@ -52,15 +45,15 @@ const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     CurrentBuilding: state.buildingManagerReducer.workingBuilding,
-    BuildFoundation:
-      state.undoableReducer.present.drawingManagerReducer.drawingPolyline
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) =>
-      dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray))
+    createPolygonFoundation: () =>
+      dispatch(actions.createPolygonFoundation()),
+    createPolygonFoundationExcludeStb: () =>
+      dispatch(actions.createPolygonFoundationExcludeStb()),
   };
 };
 

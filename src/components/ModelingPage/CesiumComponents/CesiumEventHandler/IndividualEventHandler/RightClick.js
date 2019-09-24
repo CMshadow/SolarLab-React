@@ -23,6 +23,8 @@ const RightClickHandler = (props) => {
         break;
 
       default:
+        const test = props.drawingFoundPolyline.makeSetbackPolylineInside(1);
+        props.setDebugPolylines(test)
         break;
     }
   };
@@ -39,6 +41,7 @@ const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    drawingFoundPolyline: state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
   };
 };
 
@@ -53,6 +56,8 @@ const mapDispatchToProps = dispatch => {
     setRightClickCartesian3: (cartesian, viewer) => dispatch(
       actions.setRightClickCartesian3(cartesian, viewer)
     ),
+    setDebugPolylines: (polylines) => dispatch(actions.setDebugPolylines(polylines)),
+    setDebugPoints: (points) => dispatch(actions.setDebugPoints(points)),
   };
 };
 

@@ -6,6 +6,7 @@ import DrawingManagerRender from './DrawingManagerRender';
 import Drawing3DFoundManagerRender from './Drawing3DFoundManagerRender/Drawing3DFoundMangerRender';
 import DrawingInnerManagerRender from './DrawingInnerManagerRender';
 import DrawingKeepoutManagerRender from './DrawingKeepoutManagerRender';
+import DebugRender from './DebugRender';
 
 const CesiumRender = (props) => {
   return (
@@ -22,6 +23,7 @@ const CesiumRender = (props) => {
       }
       <Drawing3DFoundManagerRender />
       <DrawingKeepoutManagerRender />
+      <DebugRender />
     </div>
   );
 };

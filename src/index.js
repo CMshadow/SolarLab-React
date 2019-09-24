@@ -24,6 +24,7 @@ import uiStateManagerReducer from './store/reducers/uiStateManager';
 import buildingManagerReducer from './store/reducers/buildingManager';
 import projectManagerReducer from './store/reducers/projectManager';
 import drawingPolygonManagerReducer from './store/reducers/drawingPolygonManager';
+import debugRenderReducer from './store/reducers/debugRender';
 // IMPORT MORE REDBUX REDUCERS OVER HERE
 
 /*
@@ -39,6 +40,7 @@ const rootReducer = combineReducers({
   projectManagerReducer: projectManagerReducer,
   cesiumReducer: cesiumReducer,
   buildingManagerReducer: buildingManagerReducer,
+  debugRenderReducer:debugRenderReducer,
   undoableReducer: undoable(combineReducers({
     drawingManagerReducer: drawingManagerReducer,
     drawingInnerManagerReducer: drawingInnerManagerReducer,

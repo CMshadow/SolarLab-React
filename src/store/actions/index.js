@@ -70,6 +70,7 @@ export {
 
 export {
   createPolygonFoundation,
+  createPolygonFoundationExcludeStb,
   setUpPolygonFoundation,
 } from './drawingPolygonManager'
 
@@ -90,3 +91,8 @@ export {
   saveBuildingInfoFields,
   resetBuilding
 } from './buildingManager';
+
+export {
+  setDebugPoints,
+  setDebugPolylines
+} from './debugRender';

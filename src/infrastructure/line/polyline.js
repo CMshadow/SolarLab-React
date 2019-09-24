@@ -1,6 +1,7 @@
 import * as Cesium from 'cesium';
 import uuid from 'uuid/v1';
-import gpsi from 'geojson-polygon-self-intersections';
+import * as turf from '@turf/turf';
+import simplepolygon from 'simplepolygon';
 
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Point from '../point/point';
@@ -69,6 +70,15 @@ class Polyline {
    */
   get length () {
     return this.points.length;
+  }
+
+  get polylineLength () {
+    const segmentDist = this.getSegmentDistance();
+    return segmentDist.reduce((a,b) => a + b, 0);
+  }
+
+  get polylineArea () {
+    return turf.area(turf.polygon(this.makeGeoJSON().geometry.coordinates));
   }
 
   /**
@@ -256,7 +266,7 @@ class Polyline {
   getSegmentDistance = () => {
     let distArray = [];
     for (let i = 0; i < this.length-1; i++) {
-      distArray.push(Point.distance(this.points[i], this.points[i+1]));
+      distArray.push(Point.surfaceDistance(this.points[i], this.points[i+1]));
     }
     return distArray;
   }
@@ -304,8 +314,9 @@ class Polyline {
   makeGeoJSON = () => {
     const coordinates = this.getPointsCoordinatesArray(false);
     const geoJSON = {
+      type: 'Feature',
       geometry: {
-        type: "Polygon",
+        type: 'Polygon',
         coordinates: [
           coordinates
         ]
@@ -316,14 +327,9 @@ class Polyline {
 
   isSelfIntersection = () => {
     const geoJson = this.makeGeoJSON();
-    const selfIntersectionDetect = gpsi(geoJson);
-    if (selfIntersectionDetect.geometry.coordinates.length === 0) {
-      return false;
-    } else {
-      console.log(selfIntersectionDetect.geometry.coordinates)
-      console.log(selfIntersectionDetect.geometry.coordinates[0] === selfIntersectionDetect.geometry.coordinates[1])
-    }
-  }
+    const selfIntersectionDetect = simplepolygon(geoJson);
+    return selfIntersectionDetect.features.length >= 2;
+  };
 }
 
 export default Polyline;
