@@ -20,13 +20,14 @@ const draw3DBuildingButton = (props) => {
       size = 'large'
       shape = 'round'
       block
+      loading = {props.backendLoading}
       disabled = {
         props.CurrentBuilding.type === 'FLAT' ?
         !uiStateJudge.isFinishedFound(props.uiState) :
         !uiStateJudge.isFinishedInner(props.uiState)
       }
       onClick = {() => {
-        props.createPolygonFoundationExcludeStb();
+        props.createPolygonFoundationWrapper();
       }}
     >Test: Draw Foundation</Button>
 
@@ -44,15 +45,15 @@ const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     CurrentBuilding: state.buildingManagerReducer.workingBuilding,
+    backendLoading:
+      state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    createPolygonFoundation: () =>
-      dispatch(actions.createPolygonFoundation()),
-    createPolygonFoundationExcludeStb: () =>
-      dispatch(actions.createPolygonFoundationExcludeStb()),
+    createPolygonFoundationWrapper: () =>
+      dispatch(actions.createPolygonFoundationWrapper()),
   };
 };
 

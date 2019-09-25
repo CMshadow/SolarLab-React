@@ -69,9 +69,11 @@ export {
 } from './drawingKeepoutManager'
 
 export {
-  createPolygonFoundation,
-  createPolygonFoundationExcludeStb,
-  setUpPolygonFoundation,
+  createPolygonFoundationWrapper,
+  createPolygonFoundationIncludeStb,
+  createWall,
+  setBackendLoadingTrue,
+  setBackendLoadingFalse
 } from './drawingPolygonManager'
 
 export {

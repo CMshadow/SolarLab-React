@@ -197,7 +197,7 @@ class Polygon {
    * @param {Color} newColor new Cesium.Color or RGBA color
    */
   setColor = (newColor) => {
-    this.color = newColor;
+    this.material = newColor;
   };
 
 }

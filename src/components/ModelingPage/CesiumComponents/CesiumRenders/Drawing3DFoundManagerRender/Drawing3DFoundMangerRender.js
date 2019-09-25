@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PolygonVisualize from '../../Polygon/Polygon';
+import CustomWall from '../../wall/wall';
 import * as actions from '../../../../../store/actions/index';
 
 
@@ -8,8 +9,11 @@ import * as actions from '../../../../../store/actions/index';
 const drawing3DFoundManagerRender = (props) => {
 	let drawingBuildingFoundation = null;
 	if (props.DrawingBuidingFoundation !== null) {
-		drawingBuildingFoundation = (<PolygonVisualize
-		{...props.DrawingBuidingFoundation}/>);
+		drawingBuildingFoundation = (
+			<PolygonVisualize
+				{...props.DrawingBuidingFoundation}
+			/>
+		);
 		props.CurrentBuilding.bindFoundPolygon(props.DrawingBuidingFoundation);
 	}
 
@@ -24,10 +28,20 @@ const drawing3DFoundManagerRender = (props) => {
 			));
 	}
 
+	let drawingBuildingParapet = null;
+	if (props.DrawingBuildingParapet !== null) {
+		drawingBuildingParapet = (
+			<CustomWall
+				{...props.DrawingBuildingParapet}
+			/>
+		)
+	}
+
 	return (
 		<div>
 			{drawingBuildingFoundation}
 			{drawingBuildingFoundationExcludeStb}
+			{drawingBuildingParapet}
 		</div>
 	);
 };
@@ -40,6 +54,9 @@ const mapStateToProps = state => {
 		DrawingBuildingFoundationExcludeStb:
 			state.undoableReducer.present.drawingPolygonManagerReducer
 			.BuildingFoundationExcludeStb,
+		DrawingBuildingParapet:
+			state.undoableReducer.present.drawingPolygonManagerReducer
+			.BuildingParapet,
 		CurrentBuilding: state.buildingManagerReducer.workingBuilding
 	};
 };

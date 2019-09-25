@@ -10,7 +10,7 @@ import * as Cesium from 'cesium';
 const polygonVisualize = (props) => {
 	return (
 		<Entity
-			id={props.id}
+			id={props.entityId}
 			name={props.name}
 			polygon={{
 				hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(props.hierarchy),
