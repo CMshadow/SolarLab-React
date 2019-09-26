@@ -17,8 +17,8 @@ export const createPolygonFoundationWrapper = () => (dispatch, getState) => {
 
   dispatch(setBackendLoadingTrue());
   axios.post('/calculate-setback-coordinate', {
-    originPolyline: foundPolyline,
-    stbDist: stbDist,
+    originPolylines: [foundPolyline],
+    stbDists: [stbDist],
     direction: 'inside'
   })
   .then(response => {
@@ -28,7 +28,7 @@ export const createPolygonFoundationWrapper = () => (dispatch, getState) => {
     if (stbDist !== 0){
       dispatch(createPolygonFoundationIncludeStb());
     }
-    const stbPolylines = JSON.parse(response.data.body).stbPolylines;
+    const stbPolylines = JSON.parse(response.data.body).stbPolylines[0];
     const buildingCoordinatesArray = stbPolylines.map(stbPly => {
       return Polygon.makeHierarchyFromPolyline(
         FoundLine.fromPolyline(stbPly), foundHeight

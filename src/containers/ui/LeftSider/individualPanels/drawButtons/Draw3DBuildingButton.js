@@ -28,6 +28,7 @@ const draw3DBuildingButton = (props) => {
       }
       onClick = {() => {
         props.createPolygonFoundationWrapper();
+        props.createAllKeepoutPolygon();
       }}
     >Test: Draw Foundation</Button>
 
@@ -54,6 +55,8 @@ const mapDispatchToProps = dispatch => {
   return {
     createPolygonFoundationWrapper: () =>
       dispatch(actions.createPolygonFoundationWrapper()),
+    createAllKeepoutPolygon: () =>
+      dispatch(actions.createAllKeepoutPolygon()),
   };
 };
 

@@ -8,11 +8,10 @@ class Vent extends Keepout {
     id = null, type = null, drew = null, editing = null, brng = null,
     radius = null, angle = null, outline = null
   ) {
-    super(id, type, drew, editing);
+    super(id, type, drew, editing, outline);
     this.bearing = brng ? brng : 0;
     this.radius = radius ? radius : 2;
     this.angle = angle ? angle : 180;
-    this.outlinePolyline = outline ? outline : null;
   }
 
   static fromKeepout (

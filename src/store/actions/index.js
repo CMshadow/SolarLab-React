@@ -77,6 +77,10 @@ export {
 } from './drawingPolygonManager'
 
 export {
+  createAllKeepoutPolygon
+} from './drawingKeepoutPolygonManager'
+
+export {
   setUIStateReadyDrawing,
   setUIStateDrawingFound,
   setUIStateFoundDrew,
