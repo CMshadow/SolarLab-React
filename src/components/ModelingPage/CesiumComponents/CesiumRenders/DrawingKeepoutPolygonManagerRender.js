@@ -7,14 +7,14 @@ import * as actions from '../../../../store/actions/index';
 const DrawingKeepoutPolygonManagerRender = (props) => {
 	let normalKeepoutPolygon = null;
 	let normalKeepoutPolygonStb = null;
-	if (props.normalKeepoutPolygon !== []) {
-		normalKeepoutPolygon = props.normalKeepoutPolygon.map(kpt => (
+	if (props.normalKeepout !== []) {
+		normalKeepoutPolygon = props.normalKeepout.map(kpt => (
       <PolygonVisualize
         key = {kpt.outlinePolygon.entityId}
 				{...kpt.outlinePolygon}
 			/>
     ));
-		normalKeepoutPolygonStb = props.normalKeepoutPolygon
+		normalKeepoutPolygonStb = props.normalKeepout
 			.filter(kpt => kpt.outlinePolygonPart2 !== null)
 			.map(kpt => (
 	      <PolygonVisualize
@@ -24,19 +24,33 @@ const DrawingKeepoutPolygonManagerRender = (props) => {
 	    ));
 	}
 
+	let passageKeepoutPolygon = null;
+	if (props.passageKeepout !== []) {
+		passageKeepoutPolygon = props.passageKeepout.map(kpt => (
+      <PolygonVisualize
+        key = {kpt.outlinePolygon.entityId}
+				{...kpt.outlinePolygon}
+			/>
+    ));
+	}
+
 	return (
 		<div>
 			{normalKeepoutPolygon}
 			{normalKeepoutPolygonStb}
+			{passageKeepoutPolygon}
 		</div>
 	);
 };
 
 const mapStateToProps = state => {
 	return{
-		normalKeepoutPolygon:
+		normalKeepout:
 			state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
 			.normalKeepout,
+		passageKeepout:
+			state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
+			.passageKeepout,
 	};
 };
 

@@ -1,12 +1,9 @@
 import * as Cesium from 'cesium';
-import simplepolygon from 'simplepolygon';
 
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Point from '../point/point';
 import Polyline from './polyline';
 import Coordinate from '../point/coordinate';
-import MathLineCollection from '../math/mathLineCollection';
-import MathLine from '../math/mathLine';
 
 class FoundLine extends Polyline {
 

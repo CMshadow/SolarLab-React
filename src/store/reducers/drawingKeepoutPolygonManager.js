@@ -22,10 +22,19 @@ const createAllNormalKeepoutPolygon = (state, action) => {
   }
 }
 
+const createAllPassageKeepoutPolygon = (state, action) => {
+  return {
+    ...state,
+    passageKeepout: action.passageKeepout,
+  }
+}
+
 const reducer = (state=initialState, action) => {
 	switch(action.type){
 		case actionTypes.CREATE_ALL_NORMAL_KEEPOUT_POLYGON:
 			return createAllNormalKeepoutPolygon(state, action);
+    case actionTypes.CREATE_ALL_PASSAGE_KEEPOUT_POLYGON:
+      return createAllPassageKeepoutPolygon(state, action);
 		default:
 			return state;
 	}

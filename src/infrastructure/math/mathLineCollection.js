@@ -1,5 +1,4 @@
 import MathLine from './mathLine';
-import FoundLine from '../line/foundLine';
 import Point from '../point/point';
 
 class MathLineCollection {
@@ -7,7 +6,7 @@ class MathLineCollection {
     this.mathLineCollection = mathLines ? mathLines : [];
   }
 
-  get length () {
+  length () {
     return this.mathLineCollection.length;
   }
 
@@ -30,12 +29,12 @@ class MathLineCollection {
     return new MathLineCollection(mathLines);
   }
 
-  toPolyline = () => {
+  toPolylinePoints () {
     const points = [];
-    this.mathLineCollection.forEach(elem =>
-      points.push(Point.fromCoordinate(elem.originCor))
-    );
-    return new FoundLine([...points, points[0]]);
+    for (let elem of this.mathLineCollection) {
+      points.push(Point.fromCoordinate(elem.originCor));
+    }
+    return [...points, points[0]];
   }
 }
 
