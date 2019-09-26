@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 import * as uiStateJudge from '../../../../infrastructure/ui/uiStateJudge';
 import DrawingManagerRender from './DrawingManagerRender';
-import Drawing3DFoundManagerRender from './Drawing3DFoundManagerRender/Drawing3DFoundMangerRender';
+import Drawing3DFoundManagerRender from './Drawing3DFoundMangerRender';
 import DrawingInnerManagerRender from './DrawingInnerManagerRender';
 import DrawingKeepoutManagerRender from './DrawingKeepoutManagerRender';
 import DebugRender from './DebugRender';

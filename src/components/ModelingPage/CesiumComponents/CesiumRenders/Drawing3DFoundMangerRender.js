@@ -1,10 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import PolygonVisualize from '../../Polygon/Polygon';
-import CustomWall from '../../wall/wall';
-import * as actions from '../../../../../store/actions/index';
-
-
+import PolygonVisualize from '../Polygon/Polygon';
+import CustomWall from '../wall/wall';
+import * as actions from '../../../../store/actions/index';
 
 const drawing3DFoundManagerRender = (props) => {
 	let drawingBuildingFoundation = null;

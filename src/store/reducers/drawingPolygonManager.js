@@ -1,8 +1,6 @@
 import * as Cesium from 'cesium';
-import uuid from 'uuid/v1';
 
 import * as actionTypes from '../actions/actionTypes';
-import Coordinate from '../../infrastructure/point/coordinate';
 import Polygon from '../../infrastructure/Polygon/Polygon';
 import Wall from '../../infrastructure/Polygon/wall';
 
