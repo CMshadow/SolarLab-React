@@ -22,9 +22,11 @@ const draw3DBuildingButton = (props) => {
       block
       loading = {props.backendLoading}
       disabled = {
-        props.CurrentBuilding.type === 'FLAT' ?
+        (props.CurrentBuilding.type === 'FLAT' ?
         !uiStateJudge.isFinishedFound(props.uiState) :
-        !uiStateJudge.isFinishedInner(props.uiState)
+        !uiStateJudge.isFinishedInner(props.uiState)) || (
+          props.keepoutList.filter(kpt => !kpt.finishedDrawing).length !== 0
+        )
       }
       onClick = {() => {
         props.createPolygonFoundationWrapper();
@@ -48,6 +50,8 @@ const mapStateToProps = state => {
     CurrentBuilding: state.buildingManagerReducer.workingBuilding,
     backendLoading:
       state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
+    keepoutList:
+      state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
   };
 };
 

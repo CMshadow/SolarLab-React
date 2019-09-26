@@ -1,10 +1,10 @@
 import {Color} from 'cesium';
+import * as martinez from 'martinez-polygon-clipping';
 
 import * as actionTypes from './actionTypes';
 import axios from '../../axios-setup';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Polygon from '../../infrastructure/Polygon/Polygon';
-import Wall from '../../infrastructure/Polygon/wall';
 import FoundLine from '../../infrastructure/line/foundLine';
 import NormalKeepout from '../../infrastructure/keepout/normalKeepout';
 
@@ -18,6 +18,8 @@ export const createAllKeepoutPolygon = () => (dispatch, getState) => {
 
 export const createNormalKeepoutPolygon = (normalKeepout) =>
 (dispatch, getState) => {
+  const foundPolyline =
+    getState().undoableReducer.present.drawingManagerReducer.drawingPolyline;
   const foundHeight =
     getState().buildingManagerReducer.workingBuilding.foundationHeight;
   const keepoutPolylines = normalKeepout.map(kpt => kpt.outlinePolyline);
@@ -30,11 +32,21 @@ export const createNormalKeepoutPolygon = (normalKeepout) =>
   })
   .then(response => {
     const stbPolylines = JSON.parse(response.data.body).stbPolylines;
-    const stbHierarchies = stbPolylines.map(stbPolyline =>
-      Polygon.makeHierarchyFromPolyline(
-        FoundLine.fromPolyline(stbPolyline[0]), foundHeight, 0.01
-      )
-    );
+    const stbHierarchies = stbPolylines.map(stbPolyline => {
+      const trimedStbTurfPolygon = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: martinez.intersection(
+            foundPolyline.makeGeoJSON().geometry.coordinates,
+            FoundLine.fromPolyline(stbPolyline[0]).makeGeoJSON().geometry.coordinates
+          )[0]
+        }
+      }
+      return Polygon.makeHierarchyFromTurfPolygon(
+        trimedStbTurfPolygon, foundHeight, 0.005
+      );
+    });
     const newNormalKeepout = normalKeepout.map((kpt, index) => {
       const hierarchy = Polygon.makeHierarchyFromPolyline(
         kpt.outlinePolyline, kpt.height + foundHeight
@@ -43,12 +55,12 @@ export const createNormalKeepoutPolygon = (normalKeepout) =>
         kpt, null, null, null,
         new Polygon(
           null, null, kpt.height + foundHeight, hierarchy, null, null,
-          Color.ORANGE
+          Color.GOLD
         ),
         kpt.setback !== 0 ?
         new Polygon(
           null, null, foundHeight, stbHierarchies[index], null, null,
-          Color.GOLD
+          Color.ORANGE
         ) :
         null
       )

@@ -55,7 +55,7 @@ export const createPolygonFoundationIncludeStb = () => (dispatch, getState) => {
     Polygon.makeHierarchyFromPolyline(
       getState().undoableReducer.present.drawingManagerReducer.drawingPolyline,
       getState().buildingManagerReducer.workingBuilding.foundationHeight,
-      -0.01
+      -0.005
     );
   return dispatch({
     type: actionTypes.CREATE_POLYGON_FOUNDATION,

@@ -16,6 +16,7 @@
     "cesium": "^1.60.0",
     "craco-cesium": "^1.1.1",
     "geojson-polygon-self-intersections": "^1.2.0",
+    "martinez-polygon-clipping": "^0.5.0",
     "react": "^16.9.0",
     "react-contextmenu": "^2.11.0",
     "react-dom": "^16.9.0",

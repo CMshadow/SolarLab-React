@@ -168,6 +168,16 @@ class Polygon {
     return polylineHierarchy;
   }
 
+  static makeHierarchyFromTurfPolygon = (GeoJSON, height, heightOffset = 0) => {
+    let polylineHierarchy = [];
+    GeoJSON.geometry.coordinates[0].forEach(cor => {
+      polylineHierarchy = polylineHierarchy.concat(
+        [cor[0], cor[1], height + heightOffset]
+      );
+    });
+    return polylineHierarchy;
+  }
+
   /**
    * get the coordinates array of the  polygon
    * @return {Number[]} An array of lon, lat, heights that represents the polygon,
