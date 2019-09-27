@@ -8,7 +8,6 @@ import {
   Col,
   Button,
 } from 'antd';
-
 import * as actions from '../../../../../store/actions/index';
 
 
@@ -26,7 +25,7 @@ const draw3DBuildingButton = (props) => {
         let buildingCoordinatesSize = buildingCoordinatesArray.length;
         buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
         props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
-          
+       
       }}
     >Test: Draw Foundation</Button>
 
@@ -52,7 +51,7 @@ const mapDispatchToProps = dispatch => {
     EnablePolygon: () => dispatch(actions.enableToBuildFoundation()),
     CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
       dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray))
-  };
+ };
 };
 
 export default connect(mapStateToProps,mapDispatchToProps)(draw3DBuildingButton);

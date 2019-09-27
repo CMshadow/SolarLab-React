@@ -7,6 +7,7 @@ class PitchedBuilding extends Building {
     this.type = 'PITCHED';
     this.hipSetback = hipStb;
     this.ridgeSetback = ridgeStb;
+    this.foundationPolygon = null;
   }
 
   bindFoundPolygon = (Polygon) => {

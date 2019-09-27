@@ -23,6 +23,10 @@ class Node {
   addChild = (childIndex) => {
     this.children.push(childIndex);
   }
+
+  present = () => {
+    return 'node: ' + this.lon + " , " + this.lat + " , " + this.height + ', ' + this.bound ;
+  }
 }
 
 export default Node;

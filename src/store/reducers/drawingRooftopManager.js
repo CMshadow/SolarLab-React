@@ -6,6 +6,7 @@ import Polygon from '../../infrastructure/Polygon/Polygon';
 
 
 const initState = {
+  NodesCollection: null,
   EdgesMap: null,
   RooftopCollection: null
 }
@@ -13,9 +14,14 @@ const initState = {
 
 const initEdgesMap = (state, action) => {
 
+
 }
 
 const initNodesCollection = (state, action) => {
+  return{
+    ...state,
+    NodesCollection: [...action.nodesCollection]
+  }
 
 }
 

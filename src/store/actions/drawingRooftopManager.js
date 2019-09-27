@@ -6,9 +6,10 @@ export const initEdgesMap = () => {
   });
 };
 
-export const initNodesCollection = () => {
+export const initNodesCollection = (newNodesCollection) => {
   return({
-    type: actionTypes.INIT_NODES_COLLECTION
+    type: actionTypes.INIT_NODES_COLLECTION,
+    nodesCollection: newNodesCollection
   });
 }
 
