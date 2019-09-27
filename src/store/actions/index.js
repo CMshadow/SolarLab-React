@@ -55,7 +55,13 @@ export {
   createPolygonFoundation,
   setUpPolygonFoundation,
   enableToBuildFoundation
-} from './drawingPolygonManager'
+} from './drawingPolygonManager';
+
+export {
+  initEdgesMap,
+  initNodesCollection,
+  searchAllRoofPlanes
+} from './drawingRooftopManager';
 
 export {
   setUIStateReadyDrawing,
