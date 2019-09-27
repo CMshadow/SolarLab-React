@@ -13,7 +13,7 @@ class Polyline {
 
   /**
    * A polyline
-   * @param {Point}   [points=null]   A list of Point objects, default empty
+   * @param {Point[]}   [points=null]   A list of Point objects, default empty
    * @param {string}  [id=null]       unique id of the polyline, automatic
    *                                  generate one if not provided
    * @param {string}  [name=null]     name of the polyline, automatic generate
@@ -340,19 +340,21 @@ class Polyline {
     let stbPolylinePoints = [];
     for(let direction of [90, -90]) {
       const stbMathLineCollection = new MathLineCollection();
-      for (let mathLine of mathLineCollection.mathLineCollection) {
+      mathLineCollection.mathLineCollection.forEach(mathLine => {
         const anchor = Coordinate.destination(
           mathLine.originCor, mathLine.brng + direction, stbDist
         );
-        stbMathLineCollection.addMathLine(new MathLine(anchor, mathLine.brng));
-      };
-      stbMathLineCollection.mathLineCollection.forEach((mathLine, index) =>{
+        const end = Coordinate.destination(
+          mathLine.dest, mathLine.brng + direction, stbDist
+        );
+        stbMathLineCollection.addMathLine(
+          new MathLine(anchor, mathLine.brng, null, end)
+        );
+      })
+      stbMathLineCollection.mathLineCollection.slice(0, -1)
+      .forEach((mathLine, index) =>{
         let nextMathLine = null;
-        if (index < stbMathLineCollection.length() - 1) {
-          nextMathLine = stbMathLineCollection.mathLineCollection[index + 1];
-        } else {
-          nextMathLine = stbMathLineCollection.mathLineCollection[0];
-        }
+        nextMathLine = stbMathLineCollection.mathLineCollection[index + 1];
         const intersectCandidate1 = Coordinate.intersection(
           mathLine.originCor,
           mathLine.brng,
@@ -407,14 +409,16 @@ class Polyline {
         );
         nextMathLine.originCor = intersection
       });
-      console.log(stbMathLineCollection.toPolylinePoints())
+      console.log(stbMathLineCollection)
+      console.log(stbMathLineCollection.toPolylinePoints(false))
       if (direction === 90) {
         stbPolylinePoints = stbPolylinePoints.concat(
-          stbMathLineCollection.toPolylinePoints()
+          stbMathLineCollection.toPolylinePoints(false)
         );
-      } else {
+      }
+      else {
         stbPolylinePoints = stbPolylinePoints.concat(
-          stbMathLineCollection.toPolylinePoints().reverse()
+          stbMathLineCollection.toPolylinePoints(false).reverse()
         );
       }
     }

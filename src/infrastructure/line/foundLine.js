@@ -9,7 +9,7 @@ class FoundLine extends Polyline {
 
   /**
    * A polyline
-   * @param {Point}   [points=null]   A list of Point objects, default empty
+   * @param {Point[]}   [points=null]   A list of Point objects, default empty
    * @param {string}  [id=null]       unique id of the polyline, automatic
    *                                  generate one if not provided
    * @param {string}  [name=null]     name of the polyline, automatic generate

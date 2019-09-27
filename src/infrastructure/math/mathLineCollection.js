@@ -22,19 +22,30 @@ class MathLineCollection {
     segmentPolyline.forEach((segment, index) => {
       mathLines.push(
         new MathLine(
-          segment.points[0], segmentBrng[index], segmentDistance[index]
+          segment.points[0], segmentBrng[index], segmentDistance[index],
+          segment.points[1]
         )
       );
     })
     return new MathLineCollection(mathLines);
   }
 
-  toPolylinePoints () {
+  toPolylinePoints (isFoundLine = true) {
     const points = [];
-    for (let elem of this.mathLineCollection) {
-      points.push(Point.fromCoordinate(elem.originCor));
+    if (isFoundLine) {
+      this.mathLineCollection.forEach(elem => {
+        points.push(Point.fromCoordinate(elem.originCor));
+      })
+      return [...points, points[0]];
+    } else {
+      this.mathLineCollection.forEach(elem => {
+        points.push(Point.fromCoordinate(elem.originCor));
+      })
+      points.push(
+        Point.fromCoordinate(this.mathLineCollection.slice(-1)[0].dest)
+      );
+      return points;
     }
-    return [...points, points[0]];
   }
 }
 
