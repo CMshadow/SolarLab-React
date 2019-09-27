@@ -8,6 +8,10 @@ class PitchedBuilding extends Building {
     this.hipSetback = hipStb;
     this.ridgeSetback = ridgeStb;
   }
+
+  bindFoundPolygon = (Polygon) => {
+    this.foundationPolygon = Polygon;
+  }
 }
 
 export default PitchedBuilding;
