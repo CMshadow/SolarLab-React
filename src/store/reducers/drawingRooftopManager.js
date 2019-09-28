@@ -18,6 +18,7 @@ const initEdgesMap = (state, action) => {
 }
 
 const initNodesCollection = (state, action) => {
+	console.log('init test: '+ action.nodesCollection);
   return{
     ...state,
     NodesCollection: [...action.nodesCollection]

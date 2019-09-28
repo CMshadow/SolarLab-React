@@ -12,6 +12,15 @@ export const searchAllPossibleRoofTops = (edges, node_list) => {
 
 }
 
+export const findNodeIndex = (NodeCollection, lon, lat) => {
+  for (let index = 0; index < NodeCollection.length; ++index) {
+    if (NodeCollection[index].lon === lon && NodeCollection[index].lat === lat) {
+      return index;
+    }
+  }
+  return null;
+}
+
 // dot cross function 
 export const dot_cross = (e1v1, e1v2, e2v1, e2v2) => {
   let x1 = e1v2.x - e1v1.x;

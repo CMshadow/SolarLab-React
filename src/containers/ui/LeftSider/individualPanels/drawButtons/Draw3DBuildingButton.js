@@ -25,6 +25,9 @@ const draw3DBuildingButton = (props) => {
         let buildingCoordinatesSize = buildingCoordinatesArray.length;
         buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
         props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
+        //console.log('ll '+buildingCoordinatesArray)
+        // let buildingOutline = props.CurrentBuilding.foundationPolygon.getFoundationCoordinatesArray();
+        props.InitNodesCollection(buildingCoordinatesArray, props.PolylinesRelation);
        
       }}
     >Test: Draw Foundation</Button>
@@ -42,7 +45,11 @@ const draw3DBuildingButton = (props) => {
 const mapStateToProps = state => {
   return {
     CurrentBuilding: state.buildingManagerReducer.workingBuilding,
-    BuildFoundation: state.undoableReducer.present.drawingManagerReducer.drawingPolyline
+    BuildFoundation: state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+    PitchedBuildingRoofTop:
+    state.undoableReducer.present.drawingRooftopManagerReducer,
+    PolylinesRelation: state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation
+
   };
 };
 
@@ -50,7 +57,9 @@ const mapDispatchToProps = dispatch => {
   return {
     EnablePolygon: () => dispatch(actions.enableToBuildFoundation()),
     CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
-      dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray))
+      dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray)),
+    InitNodesCollection: (buindingBoundary, polylinesRelation) => 
+      dispatch(actions.initNodesCollection(buindingBoundary, polylinesRelation))
  };
 };
 

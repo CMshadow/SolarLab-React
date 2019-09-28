@@ -4,15 +4,19 @@ import  * as Cesium from 'cesium';
 
 class Edge {
   constructor(
-    startNode = null,
-    endNode = null,
+    startNode,
+    endNode,
     clockWise = null,
     counterWise = null
   ){
-  this.startNode = startNode ? startNode : null;
-  this.endNode = endNode ? endNode : null;
+  this.startNode = startNode;
+  this.endNode = endNode;
   this.clockWise = clockWise ? clockWise : 0;
   this.counterWise = counterWise ? counterWise : 0;
+  }
+
+  showEdge = () => {
+    return 'edge: from ' + this.startNode + ' to ' + this.endNode;
   }
 }
 
