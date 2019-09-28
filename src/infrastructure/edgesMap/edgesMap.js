@@ -25,6 +25,10 @@ class EdgesMap {
   expandInnerEdgeCollection = (newEdge) => {
     this.innerEdgeCollection.push(newEdge);
   }
+
+  getEdgeList = () => {
+    return this.edgeList;
+  }
 }
 
 export default EdgesMap;

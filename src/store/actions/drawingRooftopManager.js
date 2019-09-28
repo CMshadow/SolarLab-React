@@ -76,11 +76,19 @@ export const initNodesCollection = (buildingOutline, polylinesRelation) => {
   for (let i = 0; i < newInnerEdgeCollection.length; ++i) {
     console.log('INNER:' + newInnerEdgeCollection[i].showEdge());
   }
+
+
+  let path = MathHelper.searchAllPossibleRoofTops([newInnerEdgeCollection,newOuterEdgeCollection],newNodeCollection);
+  for (let i = 0; i < path.length; ++i) {
+    console.log('plane:' + i + ': ['+path[i]+']');
+  }
+  
+
   return ({
     type: actionTypes.INIT_NODES_COLLECTION,
     nodesCollection: newNodeCollection,
     OuterEdgesCollection: newOuterEdgeCollection,
-    newInnerEdgeCollection: newInnerEdgeCollection
+    InnerEdgeCollection: newInnerEdgeCollection
   });
 }
 
@@ -89,21 +97,3 @@ export const searchAllRoofPlanes = () => {
     type: actionTypes.SEARCH_ALL_ROOF_PLANES
   });
 }
-
-// export const updateKeepout = (id, values) => (dispatch, getState) => {
-//   const keepoutList =
-//     getState().undoableReducer.present.keepoutManagerReducer.keepoutList;
-//   const updateIndex = keepoutList.findIndex(elem => elem.id === id);
-//   let updateKeepout = null;
-//   switch (keepoutList[updateIndex].type) {
-//     default:
-//       updateKeepout = NormalKeepout.fromKeepout(
-//         keepoutList[updateIndex], values.height, values.setback
-//       );
-//   }
-//   return dispatch({
-//     type: actionTypes.UPDATE_KEEPOUT,
-//     updateKeepout: updateKeepout,
-//     updateIndex: updateIndex
-//   });
-// };

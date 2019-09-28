@@ -6,8 +6,10 @@ import Polygon from '../../infrastructure/Polygon/Polygon';
 
 
 const initState = {
-  NodesCollection: null,
+	NodesCollection: null,
   EdgesMap: null,
+	InnerEdgesCollection: null,
+	OuterEdgesCollection: null,
   RooftopCollection: null
 }
 
@@ -21,7 +23,9 @@ const initNodesCollection = (state, action) => {
 	console.log('init test: '+ action.nodesCollection);
   return{
     ...state,
-    NodesCollection: [...action.nodesCollection]
+		NodesCollection: [...action.nodesCollection],
+		InnerEdgesCollection: [...action.InnerEdgeCollection],
+		OuterEdgesCollection: [...action.OuterEdgesCollection]
   }
 
 }

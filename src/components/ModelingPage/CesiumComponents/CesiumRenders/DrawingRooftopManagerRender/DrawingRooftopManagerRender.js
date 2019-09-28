@@ -1,6 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PolygonVisualize from '../../Polygon/Polygon';
+import CustomPoint from '../../point/point';
 import Node from '../../../../../infrastructure/edgesMap/node/node';
 import * as actions from '../../../../../store/actions/index';
 
