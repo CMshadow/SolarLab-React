@@ -4,6 +4,7 @@ import * as martinez from 'martinez-polygon-clipping';
 import * as actionTypes from './actionTypes';
 import axios from '../../axios-setup';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
+import Point from '../../infrastructure/point/point';
 import Polygon from '../../infrastructure/Polygon/Polygon';
 import FoundLine from '../../infrastructure/line/foundLine';
 import NormalKeepout from '../../infrastructure/keepout/normalKeepout';
@@ -88,82 +89,51 @@ export const createPassageKeepoutPolygon = (passageKeepout) =>
   const foundHeight =
     getState().buildingManagerReducer.workingBuilding.foundationHeight;
   const keepoutPolylines = passageKeepout.map(kpt => kpt.outlinePolyline);
-  const keepoutWidth = passageKeepout.map(kpt => kpt.width);
-
-  // const test = keepoutPolylines.map(ply => ply.makeSetbackPolyline(keepoutWidth, 'outside').polyline)
-  // const newPassageKeepout = passageKeepout.map((kpt, index) => {
-  //   const parsedPolyline = test[index].removeOutsideSetbackSelfIntersection(90);
-  //   console.log(parsedPolyline[0])
-  //   const hierarchy = Polygon.makeHierarchyFromPolyline(
-  //     parsedPolyline[0], foundHeight, 0.005
-  //   )
-  //   console.log(hierarchy)
-  //   return Passage.fromKeepout(
-  //     kpt, null, null,
-  //     new Polygon(
-  //       null, null, foundHeight, hierarchy, null, null,
-  //       Color.ORANGE
-  //     ),
-  //   )
-  // });
-  // dispatch({
-  //   type: actionTypes.CREATE_ALL_PASSAGE_KEEPOUT_POLYGON,
-  //   passageKeepout: newPassageKeepout
-  // })
-
+  const keepoutWidth = passageKeepout.map(kpt => kpt.width/2);
 
   axios.post('/calculate-passage-coordinate', {
     originPolylines: keepoutPolylines,
-    stbDists: keepoutWidth/2,
+    stbDists: keepoutWidth,
     direction: 'outside'
-  }).then(response => {
-    const stbPolylines = JSON.parse(response.data.body).stbPolylines;
-    console.log(stbPolylines)
   })
-  // .then(response => {
-  //   const stbPolylines = JSON.parse(response.data.body).stbPolylines;
-  //   const stbHierarchies = stbPolylines.map(stbPolyline => {
-  //     const trimedStbTurfPolygon = {
-  //       type: 'Feature',
-  //       geometry: {
-  //         type: 'Polygon',
-  //         coordinates: martinez.intersection(
-  //           foundPolyline.makeGeoJSON().geometry.coordinates,
-  //           FoundLine.fromPolyline(stbPolyline[0]).makeGeoJSON().geometry.coordinates
-  //         )[0]
-  //       }
-  //     }
-  //     return Polygon.makeHierarchyFromTurfPolygon(
-  //       trimedStbTurfPolygon, foundHeight, 0.005
-  //     );
-  //   });
-  //   const newNormalKeepout = normalKeepout.map((kpt, index) => {
-  //     const hierarchy = Polygon.makeHierarchyFromPolyline(
-  //       kpt.outlinePolyline, kpt.height + foundHeight
-  //     )
-  //     return NormalKeepout.fromKeepout(
-  //       kpt, null, null, null,
-  //       new Polygon(
-  //         null, null, kpt.height + foundHeight, hierarchy, null, null,
-  //         Color.GOLD
-  //       ),
-  //       kpt.setback !== 0 ?
-  //       new Polygon(
-  //         null, null, foundHeight, stbHierarchies[index], null, null,
-  //         Color.ORANGE
-  //       ) :
-  //       null
-  //     )
-  //   });
-  //   dispatch({
-  //     type: actionTypes.CREATE_ALL_NORMAL_KEEPOUT_POLYGON,
-  //     normalKeepout: newNormalKeepout
-  //   })
-  // })
-  // .catch(error => {
-  //   return errorNotification(
-  //     'Backend Error',
-  //     error
-  //   )
-  // });
+  .then(response => {
+    const stbPolylines = JSON.parse(response.data.body).stbPolylines;
+    const stbHierarchies = stbPolylines.map(stbPolyline => {
+      const trimedStbTurfPolygon = {
+        type: 'Feature',
+        geometry: {
+          type: 'Polygon',
+          coordinates: martinez.intersection(
+            foundPolyline.makeGeoJSON().geometry.coordinates,
+            new FoundLine(
+              [...stbPolyline[0].points.map(p => Point.fromPoint(p)),
+              Point.fromPoint(stbPolyline[0].points[0])]
+            ).makeGeoJSON().geometry.coordinates
+          )[0]
+        }
+      }
+      return Polygon.makeHierarchyFromTurfPolygon(
+        trimedStbTurfPolygon, foundHeight, 0.005
+      );
+    });
+    const newPassageKeepout = passageKeepout.map((kpt, index) => {
+      return Passage.fromKeepout(
+        kpt, null, null,
+        new Polygon(
+          null, null, foundHeight, stbHierarchies[index], null, null,
+          Color.ORANGE
+        )
+      )
+    });
+    dispatch({
+      type: actionTypes.CREATE_ALL_PASSAGE_KEEPOUT_POLYGON,
+      passageKeepout: newPassageKeepout
+    })
+  })
+  .catch(error => {
+    return errorNotification(
+      'Backend Error',
+      error
+    )
+  });
 }
