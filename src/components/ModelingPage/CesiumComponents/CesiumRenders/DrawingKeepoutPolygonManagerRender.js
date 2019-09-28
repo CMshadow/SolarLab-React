@@ -34,11 +34,22 @@ const DrawingKeepoutPolygonManagerRender = (props) => {
     ));
 	}
 
+	let ventKeepoutPolygon = null;
+	if (props.ventKeepout !== []) {
+		ventKeepoutPolygon = props.ventKeepout.map(kpt => (
+      <PolygonVisualize
+        key = {kpt.outlinePolygon.entityId}
+				{...kpt.outlinePolygon}
+			/>
+    ));
+	}
+
 	return (
 		<div>
 			{normalKeepoutPolygon}
 			{normalKeepoutPolygonStb}
 			{passageKeepoutPolygon}
+			{ventKeepoutPolygon}
 		</div>
 	);
 };
@@ -51,6 +62,9 @@ const mapStateToProps = state => {
 		passageKeepout:
 			state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
 			.passageKeepout,
+		ventKeepout:
+			state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
+			.ventKeepout,
 	};
 };
 

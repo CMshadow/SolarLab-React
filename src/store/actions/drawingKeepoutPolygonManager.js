@@ -9,16 +9,18 @@ import Polygon from '../../infrastructure/Polygon/Polygon';
 import FoundLine from '../../infrastructure/line/foundLine';
 import NormalKeepout from '../../infrastructure/keepout/normalKeepout';
 import Passage from '../../infrastructure/keepout/passage';
+import Vent from '../../infrastructure/keepout/vent';
 
 export const createAllKeepoutPolygon = () => (dispatch, getState) => {
   const allKeepout =
     getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
   const normalKeepout = allKeepout.filter(kpt => kpt.type === 'KEEPOUT');
   const passageKeepout = allKeepout.filter(kpt => kpt.type === 'PASSAGE');
+  const ventKeepout = allKeepout.filter(kpt => kpt.type === 'VENT');
   dispatch(createNormalKeepoutPolygon(normalKeepout));
   dispatch(createPassageKeepoutPolygon(passageKeepout));
+  dispatch(createVentKeepoutPolygon(ventKeepout));
 }
-
 
 export const createNormalKeepoutPolygon = (normalKeepout) =>
 (dispatch, getState) => {
@@ -136,4 +138,38 @@ export const createPassageKeepoutPolygon = (passageKeepout) =>
       error
     )
   });
+}
+
+export const createVentKeepoutPolygon = (ventKeepout) =>
+(dispatch, getState) => {
+  const foundPolyline =
+    getState().undoableReducer.present.drawingManagerReducer.drawingPolyline;
+  const foundHeight =
+    getState().buildingManagerReducer.workingBuilding.foundationHeight;
+  const newVentKeepout = ventKeepout.map((kpt, index) => {
+    const trimedStbTurfPolygon = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: martinez.intersection(
+          foundPolyline.makeGeoJSON().geometry.coordinates,
+          kpt.outlinePolyline.makeGeoJSON().geometry.coordinates
+        )[0]
+      }
+    }
+    const hierarchy = Polygon.makeHierarchyFromTurfPolygon(
+      trimedStbTurfPolygon, foundHeight, 0.005
+    );
+    return Vent.fromKeepout(
+      kpt, null, null, null, null,
+      new Polygon(
+        null, null, foundHeight, hierarchy, null, null,
+        Color.ORANGE
+      )
+    )
+  });
+  dispatch({
+    type: actionTypes.CREATE_ALL_VENT_KEEPOUT_POLYGON,
+    ventKeepout: newVentKeepout
+  })
 }
