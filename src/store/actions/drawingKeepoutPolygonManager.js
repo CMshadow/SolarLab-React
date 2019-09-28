@@ -90,30 +90,36 @@ export const createPassageKeepoutPolygon = (passageKeepout) =>
   const keepoutPolylines = passageKeepout.map(kpt => kpt.outlinePolyline);
   const keepoutWidth = passageKeepout.map(kpt => kpt.width);
 
-  const test = keepoutPolylines.map(ply => ply.makeSetbackPolyline(keepoutWidth, 'outside').polyline)
-  console.log(test)
-  const newPassageKeepout = passageKeepout.map((kpt, index) => {
-    const hierarchy = Polygon.makeHierarchyFromPolyline(
-      test[index], foundHeight, 0.005
-    )
-    console.log(hierarchy)
-    return Passage.fromKeepout(
-      kpt, null, null,
-      new Polygon(
-        null, null, foundHeight, hierarchy, null, null,
-        Color.ORANGE
-      ),
-    )
-  });
-  dispatch({
-    type: actionTypes.CREATE_ALL_PASSAGE_KEEPOUT_POLYGON,
-    passageKeepout: newPassageKeepout
-  })
-  // axios.post('/calculate-setback-coordinate', {
-  //   originPolylines: keepoutPolylines,
-  //   stbDists: keepoutWidth/2,
-  //   direction: 'outside'
+  // const test = keepoutPolylines.map(ply => ply.makeSetbackPolyline(keepoutWidth, 'outside').polyline)
+  // const newPassageKeepout = passageKeepout.map((kpt, index) => {
+  //   const parsedPolyline = test[index].removeOutsideSetbackSelfIntersection(90);
+  //   console.log(parsedPolyline[0])
+  //   const hierarchy = Polygon.makeHierarchyFromPolyline(
+  //     parsedPolyline[0], foundHeight, 0.005
+  //   )
+  //   console.log(hierarchy)
+  //   return Passage.fromKeepout(
+  //     kpt, null, null,
+  //     new Polygon(
+  //       null, null, foundHeight, hierarchy, null, null,
+  //       Color.ORANGE
+  //     ),
+  //   )
+  // });
+  // dispatch({
+  //   type: actionTypes.CREATE_ALL_PASSAGE_KEEPOUT_POLYGON,
+  //   passageKeepout: newPassageKeepout
   // })
+
+
+  axios.post('/calculate-passage-coordinate', {
+    originPolylines: keepoutPolylines,
+    stbDists: keepoutWidth/2,
+    direction: 'outside'
+  }).then(response => {
+    const stbPolylines = JSON.parse(response.data.body).stbPolylines;
+    console.log(stbPolylines)
+  })
   // .then(response => {
   //   const stbPolylines = JSON.parse(response.data.body).stbPolylines;
   //   const stbHierarchies = stbPolylines.map(stbPolyline => {

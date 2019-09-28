@@ -333,102 +333,20 @@ class Polyline {
     return selfIntersectionDetect.features.length >= 2;
   };
 
-  makeSetbackPolyline (stbDist, type) {
-    const originPolyline = Polyline.fromPolyline(this);
-    const mathLineCollection = MathLineCollection.fromPolyline(originPolyline);
-
-    let stbPolylinePoints = [];
-    for(let direction of [90, -90]) {
-      const stbMathLineCollection = new MathLineCollection();
-      mathLineCollection.mathLineCollection.forEach(mathLine => {
-        const anchor = Coordinate.destination(
-          mathLine.originCor, mathLine.brng + direction, stbDist
+  removeOutsideSetbackSelfIntersection (direction) {
+    const splitGeoJSON = simplepolygon(this.makeGeoJSON());
+    const splitPolylines = [];
+    for (let elem of splitGeoJSON.features) {
+      if (elem.properties.parent < 0) {
+        const points = elem.geometry.coordinates[0].slice(0,-1).map(cor =>
+          new Point(cor[0], cor[1], cor[2] ? cor[2] : this.points[0].height)
         );
-        const end = Coordinate.destination(
-          mathLine.dest, mathLine.brng + direction, stbDist
-        );
-        stbMathLineCollection.addMathLine(
-          new MathLine(anchor, mathLine.brng, null, end)
-        );
-      })
-      stbMathLineCollection.mathLineCollection.slice(0, -1)
-      .forEach((mathLine, index) =>{
-        let nextMathLine = null;
-        nextMathLine = stbMathLineCollection.mathLineCollection[index + 1];
-        const intersectCandidate1 = Coordinate.intersection(
-          mathLine.originCor,
-          mathLine.brng,
-          nextMathLine.originCor,
-          nextMathLine.brng-180
-        );
-        const intersectCandidate2 = Coordinate.intersection(
-          mathLine.originCor,
-          mathLine.brng,
-          nextMathLine.originCor,
-          nextMathLine.brng
-        );
-        const intersectCandidate3 = Coordinate.intersection(
-          mathLine.originCor,
-          mathLine.brng-180,
-          nextMathLine.originCor,
-          nextMathLine.brng-180
-        );
-        const intersectCandidate4 = Coordinate.intersection(
-          mathLine.originCor,
-          mathLine.brng-180,
-          nextMathLine.originCor,
-          nextMathLine.brng
-        );
-        const intersectCandidateCompare = [
-          {
-            'candidate':intersectCandidate1,
-            'dist':
-              Coordinate.surfaceDistance(mathLine.originCor, intersectCandidate1)
-          },
-          {
-            'candidate':intersectCandidate2,
-            'dist':
-              Coordinate.surfaceDistance(mathLine.originCor, intersectCandidate2)
-          },
-          {
-            'candidate':intersectCandidate3,
-            'dist':
-              Coordinate.surfaceDistance(mathLine.originCor, intersectCandidate3)
-          },
-          {
-            'candidate':intersectCandidate4,
-            'dist':
-              Coordinate.surfaceDistance(mathLine.originCor, intersectCandidate4)
-          }
-        ];
-        intersectCandidateCompare.sort((a,b) => (a.dist < b.dist) ? -1 : 1);
-        const intersection = intersectCandidateCompare[0].candidate;
-
-        mathLine.dist = Coordinate.surfaceDistance(
-          mathLine.originCor, intersection
-        );
-        nextMathLine.originCor = intersection
-      });
-      console.log(stbMathLineCollection)
-      console.log(stbMathLineCollection.toPolylinePoints(false))
-      if (direction === 90) {
-        stbPolylinePoints = stbPolylinePoints.concat(
-          stbMathLineCollection.toPolylinePoints(false)
-        );
+        splitPolylines.push(new Polyline([...points, points[0]]));
       }
-      else {
-        stbPolylinePoints = stbPolylinePoints.concat(
-          stbMathLineCollection.toPolylinePoints(false).reverse()
-        );
-      }
-    }
-    console.log(stbPolylinePoints)
-    const stbPolyline = new Polyline(stbPolylinePoints);
-    return {
-      'polyline': stbPolyline,
-      'direction': 90
-    }
-  }
+    };
+    return splitPolylines;
+  };
+
 }
 
 export default Polyline;
