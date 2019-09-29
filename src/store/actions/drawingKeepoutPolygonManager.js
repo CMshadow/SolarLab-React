@@ -6,10 +6,12 @@ import axios from '../../axios-setup';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Point from '../../infrastructure/point/point';
 import Polygon from '../../infrastructure/Polygon/Polygon';
+import Sphere from '../../infrastructure/Polygon/sphere';
 import FoundLine from '../../infrastructure/line/foundLine';
 import NormalKeepout from '../../infrastructure/keepout/normalKeepout';
 import Passage from '../../infrastructure/keepout/passage';
 import Vent from '../../infrastructure/keepout/vent';
+import Tree from '../../infrastructure/keepout/tree';
 
 export const createAllKeepoutPolygon = () => (dispatch, getState) => {
   const allKeepout =
@@ -17,9 +19,13 @@ export const createAllKeepoutPolygon = () => (dispatch, getState) => {
   const normalKeepout = allKeepout.filter(kpt => kpt.type === 'KEEPOUT');
   const passageKeepout = allKeepout.filter(kpt => kpt.type === 'PASSAGE');
   const ventKeepout = allKeepout.filter(kpt => kpt.type === 'VENT');
+  const treeKeepout = allKeepout.filter(kpt => kpt.type === 'TREE');
+  const envKeepout = allKeepout.filter(kpt => kpt.type === 'ENV');
   dispatch(createNormalKeepoutPolygon(normalKeepout));
   dispatch(createPassageKeepoutPolygon(passageKeepout));
   dispatch(createVentKeepoutPolygon(ventKeepout));
+  dispatch(createTreeKeepoutPolygon(treeKeepout));
+  dispatch(createEnvKeepoutPolygon(envKeepout));
 }
 
 export const createNormalKeepoutPolygon = (normalKeepout) =>
@@ -171,5 +177,45 @@ export const createVentKeepoutPolygon = (ventKeepout) =>
   dispatch({
     type: actionTypes.CREATE_ALL_VENT_KEEPOUT_POLYGON,
     ventKeepout: newVentKeepout
+  })
+}
+
+export const createTreeKeepoutPolygon = (treeKeepout) =>
+(dispatch, getState) => {
+  const newTreeKeepout = treeKeepout.map((kpt, index) => {
+    return Tree.fromKeepout(
+      kpt, null, null, null,
+      new Sphere(
+        null, null, kpt.outlinePolyline.centerPoint, kpt.height, kpt.radius,
+        Color.FORESTGREEN
+      ),
+      new Sphere(
+        null, null, kpt.outlinePolyline.centerPoint, kpt.height, kpt.radius
+      )
+    );
+  });
+  dispatch({
+    type: actionTypes.CREATE_ALL_TREE_KEEPOUT_POLYGON,
+    treeKeepout: newTreeKeepout
+  })
+}
+
+export const createEnvKeepoutPolygon = (envKeepout) =>
+(dispatch, getState) => {
+  const newEnvKeepout = envKeepout.map((kpt, index) => {
+    const hierarchy = Polygon.makeHierarchyFromPolyline(
+      kpt.outlinePolyline, kpt.height
+    )
+    return NormalKeepout.fromKeepout(
+      kpt, null, null, null,
+      new Polygon(
+        null, null, kpt.height, hierarchy, null, null,
+        Color.GOLD
+      )
+    )
+  });
+  dispatch({
+    type: actionTypes.CREATE_ALL_ENV_KEEPOUT_POLYGON,
+    envKeepout: newEnvKeepout
   })
 }

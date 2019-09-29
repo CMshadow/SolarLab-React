@@ -1,9 +1,6 @@
 import * as Cesium from 'cesium';
 
 import * as actionTypes from '../actions/actionTypes';
-import Polygon from '../../infrastructure/Polygon/Polygon';
-import Wall from '../../infrastructure/Polygon/wall';
-
 
 const initialState = {
 	normalKeepout: [],
@@ -36,6 +33,20 @@ const createAllVentKeepoutPolygon = (state, action) => {
 	}
 }
 
+const createAllTreeKeepoutPolygon = (state, action) => {
+	return {
+		...state,
+		treeKeepout: action.treeKeepout
+	}
+}
+
+const createAllEnvKeepoutPolygon = (state, action) => {
+	return {
+		...state,
+		envKeepout: action.envKeepout
+	}
+}
+
 const reducer = (state=initialState, action) => {
 	switch(action.type){
 		case actionTypes.CREATE_ALL_NORMAL_KEEPOUT_POLYGON:
@@ -44,6 +55,10 @@ const reducer = (state=initialState, action) => {
       return createAllPassageKeepoutPolygon(state, action);
 		case actionTypes.CREATE_ALL_VENT_KEEPOUT_POLYGON:
 			return createAllVentKeepoutPolygon(state, action);
+		case actionTypes.CREATE_ALL_TREE_KEEPOUT_POLYGON:
+			return createAllTreeKeepoutPolygon(state, action);
+		case actionTypes.CREATE_ALL_ENV_KEEPOUT_POLYGON:
+			return createAllEnvKeepoutPolygon(state, action);
 		default:
 			return state;
 	}
