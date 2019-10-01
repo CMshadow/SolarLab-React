@@ -9,8 +9,10 @@ const initState = {
 	NodesCollection: null,
   EdgesMap: null,
 	InnerEdgesCollection: null,
-	OuterEdgesCollection: null,
-  RooftopCollection: null
+  OuterEdgesCollection: null,
+  RoofPlaneCoordinatesCollection:null,
+  RooftopCollection: null,
+  EnableToBuild: false,
 }
 
 
@@ -20,12 +22,23 @@ const initEdgesMap = (state, action) => {
 }
 
 const initNodesCollection = (state, action) => {
-	console.log('init test: '+ action.nodesCollection);
+  console.log('create rooftop polygon: ');
+  let newRooftopCollection = [];
+  for (let roofPlane of action.AllRoofPlanePaths) {
+    let newRoofPlane = new Polygon();
+    newRoofPlane.hierarchy = [...roofPlane];
+    newRooftopCollection.push(newRoofPlane);
+  }
+ 
+  
   return{
     ...state,
 		NodesCollection: [...action.nodesCollection],
 		InnerEdgesCollection: [...action.InnerEdgeCollection],
-		OuterEdgesCollection: [...action.OuterEdgesCollection]
+    OuterEdgesCollection: [...action.OuterEdgesCollection],
+    RoofPlaneCoordinatesCollection:[...action.AllRoofPlanePaths],
+    EnableToBuild: true,
+    RooftopCollection: newRooftopCollection
   }
 
 }

@@ -1,10 +1,6 @@
 import * as Cesium from 'cesium';
 
 
-// Build outer edges-points relations
-
-// Build inner edges-points relations
-
 // Search all possible roofTop planes
 // edgesMap format: [[InnerEdge1, InnerEdge2, ...], [OuterEdge1, OuterEdge2, ...]]
 // return format: [[vertices of plane1], [vertices of plane2], ...]

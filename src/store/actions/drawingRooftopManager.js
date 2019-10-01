@@ -14,8 +14,10 @@ export const initNodesCollection = (buildingOutline, polylinesRelation) => {
   let newNodeCollection = [];
   let newOuterEdgeCollection = [];
   let newInnerEdgeCollection = [];
+  let pathCoordinatesCollection = [];
+  // Build outer edges-points relations
   for (let i = 0; i < buildingOutline.length; i+=3) {
-    newNodeCollection.push(new Node(null, buildingOutline[i], buildingOutline[i + 1], buildingOutline[i + 2], 0 ));
+    newNodeCollection.push(new Node(null, buildingOutline[i], buildingOutline[i + 1], 5, 0 ));
   }
 
   for (let noteIndex = 0; noteIndex < newNodeCollection.length; ++noteIndex) {
@@ -35,6 +37,7 @@ export const initNodesCollection = (buildingOutline, polylinesRelation) => {
   // }
   let hipCollecton = [];
   let ridgeCollection = [];
+  // Build inner edges-points relations
   Object.keys(polylinesRelation).forEach(function(key) {
     if (polylinesRelation[key]['type'] === "IN") {
       newNodeCollection.push(new Node(null, polylinesRelation[key]['object']['lon'], polylinesRelation[key]['object']['lat'], 7, 1 ));
@@ -70,25 +73,32 @@ export const initNodesCollection = (buildingOutline, polylinesRelation) => {
     } 
   });
 
-  for (let i = 0; i < newOuterEdgeCollection.length; ++i) {
-    console.log('OUTER: ' + newOuterEdgeCollection[i].showEdge());
-  }
-  for (let i = 0; i < newInnerEdgeCollection.length; ++i) {
-    console.log('INNER:' + newInnerEdgeCollection[i].showEdge());
-  }
-
-
   let path = MathHelper.searchAllPossibleRoofTops([newInnerEdgeCollection,newOuterEdgeCollection],newNodeCollection);
+
   for (let i = 0; i < path.length; ++i) {
+    let roofPlaneCoordinateArray = [];
     console.log('plane:' + i + ': ['+path[i]+']');
+    for (let nodeIndex of path[i]) {
+
+      roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].lon);
+      roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].lat);
+      roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].height);
+      console.log(newNodeCollection[nodeIndex].present());
+
+    }
+    console.log('plane:' + i + ': ['+roofPlaneCoordinateArray+']');
+    pathCoordinatesCollection.push(roofPlaneCoordinateArray);
   }
+
+
   
 
   return ({
     type: actionTypes.INIT_NODES_COLLECTION,
     nodesCollection: newNodeCollection,
     OuterEdgesCollection: newOuterEdgeCollection,
-    InnerEdgeCollection: newInnerEdgeCollection
+    InnerEdgeCollection: newInnerEdgeCollection,
+    AllRoofPlanePaths: pathCoordinatesCollection
   });
 }
 
