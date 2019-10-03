@@ -73,25 +73,24 @@ export const initNodesCollection = (buildingOutline, polylinesRelation) => {
     } 
   });
 
-  let path = MathHelper.searchAllPossibleRoofTops([newInnerEdgeCollection,newOuterEdgeCollection],newNodeCollection);
+  // let path = MathHelper.searchAllPossibleRoofTops([newInnerEdgeCollection,newOuterEdgeCollection],newNodeCollection);
 
-  for (let i = 0; i < path.length; ++i) {
-    let roofPlaneCoordinateArray = [];
-    console.log('plane:' + i + ': ['+path[i]+']');
-    for (let nodeIndex of path[i]) {
+  // for (let i = 0; i < path.length; ++i) {
+  //   let roofPlaneCoordinateArray = [];
+  //   console.log('plane:' + i + ': ['+path[i]+']');
+  //   for (let nodeIndex of path[i]) {
 
-      roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].lon);
-      roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].lat);
-      roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].height);
-      console.log(newNodeCollection[nodeIndex].present());
+  //     roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].lon);
+  //     roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].lat);
+  //     roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].height);
+  //     console.log(newNodeCollection[nodeIndex].present());
 
-    }
-    console.log('plane:' + i + ': ['+roofPlaneCoordinateArray+']');
-    pathCoordinatesCollection.push(roofPlaneCoordinateArray);
-  }
+  //   }
+  //   console.log('plane:' + i + ': ['+roofPlaneCoordinateArray+']');
+  //   pathCoordinatesCollection.push(roofPlaneCoordinateArray);
+  // }
 
-
-  
+  pathCoordinatesCollection = searchAllRoofPlanes(newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection).pathCollection;
 
   return ({
     type: actionTypes.INIT_NODES_COLLECTION,
@@ -102,8 +101,23 @@ export const initNodesCollection = (buildingOutline, polylinesRelation) => {
   });
 }
 
-export const searchAllRoofPlanes = () => {
+export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, NodesCollection) => {
+  let pathCoordinatesCollection = [];
+  let path = MathHelper.searchAllPossibleRoofTops([InnerEdgeCollection,OuterEdgesCollection],NodesCollection);
+  for (let i = 0; i < path.length; ++i) {
+    let roofPlaneCoordinateArray = [];
+    console.log('plane:' + i + ': ['+path[i]+']');
+    for (let nodeIndex of path[i]) {
+
+      roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lon);
+      roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lat);
+      roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].height);
+    }
+    console.log('plane:' + i + ': ['+roofPlaneCoordinateArray+']');
+    pathCoordinatesCollection.push(roofPlaneCoordinateArray);
+  }
   return({
-    type: actionTypes.SEARCH_ALL_ROOF_PLANES
+    type: actionTypes.SEARCH_ALL_ROOF_PLANES,
+    pathCollection: pathCoordinatesCollection
   });
 }
