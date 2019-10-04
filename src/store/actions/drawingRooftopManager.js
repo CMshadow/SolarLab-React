@@ -72,24 +72,7 @@ export const initNodesCollection = (buildingOutline, polylinesRelation) => {
       newNodeCollection[indexEnd].addChild(indexStart);
     } 
   });
-
-  // let path = MathHelper.searchAllPossibleRoofTops([newInnerEdgeCollection,newOuterEdgeCollection],newNodeCollection);
-
-  // for (let i = 0; i < path.length; ++i) {
-  //   let roofPlaneCoordinateArray = [];
-  //   console.log('plane:' + i + ': ['+path[i]+']');
-  //   for (let nodeIndex of path[i]) {
-
-  //     roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].lon);
-  //     roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].lat);
-  //     roofPlaneCoordinateArray.push(newNodeCollection[nodeIndex].height);
-  //     console.log(newNodeCollection[nodeIndex].present());
-
-  //   }
-  //   console.log('plane:' + i + ': ['+roofPlaneCoordinateArray+']');
-  //   pathCoordinatesCollection.push(roofPlaneCoordinateArray);
-  // }
-
+  //find all possible roof planes
   pathCoordinatesCollection = searchAllRoofPlanes(newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection).pathCollection;
 
   return ({
@@ -116,8 +99,10 @@ export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, N
     console.log('plane:' + i + ': ['+roofPlaneCoordinateArray+']');
     pathCoordinatesCollection.push(roofPlaneCoordinateArray);
   }
+  
   return({
     type: actionTypes.SEARCH_ALL_ROOF_PLANES,
     pathCollection: pathCoordinatesCollection
   });
 }
+
