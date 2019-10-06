@@ -4,7 +4,7 @@ import * as Cesium from 'cesium';
 
 
 /* 
-    Polygon: Create Basic 3D-foundations of both Flat/Pitched Roof
+    Polygon: Create Basic 3D Polygon
 */
 
 const polygonVisualize = (props) => {

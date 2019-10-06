@@ -27,14 +27,13 @@ const draw3DBuildingButton = (props) => {
         !uiStateJudge.isFinishedInner(props.uiState)
       }
       onClick = {() => {
-        const buildingCoordinatesArray =
-          Polygon.makeHierarchyFromPolyline(
-            props.BuildFoundation, props.CurrentBuilding.foundationHeight
-          );
-        props.CreateBuildingFoundationPolygon(
-          props.CurrentBuilding.foundationHeight,
-          buildingCoordinatesArray
-        );
+        console.log('[Button]: Test Polygon: ');
+        props.EnablePolygon();
+        let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
+        let buildingCoordinatesSize = buildingCoordinatesArray.length;
+        buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
+        props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
+        props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, props.PolylinesRelation);
       }}
     >Test: Draw Foundation</Button>
 
@@ -51,17 +50,25 @@ const draw3DBuildingButton = (props) => {
 const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    CurrentBuilding: state.buildingManagerReducer.workingBuilding,
-    BuildFoundation:
-      state.undoableReducer.present.drawingManagerReducer.drawingPolyline
+    CurrentBuilding: 
+      state.buildingManagerReducer.workingBuilding,
+    BuildFoundation: 
+      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+    PitchedBuildingRoofTop:
+      state.undoableReducer.present.drawingRooftopManagerReducer,
+    PolylinesRelation: 
+      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) =>
-      dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray))
-  };
+    EnablePolygon: () => dispatch(actions.enableToBuildFoundation()),
+    CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
+      dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray)),
+    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation) => 
+      dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation))
+ };
 };
 
 export default connect(mapStateToProps,mapDispatchToProps)(draw3DBuildingButton);

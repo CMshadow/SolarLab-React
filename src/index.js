@@ -24,6 +24,7 @@ import uiStateManagerReducer from './store/reducers/uiStateManager';
 import buildingManagerReducer from './store/reducers/buildingManager';
 import projectManagerReducer from './store/reducers/projectManager';
 import drawingPolygonManagerReducer from './store/reducers/drawingPolygonManager';
+import drawingRooftopManagerReducer from './store/reducers/drawingRooftopManager';
 // IMPORT MORE REDBUX REDUCERS OVER HERE
 
 /*
@@ -44,7 +45,8 @@ const rootReducer = combineReducers({
     drawingInnerManagerReducer: drawingInnerManagerReducer,
     uiStateManagerReducer: uiStateManagerReducer,
     drawingKeepoutManagerReducer: drawingKeepoutManagerReducer,
-    drawingPolygonManagerReducer: drawingPolygonManagerReducer
+    drawingPolygonManagerReducer: drawingPolygonManagerReducer,
+    drawingRooftopManagerReducer: drawingRooftopManagerReducer
   }), {
     initTypes: [actionTypes.SET_VIEWER],
     filter: includeAction([

@@ -25,6 +25,7 @@ const passFoundPolyline = (state, action) => {
     pointsRelation: action.foundPolyline.points.reduce((map, point) => {
       map[point.entityId] = {
         object: Point.fromPoint(point),
+        type: 'OUT',
         connectPolyline: polylineArray.reduce((acc, line) => {
           if (
             line.points[0].entityId === point.entityId ||
@@ -45,6 +46,7 @@ const updatePointsRelation = (state, action) => {
   const newPointsRelation = action.foundPolyline.points.reduce((map, point) => {
     map[point.entityId] = {
       object: Point.fromPoint(point),
+      type: 'OUT',
       connectPolyline: polylineArray.reduce((acc, line) => {
         if (
           line.points[0].entityId === point.entityId ||
@@ -62,6 +64,7 @@ const updatePointsRelation = (state, action) => {
       return {
         [point.entityId]: {
           object: point,
+          type: 'IN',
           connectPolyline: [polyline]
         }
       }
@@ -119,6 +122,7 @@ const addStartPointOnNew = (state, action) => {
       ...state.pointsRelation,
       [newPoint.entityId]: {
         object: newPoint,
+        type: 'IN',
         connectPolyline: [newPolyline]
       }
     }
@@ -139,6 +143,7 @@ const addStartPointOnFoundPolyline = (state, action) => {
       ...state.pointsRelation,
       [newPoint.entityId]: {
         object: newPoint,
+        type: 'OUT',
         connectPolyline: [newPolyline]
       }
     }
@@ -238,6 +243,7 @@ const addEndPointOnNew = (state, action) => {
       ...state.pointsRelation,
       [newPoint.entityId]: {
         object: newPoint,
+        type: 'IN',
         connectPolyline: [newPolyline]
       }
     }
@@ -262,6 +268,7 @@ const addEndPointOnFoundPolyline = (state, action) => {
       ...state.pointsRelation,
       [newPoint.entityId]: {
         object: newPoint,
+        type: 'OUT',
         connectPolyline: [newPolyline]
       }
     }
