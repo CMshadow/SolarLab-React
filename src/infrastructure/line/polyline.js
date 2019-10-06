@@ -6,8 +6,6 @@ import simplepolygon from 'simplepolygon';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Point from '../point/point';
 import Coordinate from '../point/coordinate';
-import MathLineCollection from '../math/mathLineCollection';
-import MathLine from '../math/mathLine';
 
 class Polyline {
 
@@ -332,21 +330,6 @@ class Polyline {
     const selfIntersectionDetect = simplepolygon(geoJson);
     return selfIntersectionDetect.features.length >= 2;
   };
-
-  removeOutsideSetbackSelfIntersection (direction) {
-    const splitGeoJSON = simplepolygon(this.makeGeoJSON());
-    const splitPolylines = [];
-    for (let elem of splitGeoJSON.features) {
-      if (elem.properties.parent < 0) {
-        const points = elem.geometry.coordinates[0].slice(0,-1).map(cor =>
-          new Point(cor[0], cor[1], cor[2] ? cor[2] : this.points[0].height)
-        );
-        splitPolylines.push(new Polyline([...points, points[0]]));
-      }
-    };
-    return splitPolylines;
-  };
-
 }
 
 export default Polyline;
