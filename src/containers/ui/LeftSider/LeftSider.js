@@ -31,7 +31,7 @@ class LeftSider extends Component {
       if (uiStateJudge.isIdleStates(this.props.uiState)) {
         content = (<CreateBuildingPanel/>);
       }
-      else if (uiStateJudge.isDrawingStates(this.props.uiState)) {
+      else if (uiStateJudge.showDrawingPanel(this.props.uiState)) {
         content = (<DrawBuildingPanel/>);
       }
     }

@@ -8,16 +8,24 @@ import {
   Col,
   Button,
 } from 'antd';
+
+import Polygon from '../../../../../infrastructure/Polygon/Polygon';
 import * as actions from '../../../../../store/actions/index';
+import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 
 
-const draw3DBuildingButton = (props) => { 
+const draw3DBuildingButton = (props) => {
   const DrawBuildingPolygon = (
     <Button
       type = 'primary'
       size = 'large'
       shape = 'round'
       block
+      disabled = {
+        props.CurrentBuilding.type === 'FLAT' ?
+        !uiStateJudge.isFinishedFound(props.uiState) :
+        !uiStateJudge.isFinishedInner(props.uiState)
+      }
       onClick = {() => {
         console.log('[Button]: Test Polygon: ');
         props.EnablePolygon();
@@ -26,7 +34,6 @@ const draw3DBuildingButton = (props) => {
         buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
         props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
         props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, props.PolylinesRelation);
-       
       }}
     >Test: Draw Foundation</Button>
 
@@ -42,6 +49,7 @@ const draw3DBuildingButton = (props) => {
 
 const mapStateToProps = state => {
   return {
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     CurrentBuilding: 
       state.buildingManagerReducer.workingBuilding,
     BuildFoundation: 
@@ -50,7 +58,6 @@ const mapStateToProps = state => {
       state.undoableReducer.present.drawingRooftopManagerReducer,
     PolylinesRelation: 
       state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation
-
   };
 };
 

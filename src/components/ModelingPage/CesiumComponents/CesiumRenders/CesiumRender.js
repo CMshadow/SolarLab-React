@@ -6,22 +6,25 @@ import DrawingManagerRender from './DrawingManagerRender';
 import Drawing3DFoundManagerRender from './Drawing3DFoundManagerRender/Drawing3DFoundMangerRender';
 import DrawingInnerManagerRender from './DrawingInnerManagerRender';
 import DrawingBuildingRooftopRender from './DrawingRooftopManagerRender/DrawingRooftopManagerRender';
+import DrawingKeepoutManagerRender from './DrawingKeepoutManagerRender';
 
 const CesiumRender = (props) => {
   return (
     <div>
       {
-        uiStateJudge.isWorkingFound(props.uiState) ?
+        uiStateJudge.useFoundManagerRender(props.uiState) ?
         <DrawingManagerRender /> :
         null
       }
       {
-        uiStateJudge.isWorkingInner(props.uiState) ?
+        uiStateJudge.useInnerManagerRender(props.uiState) ?
         <DrawingInnerManagerRender /> :
         null
       }
       <Drawing3DFoundManagerRender />
       <DrawingBuildingRooftopRender />
+      <DrawingKeepoutManagerRender />
+
     </div>
   );
 };

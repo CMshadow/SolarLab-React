@@ -8,7 +8,7 @@ const DrawingManagerRender = (props) => {
   let foundPolyline = null;
   let foundPoints = null;
   if (props.drawingPolyline && props.drawingPolyline.length > 1) {
-    
+
     foundPolyline = (<CustomPolyline
       key={props.drawingPolyline.entityId}
       {...props.drawingPolyline}

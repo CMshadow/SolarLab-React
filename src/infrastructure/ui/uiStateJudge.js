@@ -1,78 +1,93 @@
-export const isDrawingStates = (uiState) => {
-  if (
+export const showDrawingPanel = (uiState) => {
+  return (
     uiState === 'READY_DRAWING' ||
     uiState === 'DRAWING_FOUND' ||
     uiState === 'FOUND_DREW' ||
     uiState === 'EDITING_FOUND' ||
     uiState === 'DRAWING_INNER' ||
-    uiState === 'INNER_DREW'
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+    uiState === 'INNER_DREW' ||
+    uiState === 'DRAWING_KEEPOUT' ||
+    uiState === 'EDITING_KEEPOUT'
+  )
 };
 
-export const isIdleStates = (uiState) => {
-  if (uiState === 'IDLE') {
-    return true;
-  } else {
-    return false;
-  }
-};
-
-export const isWorkingFound = (uiState) => {
-  if (
+export const useFoundManagerRender = (uiState) => {
+  return (
     uiState === 'DRAWING_FOUND' ||
     uiState === 'FOUND_DREW' ||
     uiState === 'EDITING_FOUND'
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+  )
 };
 
+export const useInnerManagerRender = (uiState) => {
+  return (
+    uiState === 'DRAWING_INNER' ||
+    uiState === 'INNER_DREW' ||
+    uiState === 'DRAWING_KEEPOUT' ||
+    uiState === 'EDITING_KEEPOUT'
+  )
+}
+
+export const isIdleStates = (uiState) => {
+  return (uiState === 'IDLE')
+};
+
+export const isWorkingFound = (uiState) => {
+  return (
+    uiState === 'DRAWING_FOUND' ||
+    uiState === 'FOUND_DREW' ||
+    uiState === 'EDITING_FOUND'
+  )
+};
+
+export const isFinishedFound = (uiState) => {
+  return (
+    uiState === 'FOUND_DREW'
+  )
+}
+
 export const isWorkingInner = (uiState) => {
-  if (
+  return (
     uiState === 'DRAWING_INNER' ||
     uiState === 'INNER_DREW'
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+  )
+};
+
+export const isFinishedInner = (uiState) => {
+  return (
+    uiState === 'INNER_DREW'
+  )
+};
+
+export const isWorkingKeepout = (uiState) => {
+  return (
+    uiState === 'DRAWING_KEEPOUT' ||
+    uiState === 'EDITING_KEEPOUT'
+  )
 };
 
 export const isFoundDrew = (uiState) => {
-  if (uiState === 'FOUND_DREW' ||
+  return (uiState === 'FOUND_DREW' ||
     uiState === 'EDITING_FOUND' ||
     uiState === 'DRAWING_INNER' ||
-    uiState === 'INNER_DREW'
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+    uiState === 'INNER_DREW' ||
+    uiState === 'DRAWING_KEEPOUT' ||
+    uiState === 'EDITING_KEEPOUT'
+  )
 };
 
 export const isInnerDrew = (uiState) => {
-  if (
+  return (
     uiState === 'DRAWING_INNER' ||
-    uiState === 'INNER_DREW'
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+    uiState === 'INNER_DREW' ||
+    uiState === 'DRAWING_KEEPOUT' ||
+    uiState === 'EDITING_KEEPOUT'
+  )
 };
 
 export const showDrawInner = (uiState) => {
-  if (uiState === 'FOUND_DREW' ||
+  return (
+    uiState === 'FOUND_DREW' ||
     uiState === 'EDITING_FOUND'
-  ) {
-    return true;
-  } else {
-    return false;
-  }
+  )
 };

@@ -13,52 +13,70 @@ import DrawKeepoutList from './drawKeepout/drawKeepoutList';
 import DrawBuilding3DPolygon from './drawButtons/Draw3DBuildingButton';
 
 const DrawBuildingPanel = (props) => {
-
-  const step1 = (
+  const drawFound = (
     <div>
       <Divider>Step 1</Divider>
-        <DrawFoundButton />
+      <DrawFoundButton />
     </div>
   )
 
-  const step2 = (
+  const drawInner = (
     <div>
       <Divider>Step 2</Divider>
-        <DrawInnerButton />
+      <DrawInnerButton />
     </div>
   )
 
-
-  const step3 = (
+  const drawKeepout = (
     <div>
-      <Divider>Step 3</Divider>
-        <DrawKeepoutList />
+      {
+        props.workingBuilding.type === 'PITCHED' ?
+        <Divider>Step 3</Divider> :
+        <Divider>Step 2</Divider>
+      }
+      <DrawKeepoutList />
     </div>
   )
 
-  let PolygonTest = null;
-  if (uiStateJudge.isFoundDrew(props.uiState)) {
-    PolygonTest = (
-      <div>
-        <Divider>Building Modeling</Divider>
-          <DrawBuilding3DPolygon />
-      </div>
-    );
-  }
+  const generate3D = (
+    <div>
+      <Divider>Generate 3D Model</Divider>
+      <DrawBuilding3DPolygon />
+    </div>
+  )
 
+  const FlatBuildingLayout = (
+    <div>
+      {drawFound}
+      {uiStateJudge.isFoundDrew(props.uiState) ? drawKeepout : null}
+      {uiStateJudge.isFoundDrew(props.uiState) ? generate3D : null}
+    </div>
+  );
+
+  const PitchedBuildingLayout = (
+    <div>
+      {drawFound}
+      {uiStateJudge.isFoundDrew(props.uiState) ? drawInner : null}
+      {uiStateJudge.isInnerDrew(props.uiState) ? drawKeepout : null}
+      {uiStateJudge.isInnerDrew(props.uiState) ? generate3D : null}
+    </div>
+  );
+  console.log(props.uiState)
   return (
     <div>
-      {step1}
-      {uiStateJudge.isFoundDrew(props.uiState) ? step2 : null}
-      {step3}
-      {PolygonTest}
+      {
+        props.workingBuilding.type === 'PITCHED' ?
+        PitchedBuildingLayout :
+        FlatBuildingLayout
+      }
     </div>
   );
 };
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    workingBuilding: state.buildingManagerReducer.workingBuilding
   };
 };
 

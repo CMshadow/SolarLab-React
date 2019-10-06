@@ -18,7 +18,6 @@ const initialState = {
 };
 
 const passFoundPolyline = (state, action) => {
-  console.log('[passFoundPolyline]')
   const polylineArray = action.foundPolyline.getSegmentPolyline();
   return {
     ...state,
@@ -80,7 +79,6 @@ const updatePointsRelation = (state, action) => {
       newPointsRelation[Object.keys(obj)[0]] = Object.values(obj)[0];
     }
   }
-  console.log(newPointsRelation)
   return {
     ...state,
     pointsRelation: newPointsRelation
@@ -278,7 +276,6 @@ const addEndPointOnFoundPolyline = (state, action) => {
 }
 
 const addEndPoint = (state, action) => {
-  console.log('[addEndPoint]')
   if (action.cartesian3) {
     return addEndPointOnNew(state, action);
   } else {

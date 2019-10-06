@@ -208,6 +208,18 @@ class Coordinate {
     )
   };
 
+  /**
+   * the possible intersection Coordinate of two Coordinates traveling towards
+   * two different bearings
+   * @param  {Coordinate} cor1  first Coordinate object
+   * @param  {Number}     brng1 the traveling bearing of the first Coordinate obj
+   * @param  {Coordinate} cor2  second Coordinate object
+   * @param  {Number}     brng2 the traveling bearing of the second Coordinate obj
+   * @return {Coordinate}       the possible intersection Coordinate object, if
+   *                            the intersection exists
+   * or
+   * @return {undefined}       undefined if the intersection does not exist
+   */
   static intersection = (cor1, brng1, cor2, brng2) => {
     const avgHeight = (cor1.height + cor2.height) / 2;
 

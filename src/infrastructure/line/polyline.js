@@ -94,7 +94,10 @@ class Polyline {
    */
   addPointPrecision = (position, point) => {
     const newCoordinate = this.preciseAddPointPosition(position, point);
-    const newPoint = Point.fromCoordinate(newCoordinate, null, point.entityId);
+    const newPoint = Point.fromPoint(point);
+    newPoint.setCoordinate(
+      newCoordinate.lon, newCoordinate.lat, newCoordinate.height
+    );
     this.points.splice(position, 0, newPoint);
   }
 
@@ -269,6 +272,11 @@ class Polyline {
     return polylineArray;
   }
 
+  /**
+   * get the bearings for aux lines according to the bearing of every segment of
+   * the polyline
+   * @return {Number[]} a set of bearings
+   */
   getHelpLineBearings = () => {
     let brngSet = new Set();
     for (let i = 0; i < this.length-1; i++) {
@@ -279,7 +287,7 @@ class Polyline {
       const brng4 = (brng-45)%360 > 0 ? (brng-45)%360 : (brng-45)%360+360;
       const brng5 = (brng+45)%360 > 0 ? (brng+45)%360 : (brng+45)%360+360;
       const brng6 = (brng-135)%360 > 0 ? (brng-135)%360 : (brng-135)%360+360;
-      const brng7 = (brng-135)%360 > 0 ? (brng-135)%360 : (brng-135)%360+360;
+      const brng7 = (brng+135)%360 > 0 ? (brng+135)%360 : (brng+135)%360+360;
       brngSet.add(parseFloat(brng.toFixed(5)));
       brngSet.add(parseFloat(brng1.toFixed(5)));
       brngSet.add(parseFloat(brng2.toFixed(5)));
