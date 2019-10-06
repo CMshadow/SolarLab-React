@@ -16,12 +16,8 @@ const initState = {
 }
 
 
-const initEdgesMap = (state, action) => {
 
-
-}
-
-const initNodesCollection = (state, action) => {
+const build3DRoofTopModeling = (state, action) => {
   console.log('create rooftop polygon: ');
   let newRooftopCollection = [];
   for (let roofPlane of action.AllRoofPlanePaths) {
@@ -49,10 +45,8 @@ const searchAllRoofPlanes = (state, action) => {
 
 const reducer = (state=initState, action) => {
   switch(action.type){
-		case actionTypes.INIT_EDGES_MAP:
-			return initEdgesMap(state, action);
-		case actionTypes.INIT_NODES_COLLECTION:
-			return initNodesCollection(state, action);
+		case actionTypes.BUILD_3D_ROOFTOP_MODELING:
+			return build3DRoofTopModeling(state, action);
 		case actionTypes.SEARCH_ALL_ROOF_PLANES:
 			return searchAllRoofPlanes(state, action);
 		default:

@@ -58,6 +58,7 @@ export {
 } from './drawingPolygonManager';
 
 export {
+  build3DRoofTopModeling,
   initEdgesMap,
   initNodesCollection,
   searchAllRoofPlanes

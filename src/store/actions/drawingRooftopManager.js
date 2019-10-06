@@ -3,18 +3,36 @@ import Node from '../../infrastructure/edgesMap/node/node';
 import Edge from '../../infrastructure/edgesMap/edge/edge';
 import EdgesMap from '../../infrastructure/edgesMap/edgesMap';
 import * as MathHelper from '../../infrastructure/math/RoofTop_MathHelper';
+
+
 export const initEdgesMap = () => {
   return({
     type: actionTypes.INIT_EDGES_MAP
   });
 };
 
-export const initNodesCollection = (buildingOutline, polylinesRelation) => {
 
+export const build3DRoofTopModeling = (buildingOutline, polylinesRelation) => {
   let newNodeCollection = [];
-  let newOuterEdgeCollection = [];
   let newInnerEdgeCollection = [];
+  let newOuterEdgeCollection = [];
   let pathCoordinatesCollection = [];
+  console.log('hahahaha');
+  initNodesCollection(buildingOutline, newNodeCollection, newOuterEdgeCollection);
+  newInnerEdgeCollection = initEdgeMap(polylinesRelation, newNodeCollection).newInnerEdgeCollection;
+  pathCoordinatesCollection = searchAllRoofPlanes(newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection).pathCollection;
+  
+  return ({
+    type: actionTypes.BUILD_3D_ROOFTOP_MODELING,
+    nodesCollection: newNodeCollection,
+    OuterEdgesCollection: newOuterEdgeCollection,
+    InnerEdgeCollection: newInnerEdgeCollection,
+    AllRoofPlanePaths: pathCoordinatesCollection
+  });
+}
+
+export const initNodesCollection = (buildingOutline, newNodeCollection, newOuterEdgeCollection) => {
+
   // Build outer edges-points relations
   for (let i = 0; i < buildingOutline.length; i+=3) {
     newNodeCollection.push(new Node(null, buildingOutline[i], buildingOutline[i + 1], 5, 0 ));
@@ -32,11 +50,18 @@ export const initNodesCollection = (buildingOutline, polylinesRelation) => {
       newNodeCollection[noteIndex+1].addChild(noteIndex);
     }
   }
-  // for (let i = 0; i < newOuterEdgeCollection.length; ++i) {
-  //   console.log('outer: '+newOuterEdgeCollection[i].showEdge());
-  // }
+
+  return ({
+    type: actionTypes.INIT_NODES_COLLECTION,
+    nodesCollection: newNodeCollection,
+    OuterEdgesCollection: newOuterEdgeCollection
+  });
+}
+
+export const initEdgeMap = (polylinesRelation, newNodeCollection) => {
   let hipCollecton = [];
   let ridgeCollection = [];
+  let newInnerEdgeCollection = [];
   // Build inner edges-points relations
   Object.keys(polylinesRelation).forEach(function(key) {
     if (polylinesRelation[key]['type'] === "IN") {
@@ -52,7 +77,9 @@ export const initNodesCollection = (buildingOutline, polylinesRelation) => {
       startNode = new Node(null, polylinesRelation[key]['object']['lon'], polylinesRelation[key]['object']['lat'], 5, 0 );
       for (let i = 0; i < polylinesRelation[key]['connectPolyline'].length; ++i) {
         if (polylinesRelation[key]['connectPolyline'][i]['type'] === 'HIP') {
-          endNode = (polylinesRelation[key]['connectPolyline'][i]['points'][0]['lon'] === startNode.lon && polylinesRelation[key]['connectPolyline'][i]['points'][0]['lat'] === startNode.lat) ? polylinesRelation[key]['connectPolyline'][i]['points'][1] : polylinesRelation[key]['connectPolyline'][i]['points'][0];
+          endNode = (polylinesRelation[key]['connectPolyline'][i]['points'][0]['lon'] === startNode.lon 
+          && polylinesRelation[key]['connectPolyline'][i]['points'][0]['lat'] === startNode.lat) ? 
+          polylinesRelation[key]['connectPolyline'][i]['points'][1] : polylinesRelation[key]['connectPolyline'][i]['points'][0];
         } 
       }
     }
@@ -60,7 +87,9 @@ export const initNodesCollection = (buildingOutline, polylinesRelation) => {
       startNode = new Node(null, polylinesRelation[key]['object']['lon'], polylinesRelation[key]['object']['lat'], 7, 0 );
       for (let i = 0; i < polylinesRelation[key]['connectPolyline'].length; ++i) {
         if (polylinesRelation[key]['connectPolyline'][i]['type'] === 'RIDGE') {
-          endNode = (polylinesRelation[key]['connectPolyline'][i]['points'][0]['lon'] === startNode.lon && polylinesRelation[key]['connectPolyline'][i]['points'][0]['lat'] === startNode.lat) ? polylinesRelation[key]['connectPolyline'][i]['points'][1] : polylinesRelation[key]['connectPolyline'][i]['points'][0];
+          endNode = (polylinesRelation[key]['connectPolyline'][i]['points'][0]['lon'] === startNode.lon 
+          && polylinesRelation[key]['connectPolyline'][i]['points'][0]['lat'] === startNode.lat) ? 
+          polylinesRelation[key]['connectPolyline'][i]['points'][1] : polylinesRelation[key]['connectPolyline'][i]['points'][0];
         } 
       } 
     }
@@ -72,31 +101,23 @@ export const initNodesCollection = (buildingOutline, polylinesRelation) => {
       newNodeCollection[indexEnd].addChild(indexStart);
     } 
   });
-  //find all possible roof planes
-  pathCoordinatesCollection = searchAllRoofPlanes(newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection).pathCollection;
-
   return ({
-    type: actionTypes.INIT_NODES_COLLECTION,
-    nodesCollection: newNodeCollection,
-    OuterEdgesCollection: newOuterEdgeCollection,
-    InnerEdgeCollection: newInnerEdgeCollection,
-    AllRoofPlanePaths: pathCoordinatesCollection
-  });
+    newNodeCollection: newNodeCollection,
+    newInnerEdgeCollection: newInnerEdgeCollection
+  })
 }
+
 
 export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, NodesCollection) => {
   let pathCoordinatesCollection = [];
   let path = MathHelper.searchAllPossibleRoofTops([InnerEdgeCollection,OuterEdgesCollection],NodesCollection);
   for (let i = 0; i < path.length; ++i) {
     let roofPlaneCoordinateArray = [];
-    console.log('plane:' + i + ': ['+path[i]+']');
     for (let nodeIndex of path[i]) {
-
       roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lon);
       roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lat);
       roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].height);
     }
-    console.log('plane:' + i + ': ['+roofPlaneCoordinateArray+']');
     pathCoordinatesCollection.push(roofPlaneCoordinateArray);
   }
   

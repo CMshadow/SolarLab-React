@@ -25,7 +25,7 @@ const draw3DBuildingButton = (props) => {
         let buildingCoordinatesSize = buildingCoordinatesArray.length;
         buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
         props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
-        props.InitNodesCollection(buildingCoordinatesArray, props.PolylinesRelation);
+        props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, props.PolylinesRelation);
        
       }}
     >Test: Draw Foundation</Button>
@@ -59,8 +59,8 @@ const mapDispatchToProps = dispatch => {
     EnablePolygon: () => dispatch(actions.enableToBuildFoundation()),
     CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
       dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray)),
-    InitNodesCollection: (buindingBoundary, polylinesRelation) => 
-      dispatch(actions.initNodesCollection(buindingBoundary, polylinesRelation))
+    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation) => 
+      dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation))
  };
 };
 
