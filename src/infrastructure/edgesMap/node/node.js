@@ -20,7 +20,7 @@ class Node {
    *                                 -1: Keepout Node,
    *                                 -2: Shadow Node
    *                              }
-   * @memberof Node A structure that presents the point created by users' click operation. A Node could be                   defined as inner node or outer node.
+   * @memberof Node A structure that presents the point created by users' click operation. A Node could be defined as inner node or outer node.
    */
   constructor(
     id = null,

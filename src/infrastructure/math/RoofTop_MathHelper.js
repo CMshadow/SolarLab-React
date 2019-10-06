@@ -2,8 +2,8 @@ import * as Cesium from 'cesium';
 
 /**
  * Search all possible roof planes based on the edgeMap of the current building
- * @param  {[InnerEdgeCollection, OuterEdgeCollection]} [edgeList] EdgeMap that contains both inner                                                                           and outer EdgesCollection
- * @param {[Node, Node, ...]}  [nodesCollection] An array that contains all nodes of the building                                                           rooftop, each node could be either inner or outer node
+ * @param  {[InnerEdgeCollection, OuterEdgeCollection]} [edgeList] EdgeMap that contains both inner and outer EdgesCollection
+ * @param {[Node, Node, ...]}  [nodesCollection] An array that contains all nodes of the building rooftop, each node could be either inner or outer node
  * @return {[RoofPlane1, RoofPlane2, ...]}   An collection that contains of all roof plane paths
  */
 export const searchAllPossibleRoofTops = (edgeList, nodesCollection) => {
@@ -40,8 +40,8 @@ export const searchAllPossibleRoofTops = (edgeList, nodesCollection) => {
  *                         If flag equals to 1, we are doing the clockwise searching.
  *                         If flag equals to 0, we are doing the counterclockwise searching.
  *                         Flag can only be either 1 or 0, no other valid values available.
- * @param  {[InnerEdgeCollection, OuterEdgeCollection]} [edges] EdgeMap that contains both inner                                                                           and outer EdgesCollection
- * @param {[Node, Node, ...]}  [node_list] An array that contains all nodes of the building                                                           rooftop, each node could be either inner or outer node
+ * @param  {[InnerEdgeCollection, OuterEdgeCollection]} [edges] EdgeMap that contains both inner and outer EdgesCollection
+ * @param {[Node, Node, ...]}  [node_list] An array that contains all nodes of the building rooftop, each node could be either inner or outer node
  * @param {[Node, Node, ...]}  [vertex_stact] An Stack of Nodes that represents one possible path of a roof
  * @return {[RoofPlane1, RoofPlane2, ...]}   An collection that contains of all roof plane paths
  */
@@ -93,7 +93,7 @@ export const checkClockWise = (start_edge, start_point, flag, edges, node_list, 
  * @param {Number} [startNode] An number that represents the index of the start node of the edge
  * @param {Number} [endNode] An number that represents the index of the start node of the edge        
  * @param  {Edge} [inner_edges] A inner edge
- * @return {Number}   An number that represents the index of a specific inner edge located in the          *                    innerEdgeCollection
+ * @return {Number}   An number that represents the index of a specific inner edge located in the innerEdgeCollection
  */
 export const find_index = (startNode, endNode, inner_edges) => {
   let index = -1;
@@ -109,8 +109,8 @@ export const find_index = (startNode, endNode, inner_edges) => {
 
 /**
  * Search all possible roof planes based on the edgeMap of the current building
- * @param  {[InnerEdgeCollection, OuterEdgeCollection]} [toArray=false] EdgeMap that contains both inner                                                                           and outer EdgesCollection
- * @param {[Node, Node, ...]}  [nodesCollection= null] An array that contains all nodes of the building                                                          rooftop, each node could be either inner or outer node
+ * @param  {[InnerEdgeCollection, OuterEdgeCollection]} [toArray=false] EdgeMap that contains both inner and outer EdgesCollection
+ * @param {[Node, Node, ...]}  [nodesCollection= null] An array that contains all nodes of the building rooftop, each node could be either inner or outer node
  * @return {[RoofPlane1, RoofPlane2, ...]}   An collection that contains of all roof plane paths
  */
 export const findNodeIndex = (NodeCollection, lon, lat) => {

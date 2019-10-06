@@ -11,9 +11,9 @@ class EdgesMap {
    *Creates an instance of EdgesMap.
    * @param {string} [id=null] unique id of the EdgesMap, automatic generate one if not provided
 
-   * @param {[Node, Node, ...]} [nodesCollection=null] An array that contains both inner and outer Nodes                                                        users created sorted by creation order. 
-   * @param {[Edge, Edge, ...]} [outerEdgeCollection=null] An array that contains only outer edges tagged                                                           by users
-   * @param {[Edge, Edge, ...]} [innerEdgeCollection=null] An array that contains only inner edges tagged                                                           by users
+   * @param {[Node, Node, ...]} [nodesCollection=null] An array that contains both inner and outer Nodes users created sorted by creation order. 
+   * @param {[Edge, Edge, ...]} [outerEdgeCollection=null] An array that contains only outer edges tagged by users
+   * @param {[Edge, Edge, ...]} [innerEdgeCollection=null] An array that contains only inner edges tagged by users
    * @memberof EdgesMap  An array that contains innerEdgeCollection and outerEdgeCollection
    */
   constructor(
