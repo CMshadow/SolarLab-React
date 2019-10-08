@@ -5,11 +5,11 @@ import Keepout from './keepout';
 class Tree extends Keepout {
 
   constructor (
-    id = null, type = null, drew = null, editing = null, ventHt = null,
+    id = null, type = 'TREE', drew = null, editing = null, treeHt = null,
     radius = null, outline = null, polygon = null, polygonPart2 = null
   ) {
     super(id, type, drew, editing, outline, polygon, polygonPart2);
-    this.height = ventHt ? ventHt : 0;
+    this.height = treeHt ? treeHt : 0;
     this.radius = radius ? radius : 5;
   }
 

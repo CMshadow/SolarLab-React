@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import PolygonVisualize from '../Polygon/Polygon';
 import CustomSphere from '../sphere/sphere';
 import CustomCylinder from '../cylinder/cylinder';
-import * as actions from '../../../../store/actions/index';
 
 const DrawingKeepoutPolygonManagerRender = (props) => {
 	let normalKeepoutPolygon = null;

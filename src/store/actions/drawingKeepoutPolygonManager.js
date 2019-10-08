@@ -12,6 +12,7 @@ import NormalKeepout from '../../infrastructure/keepout/normalKeepout';
 import Passage from '../../infrastructure/keepout/passage';
 import Vent from '../../infrastructure/keepout/vent';
 import Tree from '../../infrastructure/keepout/tree';
+import Env from '../../infrastructure/keepout/env';
 
 export const createAllKeepoutPolygon = () => (dispatch, getState) => {
   const allKeepout =
@@ -206,8 +207,8 @@ export const createEnvKeepoutPolygon = (envKeepout) =>
     const hierarchy = Polygon.makeHierarchyFromPolyline(
       kpt.outlinePolyline, kpt.height
     )
-    return NormalKeepout.fromKeepout(
-      kpt, null, null, null,
+    return Env.fromKeepout(
+      kpt, null, null,
       new Polygon(
         null, null, kpt.height, hierarchy, null, null,
         Color.GOLD

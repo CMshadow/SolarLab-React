@@ -4,7 +4,7 @@ import Keepout from './keepout';
 
 class Passage extends Keepout {
 
-  constructor (id = null, type = null, drew = null, editing = null,
+  constructor (id = null, type = 'PASSAGE', drew = null, editing = null,
     passageWidth = null, outline = null, polygon = null
   ) {
     super(id, type, drew, editing, outline, polygon);

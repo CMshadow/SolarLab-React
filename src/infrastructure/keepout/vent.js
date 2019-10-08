@@ -5,7 +5,7 @@ import Keepout from './keepout';
 class Vent extends Keepout {
 
   constructor (
-    id = null, type = null, drew = null, editing = null, brng = null,
+    id = null, type = 'VENT', drew = null, editing = null, brng = null,
     radius = null, angle = null, outline = null, polygon = null
   ) {
     super(id, type, drew, editing, outline, polygon);
