@@ -5,7 +5,7 @@ import Keepout from './keepout';
 class NormalKeepout extends Keepout {
 
   constructor (
-    id=null, type=null, drew=null, editing=null, keepoutHt=null,
+    id=null, type='KEEPOUT', drew=null, editing=null, keepoutHt=null,
     keepoutStb=null, outline=null, polygon=null, polygonPart2=null
   ) {
     super(id, type, drew, editing, outline, polygon, polygonPart2);
