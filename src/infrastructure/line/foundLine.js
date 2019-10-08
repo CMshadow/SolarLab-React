@@ -77,6 +77,10 @@ class FoundLine extends Polyline {
         this.points.splice(this.length-1, 1);
         this.addPoint(this.length, this.points[0]);
       }
+      else if (position === this.length-1) {
+        this.points.splice(0, 1);
+        this.addPoint(this.length, this.points[0]);
+      }
       return deletedPoint[0];
     } else {
       throw new Error('The index is beyond Polyline length');

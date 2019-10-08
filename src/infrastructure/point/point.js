@@ -16,7 +16,7 @@ class Point extends Coordinate {
    * @param {number}  lat           the latitude of the coordinate, fixed
    *                                to 12 decimalplaces
    * @param {number}  height        the height of the coordinate, fixed
-   *                                to 12 decimalplaces
+   *                                to 3 decimalplaces
    * @param {number}  [hOffset=0]   the height offset beyond its original
    *                                height, default 0
    * @param {string}  [id=null]     unique id of the point, automatic

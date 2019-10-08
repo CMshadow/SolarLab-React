@@ -72,15 +72,6 @@ class Polyline {
     return this.points.length;
   }
 
-  get polylineLength () {
-    const segmentDist = this.getSegmentDistance();
-    return segmentDist.reduce((a,b) => a + b, 0);
-  }
-
-  get polylineArea () {
-    return turf.area(turf.polygon(this.makeGeoJSON().geometry.coordinates));
-  }
-
   /**
    * change the color of the polyline
    * @param {Color} newColor new Cesium.Color or RGBA color
