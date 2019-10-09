@@ -11,11 +11,15 @@ class FlatBuilding extends Building {
     this.foundationPolygon = null;
   }
 
-/**
- *  Bind the building foudantion Polygon to the building currently working on
- */
-  bindFoundPolygon = (Polygon) => {
-    this.foundationPolygon = Polygon;
+  bindFoundPolyline = (polyline) => {
+    this.polyline = polyline;
+  }
+
+  /**
+   *  Bind the building foudantion Polygon to the building currently working on
+   */
+  bindFoundPolygon = (polygon) => {
+    this.foundationPolygon = polygon;
   }
 }
 

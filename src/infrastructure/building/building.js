@@ -1,7 +1,7 @@
 
 class Building {
 
-  constructor (name = null, serial = null, foundHt = null, eaveStb = null) {
+  constructor (name, serial, foundHt, eaveStb) {
     this.name = name;
     this.serial = serial;
     this.foundationHeight = foundHt;
