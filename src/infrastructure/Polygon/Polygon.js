@@ -168,7 +168,7 @@ class Polygon {
     return polylineHierarchy;
   }
 
-  static makeHierarchyFromTurfPolygon = (GeoJSON, height, heightOffset = 0) => {
+  static makeHierarchyFromGeoJSON = (GeoJSON, height, heightOffset = 0) => {
     let polylineHierarchy = [];
     GeoJSON.geometry.coordinates[0].forEach(cor => {
       polylineHierarchy = polylineHierarchy.concat(

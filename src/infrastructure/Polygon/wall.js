@@ -47,11 +47,11 @@ class Wall {
     shadow=null,
     show=null
   ){
-    const newID = id ? id : wall.id;
+    const newID = id ? id : wall.entityId;
     const newName = name ? name : wall.name;
     const newPositions = positions ? [...positions]: wall.positions;
-    const newMinimumHeight = minimumHeight ? minimumHeight: wall.minimumHeight;
-    const newMaximumHeight = maximumHeight ? maximumHeight: wall.maximumHeight;
+    const newMinimumHeight = minimumHeight ? minimumHeight: wall.minimumHeight[0];
+    const newMaximumHeight = maximumHeight ? maximumHeight: wall.maximumHeight[0];
     const newMaterial = material ? material: wall.material;
     const newShadow = shadow? shadow: true;
     const newShow = show? show: true;

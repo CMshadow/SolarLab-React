@@ -56,7 +56,7 @@ export const createNormalKeepoutPolygon = (normalKeepout) =>
           )[0]
         }
       }
-      return Polygon.makeHierarchyFromTurfPolygon(
+      return Polygon.makeHierarchyFromGeoJSON(
         trimedStbTurfPolygon, foundHeight, 0.005
       );
     });
@@ -121,7 +121,7 @@ export const createPassageKeepoutPolygon = (passageKeepout) =>
           )[0]
         }
       }
-      return Polygon.makeHierarchyFromTurfPolygon(
+      return Polygon.makeHierarchyFromGeoJSON(
         trimedStbTurfPolygon, foundHeight, 0.005
       );
     });
@@ -164,7 +164,7 @@ export const createVentKeepoutPolygon = (ventKeepout) =>
         )[0]
       }
     }
-    const hierarchy = Polygon.makeHierarchyFromTurfPolygon(
+    const hierarchy = Polygon.makeHierarchyFromGeoJSON(
       trimedStbTurfPolygon, foundHeight, 0.005
     );
     return Vent.fromKeepout(

@@ -17,7 +17,7 @@ class Sphere {
     show = null
   ) {
     this.entityId = id ? id : uuid();
-    this.name = name ? name: 'Polygon';
+    this.name = name ? name: 'Sphere';
     this.centerPoint =
       new Point(centerPoint.lon, centerPoint.lat, height);
     this.radius = radius ? radius : 1
@@ -38,8 +38,8 @@ class Sphere {
     const newID = id ? id : sphere.id;
     const newName = name ? name : sphere.name;
     const newCenterPoint =
-      centerPoint ? centerPoint : sphere.position
-    const newHeight = height ? height : sphere.position.height
+      centerPoint ? centerPoint : sphere.centerPoint
+    const newHeight = height ? height : sphere.centerPoint.height
     const newRadius = radius ? radius : sphere.radius;
     const newMaterial = material ? material: sphere.material;
     const newShow = show? show: true;
