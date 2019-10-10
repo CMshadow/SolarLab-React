@@ -5,6 +5,7 @@ import {
 } from 'antd';
 import RoofList3D from './edit3D/roofList3D';
 import KeepoutList3D from './edit3D/keepoutList3D';
+import FinishedModelingButton from './drawButtons/finishModelingButton';
 
 const DrawBuildingPanel = (props) => {
   return (
@@ -12,6 +13,8 @@ const DrawBuildingPanel = (props) => {
       <RoofList3D />
       <Divider />
       <KeepoutList3D />
+      <Divider />
+      <FinishedModelingButton />
     </div>
   );
 };

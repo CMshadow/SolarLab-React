@@ -60,12 +60,29 @@ const bindFoundPolyline = (state, action) => {
   };
 };
 
+const bindFoundPolygons = (state, action) => {
+  let newWorkingBuilding = null;
+  if (state.workingBuilding instanceof FlatBuilding) {
+    newWorkingBuilding = FlatBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindFoundPolygon(action.polygon);
+    newWorkingBuilding.bindFoundPolygonExcludeStb(action.polygonsExcludeStb);
+    newWorkingBuilding.bindParapetPolygon(action.parapet);
+  }
+
+  return {
+    ...state,
+    workingBuilding: newWorkingBuilding
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SAVE_BUILDING_INFO_FIELDS:
       return saveFields(state, action);
     case actionTypes.BIND_FOUNDATION_POLYLINE:
       return bindFoundPolyline(state, action);
+    case actionTypes.BIND_FOUNDATION_POLYGONS:
+      return bindFoundPolygons(state, action);
     case actionTypes.INIT_BUILDING:
       return initBuilding(state, action);
     case actionTypes.UPDATE_BUILDING:

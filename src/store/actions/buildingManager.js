@@ -93,20 +93,21 @@ export const bindFoundPolyline = () => (dispatch, getState) => {
 };
 
 export const bindFoundPolygons = () => (dispatch, getState) => {
-  const BuildingFoundation = Polygon.copyPolygon(
-    getState().undoableReducer.present.drawingPolygonManager.BuildingFoundation
-  );
-  const BuildingFoundationExcludeStb =
-    getState().undoableReducer.present.drawingPolygonManager
+  const buildingFoundation =
+    getState().undoableReducer.present.drawingPolygonManagerReducer
+    .BuildingFoundation.map(polygon => Polygon.copyPolygon(polygon));
+  const buildingFoundationExcludeStb =
+    getState().undoableReducer.present.drawingPolygonManagerReducer
     .BuildingFoundationExcludeStb.map(polygon => Polygon.copyPolygon(polygon));
-  const BuildingParapet = Wall.copyWall(
-    getState().undoableReducer.present.drawingPolygonManager.BuildingParapet
+  const buildingParapet = Wall.copyWall(
+    getState().undoableReducer.present.drawingPolygonManagerReducer
+    .BuildingParapet
   );
   return dispatch({
     type: actionTypes.BIND_FOUNDATION_POLYGONS,
-    polygon: BuildingFoundation,
-    polygonsExcludeStb: BuildingFoundationExcludeStb,
-    parapet: BuildingParapet
+    polygon: buildingFoundation,
+    polygonsExcludeStb: buildingFoundationExcludeStb,
+    parapet: buildingParapet
   });
 };
 
