@@ -6,7 +6,7 @@ import Wall from '../../infrastructure/Polygon/wall';
 
 
 const initialState = {
-	BuildingFoundation: null,
+	BuildingFoundation: [],
 	BuildingFoundationExcludeStb: [],
 	BuildingParapet: null,
 
@@ -24,7 +24,7 @@ const createBuildingFoundationPolygon = (state, action) => {
 		);
 	return{
 		...state,
-		BuildingFoundation: newFoundation
+		BuildingFoundation: [newFoundation]
 	};
 };
 

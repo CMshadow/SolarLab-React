@@ -79,6 +79,13 @@ const setPreviousUIState = (state, action) => {
   }
 };
 
+const setUIstateEditing3D = (state,action) => {
+  return {
+    ...state,
+    uiState: 'EDITING_3D'
+  };
+};
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_UI_STATE_READY_DRAWING:
@@ -99,6 +106,8 @@ const reducer = (state=initialState, action) => {
       return setUIStateEditingKeepout(state, action);
     case actionTypes.SET_PREVIOUS_UI_STATE:
       return setPreviousUIState(state, action);
+    case actionTypes.SET_UI_STATE_EDITING_3D:
+      return setUIstateEditing3D(state, action);
     default: return state;
   }
 };

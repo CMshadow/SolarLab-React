@@ -1,4 +1,8 @@
 import * as actionTypes from './actionTypes';
+import FoundLine from '../../infrastructure/line/foundLine';
+import Polygon from '../../infrastructure/Polygon/Polygon';
+import Wall from '../../infrastructure/Polygon/wall';
+import Sphere from '../../infrastructure/Polygon/sphere';
 import FlatBuilding from '../../infrastructure/building/flatBuilding';
 import PitchedBuilding from '../../infrastructure/building/pitchedBuilding';
 
@@ -53,6 +57,15 @@ export const initBuilding = (values) => (dispatch, getState) => {
   });
 };
 
+export const updateBuilding = (values) => {
+  return {
+    type: actionTypes.UPDATE_BUILDING,
+    foundationHeight: values.foundationHeight,
+    eaveSetback: values.eaveStb,
+    parapetHeight: values.parapetHeight
+  };
+};
+
 /**
  * The action saveing createBuildingPanel user inputs to redux for future
  * reference/change/retrieve
@@ -67,6 +80,54 @@ export const saveBuildingInfoFields = (values) => {
     type: actionTypes.SAVE_BUILDING_INFO_FIELDS,
     values: values
   });
+};
+
+export const bindFoundPolyline = () => (dispatch, getState) => {
+  const foundPolyline = FoundLine.fromPolyline(
+    getState().undoableReducer.present.drawingManagerReducer.drawingPolyline
+  );
+  return dispatch({
+    type: actionTypes.BIND_FOUNDATION_POLYLINE,
+    polyline: foundPolyline
+  });
+};
+
+export const bindFoundPolygons = () => (dispatch, getState) => {
+  const BuildingFoundation = Polygon.copyPolygon(
+    getState().undoableReducer.present.drawingPolygonManager.BuildingFoundation
+  );
+  const BuildingFoundationExcludeStb =
+    getState().undoableReducer.present.drawingPolygonManager
+    .BuildingFoundationExcludeStb.map(polygon => Polygon.copyPolygon(polygon));
+  const BuildingParapet = Wall.copyWall(
+    getState().undoableReducer.present.drawingPolygonManager.BuildingParapet
+  );
+  return dispatch({
+    type: actionTypes.BIND_FOUNDATION_POLYGONS,
+    polygon: BuildingFoundation,
+    polygonsExcludeStb: BuildingFoundationExcludeStb,
+    parapet: BuildingParapet
+  });
+};
+
+export const bindNormalKeepout = () => (dispatch, getState) => {
+
+};
+
+export const bindPassage = () => (dispatch, getState) => {
+
+};
+
+export const bindVent = () => (dispatch, getState) => {
+
+};
+
+export const bindTree = () => (dispatch, getState) => {
+
+};
+
+export const bindEnv = () => (dispatch, getState) => {
+
 };
 
 /**

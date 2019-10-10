@@ -2,6 +2,7 @@ import {Color} from 'cesium';
 import * as martinez from 'martinez-polygon-clipping';
 
 import * as actionTypes from './actionTypes';
+import * as actions from './index';
 import axios from '../../axios-setup';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Point from '../../infrastructure/point/point';
@@ -220,3 +221,50 @@ export const createEnvKeepoutPolygon = (envKeepout) =>
     envKeepout: newEnvKeepout
   })
 }
+
+export const reRenderKeepoutPolygon = (type, id, values) =>
+(dispatch, getState) => {
+  dispatch(actions.updateKeepout(id, values));
+  switch (type) {
+    default:
+    case 'KEEPOUT': {
+      const allKeepout =
+        getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+      const normalKeepout = allKeepout.filter(kpt => kpt.type === 'KEEPOUT');
+      dispatch(createNormalKeepoutPolygon(normalKeepout));
+      break;
+    }
+
+    case 'PASSAGE': {
+      const allKeepout =
+        getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+      const passageKeepout = allKeepout.filter(kpt => kpt.type === 'PASSAGE');
+      dispatch(createPassageKeepoutPolygon(passageKeepout));
+      break;
+    }
+
+    case 'VENT': {
+      const allKeepout =
+        getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+      const ventKeepout = allKeepout.filter(kpt => kpt.type === 'VENT');
+      dispatch(createVentKeepoutPolygon(ventKeepout));
+      break;
+    }
+
+    case 'TREE': {
+      const allKeepout =
+        getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+      const treeKeepout = allKeepout.filter(kpt => kpt.type === 'TREE');
+      dispatch(createTreeKeepoutPolygon(treeKeepout));
+      break;
+    }
+
+    case 'ENV': {
+      const allKeepout =
+        getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+      const envKeepout = allKeepout.filter(kpt => kpt.type === 'ENV');
+      dispatch(createEnvKeepoutPolygon(envKeepout));
+      break;
+    }
+  }
+};

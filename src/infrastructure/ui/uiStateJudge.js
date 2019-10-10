@@ -11,6 +11,12 @@ export const showDrawingPanel = (uiState) => {
   )
 };
 
+export const showEditing3DPanel = (uiState) => {
+  return (
+    uiState === 'EDITING_3D'
+  )
+};
+
 export const useFoundManagerRender = (uiState) => {
   return (
     uiState === 'DRAWING_FOUND' ||
