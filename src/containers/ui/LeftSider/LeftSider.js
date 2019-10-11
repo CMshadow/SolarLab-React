@@ -9,6 +9,7 @@ import UndoRedo from '../../../components/ui/UndoRedo/UndoRedo';
 import CreateBuildingPanel from './individualPanels/createBuildingPanel';
 import DrawBuildingPanel from './individualPanels/drawBuildingPanel';
 import Editing3DPanel from './individualPanels/editing3DPanel';
+import SetUpPVPanel from './individualPanels/setUpPVPanel';
 import * as uiStateJudge from '../../../infrastructure/ui/uiStateJudge';
 
 const { Sider } = Layout;
@@ -34,8 +35,12 @@ class LeftSider extends Component {
       }
       else if (uiStateJudge.showDrawingPanel(this.props.uiState)) {
         content = (<DrawBuildingPanel/>);
-      }else if (uiStateJudge.showEditing3DPanel(this.props.uiState)) {
+      }
+      else if (uiStateJudge.showEditing3DPanel(this.props.uiState)) {
         content = (<Editing3DPanel/>);
+      }
+      else if (uiStateJudge.showSetUpPVPanel(this.props.uiState)) {
+        content = (<SetUpPVPanel/>)
       }
     }
 

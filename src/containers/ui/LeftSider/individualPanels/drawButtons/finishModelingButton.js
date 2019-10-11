@@ -7,11 +7,9 @@ import {
 } from 'antd';
 
 import * as actions from '../../../../../store/actions/index';
-import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
-
 
 const FinishModelingButton = (props) => {
-  const DrawBuildingPolygon = (
+  const finishAdjustButton = (
     <Button
       type = 'primary'
       size = 'large'
@@ -21,6 +19,7 @@ const FinishModelingButton = (props) => {
         props.bindFoundPolyline();
         props.bindFoundPolygons();
         props.bindAllKeepout();
+        props.setUIStateSetUpPV();
       }}
     >Finish Modeling</Button>
 
@@ -28,7 +27,7 @@ const FinishModelingButton = (props) => {
   return (
     <Row>
     <Col span={18} offset={3}>
-      {DrawBuildingPolygon}
+      {finishAdjustButton}
     </Col>
   </Row>
   );
@@ -45,7 +44,8 @@ const mapDispatchToProps = dispatch => {
   return {
     bindFoundPolyline: () => dispatch(actions.bindFoundPolyline()),
     bindFoundPolygons: () => dispatch(actions.bindFoundPolygons()),
-    bindAllKeepout: () => dispatch(actions.bindAllKeepout())
+    bindAllKeepout: () => dispatch(actions.bindAllKeepout()),
+    setUIStateSetUpPV: () => dispatch(actions.setUIStateSetUpPV())
   };
 };
 

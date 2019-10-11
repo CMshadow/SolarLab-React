@@ -17,6 +17,12 @@ export const showEditing3DPanel = (uiState) => {
   )
 };
 
+export const showSetUpPVPanel = (uiState) => {
+  return (
+    uiState === 'SETUP_PV'
+  )
+};
+
 export const useFoundManagerRender = (uiState) => {
   return (
     uiState === 'DRAWING_FOUND' ||

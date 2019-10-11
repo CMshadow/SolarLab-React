@@ -91,7 +91,8 @@ export {
   setUIStateDrawingKeepout,
   setUIStateEditingKeepout,
   setPreviousUIState,
-  setUIStateEditing3D
+  setUIStateEditing3D,
+  setUIStateSetUpPV
 } from './uiStateManager';
 
 export {

@@ -1,9 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/pro-light-svg-icons'
 import {
-  Divider,
   Row,
   Col,
   Button,

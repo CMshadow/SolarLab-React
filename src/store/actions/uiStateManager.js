@@ -59,3 +59,9 @@ export const setUIStateEditing3D = () => {
     type: actionTypes.SET_UI_STATE_EDITING_3D
   };
 };
+
+export const setUIStateSetUpPV = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_SETUP_PV
+  };
+};
