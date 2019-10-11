@@ -100,13 +100,12 @@ export {
   saveBuildingInfoFields,
   bindFoundPolyline,
   bindFoundPolygons,
-  bindNormalKeepout,
-  bindPassage,
-  bindVent,
-  bindTree,
-  bindEnv,
   resetBuilding
 } from './buildingManager';
+
+export {
+  bindAllKeepout
+} from './keepoutManager';
 
 export {
   setDebugPoints,

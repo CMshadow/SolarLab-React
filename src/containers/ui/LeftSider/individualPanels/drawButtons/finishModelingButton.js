@@ -20,6 +20,7 @@ const FinishModelingButton = (props) => {
       onClick = {() => {
         props.bindFoundPolyline();
         props.bindFoundPolygons();
+        props.bindAllKeepout();
       }}
     >Finish Modeling</Button>
 
@@ -44,6 +45,7 @@ const mapDispatchToProps = dispatch => {
   return {
     bindFoundPolyline: () => dispatch(actions.bindFoundPolyline()),
     bindFoundPolygons: () => dispatch(actions.bindFoundPolygons()),
+    bindAllKeepout: () => dispatch(actions.bindAllKeepout())
   };
 };
 

@@ -111,26 +111,6 @@ export const bindFoundPolygons = () => (dispatch, getState) => {
   });
 };
 
-export const bindNormalKeepout = () => (dispatch, getState) => {
-
-};
-
-export const bindPassage = () => (dispatch, getState) => {
-
-};
-
-export const bindVent = () => (dispatch, getState) => {
-
-};
-
-export const bindTree = () => (dispatch, getState) => {
-
-};
-
-export const bindEnv = () => (dispatch, getState) => {
-
-};
-
 /**
  * Reset buildingManager to its initial state
  * @return {Redux action}        tell buildingManager reducer to reset to init

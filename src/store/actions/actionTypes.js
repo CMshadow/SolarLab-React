@@ -105,6 +105,10 @@ export const BIND_TREE = 'BIND_TREE';
 export const BIND_ENV = 'BIND_ENV';
 export const RESET_BUILDING = 'RESET_BUILDING';
 
+/*
+  keepoutManager.js
+ */
+export const BIND_ALL_KEEPOUT = 'BIND_ALL_KEEPOUT';
 
 /*
   drawingPolygonManager.js
