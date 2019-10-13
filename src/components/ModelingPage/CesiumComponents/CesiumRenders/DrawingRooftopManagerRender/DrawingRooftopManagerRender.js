@@ -28,10 +28,5 @@ const mapStateToProps = state => {
       state.undoableReducer.present.drawingRooftopManagerReducer
   }
 };
-const mapDispatchToProps = dispatch => {
-  return {
-    EnablePolygon: () => dispatch(actions.enableToBuildFoundation()),
-  };
-};
 
-export default connect(mapStateToProps,mapDispatchToProps)(drawingRooftopManagerRender);
+export default connect(mapStateToProps)(drawingRooftopManagerRender);

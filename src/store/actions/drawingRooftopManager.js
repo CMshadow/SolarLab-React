@@ -17,7 +17,7 @@ export const build3DRoofTopModeling = (buildingOutline, polylinesRelation) => {
   let newInnerEdgeCollection = [];
   let newOuterEdgeCollection = [];
   let pathCoordinatesCollection = [];
-  console.log('hahahaha');
+
   initNodesCollection(buildingOutline, newNodeCollection, newOuterEdgeCollection);
   newInnerEdgeCollection = initEdgeMap(polylinesRelation, newNodeCollection).newInnerEdgeCollection;
   pathCoordinatesCollection = searchAllRoofPlanes(newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection).pathCollection;
