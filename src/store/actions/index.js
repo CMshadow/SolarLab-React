@@ -109,6 +109,10 @@ export {
 } from './keepoutManager';
 
 export {
+  initEditingPanels
+} from './editingPVPanelManager';
+
+export {
   setDebugPoints,
   setDebugPolylines
 } from './debugRender';

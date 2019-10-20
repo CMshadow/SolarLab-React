@@ -7,6 +7,7 @@ import Drawing3DFoundManagerRender from './Drawing3DFoundMangerRender';
 import DrawingInnerManagerRender from './DrawingInnerManagerRender';
 import DrawingKeepoutManagerRender from './DrawingKeepoutManagerRender';
 import DrawingKeepoutPolygonManagerRender from './DrawingKeepoutPolygonManagerRender';
+import EditingPVPanelRender from './EditingPVPanelRender';
 import DebugRender from './DebugRender';
 
 const CesiumRender = (props) => {
@@ -25,6 +26,7 @@ const CesiumRender = (props) => {
       <Drawing3DFoundManagerRender />
       <DrawingKeepoutPolygonManagerRender />
       <DrawingKeepoutManagerRender />
+      <EditingPVPanelRender />
       <DebugRender />
     </div>
   );

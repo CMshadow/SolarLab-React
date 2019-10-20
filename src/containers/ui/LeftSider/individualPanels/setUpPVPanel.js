@@ -6,17 +6,18 @@ import {
 } from 'antd';
 import * as martinez from 'martinez-polygon-clipping';
 
-import Point from '../../../../infrastructure/point/point';
-import FoundLine from '../../../../infrastructure/line/foundLine';
-import RoofList3D from './edit3D/roofList3D';
-import KeepoutList3D from './edit3D/keepoutList3D';
-import FinishedModelingButton from './drawButtons/finishModelingButton';
 import {makeMultiPolygonGeoJson} from '../../../../infrastructure/math/geoJSON';
 
+import * as actions from '../../../../store/actions/index';
 import * as MyMath from '../../../../infrastructure/math/math';
 import Coordinate from '../../../../infrastructure/point/coordinate';
 import MathLine from '../../../../infrastructure/math/mathLine';
 import MathLineCollection from '../../../../infrastructure/math/mathLineCollection';
+import Point from '../../../../infrastructure/point/point';
+import Polyline from '../../../../infrastructure/line/polyline';
+import FoundLine from '../../../../infrastructure/line/foundLine';
+import Polygon from '../../../../infrastructure/Polygon/Polygon';
+import PV from '../../../../infrastructure/Polygon/PV';
 
 const comparator1 = (cor1, cor2) => {
   return (cor1.lon - cor2.lon);
@@ -34,6 +35,35 @@ const sortByDist1 = (obj1, obj2) => {
   return (obj1.dist - obj2.dist);
 };
 
+// export const calculateFlatRoofPanelSection1 = (
+//   RoofFoundLine, allKeepoutFoundLine, rotationAngle, panelWidth, panelLength,
+//   height, widthOffset, lengthOffset, panelTiltAngle, initalArraySequenceNum
+// ) => {
+//   const rooftopLineCollection = MathLineCollection.fromPolyline(RoofFoundLine);
+//   const allKeepoutLineCollection = [];
+//   allKeepoutFoundLine.forEach(kpt =>
+//     allKeepoutLineCollection.push(MathLineCollection.fromPolyline(kpt))
+//   );
+//   console.log()
+//
+//   const panelTiltCos = Math.cos(panelTiltAngle * Math.PI / 180.0);
+//   const rotationCos = Math.cos(rotationAngle * Math.PI / 180.0);
+//
+//   const edgeLengthCorrespondingPanelWidth = panelWidth * panelTiltCos / rotationCos;
+//   const edgeLengthCorrespondingWidthOffset = widthOffset / rotationCos;
+//
+//   const maximumPlansToTry = parseInt(
+//     (panelWidth * panelTiltCos) + widthOffset / 0.1, 10
+//   );
+//
+//   const boundings = MyMath.generateBoundingWNES(RoofFoundLine);
+//   const west = boundings[0];
+//   const east = boundings[1];
+//   const north = boundings[2];
+//   const south = boundings[3];
+// }
+//
+
 export const calculateFlatRoofPanelSection1 = (
   RoofFoundLine, allKeepoutFoundLine, rotationAngle, panelWidth, panelLength,
   height, widthOffset, lengthOffset, panelTiltAngle, initalArraySequenceNum
@@ -43,6 +73,8 @@ export const calculateFlatRoofPanelSection1 = (
 
   // 太阳能板起伏角度的cos
   const panelCos = Math.cos(panelTiltAngle * Math.PI / 180.0);
+  // 太阳能板起伏角度的sin
+  const panelSin = Math.sin(panelTiltAngle * Math.PI / 180.0);
   // 太阳能板旋转角度cos
   const rotationCos = Math.cos(rotationAngle * Math.PI / 180.0);
 
@@ -69,7 +101,7 @@ export const calculateFlatRoofPanelSection1 = (
   // 障碍物顶点sequence转换为顶点、朝向、边距离sequence
   const allKeepoutLineCollection = [];
   allKeepoutFoundLine.forEach(kpt =>
-    allKeepoutLineCollection.push(MathLineCollection.fromPolyline(RoofFoundLine))
+    allKeepoutLineCollection.push(MathLineCollection.fromPolyline(kpt))
   );
 
   for (let planIndex = 0; planIndex < 1; planIndex++) { // maximumPlansToTry
@@ -447,7 +479,6 @@ export const calculateFlatRoofPanelSection1 = (
                 // DrawingHelper.generate_point_by_lon_lat_size_color(kptMathLine.originCor[0],kptMathLine.originCor[1],25,Cesium.Color.ORANGE)
               }
             });
-
             // 如果某个障碍物确定与可能铺板矩形相交或在内部
             if (insideBoxKeepout[kptIndex].length >= 2) {
               // 按照离可能铺板矩形左边的距离从近到远排序
@@ -502,26 +533,12 @@ export const calculateFlatRoofPanelSection1 = (
             }
           });
 
-          if (saveRightRefCor === true) insdeBoxKeepoutCors.push({
-            cor: rightRefCor, type: 'right'
-          });
+          if (saveRightRefCor === true) {
+            insdeBoxKeepoutCors.push({
+              cor: rightRefCor, type: 'right'
+            });
+          }
           insdeBoxKeepoutCors.sort(sortByCor1);
-
-          // //处理keepout重叠问题：每个keepout与可能铺板矩形的两个交点命名为keepout_start和keepout_end, 通过local_counter实现重叠的keepouts只保留一个keepout_start 和一个keepout_end
-          // inside_keepout_available_cors_modified = [];
-          // var local_counter = 0
-          // for(var each_node in insdeBoxKeepoutCors){
-          //   if(insdeBoxKeepoutCors[each_node][1] === "keepout_start"){
-          //     if(local_counter === 0) inside_keepout_available_cors_modified.push(insdeBoxKeepoutCors[each_node][0])
-          //     local_counter++;
-          //   }
-          //   else if (insdeBoxKeepoutCors[each_node][1] === "keepout_end"){
-          //     if(local_counter > 0) local_counter--;
-          //     if(local_counter === 0) inside_keepout_available_cors_modified.push(insdeBoxKeepoutCors[each_node][0])
-          //   }
-          //   else inside_keepout_available_cors_modified.push(insdeBoxKeepoutCors[each_node][0])
-          // }
-          // insdeBoxKeepoutCors = inside_keepout_available_cors_modified;
 
           // 铺板空间里头点数不为2的倍数的极端情况
           if (insdeBoxKeepoutCors.length % 2 !== 0) {
@@ -532,7 +549,7 @@ export const calculateFlatRoofPanelSection1 = (
             let splitIndex = 0;
             splitIndex < insdeBoxKeepoutCors.length;
             splitIndex += 2
-          ){
+          ) {
             const leftToNorth = Coordinate.destination(
               insdeBoxKeepoutCors[splitIndex].cor,
               -rotationAngle,
@@ -556,43 +573,60 @@ export const calculateFlatRoofPanelSection1 = (
             if (col_check >= 0) {
               cols = parseInt(col_check / (panelLength + lengthOffset), 10) + 1;
             }
-            console.log(cols)
-            console.log(insdeBoxKeepoutCors[splitIndex])
-            // for (let c = 0; c < cols; c++) {
-            //   totalPossiblePanels += 1;
-            //   const PVWestCor = Coordinate.destination(
-            //     insdeBoxKeepoutCors[splitIndex].cor,
-            //     -rotationAngle + 90,
-            //     c * (panelLength + lengthOffset)
-            //   );
-            //   const PVEastCor = Coordinate.destination(
-            //     PVWestCor, -rotationAngle + 90, panelLength
-            //   );
-            //   const PVWestNorthCor = Coordinate.destination(
-            //     PVWestCor, -rotationAngle, panelWidth * panelCos
-            //   );
-            //   const PVEastNorthCor = Coordinate.destination(
-            //     PVEastCor, -rotationAngle, panelWidth * panelCos
-            //   );
-            //   if(c === 0 && c === cols-1){
-            //     possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"single", "sequence":arraySequenceNum, "col":c, "row":rowNum});
-            //   }
-            //   else if(c === 0){
-            //     possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"start", "sequence":arraySequenceNum, "col":c, "row":rowNum});
-            //   }
-            //   else if(c === cols-1){
-            //     possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"end", "sequence":arraySequenceNum, "col":c, "row":rowNum});
-            //   }
-            //   else{
-            //     possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"mid", "sequence":arraySequenceNum, "col":c, "row":rowNum});
-            //   }
-            // }
+            for (let c = 0; c < cols; c++) {
+              totalPossiblePanels += 1;
+              const PVWestCor = Coordinate.destination(
+                insdeBoxKeepoutCors[splitIndex].cor,
+                -rotationAngle + 90,
+                c * (panelLength + lengthOffset)
+              );
+              const PVEastCor = Coordinate.destination(
+                PVWestCor, -rotationAngle + 90, panelLength
+              );
+              const PVWestNorthCor = Coordinate.destination(
+                PVWestCor, -rotationAngle, panelWidth * panelCos
+              );
+              PVWestNorthCor.setCoordinate(
+                null, null, height + panelSin * panelWidth
+              );
+              const PVEastNorthCor = Coordinate.destination(
+                PVEastCor, -rotationAngle, panelWidth * panelCos
+              );
+              PVEastNorthCor.setCoordinate(
+                null, null, height + panelSin * panelWidth
+              );
+              const pvPolyline = new Polyline([
+                Point.fromCoordinate(PVWestCor),
+                Point.fromCoordinate(PVEastCor),
+                Point.fromCoordinate(PVEastNorthCor),
+                Point.fromCoordinate(PVWestNorthCor)
+              ])
+              const pv = new PV(
+                null, null, Polygon.makeHierarchyFromPolyline(pvPolyline)
+              );
+              let rowPos = null;
+              if (c === 0 && c === cols-1) {
+                rowPos = 'single'
+              } else if (c === 0) {
+                rowPos = 'start'
+              } else if (c === cols-1) {
+                rowPos = 'end'
+              } else {
+                rowPos = 'mid'
+              }
+              possibleDrawingSequence.push({
+                pv:pv,
+                height:height,
+                rowPos: rowPos,
+                sequence:arraySequenceNum,
+                col:c, row:rowNum
+              });
+            }
           }
           // //同行不同段拥有相同array sequence num
           // if(cols > 0) arraySequenceNum+=1;
         }
       }
-      console.log('update')
       // 更新下一行的 tempNorthCoordinate
       tempNorthCoordinate = Coordinate.destination(tempSouthCoordinate, 180, edgeLengthCorrespondingWidthOffset);
       // 行数++
@@ -606,6 +640,8 @@ export const calculateFlatRoofPanelSection1 = (
   }
   return [maxPanelNum, drawingSequence];
 };
+
+
 
 const SetUpPVPanel = (props) => {
 
@@ -702,9 +738,9 @@ const SetUpPVPanel = (props) => {
     })
     console.log(requestData)
     const panelLayout = calculateFlatRoofPanelSection1(
-      requestData[0][0], requestData[0][1], 180, 2, 1, 5, 0.1, 0, 10, 0
+      requestData[0][0], requestData[0][1], 0, 2, 1, 5, 0.1, 0, 10, 0
     )
-    console.log(panelLayout)
+    props.initEditingPanels(panelLayout[1]);
   }
 
   const testButton = (
@@ -736,4 +772,10 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(SetUpPVPanel);
+const mapDispatchToProps = dispatch => {
+  return {
+    initEditingPanels: (panels) => dispatch(actions.initEditingPanels(panels))
+  };
+};
+
+export default connect(mapStateToProps, mapDispatchToProps)(SetUpPVPanel);

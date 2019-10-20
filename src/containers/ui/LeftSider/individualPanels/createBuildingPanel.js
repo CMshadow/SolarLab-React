@@ -543,9 +543,13 @@ class CreateBuildingPanel extends PureComponent {
           </Col>
         </Row>
       </Form>
-      <Button onClick={() => calculateFlatRoofPanelSection1(
-        FoundLine.fromPolyline(data[0][0]), data[0][1].map(d => FoundLine.fromPolyline(d)), 0, 2, 1, 5, 0.1, 0, 10, 0
-      )}>TEST</Button>
+      <Button onClick={() => {
+        const panelLayout = calculateFlatRoofPanelSection1(
+          FoundLine.fromPolyline(data[0][0]), data[0][1].map(d => FoundLine.fromPolyline(d)), 0, 2, 1, 5, 0.1, 0, 10, 0
+        );
+        console.log(panelLayout)
+        this.props.initEditingPanels(panelLayout[1]);
+      }}>TEST</Button>
     </div>
     );
   }
@@ -561,7 +565,8 @@ const mapDispatchToProps = dispatch => {
   return {
     setUIStateReadyDrawing: () => dispatch(actions.setUIStateReadyDrawing()),
     initBuilding: (values) => dispatch(actions.initBuilding(values)),
-    saveBuildingInfoFields: (values) => dispatch(actions.saveBuildingInfoFields(values))
+    saveBuildingInfoFields: (values) => dispatch(actions.saveBuildingInfoFields(values)),
+    initEditingPanels: (panels) => dispatch(actions.initEditingPanels(panels))
   };
 };
 
