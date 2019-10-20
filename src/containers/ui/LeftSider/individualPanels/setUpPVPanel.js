@@ -531,7 +531,7 @@ export const calculateFlatRoofPanelSection1 = (
           for (
             let splitIndex = 0;
             splitIndex < insdeBoxKeepoutCors.length;
-            splitIndex+=2
+            splitIndex += 2
           ){
             const leftToNorth = Coordinate.destination(
               insdeBoxKeepoutCors[splitIndex].cor,
@@ -556,36 +556,37 @@ export const calculateFlatRoofPanelSection1 = (
             if (col_check >= 0) {
               cols = parseInt(col_check / (panelLength + lengthOffset), 10) + 1;
             }
+            console.log(cols)
             console.log(insdeBoxKeepoutCors[splitIndex])
-            for (let c = 0; c < cols; c++) {
-              totalPossiblePanels += 1;
-              const PVWestCor = Coordinate.destination(
-                insdeBoxKeepoutCors[splitIndex].cor,
-                -rotationAngle + 90,
-                c * (panelLength + lengthOffset)
-              );
-              const PVEastCor = Coordinate.destination(
-                PVWestCor, -rotationAngle + 90, panelLength
-              );
-              const PVWestNorthCor = Coordinate.destination(
-                PVWestCor, -rotationAngle, panelWidth * panelCos
-              );
-              const PVEastNorthCor = Coordinate.destination(
-                PVEastCor, -rotationAngle, panelWidth * panelCos
-              );
-              if(c === 0 && c === cols-1){
-                possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"single", "sequence":arraySequenceNum, "col":c, "row":rowNum});
-              }
-              else if(c === 0){
-                possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"start", "sequence":arraySequenceNum, "col":c, "row":rowNum});
-              }
-              else if(c === cols-1){
-                possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"end", "sequence":arraySequenceNum, "col":c, "row":rowNum});
-              }
-              else{
-                possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"mid", "sequence":arraySequenceNum, "col":c, "row":rowNum});
-              }
-            }
+            // for (let c = 0; c < cols; c++) {
+            //   totalPossiblePanels += 1;
+            //   const PVWestCor = Coordinate.destination(
+            //     insdeBoxKeepoutCors[splitIndex].cor,
+            //     -rotationAngle + 90,
+            //     c * (panelLength + lengthOffset)
+            //   );
+            //   const PVEastCor = Coordinate.destination(
+            //     PVWestCor, -rotationAngle + 90, panelLength
+            //   );
+            //   const PVWestNorthCor = Coordinate.destination(
+            //     PVWestCor, -rotationAngle, panelWidth * panelCos
+            //   );
+            //   const PVEastNorthCor = Coordinate.destination(
+            //     PVEastCor, -rotationAngle, panelWidth * panelCos
+            //   );
+            //   if(c === 0 && c === cols-1){
+            //     possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"single", "sequence":arraySequenceNum, "col":c, "row":rowNum});
+            //   }
+            //   else if(c === 0){
+            //     possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"start", "sequence":arraySequenceNum, "col":c, "row":rowNum});
+            //   }
+            //   else if(c === cols-1){
+            //     possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"end", "sequence":arraySequenceNum, "col":c, "row":rowNum});
+            //   }
+            //   else{
+            //     possibleDrawingSequence.push({"cor1":PVWestCor, "cor2":PVEastCor, "cor3":PVEastNorthCor, "cor4":PVWestNorthCor, "height":height, "row pos":"mid", "sequence":arraySequenceNum, "col":c, "row":rowNum});
+            //   }
+            // }
           }
           // //同行不同段拥有相同array sequence num
           // if(cols > 0) arraySequenceNum+=1;
