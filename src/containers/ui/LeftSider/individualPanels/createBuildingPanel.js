@@ -16,8 +16,214 @@ import {
 
 import * as classes from './createBuildingPanel.module.css';
 import * as actions from '../../../../store/actions/index';
-
+import {calculateFlatRoofPanelSection1} from './setUpPVPanel';
+import FoundLine from '../../../../infrastructure/line/foundLine';
 const { Option } = Select;
+
+const data = [
+  [
+    {
+      "points": [
+        {
+          "lon": -117.84138008952,
+          "lat": 33.647053651536,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "357131a0-f2f9-11e9-9523-a32c1a6aa8fa",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.84110106389,
+          "lat": 33.646874469142,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "357131a1-f2f9-11e9-9523-a32c1a6aa8fa",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.840979991243,
+          "lat": 33.647010393716,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "357131a2-f2f9-11e9-9523-a32c1a6aa8fa",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841257323237,
+          "lat": 33.647191009467,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "357131a3-f2f9-11e9-9523-a32c1a6aa8fa",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.84138008952,
+          "lat": 33.647053651536,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "357131a0-f2f9-11e9-9523-a32c1a6aa8fa",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "357131a4-f2f9-11e9-9523-a32c1a6aa8fa",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4
+    },
+    [
+      {
+        "points": [
+          {
+            "lon": -117.841275768684,
+            "lat": 33.647050741263,
+            "height": 5,
+            "heightOffset": 0,
+            "entityId": "357131a5-f2f9-11e9-9523-a32c1a6aa8fa",
+            "name": "vertex",
+            "color": {
+              "red": 1,
+              "green": 1,
+              "blue": 1,
+              "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+          },
+          {
+            "lon": -117.841222107133,
+            "lat": 33.647032277927,
+            "height": 5,
+            "heightOffset": 0,
+            "entityId": "357131a6-f2f9-11e9-9523-a32c1a6aa8fa",
+            "name": "vertex",
+            "color": {
+              "red": 1,
+              "green": 1,
+              "blue": 1,
+              "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+          },
+          {
+            "lon": -117.841203686831,
+            "lat": 33.647096102272,
+            "height": 5,
+            "heightOffset": 0,
+            "entityId": "357131a7-f2f9-11e9-9523-a32c1a6aa8fa",
+            "name": "vertex",
+            "color": {
+              "red": 1,
+              "green": 1,
+              "blue": 1,
+              "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+          },
+          {
+            "lon": -117.841266708346,
+            "lat": 33.647092418363,
+            "height": 5,
+            "heightOffset": 0,
+            "entityId": "357131a8-f2f9-11e9-9523-a32c1a6aa8fa",
+            "name": "vertex",
+            "color": {
+              "red": 1,
+              "green": 1,
+              "blue": 1,
+              "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+          },
+          {
+            "lon": -117.841275768684,
+            "lat": 33.647050741263,
+            "height": 5,
+            "heightOffset": 0,
+            "entityId": "357131a5-f2f9-11e9-9523-a32c1a6aa8fa",
+            "name": "vertex",
+            "color": {
+              "red": 1,
+              "green": 1,
+              "blue": 1,
+              "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+          }
+        ],
+        "entityId": "357131a9-f2f9-11e9-9523-a32c1a6aa8fa",
+        "name": "polyline",
+        "color": {
+          "red": 1,
+          "green": 1,
+          "blue": 1,
+          "alpha": 1
+        },
+        "show": true,
+        "width": 4
+      }
+    ]
+  ]
+]
 
 class CreateBuildingPanel extends PureComponent {
   state = {
@@ -198,6 +404,7 @@ class CreateBuildingPanel extends PureComponent {
     );
 
     return (
+      <div>
       <Form onSubmit={this.handleSubmit}>
         {/*Bulding name Input*/}
         <Form.Item>
@@ -336,6 +543,10 @@ class CreateBuildingPanel extends PureComponent {
           </Col>
         </Row>
       </Form>
+      <Button onClick={() => calculateFlatRoofPanelSection1(
+        FoundLine.fromPolyline(data[0][0]), data[0][1].map(d => FoundLine.fromPolyline(d)), 0, 2, 1, 5, 0.1, 0, 10, 0
+      )}>TEST</Button>
+    </div>
     );
   }
 };

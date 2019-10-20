@@ -1,5 +1,4 @@
 export const makeMultiPolygonGeoJson = (geoJsonArray) => {
-  console.log(geoJsonArray)
   let data = {
     type: 'Feature',
     geometry: {
