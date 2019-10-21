@@ -159,6 +159,7 @@ export const calculateFlatRoofPanelSection1 = (
         continue;
       }
 
+      let corSouthIndex = 0;
       // 针对corNorthList中的交点，两两一组
       for (let e = 0; e < corNorthList.length; e += 2) {
         // corNorthLeft - 北参考线靠西的交点
@@ -178,7 +179,7 @@ export const calculateFlatRoofPanelSection1 = (
           panelWidth * panelCos
         );
 
-        for (let f = 0; f < corSouthList.length; f += 2) {
+        for (let f = corSouthIndex; f < corSouthList.length; f += 2) {
           // corSouthLeft - 南参考线靠西的交点
           const corSouthLeft = corSouthList[f].cor;
           // corSouthRight - 南参考线靠东的交点
@@ -192,7 +193,8 @@ export const calculateFlatRoofPanelSection1 = (
           ) {
             continue;
           }
-
+          corSouthIndex = f + 2;
+          console.log(corSouthIndex)
           // 西-南北比较西侧最靠里的点
           let leftRefCor = null;
           if (corNorthLeftToSouth.lon > corSouthLeft.lon) {
