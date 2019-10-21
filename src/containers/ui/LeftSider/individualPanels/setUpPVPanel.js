@@ -4,10 +4,9 @@ import {
   Divider,
   Button
 } from 'antd';
-import * as martinez from 'martinez-polygon-clipping';
+import * as turf from '@turf/turf';
 
-import {makeMultiPolygonGeoJson} from '../../../../infrastructure/math/geoJSON';
-
+import {makeUnionPolygonGeoJson} from '../../../../infrastructure/math/geoJSON';
 import * as actions from '../../../../store/actions/index';
 import * as MyMath from '../../../../infrastructure/math/math';
 import Coordinate from '../../../../infrastructure/point/coordinate';
@@ -34,35 +33,6 @@ const sortByCor1 = (obj1, obj2) => {
 const sortByDist1 = (obj1, obj2) => {
   return (obj1.dist - obj2.dist);
 };
-
-// export const calculateFlatRoofPanelSection1 = (
-//   RoofFoundLine, allKeepoutFoundLine, rotationAngle, panelWidth, panelLength,
-//   height, widthOffset, lengthOffset, panelTiltAngle, initalArraySequenceNum
-// ) => {
-//   const rooftopLineCollection = MathLineCollection.fromPolyline(RoofFoundLine);
-//   const allKeepoutLineCollection = [];
-//   allKeepoutFoundLine.forEach(kpt =>
-//     allKeepoutLineCollection.push(MathLineCollection.fromPolyline(kpt))
-//   );
-//   console.log()
-//
-//   const panelTiltCos = Math.cos(panelTiltAngle * Math.PI / 180.0);
-//   const rotationCos = Math.cos(rotationAngle * Math.PI / 180.0);
-//
-//   const edgeLengthCorrespondingPanelWidth = panelWidth * panelTiltCos / rotationCos;
-//   const edgeLengthCorrespondingWidthOffset = widthOffset / rotationCos;
-//
-//   const maximumPlansToTry = parseInt(
-//     (panelWidth * panelTiltCos) + widthOffset / 0.1, 10
-//   );
-//
-//   const boundings = MyMath.generateBoundingWNES(RoofFoundLine);
-//   const west = boundings[0];
-//   const east = boundings[1];
-//   const north = boundings[2];
-//   const south = boundings[3];
-// }
-//
 
 export const calculateFlatRoofPanelSection1 = (
   RoofFoundLine, allKeepoutFoundLine, rotationAngle, panelWidth, panelLength,
@@ -661,51 +631,35 @@ const SetUpPVPanel = (props) => {
     const geoVentKeepout =
       props.allVentKeepout.map(kpt => kpt.keepout.outlinePolygon.toFoundLine()
       .makeGeoJSON())
-    const geoNormalKeepoutInOne = makeMultiPolygonGeoJson(geoNormalKeepout);
-    const geoPassageKeepoutInOne = makeMultiPolygonGeoJson(geoPassageKeepout);
-    const geoVentKeepoutInOne = makeMultiPolygonGeoJson(geoVentKeepout);
+    const geoNormalKeepoutInOne = makeUnionPolygonGeoJson(geoNormalKeepout);
+    const geoPassageKeepoutInOne = makeUnionPolygonGeoJson(geoPassageKeepout);
+    const geoVentKeepoutInOne = makeUnionPolygonGeoJson(geoVentKeepout);
 
     let keepoutCombi = null;
     let finalCombi = null;
     if (geoNormalKeepoutInOne.geometry.coordinates.length !== 0) {
-      keepoutCombi = geoNormalKeepoutInOne.geometry.coordinates;
+      keepoutCombi = geoNormalKeepoutInOne
       if(geoPassageKeepoutInOne.geometry.coordinates.length !== 0) {
-        keepoutCombi = martinez.union(
-          keepoutCombi, geoPassageKeepoutInOne.geometry.coordinates
-        );
+        keepoutCombi = turf.union(keepoutCombi, geoPassageKeepoutInOne);
       }
       if(geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
-        keepoutCombi = martinez.union(
-          keepoutCombi, geoVentKeepoutInOne.geometry.coordinates
-        );
+        keepoutCombi = turf.union(keepoutCombi, geoVentKeepoutInOne);
       }
-      finalCombi = geoFoundation.map(geo => martinez.diff(
-        geo.geometry.coordinates, keepoutCombi
-      ));
+      finalCombi = geoFoundation.map(geo => turf.difference(geo, keepoutCombi));
     }
     else if (geoPassageKeepoutInOne.geometry.coordinates.length !== 0) {
-      keepoutCombi = geoPassageKeepoutInOne.geometry.coordinates;
+      keepoutCombi = geoPassageKeepoutInOne;
       if(geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
-        keepoutCombi = martinez.union(
-          keepoutCombi, geoVentKeepoutInOne.geometry.coordinates
-        );
+        keepoutCombi = turf.union(keepoutCombi, geoVentKeepoutInOne);
       }
-      console.log(keepoutCombi)
-      console.log(martinez.diff(
-        keepoutCombi, geoFoundation[0].geometry.coordinates
-      ))
-      finalCombi = geoFoundation.map(geo => martinez.diff(
-        geo.geometry.coordinates, keepoutCombi
-      ));
+      finalCombi = geoFoundation.map(geo => turf.difference(geo, keepoutCombi));
     }
     else if (geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
-      keepoutCombi = geoVentKeepoutInOne.geometry.coordinates;
-      finalCombi = geoFoundation.map(geo => martinez.diff(
-        geo.geometry.coordinates, keepoutCombi
-      ));
+      keepoutCombi = geoVentKeepoutInOne;
+      finalCombi = geoFoundation.map(geo => turf.difference(geo, keepoutCombi));
     }
     else {
-      finalCombi = geoFoundation.map(geo => [geo.geometry.coordinates]);
+      finalCombi = geoFoundation;
     }
     return finalCombi;
   }
@@ -715,7 +669,8 @@ const SetUpPVPanel = (props) => {
     console.log(finalCombi)
     const requestData = []
     finalCombi.forEach(roof => {
-      roof.forEach(partialRoof => {
+      roof.geometry.coordinates.forEach(partialRoof => {
+        console.log(partialRoof)
         const startAndLastPoint = new Point(
           partialRoof[0][0][0], partialRoof[0][0][1],
           props.workingBuilding.foundationHeight

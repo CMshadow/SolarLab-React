@@ -1,6 +1,6 @@
-import * as martinez from 'martinez-polygon-clipping';
+import * as turf from '@turf/turf';
 
-export const makeMultiPolygonGeoJson = (geoJsonArray) => {
+export const makeUnionPolygonGeoJson = (geoJsonArray) => {
   let data = {
     type: 'Feature',
     geometry: {
@@ -10,13 +10,20 @@ export const makeMultiPolygonGeoJson = (geoJsonArray) => {
     }
   }
   let combi = null;
-  if (geoJsonArray.length !== 0) combi = geoJsonArray[0].geometry.coordinates
-  geoJsonArray.forEach(geo =>{
-    combi = martinez.union(
-      combi, geo.geometry.coordinates
+  if (geoJsonArray.length !== 0) {
+    combi = turf.polygon(
+      geoJsonArray[0].geometry.coordinates
     );
-    // return data.geometry.coordinates.push(geo.geometry.coordinates)
+  }
+  geoJsonArray.forEach(geo =>{
+    combi = turf.union(
+      combi, geo
+    );
   });
-  data.geometry.coordinates = combi || [];
-  return data;
+  if (combi !== null) {
+    return combi;
+  }
+  else {
+    return data;
+  }
 }
