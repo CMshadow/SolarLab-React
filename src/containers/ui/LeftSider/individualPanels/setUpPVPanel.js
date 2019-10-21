@@ -68,6 +68,16 @@ export const calculateFlatRoofPanelSection1 = (
   RoofFoundLine, allKeepoutFoundLine, rotationAngle, panelWidth, panelLength,
   height, widthOffset, lengthOffset, panelTiltAngle, initalArraySequenceNum
 ) => {
+
+  // 屋顶顶点sequence转换为顶点、朝向、边距离sequence
+  const rooftopLineCollection = MathLineCollection.fromPolyline(RoofFoundLine);
+  // 障碍物顶点sequence转换为顶点、朝向、边距离sequence
+  const allKeepoutLineCollection = [];
+  allKeepoutFoundLine.forEach(kpt =>
+    allKeepoutLineCollection.push(MathLineCollection.fromPolyline(kpt))
+  );
+  console.log(rooftopLineCollection)
+
   let maxPanelNum = 0;
   let drawingSequence = [];
 
@@ -96,15 +106,7 @@ export const calculateFlatRoofPanelSection1 = (
   const north = boundings[2];
   const south = boundings[3];
 
-  // 屋顶顶点sequence转换为顶点、朝向、边距离sequence
-  const rooftopLineCollection = MathLineCollection.fromPolyline(RoofFoundLine);
-  // 障碍物顶点sequence转换为顶点、朝向、边距离sequence
-  const allKeepoutLineCollection = [];
-  allKeepoutFoundLine.forEach(kpt =>
-    allKeepoutLineCollection.push(MathLineCollection.fromPolyline(kpt))
-  );
-
-  for (let planIndex = 0; planIndex < 1; planIndex++) { // maximumPlansToTry
+  for (let planIndex = 0; planIndex < maximumPlansToTry; planIndex++) { // maximumPlansToTry
     // 阵列编码
     let arraySequenceNum = initalArraySequenceNum;
 
@@ -282,7 +284,7 @@ export const calculateFlatRoofPanelSection1 = (
             ) {
               // 稍微偏移的测试点
               const tempTestCor = Coordinate.destination(
-                roofLine.originCor, roofLine.originCor.brng, 0.1
+                roofLine.originCor, roofLine.brng, 0.1
               );
               // 在矩形内房屋顶点在南线上的坐标
               var newRefCorSouth = Coordinate.intersection(
@@ -313,7 +315,7 @@ export const calculateFlatRoofPanelSection1 = (
               const leftboxLeft = new MathLine(
                 leftRefCorToNorth,
                 -rotationAngle - 180,
-                Coordinate.surfaceDistance(leftRefCorToNorth, leftRefCor[0])
+                Coordinate.surfaceDistance(leftRefCorToNorth, leftRefCor)
               );
               const leftPossibleBoxLineCollection = new MathLineCollection(
                 [leftboxBot, leftboxRight, leftboxTop, leftboxLeft]
@@ -346,7 +348,7 @@ export const calculateFlatRoofPanelSection1 = (
 
               // 检测稍微偏移的测试点在左矩形还是右矩形里
               if (
-                Math.corWithinLineCollectionPolygon(
+                MyMath.corWithinLineCollectionPolygon(
                   leftPossibleBoxLineCollection, tempTestCor
                 )
               ) {
@@ -688,6 +690,10 @@ const SetUpPVPanel = (props) => {
           keepoutCombi, geoVentKeepoutInOne.geometry.coordinates
         );
       }
+      console.log(keepoutCombi)
+      console.log(martinez.diff(
+        keepoutCombi, geoFoundation[0].geometry.coordinates
+      ))
       finalCombi = geoFoundation.map(geo => martinez.diff(
         geo.geometry.coordinates, keepoutCombi
       ));
@@ -699,7 +705,7 @@ const SetUpPVPanel = (props) => {
       ));
     }
     else {
-      finalCombi = geoFoundation
+      finalCombi = geoFoundation.map(geo => [geo.geometry.coordinates]);
     }
     return finalCombi;
   }
@@ -737,9 +743,14 @@ const SetUpPVPanel = (props) => {
       })
     })
     console.log(requestData)
-    const panelLayout = calculateFlatRoofPanelSection1(
-      requestData[0][0], requestData[0][1], 0, 2, 1, 5, 0.1, 0, 10, 0
-    )
+    let panelLayout = [0,[]];
+    requestData.forEach(partialRoof => {
+      const output = calculateFlatRoofPanelSection1(
+        partialRoof[0], partialRoof[1], 0, 2, 1, 5, 0.1, 0, 10, 0
+      );
+      panelLayout[0] += output[0];
+      panelLayout[1] = panelLayout[1].concat(output[1]);
+    })
     props.initEditingPanels(panelLayout[1]);
   }
 
