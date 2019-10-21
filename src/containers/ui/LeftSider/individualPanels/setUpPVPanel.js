@@ -36,7 +36,7 @@ const sortByDist1 = (obj1, obj2) => {
 
 export const calculateFlatRoofPanelSection1 = (
   RoofFoundLine, allKeepoutFoundLine, rotationAngle, panelWidth, panelLength,
-  height, widthOffset, lengthOffset, panelTiltAngle, initalArraySequenceNum
+  height, widthOffset, lengthOffset, panelTiltAngle, initalArraySequenceNum, props
 ) => {
 
   // 屋顶顶点sequence转换为顶点、朝向、边距离sequence
@@ -46,7 +46,6 @@ export const calculateFlatRoofPanelSection1 = (
   allKeepoutFoundLine.forEach(kpt =>
     allKeepoutLineCollection.push(MathLineCollection.fromPolyline(kpt))
   );
-  console.log(rooftopLineCollection)
 
   let maxPanelNum = 0;
   let drawingSequence = [];
@@ -76,7 +75,7 @@ export const calculateFlatRoofPanelSection1 = (
   const north = boundings[2];
   const south = boundings[3];
 
-  for (let planIndex = 0; planIndex < maximumPlansToTry; planIndex++) { // maximumPlansToTry
+  for (let planIndex = 0; planIndex < 1; planIndex++) { // maximumPlansToTry
     // 阵列编码
     let arraySequenceNum = initalArraySequenceNum;
 
@@ -94,6 +93,7 @@ export const calculateFlatRoofPanelSection1 = (
     );
 
     // 行数
+    let test = []
     let rowNum = 0;
     while (breakable !== 2) {
       // corNorthList - 北线交点坐标array
@@ -167,18 +167,18 @@ export const calculateFlatRoofPanelSection1 = (
         const corNorthRight = corNorthList[e + 1].cor;
 
         // 将北参考线的两交点转换到南参考线的位置
-        var corNorthLeftToSouth = Coordinate.destination(
+        const corNorthLeftToSouth = Coordinate.destination(
           corNorthLeft,
           -rotationAngle + 180,
           panelWidth * panelCos
         );
-        var corNorthRightToSouth = Coordinate.destination(
+        const corNorthRightToSouth = Coordinate.destination(
           corNorthRight,
           -rotationAngle + 180,
           panelWidth * panelCos
         );
 
-        for (var f = 0; f < corSouthList.length; f += 2) {
+        for (let f = 0; f < corSouthList.length; f += 2) {
           // corSouthLeft - 南参考线靠西的交点
           const corSouthLeft = corSouthList[f].cor;
           // corSouthRight - 南参考线靠东的交点
@@ -257,12 +257,12 @@ export const calculateFlatRoofPanelSection1 = (
                 roofLine.originCor, roofLine.brng, 0.1
               );
               // 在矩形内房屋顶点在南线上的坐标
-              var newRefCorSouth = Coordinate.intersection(
+              const newRefCorSouth = Coordinate.intersection(
                 roofLine.originCor, -rotationAngle + 180,
                 leftRefCor, -rotationAngle + 90
               );
               // 在矩形内房屋顶点在北线上的坐标
-              var newRefCorNorth = Coordinate.destination(
+              const newRefCorNorth = Coordinate.destination(
                 newRefCorSouth, -rotationAngle, panelWidth * panelCos
               );
 
@@ -437,7 +437,7 @@ export const calculateFlatRoofPanelSection1 = (
                   possibleBoxLineCollection, kptMathLine.originCor
                 )
               ) {
-                var intersectionCor = Coordinate.intersection(
+                const intersectionCor = Coordinate.intersection(
                   kptMathLine.originCor, -rotationAngle - 90,
                   leftRefCorToNorth, -rotationAngle + 180
                 );
@@ -532,6 +532,13 @@ export const calculateFlatRoofPanelSection1 = (
               -rotationAngle,
               panelWidth * panelCos,
             );
+            test.push(new Polyline([
+              Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex].cor),
+              Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex+1].cor),
+              Point.fromCoordinate(rightToNorth),
+              Point.fromCoordinate(leftToNorth),
+              Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex].cor)
+            ]))
 
             //检查铺板空间够不够长
             const max_horizental_dist_in_row = Coordinate.surfaceDistance(
@@ -595,6 +602,7 @@ export const calculateFlatRoofPanelSection1 = (
               });
             }
           }
+
           // //同行不同段拥有相同array sequence num
           // if(cols > 0) arraySequenceNum+=1;
         }
@@ -604,6 +612,7 @@ export const calculateFlatRoofPanelSection1 = (
       // 行数++
       rowNum++;
     }
+    props.setDebugPolylines(test);
     // 判断是不是最大铺板方案
     if (totalPossiblePanels > maxPanelNum) {
       maxPanelNum = totalPossiblePanels;
@@ -645,32 +654,59 @@ const SetUpPVPanel = (props) => {
       if(geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
         keepoutCombi = turf.union(keepoutCombi, geoVentKeepoutInOne);
       }
-      finalCombi = geoFoundation.map(geo => turf.difference(geo, keepoutCombi));
+      finalCombi = geoFoundation.map(geo => {
+        const diff = turf.difference(geo, keepoutCombi);
+        if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
+          diff.geometry.coordinates = [diff.geometry.coordinates];
+          return diff;
+        } else {
+          return diff;
+        }
+      });
     }
     else if (geoPassageKeepoutInOne.geometry.coordinates.length !== 0) {
       keepoutCombi = geoPassageKeepoutInOne;
       if(geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
         keepoutCombi = turf.union(keepoutCombi, geoVentKeepoutInOne);
       }
-      finalCombi = geoFoundation.map(geo => turf.difference(geo, keepoutCombi));
+      finalCombi = geoFoundation.map(geo => {
+        const diff = turf.difference(geo, keepoutCombi);
+        if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
+          diff.geometry.coordinates = [diff.geometry.coordinates];
+          return diff;
+        } else {
+          return diff;
+        }
+      });
     }
     else if (geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
       keepoutCombi = geoVentKeepoutInOne;
-      finalCombi = geoFoundation.map(geo => turf.difference(geo, keepoutCombi));
+      finalCombi = geoFoundation.map(geo => {
+        const diff = turf.difference(geo, keepoutCombi);
+        if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
+          diff.geometry.coordinates = [diff.geometry.coordinates];
+          return diff;
+        } else {
+          return diff;
+        }
+      });
     }
     else {
-      finalCombi = geoFoundation;
+      finalCombi = geoFoundation
+      finalCombi.forEach(geo =>
+        geo.geometry.coordinates = [[...geo.geometry.coordinates]]
+      );
     }
     return finalCombi;
   }
 
   const makeRequestData = (props) => {
     const finalCombi = makeCombiGeometry(props);
-    console.log(finalCombi)
+    // console.log(finalCombi)
     const requestData = []
     finalCombi.forEach(roof => {
       roof.geometry.coordinates.forEach(partialRoof => {
-        console.log(partialRoof)
+        // console.log(partialRoof)
         const startAndLastPoint = new Point(
           partialRoof[0][0][0], partialRoof[0][0][1],
           props.workingBuilding.foundationHeight
@@ -697,7 +733,7 @@ const SetUpPVPanel = (props) => {
         requestData.push([roofFoundLine, allKeepoutFoundLine]);
       })
     })
-    console.log(requestData)
+    // console.log(requestData)
     let panelLayout = [0,[]];
     requestData.forEach(partialRoof => {
       const output = calculateFlatRoofPanelSection1(
@@ -740,7 +776,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    initEditingPanels: (panels) => dispatch(actions.initEditingPanels(panels))
+    initEditingPanels: (panels) => dispatch(actions.initEditingPanels(panels)),
+    setDebugPolylines: (polylines) => dispatch(actions.setDebugPolylines(polylines))
   };
 };
 
