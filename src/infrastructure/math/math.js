@@ -94,7 +94,8 @@ export const generateBoundingWNES = (foundLine) => {
   return [west, east, north, south];
 };
 
-export const corWithinLineCollectionPolygon = (polygonMathLineCollection, testCor) => {
+export const corWithinLineCollectionPolygon =
+(polygonMathLineCollection, testCor) => {
   const temp = [];
   polygonMathLineCollection.mathLineCollection.forEach(mathLine => {
     const bearing = Coordinate.bearing(mathLine.originCor, testCor);
@@ -109,4 +110,20 @@ export const corWithinLineCollectionPolygon = (polygonMathLineCollection, testCo
   });
   if (temp.length % 2 === 1) return true;
   else return false;
+};
+
+export const corCrossOverLineCollectionPolygon =
+(polygonMathLineCollection, testCor, testBrng) => {
+  polygonMathLineCollection.mathLineCollection.forEach(mathLine => {
+    const intersectCor =
+      Coordinate.intersection(
+        mathLine.originCor, mathLine.brng, testCor, testBrng
+      );
+    if (intersectCor !== undefined) {
+      const trueDist =
+        Coordinate.surfaceDistance(mathLine.originCor, intersectCor);
+      if (trueDist < mathLine.dist & !Coordinate.isEqual(intersectCor, mathLine.originCor) & !Coordinate.isEqual(intersectCor, testCor)) return true;
+    }
+  });
+  return false;
 };

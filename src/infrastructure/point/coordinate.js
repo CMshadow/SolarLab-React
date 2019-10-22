@@ -256,6 +256,9 @@ class Coordinate {
     return undefined;
   }
 
+  static isEqual = (cor1, cor2) => {
+    return (cor1.lon === cor2.lon & cor1.lat === cor2.lat);
+  }
 }
 
 export default Coordinate;

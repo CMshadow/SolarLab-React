@@ -94,6 +94,7 @@ export const calculateFlatRoofPanelSection1 = (
 
     // 行数
     let test = []
+    let testpoint = []
     let rowNum = 0;
     while (breakable !== 2) {
       // corNorthList - 北线交点坐标array
@@ -159,7 +160,6 @@ export const calculateFlatRoofPanelSection1 = (
         continue;
       }
 
-      let corSouthIndex = 0;
       // 针对corNorthList中的交点，两两一组
       for (let e = 0; e < corNorthList.length; e += 2) {
         // corNorthLeft - 北参考线靠西的交点
@@ -179,7 +179,7 @@ export const calculateFlatRoofPanelSection1 = (
           panelWidth * panelCos
         );
 
-        for (let f = corSouthIndex; f < corSouthList.length; f += 2) {
+        for (let f = 0; f < corSouthList.length; f += 2) {
           // corSouthLeft - 南参考线靠西的交点
           const corSouthLeft = corSouthList[f].cor;
           // corSouthRight - 南参考线靠东的交点
@@ -193,8 +193,6 @@ export const calculateFlatRoofPanelSection1 = (
           ) {
             continue;
           }
-          corSouthIndex = f + 2;
-          console.log(corSouthIndex)
           // 西-南北比较西侧最靠里的点
           let leftRefCor = null;
           if (corNorthLeftToSouth.lon > corSouthLeft.lon) {
@@ -336,7 +334,38 @@ export const calculateFlatRoofPanelSection1 = (
               }
             }
           });
-          // DrawingHelper.generate_line_by_array_color([rightRefCor[0],rightRefCor[1],leftRefCor[0],leftRefCor[1],leftRefCorToNorth[0],leftRefCorToNorth[1],rightRefCorToNorth[0],rightRefCorToNorth[1],rightRefCor[0],rightRefCor[1]],Cesium.Color.BLACK)
+
+          test.push(new Polyline([
+            Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[0].originCor),
+            Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[1].originCor),
+            Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[2].originCor),
+            Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[3].originCor),
+            Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[0].originCor)
+          ]))
+          testpoint.push(Point.fromCoordinate(Coordinate.destination(
+            possibleBoxLineCollection.mathLineCollection[0].originCor,
+            Coordinate.bearing(
+              possibleBoxLineCollection.mathLineCollection[0].originCor,
+              possibleBoxLineCollection.mathLineCollection[2].originCor
+            ),
+            0.5 * Coordinate.surfaceDistance(
+              possibleBoxLineCollection.mathLineCollection[0].originCor,
+              possibleBoxLineCollection.mathLineCollection[2].originCor
+            )
+          ), -5))
+          // 检查可能铺板矩形是否在房屋外部，如果存在跳过该可能铺板矩形
+          let midTestCor = Coordinate.destination(
+            possibleBoxLineCollection.mathLineCollection[0].originCor,
+            Coordinate.bearing(
+              possibleBoxLineCollection.mathLineCollection[0].originCor,
+              possibleBoxLineCollection.mathLineCollection[2].originCor
+            ),
+            0.5 * Coordinate.surfaceDistance(
+              possibleBoxLineCollection.mathLineCollection[0].originCor,
+              possibleBoxLineCollection.mathLineCollection[2].originCor
+            )
+          );
+          if (!MyMath.corWithinLineCollectionPolygon(rooftopLineCollection, midTestCor)) continue;
 
           // 检测可能铺板矩形是否有内部障碍物
           // 重新整理一个可能铺板矩形的顶点坐标sequence
@@ -534,13 +563,13 @@ export const calculateFlatRoofPanelSection1 = (
               -rotationAngle,
               panelWidth * panelCos,
             );
-            test.push(new Polyline([
-              Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex].cor),
-              Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex+1].cor),
-              Point.fromCoordinate(rightToNorth),
-              Point.fromCoordinate(leftToNorth),
-              Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex].cor)
-            ]))
+            // test.push(new Polyline([
+            //   Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex].cor),
+            //   Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex+1].cor),
+            //   Point.fromCoordinate(rightToNorth),
+            //   Point.fromCoordinate(leftToNorth),
+            //   Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex].cor)
+            // ]))
 
             //检查铺板空间够不够长
             const max_horizental_dist_in_row = Coordinate.surfaceDistance(
@@ -615,6 +644,7 @@ export const calculateFlatRoofPanelSection1 = (
       rowNum++;
     }
     props.setDebugPolylines(test);
+    props.setDebugPoints(testpoint);
     // 判断是不是最大铺板方案
     if (totalPossiblePanels > maxPanelNum) {
       maxPanelNum = totalPossiblePanels;
@@ -739,7 +769,7 @@ const SetUpPVPanel = (props) => {
     let panelLayout = [0,[]];
     requestData.forEach(partialRoof => {
       const output = calculateFlatRoofPanelSection1(
-        partialRoof[0], partialRoof[1], 0, 2, 1, 5, 0.1, 0, 10, 0
+        partialRoof[0], partialRoof[1], 0, 2, 1, 5, 0.1, 0, 10, 0, props
       );
       panelLayout[0] += output[0];
       panelLayout[1] = panelLayout[1].concat(output[1]);
@@ -779,7 +809,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     initEditingPanels: (panels) => dispatch(actions.initEditingPanels(panels)),
-    setDebugPolylines: (polylines) => dispatch(actions.setDebugPolylines(polylines))
+    setDebugPolylines: (polylines) => dispatch(actions.setDebugPolylines(polylines)),
+    setDebugPoints: (points) => dispatch(actions.setDebugPoints(points))
   };
 };
 

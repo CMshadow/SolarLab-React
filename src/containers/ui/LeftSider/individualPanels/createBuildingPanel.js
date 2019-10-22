@@ -977,7 +977,8 @@ const mapDispatchToProps = dispatch => {
     initBuilding: (values) => dispatch(actions.initBuilding(values)),
     saveBuildingInfoFields: (values) => dispatch(actions.saveBuildingInfoFields(values)),
     initEditingPanels: (panels) => dispatch(actions.initEditingPanels(panels)),
-    setDebugPolylines: (polylines) => dispatch(actions.setDebugPolylines(polylines))
+    setDebugPolylines: (polylines) => dispatch(actions.setDebugPolylines(polylines)),
+    setDebugPoints: (points) => dispatch(actions.setDebugPoints(points))
   };
 };
 
