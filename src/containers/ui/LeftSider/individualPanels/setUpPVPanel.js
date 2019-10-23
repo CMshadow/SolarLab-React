@@ -75,7 +75,7 @@ export const calculateFlatRoofPanelSection1 = (
   const north = boundings[2];
   const south = boundings[3];
 
-  for (let planIndex = 0; planIndex < 1; planIndex++) { // maximumPlansToTry
+  for (let planIndex = 0; planIndex < maximumPlansToTry; planIndex++) { // maximumPlansToTry
     // 阵列编码
     let arraySequenceNum = initalArraySequenceNum;
 
@@ -335,13 +335,13 @@ export const calculateFlatRoofPanelSection1 = (
             }
           });
 
-          test.push(new Polyline([
-            Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[0].originCor),
-            Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[1].originCor),
-            Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[2].originCor),
-            Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[3].originCor),
-            Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[0].originCor)
-          ]))
+          // test.push(new Polyline([
+          //   Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[0].originCor),
+          //   Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[1].originCor),
+          //   Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[2].originCor),
+          //   Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[3].originCor),
+          //   Point.fromCoordinate(possibleBoxLineCollection.mathLineCollection[0].originCor)
+          // ]))
           testpoint.push(Point.fromCoordinate(Coordinate.destination(
             possibleBoxLineCollection.mathLineCollection[0].originCor,
             Coordinate.bearing(
@@ -563,19 +563,18 @@ export const calculateFlatRoofPanelSection1 = (
               -rotationAngle,
               panelWidth * panelCos,
             );
-            // test.push(new Polyline([
-            //   Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex].cor),
-            //   Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex+1].cor),
-            //   Point.fromCoordinate(rightToNorth),
-            //   Point.fromCoordinate(leftToNorth),
-            //   Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex].cor)
-            // ]))
+            test.push(new Polyline([
+              Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex].cor),
+              Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex+1].cor),
+              Point.fromCoordinate(rightToNorth),
+              Point.fromCoordinate(leftToNorth),
+              Point.fromCoordinate(insdeBoxKeepoutCors[splitIndex].cor)
+            ]))
 
             //检查铺板空间够不够长
             const max_horizental_dist_in_row = Coordinate.surfaceDistance(
               leftToNorth, rightToNorth
             );
-            // DrawingHelper.generate_line_by_array_color([insdeBoxKeepoutCors[splitIndex][0], insdeBoxKeepoutCors[splitIndex][1], insdeBoxKeepoutCors[splitIndex+1][0], insdeBoxKeepoutCors[splitIndex+1][1], rightToNorth[0], rightToNorth[1], leftToNorth[0], leftToNorth[1], insdeBoxKeepoutCors[splitIndex][0], insdeBoxKeepoutCors[splitIndex][1]],Cesium.Color.fromRandom({alpha : 1.0}))
             //col_check - 检查该列空间是否够放一组阵列
             const col_check = max_horizental_dist_in_row - panelLength;
             //cols - 该列能摆板的阵列数
@@ -606,10 +605,10 @@ export const calculateFlatRoofPanelSection1 = (
                 null, null, height + panelSin * panelWidth
               );
               const pvPolyline = new Polyline([
-                Point.fromCoordinate(PVWestCor),
-                Point.fromCoordinate(PVEastCor),
-                Point.fromCoordinate(PVEastNorthCor),
-                Point.fromCoordinate(PVWestNorthCor)
+                Point.fromCoordinate(PVWestCor, 0.01),
+                Point.fromCoordinate(PVEastCor, 0.01),
+                Point.fromCoordinate(PVEastNorthCor, 0.01),
+                Point.fromCoordinate(PVWestNorthCor, 0.01)
               ])
               const pv = new PV(
                 null, null, Polygon.makeHierarchyFromPolyline(pvPolyline)
@@ -765,11 +764,11 @@ const SetUpPVPanel = (props) => {
         requestData.push([roofFoundLine, allKeepoutFoundLine]);
       })
     })
-    // console.log(requestData)
+    console.log(requestData)
     let panelLayout = [0,[]];
     requestData.forEach(partialRoof => {
       const output = calculateFlatRoofPanelSection1(
-        partialRoof[0], partialRoof[1], 0, 2, 1, 5, 0.1, 0, 10, 0, props
+        partialRoof[0], partialRoof[1], 0, 2, 1, 5, 0.1, 0, 0, 0, props
       );
       panelLayout[0] += output[0];
       panelLayout[1] = panelLayout[1].concat(output[1]);
