@@ -84,65 +84,30 @@ export const calculateFlatRoofPanel = (
 
   // 每次向下平移0.1m，最多需要测试的铺板方案数
   const maximumPlansToTry = parseInt(
-    (panelWidth * panelCos) + widthOffset / 0.1, 10
+    ((panelWidth * panelCos) + widthOffset) / 0.1, 10
   );
 
-  const setupProps = {
-    rooftopLineCollection: rooftopLineCollection,
-    allKeepoutLineCollection: allKeepoutLineCollection,
-    align: align,
-    panelWidth: panelWidth,
-    panelLength: panelLength,
-    height: height,
-    widthOffset: widthOffset,
-    lengthOffset: lengthOffset,
-    initialArraySqeuenceNum: initialArraySqeuenceNum,
-    west: west,
-    east: east,
-    north: north,
-    south: south,
-    panelCos: panelCos,
-    panelSin: panelSin,
-    rotationAngle: rotationAngle,
-    rotationCos: rotationCos,
-    edgeLengthCorrespondingPanelWidth: edgeLengthCorrespondingPanelWidth,
-    edgeLengthCorrespondingWidthOffset: edgeLengthCorrespondingWidthOffset,
-    maximumPlansToTry: maximumPlansToTry
-  }
-
+  let rotationMode = null;
+  let rowDirection = null;
   //输入朝向180到90
   if (rotationAngle >= 0 && rotationAngle < 90) {
-    return calculateFlatRoofPanelSection1(setupProps);
+    rotationMode = 1;
+    rowDirection = 180;
   }
   //输入朝向90
   else if (rotationAngle === 90) {
-    return calculateFlatRoofPanelSection2(setupProps, props);
+    rotationMode = 2;
+    rowDirection = 90;
   }
-}
+  //输入朝向90到0
+  else if (rotationAngle > 90 && rotationAngle < 180) {
+    rotationMode = 3;
+    rowDirection = 90;
+  }
 
-const calculateFlatRoofPanelSection1 = (setupProps) => {
+  //铺板数据
   let maxPanelNum = 0;
   let drawingSequence = [];
-
-  const rooftopLineCollection = setupProps.rooftopLineCollection;
-  const allKeepoutLineCollection = setupProps.allKeepoutLineCollection;
-  const align = setupProps.align;
-  const rotationAngle = setupProps.rotationAngle;
-  const panelWidth = setupProps.panelWidth;
-  const panelLength = setupProps.panelLength;
-  const lengthOffset = setupProps.lengthOffset;
-  const panelCos = setupProps.panelCos;
-  const panelSin = setupProps.panelSin;
-  const rotationCos = setupProps.rotationCos;
-  const edgeLengthCorrespondingPanelWidth =
-    setupProps.edgeLengthCorrespondingPanelWidth;
-  const edgeLengthCorrespondingWidthOffset =
-    setupProps.edgeLengthCorrespondingWidthOffset;
-  const maximumPlansToTry = setupProps.maximumPlansToTry;
-  const west = setupProps.west;
-  const north = setupProps.north;
-  const height = setupProps.height;
-  const initialArraySqeuenceNum = setupProps.initialArraySqeuenceNum;
 
   for (let planIndex = 0; planIndex < maximumPlansToTry; planIndex++) {
     // 阵列编码
@@ -155,11 +120,32 @@ const calculateFlatRoofPanelSection1 = (setupProps) => {
     const possibleDrawingSequence = [];
 
     // 北侧参考点，兼起始点
-    let tempNorthCoordinate = Coordinate.destination(
-      new Coordinate(west, north, height),
-      180,
-      planIndex * 0.1 / rotationCos
-    );
+    let tempNorthCoordinate = null;
+    switch (rotationMode) {
+      default:
+      case 1:
+        tempNorthCoordinate = Coordinate.destination(
+          new Coordinate(west, north, height),
+          rowDirection,
+          planIndex * 0.1 / rotationCos
+        );
+        break;
+      case 2:
+        tempNorthCoordinate = Coordinate.destination(
+          new Coordinate(west, south, height),
+          rowDirection,
+          planIndex * 0.1
+        );
+        break;
+      case 3:
+        tempNorthCoordinate = Coordinate.destination(
+          new Coordinate(west, south, height),
+          rowDirection,
+          planIndex * 0.1 / rotationCos
+        );
+        break;
+    }
+    console.log(tempNorthCoordinate)
 
     // 行数
     let rowNum = 0;
@@ -194,13 +180,24 @@ const calculateFlatRoofPanelSection1 = (setupProps) => {
           }
         })
       )
-      // 将corNorthList里的坐标从西至东排序
-      corNorthList.sort(sortByCor1);
+      // 将corNorthList里的坐标排序
+      switch (rotationMode) {
+        default:
+        case 1:
+          corNorthList.sort(sortByCor1);
+          break;
+        case 3:
+        case 2:
+          corNorthList.sort(sortByCor2);
+          break;
+      }
+      console.log(corNorthList)
+      console.log(tempNorthCoordinate)
 
       // 南侧参考点
       let tempSouthCoordinate = Coordinate.destination(
         tempNorthCoordinate,
-        180,
+        rowDirection,
         edgeLengthCorrespondingPanelWidth
       );
       // corSouthList - 南参考线交点坐标array
@@ -233,8 +230,17 @@ const calculateFlatRoofPanelSection1 = (setupProps) => {
           }
         })
       )
-      // 将corNorthList里的坐标从西至东排序
-      corSouthList.sort(sortByCor1);
+      // 将corSouthList里的坐标排序
+      switch (rotationMode) {
+        default:
+        case 1:
+          corSouthList.sort(sortByCor1);
+          break;
+        case 3:
+        case 2:
+          corSouthList.sort(sortByCor2);
+          break;
+      }
 
       // 北线有交点 & breakable = 0 -> 开始与房屋相交
       if (corNorthList.length !== 0 && breakable === 0) {
@@ -249,7 +255,7 @@ const calculateFlatRoofPanelSection1 = (setupProps) => {
       if (corNorthList.length === 1 || corSouthList.length === 1) {
         tempNorthCoordinate = Coordinate.destination(
           tempSouthCoordinate,
-          180,
+          rowDirection,
           edgeLengthCorrespondingWidthOffset
         );
         continue;
@@ -281,29 +287,63 @@ const calculateFlatRoofPanelSection1 = (setupProps) => {
 
           // 跳过这一组坐标的条件
           // 南坐标不在北坐标的范围内
-          if (
-            (corSouthLeft.lon > corNorthRightToSouth.lon) ||
-            (corSouthRight.lon < corNorthLeftToSouth.lon)
-          ) {
-            continue;
+          switch (rotationMode) {
+            default:
+            case 1:
+              if (
+                (corSouthLeft.lon > corNorthRightToSouth.lon) ||
+                (corSouthRight.lon < corNorthLeftToSouth.lon)
+              ) continue;
+              break;
+            case 3:
+            case 2:
+              if (
+                (corSouthLeft.lat > corNorthRightToSouth.lat) ||
+                (corSouthRight.lat < corNorthLeftToSouth.lat)
+              ) continue;
+              break;
           }
+
           // 西-南北比较西侧最靠里的点
           let leftRefCor = null;
-          if (corNorthLeftToSouth.lon > corSouthLeft.lon) {
-            leftRefCor = corNorthLeftToSouth;
-          } else {
-            leftRefCor = corSouthLeft;
+          switch (rotationMode) {
+            default:
+            case 1:
+              if (corNorthLeftToSouth.lon > corSouthLeft.lon) {
+                leftRefCor = corNorthLeftToSouth;
+              } else {
+                leftRefCor = corSouthLeft;
+              }
+              break;
+            case 3:
+            case 2:
+              if (corNorthLeftToSouth.lat > corSouthLeft.lat) {
+                leftRefCor = corNorthLeftToSouth;
+              } else {
+                leftRefCor = corSouthLeft;
+              }
+              break;
           }
-          // DrawingHelper.generate_point_by_lon_lat_size_color(leftRefCor[0], leftRefCor[1], 10, Cesium.Color.YELLOW)
 
           // 东-南北比较东侧最靠里的点
           let rightRefCor = null;
-          if (corNorthRightToSouth.lon < corSouthRight.lon) {
-            rightRefCor = corNorthRightToSouth;
-          } else {
-            rightRefCor = corSouthRight;
+          switch (rotationMode) {
+            default:
+            case 1:
+              if (corNorthRightToSouth.lon < corSouthRight.lon) {
+                rightRefCor = corNorthRightToSouth;
+              } else {
+                rightRefCor = corSouthRight;
+              }
+              break;
+            case 3:
+            case 2:
+              if (corNorthRightToSouth.lat < corSouthRight.lat) {
+                rightRefCor = corNorthRightToSouth;
+              } else {
+                rightRefCor = corSouthRight;
+              }
           }
-          // DrawingHelper.generate_point_by_lon_lat_size_color(rightRefCor[0], rightRefCor[1], 10, Cesium.Color.GREEN)
 
           let rightRefCorToNorth = Coordinate.destination(
             rightRefCor,
@@ -418,7 +458,7 @@ const calculateFlatRoofPanelSection1 = (setupProps) => {
               panelWidth * panelCos
             );
           }
-          if(leftCors.length > 1 || rightCors.length > 1) {
+          if(leftCors.length > 0 || rightCors.length > 0) {
             const newboxBot = new MathLine(
               leftRefCor,
               90 - rotationAngle,
@@ -550,451 +590,10 @@ const calculateFlatRoofPanelSection1 = (setupProps) => {
         }
       }
       // 更新下一行的 tempNorthCoordinate
-      tempNorthCoordinate = Coordinate.destination(tempSouthCoordinate, 180, edgeLengthCorrespondingWidthOffset);
-      // 行数++
-      rowNum++;
-    }
-    // 判断是不是最大铺板方案
-    if (totalPossiblePanels > maxPanelNum) {
-      maxPanelNum = totalPossiblePanels;
-      drawingSequence = possibleDrawingSequence;
-    }
-  }
-  return [maxPanelNum, drawingSequence];
-}
-
-const calculateFlatRoofPanelSection2 = (setupProps, props) => {
-  let maxPanelNum = 0;
-  let drawingSequence = [];
-
-  const rooftopLineCollection = setupProps.rooftopLineCollection;
-  const allKeepoutLineCollection = setupProps.allKeepoutLineCollection;
-  const align = setupProps.align;
-  const rotationAngle = setupProps.rotationAngle;
-  const panelWidth = setupProps.panelWidth;
-  const panelLength = setupProps.panelLength;
-  const lengthOffset = setupProps.lengthOffset;
-  const panelCos = setupProps.panelCos;
-  const panelSin = setupProps.panelSin;
-  const rotationCos = setupProps.rotationCos;
-  const edgeLengthCorrespondingPanelWidth =
-    setupProps.edgeLengthCorrespondingPanelWidth;
-  const edgeLengthCorrespondingWidthOffset =
-    setupProps.edgeLengthCorrespondingWidthOffset;
-  const maximumPlansToTry = setupProps.maximumPlansToTry;
-  const west = setupProps.west;
-  const south = setupProps.south;
-  const height = setupProps.height;
-  const initialArraySqeuenceNum = setupProps.initialArraySqeuenceNum;
-
-  for (let planIndex = 0; planIndex < 1; planIndex++) {
-    // 阵列编码
-    let arraySequenceNum = initialArraySqeuenceNum;
-
-    let breakable = 0;
-
-    // 统计该方案总共能铺板数量
-    let totalPossiblePanels = 0;
-    const possibleDrawingSequence = [];
-
-    // 北侧参考点，兼起始点
-    let tempNorthCoordinate = Coordinate.destination(
-      new Coordinate(west, south, height),
-      90,
-      planIndex * 0.1 / rotationCos
-    );
-
-    // 行数
-    let rowNum = 0;
-    while (breakable !== 2) {
-      // corNorthList - 北线交点坐标array
-      const corNorthList = [];
-      // 计算多边形每条线与北线的交点坐标，如果存在加入到corNorthList
-      rooftopLineCollection.mathLineCollection.forEach(mathLine => {
-        const northJoint = Coordinate.intersection(
-          tempNorthCoordinate, -rotationAngle + 90,
-          mathLine.originCor, mathLine.brng
-        );
-        if (northJoint !== undefined) {
-          if (Coordinate.surfaceDistance(northJoint, mathLine.originCor) <
-          mathLine.dist) {
-            corNorthList.push({cor:northJoint, type:'wall'});
-          }
-        }
-      });
-      // 计算每个障碍物每条线与北线的交点坐标，如果存在加入到corNorthList
-      allKeepoutLineCollection.forEach(kptLineCollection =>
-        kptLineCollection.mathLineCollection.forEach(mathLine => {
-          const northJoint = Coordinate.intersection(
-            tempNorthCoordinate, -rotationAngle + 90,
-            mathLine.originCor, mathLine.brng
-          );
-          if (northJoint !== undefined) {
-            if (Coordinate.surfaceDistance(northJoint, mathLine.originCor) <
-            mathLine.dist) {
-              corNorthList.push({cor:northJoint, type:'keepout'});
-            }
-          }
-        })
-      )
-      // 将corNorthList里的坐标从南至北排序
-      corNorthList.sort(sortByCor2);
-
-      console.log(corNorthList)
-
-      // 南侧参考点
-      let tempSouthCoordinate = Coordinate.destination(
-        tempNorthCoordinate,
-        90,
-        edgeLengthCorrespondingPanelWidth
+      tempNorthCoordinate = Coordinate.destination(
+        tempSouthCoordinate, rowDirection,
+        edgeLengthCorrespondingWidthOffset
       );
-      // corSouthList - 南参考线交点坐标array
-      const corSouthList = [];
-      // 计算多边形每条线与北线的交点坐标，如果存在加入到corNorthList
-      rooftopLineCollection.mathLineCollection.forEach(mathLine => {
-        const southJoint = Coordinate.intersection(
-          tempSouthCoordinate, -rotationAngle + 90,
-          mathLine.originCor, mathLine.brng
-        );
-        if (southJoint !== undefined) {
-          if (Coordinate.surfaceDistance(southJoint, mathLine.originCor) <
-          mathLine.dist) {
-            corSouthList.push({cor:southJoint, type:'wall'});
-          }
-        }
-      });
-      // 计算每个障碍物每条线与北线的交点坐标，如果存在加入到corSouthList
-      allKeepoutLineCollection.forEach(kptLineCollection =>
-        kptLineCollection.mathLineCollection.forEach(mathLine => {
-          const southJoint = Coordinate.intersection(
-            tempSouthCoordinate, -rotationAngle + 90,
-            mathLine.originCor, mathLine.brng
-          );
-          if (southJoint !== undefined) {
-            if (Coordinate.surfaceDistance(southJoint, mathLine.originCor) <
-            mathLine.dist) {
-              corSouthList.push({cor:southJoint, type:'keepout'});
-            }
-          }
-        })
-      )
-      // 将corNorthList里的坐标从西至东排序
-      corSouthList.sort(sortByCor2);
-
-      // 北线有交点 & breakable = 0 -> 开始与房屋相交
-      if (corNorthList.length !== 0 && breakable === 0) {
-        breakable = 1;
-      }
-      // 北线不再有交点 & breakable = 1 -> 开始不再与房屋相交，可以不再循环
-      if (corNorthList.length === 0 && breakable === 1) {
-        breakable = 2;
-      }
-
-      // 如果corNorthList里面只有一个交点，则跳入下一行
-      if (corNorthList.length === 1 || corSouthList.length === 1) {
-        tempNorthCoordinate = Coordinate.destination(
-          tempSouthCoordinate,
-          90,
-          edgeLengthCorrespondingWidthOffset
-        );
-        continue;
-      }
-
-      // 针对corNorthList中的交点，两两一组
-      for (let e = 0; e < corNorthList.length; e += 2) {
-        // corNorthLeft - 北参考线靠西的交点
-        const corNorthLeft = corNorthList[e].cor;
-        // corNorthRight - 北参考线靠东的交点
-        const corNorthRight = corNorthList[e + 1].cor;
-        // 将北参考线的两交点转换到南参考线的位置
-        const corNorthLeftToSouth = Coordinate.destination(
-          corNorthLeft,
-          -rotationAngle + 180,
-          panelWidth * panelCos
-        );
-        const corNorthRightToSouth = Coordinate.destination(
-          corNorthRight,
-          -rotationAngle + 180,
-          panelWidth * panelCos
-        );
-
-        for (let f = 0; f < corSouthList.length; f += 2) {
-          // corSouthLeft - 南参考线靠西的交点
-          const corSouthLeft = corSouthList[f].cor;
-          // corSouthRight - 南参考线靠东的交点
-          const corSouthRight = corSouthList[f + 1].cor;
-
-          // 跳过这一组坐标的条件
-          // 南坐标不在北坐标的范围内
-          if (
-            (corSouthLeft.lat > corNorthRightToSouth.lat) ||
-            (corSouthRight.lat < corNorthLeftToSouth.lat)
-          ) {
-            continue;
-          }
-          // 西-南北比较西侧最靠里的点
-          let leftRefCor = null;
-          if (corNorthLeftToSouth.lat > corSouthLeft.lat) {
-            leftRefCor = corNorthLeftToSouth;
-          } else {
-            leftRefCor = corSouthLeft;
-          }
-
-          // 东-南北比较东侧最靠里的点
-          let rightRefCor = null;
-          if (corNorthRightToSouth.lat < corSouthRight.lat) {
-            rightRefCor = corNorthRightToSouth;
-          } else {
-            rightRefCor = corSouthRight;
-          }
-
-          let rightRefCorToNorth = Coordinate.destination(
-            rightRefCor,
-            -rotationAngle,
-            panelWidth * panelCos
-          );
-          let leftRefCorToNorth = Coordinate.destination(
-            leftRefCor,
-            -rotationAngle,
-            panelWidth * panelCos
-          );
-          // push([顶点坐标，朝向，边距离])
-          const boxBot = new MathLine(
-            leftRefCor,
-            90 - rotationAngle,
-            Coordinate.surfaceDistance(leftRefCor, rightRefCor)
-          );
-          const boxRight = new MathLine(
-            rightRefCor,
-            -rotationAngle,
-            Coordinate.surfaceDistance(rightRefCor, rightRefCorToNorth)
-          );
-          const boxTop = new MathLine(
-            rightRefCorToNorth,
-            -rotationAngle - 90,
-            Coordinate.surfaceDistance(rightRefCorToNorth, leftRefCorToNorth)
-          );
-          const boxLeft = new MathLine(
-            leftRefCorToNorth,
-            -rotationAngle - 180,
-            Coordinate.surfaceDistance(leftRefCorToNorth, leftRefCor)
-          );
-          // 可能铺板矩形四条边的顶点，朝向，距离
-          let possibleBoxLineCollection = new MathLineCollection(
-            [boxBot, boxRight, boxTop, boxLeft]
-          );
-
-          // 检查有没有房屋顶点或障碍物顶点在矩形内
-          const allRoofLineCorInBox = [];
-          rooftopLineCollection.mathLineCollection.forEach(roofLine => {
-            if (MyMath.corWithinLineCollectionPolygon(
-              possibleBoxLineCollection, roofLine.originCor)
-            ) {
-              allRoofLineCorInBox.push(roofLine.originCor)
-            }
-          });
-          allKeepoutLineCollection.forEach(kptMathLine => {
-            kptMathLine.mathLineCollection.forEach(kptLine => {
-              if (MyMath.corWithinLineCollectionPolygon(
-                possibleBoxLineCollection, kptLine.originCor)
-              ) {
-                allRoofLineCorInBox.push(kptLine.originCor)
-              }
-            });
-          })
-          const leftCors = [];
-          const rightCors = [];
-          const boxMidCorToSouth = Coordinate.intersection(
-            Coordinate.destination(
-              possibleBoxLineCollection.mathLineCollection[0].originCor,
-              Coordinate.bearing(
-                possibleBoxLineCollection.mathLineCollection[0].originCor,
-                possibleBoxLineCollection.mathLineCollection[2].originCor
-              ),
-              0.5 * Coordinate.surfaceDistance(
-                possibleBoxLineCollection.mathLineCollection[0].originCor,
-                possibleBoxLineCollection.mathLineCollection[2].originCor
-              )
-            ),
-            -rotationAngle + 180,
-            possibleBoxLineCollection.mathLineCollection[0].originCor,
-            -rotationAngle + 90
-          );
-          const distSeperation = Coordinate.surfaceDistance(
-            possibleBoxLineCollection.mathLineCollection[0].originCor,
-            boxMidCorToSouth
-          );
-          allRoofLineCorInBox.forEach(cor => {
-            const corToSouth = Coordinate.intersection(
-              cor, -rotationAngle + 180,
-              possibleBoxLineCollection.mathLineCollection[0].originCor,
-              -rotationAngle + 90
-            );
-            const distToMid = Coordinate.surfaceDistance(
-              corToSouth, boxMidCorToSouth
-            );
-            if (
-              Coordinate.surfaceDistance(
-                corToSouth,
-                possibleBoxLineCollection.mathLineCollection[0].originCor
-              ) < distSeperation
-            ) {
-              leftCors.push({cor: corToSouth, dist: distToMid});
-            } else {
-              rightCors.push({cor: corToSouth, dist: distToMid});
-            }
-          })
-          leftCors.sort(sortByDist1)
-          rightCors.sort(sortByDist1)
-          if (leftCors.length !== 0) {
-            leftRefCor = leftCors[0].cor;
-            leftRefCorToNorth = Coordinate.destination(
-              leftRefCor,
-              -rotationAngle,
-              panelWidth * panelCos
-            );
-          }
-          if (rightCors.length !== 0) {
-            rightRefCor = rightCors[0].cor;
-            rightRefCorToNorth = Coordinate.destination(
-              rightRefCor,
-              -rotationAngle,
-              panelWidth * panelCos
-            );
-          }
-          if(leftCors.length > 1 || rightCors.length > 1) {
-            const newboxBot = new MathLine(
-              leftRefCor,
-              90 - rotationAngle,
-              Coordinate.surfaceDistance(leftRefCor, rightRefCor)
-            );
-            const newboxRight = new MathLine(
-              rightRefCor,
-              -rotationAngle,
-              Coordinate.surfaceDistance(rightRefCor, rightRefCorToNorth)
-            );
-            const newboxTop = new MathLine(
-              rightRefCorToNorth,
-              -rotationAngle - 90,
-              Coordinate.surfaceDistance(rightRefCorToNorth, leftRefCorToNorth)
-            );
-            const newboxLeft = new MathLine(
-              leftRefCorToNorth,
-              -rotationAngle - 180,
-              Coordinate.surfaceDistance(leftRefCorToNorth, leftRefCor)
-            );
-            // 可能铺板矩形四条边的顶点，朝向，距离
-            possibleBoxLineCollection = new MathLineCollection(
-              [newboxBot, newboxRight, newboxTop, newboxLeft]
-            );
-          }
-
-
-
-          // 检查可能铺板矩形是否在房屋外部/障碍物内部，如果存在跳过该可能铺板矩形
-          let midTestCor = Coordinate.destination(
-            possibleBoxLineCollection.mathLineCollection[0].originCor,
-            Coordinate.bearing(
-              possibleBoxLineCollection.mathLineCollection[0].originCor,
-              possibleBoxLineCollection.mathLineCollection[2].originCor
-            ),
-            0.5 * Coordinate.surfaceDistance(
-              possibleBoxLineCollection.mathLineCollection[0].originCor,
-              possibleBoxLineCollection.mathLineCollection[2].originCor
-            )
-          );
-          if (!MyMath.corWithinLineCollectionPolygon(
-            rooftopLineCollection, midTestCor
-          )) continue;
-          let boxWithinKpt = false;
-          allKeepoutLineCollection.forEach(kptMathLine => {
-            if (MyMath.corWithinLineCollectionPolygon(
-              kptMathLine, midTestCor
-            )) boxWithinKpt = true;
-          })
-          if (boxWithinKpt) continue;
-
-          //检查铺板空间够不够长
-          const max_horizental_dist_in_row = Coordinate.surfaceDistance(
-            possibleBoxLineCollection.mathLineCollection[0].originCor,
-            possibleBoxLineCollection.mathLineCollection[1].originCor
-          );
-          //col_check - 检查该列空间是否够放一组阵列
-          const col_check = max_horizental_dist_in_row - panelLength;
-          //cols - 该列能摆板的阵列数
-          let cols = 0;
-          if (col_check >= 0) {
-            cols = parseInt(col_check / (panelLength + lengthOffset), 10) + 1;
-          }
-
-          let startingGap = null;
-          if (align === 'left') {
-            startingGap = 0;
-          }
-          else if (align === 'center') {
-            startingGap = (max_horizental_dist_in_row - panelLength -
-            (cols - 1) * (panelLength + lengthOffset)) / 2;
-          }
-          else {
-            startingGap = (max_horizental_dist_in_row - panelLength -
-            (cols - 1) * (panelLength + lengthOffset))
-          }
-
-          for (let c = 0; c < cols; c++) {
-            totalPossiblePanels += 1;
-            const PVWestCor = Coordinate.destination(
-              possibleBoxLineCollection.mathLineCollection[0].originCor,
-              -rotationAngle + 90,
-              c * (panelLength + lengthOffset) + startingGap
-            );
-            const PVEastCor = Coordinate.destination(
-              PVWestCor, -rotationAngle + 90, panelLength
-            );
-            const PVWestNorthCor = Coordinate.destination(
-              PVWestCor, -rotationAngle, panelWidth * panelCos
-            );
-            PVWestNorthCor.setCoordinate(
-              null, null, height + panelSin * panelWidth
-            );
-            const PVEastNorthCor = Coordinate.destination(
-              PVEastCor, -rotationAngle, panelWidth * panelCos
-            );
-            PVEastNorthCor.setCoordinate(
-              null, null, height + panelSin * panelWidth
-            );
-            const pvPolyline = new Polyline([
-              Point.fromCoordinate(PVWestCor, 0.01),
-              Point.fromCoordinate(PVEastCor, 0.01),
-              Point.fromCoordinate(PVEastNorthCor, 0.01),
-              Point.fromCoordinate(PVWestNorthCor, 0.01)
-            ])
-            const pv = new PV(
-              null, null, Polygon.makeHierarchyFromPolyline(pvPolyline)
-            );
-            let rowPos = null;
-            if (c === 0 && c === cols-1) {
-              rowPos = 'single'
-            } else if (c === 0) {
-              rowPos = 'start'
-            } else if (c === cols-1) {
-              rowPos = 'end'
-            } else {
-              rowPos = 'mid'
-            }
-            possibleDrawingSequence.push({
-              pv:pv,
-              height:height,
-              rowPos: rowPos,
-              sequence:arraySequenceNum,
-              col:c, row:rowNum
-            });
-          }
-          // 阵列编号++
-          arraySequenceNum++;
-        }
-      }
-      // 更新下一行的 tempNorthCoordinate
-      tempNorthCoordinate = Coordinate.destination(tempSouthCoordinate, 90, edgeLengthCorrespondingWidthOffset);
       // 行数++
       rowNum++;
     }
@@ -1120,7 +719,7 @@ const SetUpPVPanel = (props) => {
     let panelLayout = [0,[]];
     requestData.forEach(partialRoof => {
       const output = calculateFlatRoofPanel(
-        partialRoof[0], partialRoof[1], 'right', 90, 2, 1, 5, 0.1, 0, 0, 0, props
+        partialRoof[0], partialRoof[1], 'right', 45, 2, 1, 5, 0.1, 0, 30, 0, props
       );
       panelLayout[0] += output[0];
       panelLayout[1] = panelLayout[1].concat(output[1]);
