@@ -77,7 +77,7 @@ export const plus = (v1, v2) => {
 
 
 // 给入 [[经度，纬度], [经度，纬度], ...]，返回[最左侧经度，最右侧经度，最北侧纬度，最南侧纬度]
-export const generateBoundingWNES = (foundLine) => {
+export const generateBoundingWENS = (foundLine) => {
   // pointsSequence中分类东西南北坐标
   const lons = [];
   const lats = [];

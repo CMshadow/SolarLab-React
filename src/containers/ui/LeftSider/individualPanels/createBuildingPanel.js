@@ -16,7 +16,7 @@ import {
 
 import * as classes from './createBuildingPanel.module.css';
 import * as actions from '../../../../store/actions/index';
-import {calculateFlatRoofPanelSection1} from './setUpPVPanel';
+import {calculateFlatRoofPanel} from './setUpPVPanel';
 import FoundLine from '../../../../infrastructure/line/foundLine';
 const { Option } = Select;
 
@@ -1602,8 +1602,11 @@ class CreateBuildingPanel extends PureComponent {
       <Button onClick={() => {
         let panelLayout = [0,[]];
         data.forEach(partialRoof => {
-          const output = calculateFlatRoofPanelSection1(
-            FoundLine.fromPolyline(partialRoof[0]), partialRoof[1].map(d => FoundLine.fromPolyline(d)), 0, 2, 1, 5, 0.1, 0, 0, 0, this.props
+          const output = calculateFlatRoofPanel(
+            FoundLine.fromPolyline(partialRoof[0]),
+            partialRoof[1].map(d => FoundLine.fromPolyline(d)),
+            'center',
+            90, 2, 1, 5, 0.1, 0, 0, 0, this.props
           );
           panelLayout[0] += output[0];
           panelLayout[1] = panelLayout[1].concat(output[1]);
