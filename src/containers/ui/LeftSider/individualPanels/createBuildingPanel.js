@@ -1606,7 +1606,7 @@ class CreateBuildingPanel extends PureComponent {
             FoundLine.fromPolyline(partialRoof[0]),
             partialRoof[1].map(d => FoundLine.fromPolyline(d)),
             'center',
-            45, 2, 1, 5, 0.1, 0, 0, 0, this.props
+            360, 2, 1, 5, 0.1, 0, 30, 0
           );
           panelLayout[0] += output[0];
           panelLayout[1] = panelLayout[1].concat(output[1]);

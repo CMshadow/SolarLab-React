@@ -19,21 +19,29 @@ import FoundLine from '../../../../infrastructure/line/foundLine';
 import Polygon from '../../../../infrastructure/Polygon/Polygon';
 import PV from '../../../../infrastructure/Polygon/PV';
 
-const sortByCor1 = (obj1, obj2) => {
+const sortByCorLonAsc = (obj1, obj2) => {
   return (obj1.cor.lon - obj2.cor.lon);
 };
 
-const sortByCor2 = (obj1, obj2) => {
+const sortByCorLonDes = (obj1, obj2) => {
+  return (obj2.cor.lon - obj1.cor.lon);
+};
+
+const sortByCorLatAsc = (obj1, obj2) => {
   return (obj1.cor.lat - obj2.cor.lat);
 };
 
-const sortByDist1 = (obj1, obj2) => {
+const sortByCorLatDes = (obj1, obj2) => {
+  return (obj2.cor.lat - obj1.cor.lat);
+};
+
+const sortByDist = (obj1, obj2) => {
   return (obj1.dist - obj2.dist);
 };
 
 export const calculateFlatRoofPanel = (
   RoofFoundLine, allKeepoutFoundLine, align, rotationAngle, panelWidth, panelLength,
-  height, widthOffset, lengthOffset, panelTiltAngle, initialArraySqeuenceNum, props
+  height, widthOffset, lengthOffset, panelTiltAngle, initialArraySqeuenceNum
 ) => {
   //朝向转换为 正北0度 正南180度 正东90度 正西270度 区间为-180到180度之间
   rotationAngle = -(rotationAngle + 180);
@@ -72,12 +80,14 @@ export const calculateFlatRoofPanel = (
 
 
   // 板斜摆之后实际对应外切矩形宽度
-  let edgeLengthCorrespondingPanelWidth = panelWidth * panelCos / rotationCos;
+  let edgeLengthCorrespondingPanelWidth = Math.abs(
+    panelWidth * panelCos / rotationCos
+  );
   if (rotationAngle === 90 || rotationAngle === -90) {
-    edgeLengthCorrespondingPanelWidth = panelWidth * panelCos;
+    edgeLengthCorrespondingPanelWidth = Math.abs(panelWidth * panelCos);
   }
   // 板间距斜摆之后实际对应外切矩形宽度
-  let edgeLengthCorrespondingWidthOffset = widthOffset / rotationCos;
+  let edgeLengthCorrespondingWidthOffset = Math.abs(widthOffset / rotationCos);
   if (rotationAngle === 90 || rotationAngle === -90) {
     edgeLengthCorrespondingWidthOffset = widthOffset;
   }
@@ -87,22 +97,42 @@ export const calculateFlatRoofPanel = (
     ((panelWidth * panelCos) + widthOffset) / 0.1, 10
   );
 
+  // 六种朝向模式
   let rotationMode = null;
+  // 每种模式行的伸展方向
   let rowDirection = null;
-  //输入朝向180到90
+  // 输入朝向180到90
   if (rotationAngle >= 0 && rotationAngle < 90) {
     rotationMode = 1;
     rowDirection = 180;
   }
-  //输入朝向90
+  // 输入朝向90
   else if (rotationAngle === 90) {
     rotationMode = 2;
     rowDirection = 90;
   }
-  //输入朝向90到0
+  // 输入朝向90到0
   else if (rotationAngle > 90 && rotationAngle < 180) {
     rotationMode = 3;
     rowDirection = 90;
+  }
+  // 输入朝向180到270
+  else if (rotationAngle < 0 && rotationAngle > -90) {
+    rotationMode = 4;
+    rowDirection = 270;
+  }
+  // 输入朝向270
+  else if (rotationAngle === -90) {
+    rotationMode = 5;
+    rowDirection = 270;
+  }
+  // 输入朝向270到360
+  else if (
+    (rotationAngle < -90 && rotationAngle >= -180) ||
+    rotationAngle === 180
+  ) {
+    rotationMode = 6;
+    rowDirection = 0;
   }
 
   //铺板数据
@@ -144,8 +174,28 @@ export const calculateFlatRoofPanel = (
           planIndex * 0.1 / rotationCos
         );
         break;
+      case 4:
+        tempNorthCoordinate = Coordinate.destination(
+          new Coordinate(east, north, height),
+          rowDirection,
+          planIndex * 0.1 / rotationCos
+        );
+        break;
+      case 5:
+        tempNorthCoordinate = Coordinate.destination(
+          new Coordinate(east, north, height),
+          rowDirection,
+          planIndex * 0.1
+        );
+        break;
+      case 6:
+        tempNorthCoordinate = Coordinate.destination(
+          new Coordinate(east, south, height),
+          rowDirection,
+          planIndex * 0.1 / rotationCos
+        );
+        break;
     }
-    console.log(tempNorthCoordinate)
 
     // 行数
     let rowNum = 0;
@@ -183,16 +233,20 @@ export const calculateFlatRoofPanel = (
       // 将corNorthList里的坐标排序
       switch (rotationMode) {
         default:
+        case 4:
         case 1:
-          corNorthList.sort(sortByCor1);
+          corNorthList.sort(sortByCorLonAsc);
           break;
         case 3:
-        case 2:
-          corNorthList.sort(sortByCor2);
+          corNorthList.sort(sortByCorLatAsc);
+          break;
+        case 5:
+          corNorthList.sort(sortByCorLatDes);
+          break;
+        case 6:
+          corNorthList.sort(sortByCorLonDes);
           break;
       }
-      console.log(corNorthList)
-      console.log(tempNorthCoordinate)
 
       // 南侧参考点
       let tempSouthCoordinate = Coordinate.destination(
@@ -233,12 +287,19 @@ export const calculateFlatRoofPanel = (
       // 将corSouthList里的坐标排序
       switch (rotationMode) {
         default:
+        case 4:
         case 1:
-          corSouthList.sort(sortByCor1);
+          corSouthList.sort(sortByCorLonAsc);
           break;
-        case 3:
         case 2:
-          corSouthList.sort(sortByCor2);
+        case 3:
+          corSouthList.sort(sortByCorLatAsc);
+          break;
+        case 5:
+          corSouthList.sort(sortByCorLatDes);
+          break;
+        case 6:
+          corSouthList.sort(sortByCorLonDes);
           break;
       }
 
@@ -289,17 +350,30 @@ export const calculateFlatRoofPanel = (
           // 南坐标不在北坐标的范围内
           switch (rotationMode) {
             default:
+            case 4:
             case 1:
               if (
                 (corSouthLeft.lon > corNorthRightToSouth.lon) ||
                 (corSouthRight.lon < corNorthLeftToSouth.lon)
               ) continue;
               break;
-            case 3:
             case 2:
+            case 3:
               if (
                 (corSouthLeft.lat > corNorthRightToSouth.lat) ||
                 (corSouthRight.lat < corNorthLeftToSouth.lat)
+              ) continue;
+              break;
+            case 5:
+              if (
+                (corSouthLeft.lat < corNorthRightToSouth.lat) ||
+                (corSouthRight.lat > corNorthLeftToSouth.lat)
+              ) continue;
+              break;
+            case 6:
+              if (
+                (corSouthLeft.lon < corNorthRightToSouth.lon) ||
+                (corSouthRight.lon > corNorthLeftToSouth.lon)
               ) continue;
               break;
           }
@@ -308,6 +382,7 @@ export const calculateFlatRoofPanel = (
           let leftRefCor = null;
           switch (rotationMode) {
             default:
+            case 4:
             case 1:
               if (corNorthLeftToSouth.lon > corSouthLeft.lon) {
                 leftRefCor = corNorthLeftToSouth;
@@ -315,9 +390,23 @@ export const calculateFlatRoofPanel = (
                 leftRefCor = corSouthLeft;
               }
               break;
-            case 3:
             case 2:
+            case 3:
               if (corNorthLeftToSouth.lat > corSouthLeft.lat) {
+                leftRefCor = corNorthLeftToSouth;
+              } else {
+                leftRefCor = corSouthLeft;
+              }
+              break;
+            case 5:
+              if (corNorthLeftToSouth.lat < corSouthLeft.lat) {
+                leftRefCor = corNorthLeftToSouth;
+              } else {
+                leftRefCor = corSouthLeft;
+              }
+              break;
+            case 6:
+              if (corNorthLeftToSouth.lon < corSouthLeft.lon) {
                 leftRefCor = corNorthLeftToSouth;
               } else {
                 leftRefCor = corSouthLeft;
@@ -329,6 +418,7 @@ export const calculateFlatRoofPanel = (
           let rightRefCor = null;
           switch (rotationMode) {
             default:
+            case 4:
             case 1:
               if (corNorthRightToSouth.lon < corSouthRight.lon) {
                 rightRefCor = corNorthRightToSouth;
@@ -336,13 +426,28 @@ export const calculateFlatRoofPanel = (
                 rightRefCor = corSouthRight;
               }
               break;
-            case 3:
             case 2:
+            case 3:
               if (corNorthRightToSouth.lat < corSouthRight.lat) {
                 rightRefCor = corNorthRightToSouth;
               } else {
                 rightRefCor = corSouthRight;
               }
+              break;
+            case 5:
+              if (corNorthRightToSouth.lat > corSouthRight.lat) {
+                rightRefCor = corNorthRightToSouth;
+              } else {
+                rightRefCor = corSouthRight;
+              }
+              break;
+            case 6:
+              if (corNorthRightToSouth.lon > corSouthRight.lon) {
+                rightRefCor = corNorthRightToSouth;
+              } else {
+                rightRefCor = corSouthRight;
+              }
+              break;
           }
 
           let rightRefCorToNorth = Coordinate.destination(
@@ -355,7 +460,7 @@ export const calculateFlatRoofPanel = (
             -rotationAngle,
             panelWidth * panelCos
           );
-          // push([顶点坐标，朝向，边距离])
+
           const boxBot = new MathLine(
             leftRefCor,
             90 - rotationAngle,
@@ -403,16 +508,16 @@ export const calculateFlatRoofPanel = (
           const rightCors = [];
           const boxMidCorToSouth = Coordinate.intersection(
             Coordinate.destination(
-            possibleBoxLineCollection.mathLineCollection[0].originCor,
-            Coordinate.bearing(
               possibleBoxLineCollection.mathLineCollection[0].originCor,
-              possibleBoxLineCollection.mathLineCollection[2].originCor
-            ),
-            0.5 * Coordinate.surfaceDistance(
-              possibleBoxLineCollection.mathLineCollection[0].originCor,
-              possibleBoxLineCollection.mathLineCollection[2].originCor
-            )
-          ), -rotationAngle + 180,
+              Coordinate.bearing(
+                possibleBoxLineCollection.mathLineCollection[0].originCor,
+                possibleBoxLineCollection.mathLineCollection[2].originCor
+              ),
+              0.5 * Coordinate.surfaceDistance(
+                possibleBoxLineCollection.mathLineCollection[0].originCor,
+                possibleBoxLineCollection.mathLineCollection[2].originCor
+              )
+            ), -rotationAngle + 180,
             possibleBoxLineCollection.mathLineCollection[0].originCor,
             -rotationAngle + 90
           );
@@ -440,8 +545,9 @@ export const calculateFlatRoofPanel = (
               rightCors.push({cor: corToSouth, dist: distToMid});
             }
           })
-          leftCors.sort(sortByDist1)
-          rightCors.sort(sortByDist1)
+          leftCors.sort(sortByDist)
+          rightCors.sort(sortByDist)
+
           if (leftCors.length !== 0) {
             leftRefCor = leftCors[0].cor;
             leftRefCorToNorth = Coordinate.destination(
@@ -484,8 +590,6 @@ export const calculateFlatRoofPanel = (
               [newboxBot, newboxRight, newboxTop, newboxLeft]
             );
           }
-
-
 
           // 检查可能铺板矩形是否在房屋外部/障碍物内部，如果存在跳过该可能铺板矩形
           let midTestCor = Coordinate.destination(
@@ -719,7 +823,7 @@ const SetUpPVPanel = (props) => {
     let panelLayout = [0,[]];
     requestData.forEach(partialRoof => {
       const output = calculateFlatRoofPanel(
-        partialRoof[0], partialRoof[1], 'right', 45, 2, 1, 5, 0.1, 0, 30, 0, props
+        partialRoof[0], partialRoof[1], 'center', 360, 2, 1, 5, 0.1, 0, 30, 0
       );
       panelLayout[0] += output[0];
       panelLayout[1] = panelLayout[1].concat(output[1]);
