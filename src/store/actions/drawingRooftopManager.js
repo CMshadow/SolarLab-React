@@ -3,7 +3,7 @@ import Node from '../../infrastructure/edgesMap/node/node';
 import Edge from '../../infrastructure/edgesMap/edge/edge';
 import EdgesMap from '../../infrastructure/edgesMap/edgesMap';
 import * as MathHelper from '../../infrastructure/math/RoofTop_MathHelper';
-
+import * as SunInfomation from '../../infrastructure/math/sunPositionCalculation';
 
 export const initEdgesMap = () => {
   return({
@@ -118,7 +118,8 @@ export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, N
       roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lat);
       roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].height);
     }
-    pathCoordinatesCollection.push(roofPlaneCoordinateArray);
+    pathCoordinatesCollection.push(roofPlaneCoordinateArray); 
+    // console.log(SunInfomation.sun_position(2019, 10, 26, 12, -117.841176, 33.647028, -7));
   }
   
   return({
