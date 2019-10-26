@@ -5,6 +5,17 @@ import ProjectInfo from '../../infrastructure/projectInfo/projectInfo';
 
 const initialState = {
   panels: [],
+  parameters: {
+    azimuth: 180,
+    tilt: 10,
+    orientation: 'portrait',
+    rowSpace: 0.5,
+    colSpace: 0,
+    align: 'center',
+    mode: 'individual',
+    rowPerArray: 2,
+    panelPerRow: 11
+  },
 };
 
 const initEditingPanels = (state, action) => {

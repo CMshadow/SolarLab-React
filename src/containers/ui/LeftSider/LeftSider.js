@@ -31,7 +31,8 @@ class LeftSider extends Component {
     let content = null;
     if (this.state.siderCollapse === false) {
       if (uiStateJudge.isIdleStates(this.props.uiState)) {
-        content = (<CreateBuildingPanel/>);
+        // content = (<CreateBuildingPanel/>);
+        content = (<SetUpPVPanel/>);
       }
       else if (uiStateJudge.showDrawingPanel(this.props.uiState)) {
         content = (<DrawBuildingPanel/>);

@@ -16,7 +16,6 @@ import {
 
 import * as classes from './createBuildingPanel.module.css';
 import * as actions from '../../../../store/actions/index';
-import {calculateFlatRoofPanel} from './setUpPVPanel';
 import FoundLine from '../../../../infrastructure/line/foundLine';
 const { Option } = Select;
 
@@ -1322,14 +1321,7 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title="The height of the building foundation"
             >
-              <Row>
-                <Col span={20}>
-                  <h4>Building Height</h4>
-                </Col>
-                <Col span={4}>
-                  <Icon type="question-circle" />
-                </Col>
-              </Row>
+              <h4>Building Height <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -1358,14 +1350,7 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title="The height of parapet beyond the rooftop"
             >
-              <Row>
-                <Col span={20}>
-                  <h4>Parapet Height</h4>
-                </Col>
-                <Col span={4}>
-                  <Icon type="question-circle" />
-                </Col>
-              </Row>
+              <h4>Parapet Height <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -1394,14 +1379,7 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title="The setback distance from hips towards fields of the roof"
             >
-              <Row>
-                <Col span={20}>
-                  <h4>Hip Setback</h4>
-                </Col>
-                <Col span={4}>
-                  <Icon type="question-circle" />
-                </Col>
-              </Row>
+              <h4>Hip Setback <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -1430,14 +1408,7 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title="The setback distance from ridges towards fields of the roof"
             >
-              <Row>
-                <Col span={20}>
-                  <h4>Ridge Setback</h4>
-                </Col>
-                <Col span={4}>
-                  <Icon type="question-circle" />
-                </Col>
-              </Row>
+              <h4>Ridge Setback <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -1552,14 +1523,7 @@ class CreateBuildingPanel extends PureComponent {
                 placement="topLeft"
                 title="The setback distance from eaves towards building inside"
               >
-                <Row>
-                  <Col span={20}>
-                    <h4>Eave Setback</h4>
-                  </Col>
-                  <Col span={4}>
-                    <Icon type="question-circle" />
-                  </Col>
-                </Row>
+                <h4>Eave Setback <Icon type="question-circle" /></h4>
               </Tooltip>
             </Col>
             <Col {...this.rowLayout.field}>
@@ -1600,18 +1564,18 @@ class CreateBuildingPanel extends PureComponent {
         </Row>
       </Form>
       <Button onClick={() => {
-        let panelLayout = [0,[]];
-        data.forEach(partialRoof => {
-          const output = calculateFlatRoofPanel(
-            FoundLine.fromPolyline(partialRoof[0]),
-            partialRoof[1].map(d => FoundLine.fromPolyline(d)),
-            'center',
-            360, 2, 1, 5, 0.1, 0, 30, 0
-          );
-          panelLayout[0] += output[0];
-          panelLayout[1] = panelLayout[1].concat(output[1]);
-        })
-        this.props.initEditingPanels(panelLayout[1]);
+        // let panelLayout = [0,[]];
+        // data.forEach(partialRoof => {
+        //   const output = calculateFlatRoofPanel(
+        //     FoundLine.fromPolyline(partialRoof[0]),
+        //     partialRoof[1].map(d => FoundLine.fromPolyline(d)),
+        //     'center',
+        //     360, 2, 1, 5, 0.1, 0, 30, 0
+        //   );
+        //   panelLayout[0] += output[0];
+        //   panelLayout[1] = panelLayout[1].concat(output[1]);
+        // })
+        // this.props.initEditingPanels(panelLayout[1]);
       }}>TEST</Button>
     </div>
     );
