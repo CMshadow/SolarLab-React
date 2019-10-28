@@ -18,7 +18,16 @@ const initialState = {
   },
 };
 
-const initEditingPanels = (state, action) => {
+const setupPanelParams = (state, action) => {
+  return {
+    ...state,
+    parameters: {
+      ...action.parameters
+    }
+  };
+}
+
+const generatePanels = (state, action) => {
   return {
     ...state,
     panels: action.panels
@@ -27,8 +36,10 @@ const initEditingPanels = (state, action) => {
 
 const reducer = (state=initialState, action) => {
   switch (action.type) {
+    case actionTypes.SETUP_PANEL_PARAMS:
+      return setupPanelParams(state, action);
     case actionTypes.INIT_EDITING_PANELS:
-      return initEditingPanels(state, action);
+      return generatePanels(state, action);
     default: return state;
   }
 };

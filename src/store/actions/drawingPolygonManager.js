@@ -48,7 +48,7 @@ export const createPolygonFoundationWrapper = () => (dispatch, getState) => {
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Backend Error',
-      error
+      error.toString()
     )
   });
 };

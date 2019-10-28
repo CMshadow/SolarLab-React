@@ -6,12 +6,15 @@ const EditingPVPanelRender = (props) => {
 
   let allPanels = null
   if(props.panels !== []) {
-    allPanels = props.panels.map(panel => (
-      <PVVisualize
-        key={panel.pv.entityId}
-        {...panel.pv}
-      />
-    ));
+    console.log(props.panels)
+    allPanels = props.panels.map(array =>
+      array.map(elem => (
+        <PVVisualize
+          key={elem.pv.entityId}
+          {...elem.pv}
+        />
+      ))
+    );
   }
 
 	return (

@@ -109,7 +109,8 @@ export {
 } from './keepoutManager';
 
 export {
-  initEditingPanels
+  setupPanelParams,
+  generatePanels
 } from './editingPVPanelManager';
 
 export {

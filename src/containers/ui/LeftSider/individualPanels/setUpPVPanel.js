@@ -1,6 +1,5 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import * as Cesium from 'cesium';
 import {
   Form,
   Input,
@@ -17,19 +16,11 @@ import {
 } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRectanglePortrait, faRectangleLandscape } from '@fortawesome/pro-light-svg-icons'
-import * as turf from '@turf/turf';
 
-import {makeUnionPolygonGeoJson} from '../../../../infrastructure/math/geoJSON';
 import * as actions from '../../../../store/actions/index';
-import * as MyMath from '../../../../infrastructure/math/math';
-import Coordinate from '../../../../infrastructure/point/coordinate';
-import MathLine from '../../../../infrastructure/math/mathLine';
-import MathLineCollection from '../../../../infrastructure/math/mathLineCollection';
-import Point from '../../../../infrastructure/point/point';
-import Polyline from '../../../../infrastructure/line/polyline';
-import FoundLine from '../../../../infrastructure/line/foundLine';
 const { Option } = Select;
 const { TabPane } = Tabs;
+const ButtonGroup = Button.Group;
 
 class SetUpPVPanel extends Component {
   state = {
@@ -37,131 +28,14 @@ class SetUpPVPanel extends Component {
     ...this.props.parameters
   }
 
-  makeCombiGeometry = (props) => {
-    const geoFoundation =
-      props.workingBuilding.foundationPolygonExcludeStb.map(polygon =>
-        polygon.toFoundLine().makeGeoJSON()
-      );
-    const geoNormalKeepout =
-      props.allNormalKeepout.map(kpt => kpt.keepout.outlinePolygonPart2
-      .toFoundLine().makeGeoJSON())
-    const geoPassageKeepout =
-      props.allPassageKeepout.map(kpt => kpt.keepout.outlinePolygon
-      .toFoundLine().makeGeoJSON())
-    const geoVentKeepout =
-      props.allVentKeepout.map(kpt => kpt.keepout.outlinePolygon.toFoundLine()
-      .makeGeoJSON())
-    const geoNormalKeepoutInOne = makeUnionPolygonGeoJson(geoNormalKeepout);
-    const geoPassageKeepoutInOne = makeUnionPolygonGeoJson(geoPassageKeepout);
-    const geoVentKeepoutInOne = makeUnionPolygonGeoJson(geoVentKeepout);
-
-    let keepoutCombi = null;
-    let finalCombi = null;
-    if (geoNormalKeepoutInOne.geometry.coordinates.length !== 0) {
-      keepoutCombi = geoNormalKeepoutInOne
-      if(geoPassageKeepoutInOne.geometry.coordinates.length !== 0) {
-        keepoutCombi = turf.union(keepoutCombi, geoPassageKeepoutInOne);
-      }
-      if(geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
-        keepoutCombi = turf.union(keepoutCombi, geoVentKeepoutInOne);
-      }
-      finalCombi = geoFoundation.map(geo => {
-        const diff = turf.difference(geo, keepoutCombi);
-        if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
-          diff.geometry.coordinates = [diff.geometry.coordinates];
-          return diff;
-        } else {
-          return diff;
-        }
-      });
-    }
-    else if (geoPassageKeepoutInOne.geometry.coordinates.length !== 0) {
-      keepoutCombi = geoPassageKeepoutInOne;
-      if(geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
-        keepoutCombi = turf.union(keepoutCombi, geoVentKeepoutInOne);
-      }
-      finalCombi = geoFoundation.map(geo => {
-        const diff = turf.difference(geo, keepoutCombi);
-        if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
-          diff.geometry.coordinates = [diff.geometry.coordinates];
-          return diff;
-        } else {
-          return diff;
-        }
-      });
-    }
-    else if (geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
-      keepoutCombi = geoVentKeepoutInOne;
-      finalCombi = geoFoundation.map(geo => {
-        const diff = turf.difference(geo, keepoutCombi);
-        if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
-          diff.geometry.coordinates = [diff.geometry.coordinates];
-          return diff;
-        } else {
-          return diff;
-        }
-      });
-    }
-    else {
-      finalCombi = geoFoundation
-      finalCombi.forEach(geo =>
-        geo.geometry.coordinates = [[...geo.geometry.coordinates]]
-      );
-    }
-    return finalCombi;
-  }
-
-  makeRequestData = (props) => {
-    const finalCombi = this.makeCombiGeometry(props);
-    // console.log(finalCombi)
-    const requestData = []
-    finalCombi.forEach(roof => {
-      roof.geometry.coordinates.forEach(partialRoof => {
-        // console.log(partialRoof)
-        const startAndLastPoint = new Point(
-          partialRoof[0][0][0], partialRoof[0][0][1],
-          props.workingBuilding.foundationHeight
-        );
-        const roofFoundLine = new FoundLine([
-          startAndLastPoint,
-          ...(partialRoof[0].slice(1,-1).map(cor => new Point(
-            cor[0], cor[1], props.workingBuilding.foundationHeight
-          ))),
-          startAndLastPoint
-        ]);
-        const allKeepoutFoundLine = partialRoof.slice(1).map(kpt => {
-          const startAndLastPoint = new Point(
-            kpt[0][0], kpt[0][1], props.workingBuilding.foundationHeight
-          );
-          return new FoundLine([
-            startAndLastPoint,
-            ...(kpt.slice(1,-1).map(cor => new Point(
-              cor[0], cor[1], props.workingBuilding.foundationHeight
-            ))),
-            startAndLastPoint
-          ]);
-        })
-        requestData.push([roofFoundLine, allKeepoutFoundLine]);
-      })
-    })
-    console.log(requestData)
-    // let panelLayout = [0,[]];
-    // requestData.forEach(partialRoof => {
-    //   const output = calculateFlatRoofPanel(
-    //     partialRoof[0], partialRoof[1], 'center', 360, 2, 1, 5, 0.1, 0, 30, 0
-    //   );
-    //   panelLayout[0] += output[0];
-    //   panelLayout[1] = panelLayout[1].concat(output[1]);
-    // })
-    // props.initEditingPanels(panelLayout[1]);
-  }
-
   handleSubmit = (event) => {
     event.preventDefault();
-  }
-
-  tabCallback = (key) => {
-    this.setState({tab:key})
+    this.props.form.validateFieldsAndScroll((err, values) => {
+      if (!err) {
+        this.props.setupPanelParams(values)
+        this.props.generatePanels()
+      }
+    });
   }
 
   numberInputRules = [{
@@ -339,172 +213,106 @@ class SetUpPVPanel extends Component {
             size = 'small'
             tabBarGutter = {5}
             tabBarStyle = {{textAlign: 'center'}}
-            onChange = {this.tabCallback}
+            onChange = {e => this.setState({tab:e})}
           >
             <TabPane tab="Manual" key="manual">
-              {/*Panel Azimuth*/}
-              <Form.Item>
-                <Row>
-                  <Col span={10} offset={4}>
-                    <Tooltip
-                      placement="topLeft"
-                      title="The azimuth of the panels, 180° is south, 0° is north"
-                    >
-                      <h4>Panel Azimuth <Icon type="question-circle" /></h4>
-                    </Tooltip>
-                  </Col>
-                  <Col span={6}>
-                    {getFieldDecorator('azimuth', {
-                      rules: [...this.numberInputRules],
-                      initialValue: this.state.azimuth
-                    })(
-                      <InputNumber
-                        min={0}
-                        max={360}
-                        step={1}
-                        formatter={value => `${value}\xB0`}
-                        parser={value => value.replace('\xB0', '')}
-                        onChange = {e => this.setState({azimuth:e})}
-                      />
-                    )}
-                  </Col>
-                </Row>
-              </Form.Item>
-              {/*Panel Tilt*/}
-              <Form.Item>
-                <Row>
-                  <Col span={10} offset={4}>
-                    <Tooltip
-                      placement="topLeft"
-                      title="Panel tilt angle"
-                    >
-                      <h4>Panel Tilt <Icon type="question-circle" /></h4>
-                    </Tooltip>
-                  </Col>
-                  <Col span={6}>
-                    {getFieldDecorator('tilt', {
-                      rules: [...this.numberInputRules],
-                      initialValue: this.state.tilt
-                    })(
-                      <InputNumber
-                        min={0}
-                        max={45}
-                        step={5}
-                        formatter={value => `${value}\xB0`}
-                        parser={value => value.replace('\xB0', '')}
-                        onChange = {e => this.setState({tilt:e})}
-                      />
-                    )}
-                  </Col>
-                </Row>
-              </Form.Item>
-              {/*Panel Orientation*/}
-              {panelOrientation}
-              {/*Row Space*/}
-              <Form.Item>
-                <Row>
-                  <Col span={10} offset={4}>
-                    <Tooltip
-                      placement="topLeft"
-                      title="The spacing between each row of panels"
-                    >
-                      <h4>Row Spacing <Icon type="question-circle" /></h4>
-                    </Tooltip>
-                  </Col>
-                  <Col span={6}>
-                    {getFieldDecorator('rowSpace', {
-                      rules: [...this.numberInputRules],
-                      initialValue: this.state.rowSpace
-                    })(
-                      <InputNumber
-                        min={0}
-                        max={30}
-                        step={5}
-                        formatter={value => `${value}m`}
-                        parser={value => value.replace('m', '')}
-                        onChange = {e => this.setState({rowSpace:e})}
-                      />
-                    )}
-                  </Col>
-                </Row>
-              </Form.Item>
-              {/*Col Space*/}
-              {colSpacing}
-              {/*Align*/}
-              {align}
             </TabPane>
             <TabPane tab="Max Panels" key="max">
-              {/*Panel Azimuth*/}
-              <Form.Item>
-                <Row>
-                  <Col span={10} offset={4}>
-                    <Tooltip
-                      placement="topLeft"
-                      title="The azimuth of the panels, 180° is south, 0° is north"
-                    >
-                      <h4>Panel Azimuth <Icon type="question-circle" /></h4>
-                    </Tooltip>
-                  </Col>
-                  <Col span={6}>
-                    {getFieldDecorator('azimuth', {
-                      initialValue: 'max'
-                    })(
-                      <Input disabled />
-                    )}
-                  </Col>
-                </Row>
-              </Form.Item>
-              {/*Panel Tilt*/}
-              <Form.Item>
-                <Row>
-                  <Col span={10} offset={4}>
-                    <Tooltip
-                      placement="topLeft"
-                      title="Panel tilt angle"
-                    >
-                      <h4>Panel Tilt <Icon type="question-circle" /></h4>
-                    </Tooltip>
-                  </Col>
-                  <Col span={6}>
-                    {getFieldDecorator('tilt', {
-                      initialValue: 'auto'
-                    })(
-                      <InputNumber disabled />
-                    )}
-                  </Col>
-                </Row>
-              </Form.Item>
-              {/*Panel Orientation*/}
-              {panelOrientation}
-              {/*Row Space*/}
-              <Form.Item>
-                <Row>
-                  <Col span={10} offset={4}>
-                    <Tooltip
-                      placement="topLeft"
-                      title="The spacing between each row of panels"
-                    >
-                      <h4>Row Spacing <Icon type="question-circle" /></h4>
-                    </Tooltip>
-                  </Col>
-                  <Col span={6}>
-                    {getFieldDecorator('rowSpace', {
-                      rules: [...this.numberInputRules],
-                      initialValue: this.state.rowSpace
-                    })(
-                      <InputNumber />
-                    )}
-                  </Col>
-                </Row>
-              </Form.Item>
-              {/*Col Space*/}
-              {colSpacing}
-              {/*Align*/}
-              {align}
             </TabPane>
             <TabPane tab="Max Eco" key="eco">
             </TabPane>
           </Tabs>
+
+          {/*Panel Azimuth*/}
+          <Form.Item>
+            <Row>
+              <Col span={10} offset={4}>
+                <Tooltip
+                  placement="topLeft"
+                  title="The azimuth of the panels, 180° is south, 0° is north"
+                >
+                  <h4>Panel Azimuth <Icon type="question-circle" /></h4>
+                </Tooltip>
+              </Col>
+              <Col span={6}>
+                {getFieldDecorator('azimuth', {
+                  rules: [...this.numberInputRules],
+                  initialValue: this.state.azimuth
+                })(
+                  <InputNumber
+                    min={0}
+                    max={360}
+                    step={1}
+                    formatter={value => `${value}\xB0`}
+                    parser={value => value.replace('\xB0', '')}
+                    onChange = {e => this.setState({azimuth:e})}
+                  />
+                )}
+              </Col>
+            </Row>
+          </Form.Item>
+          {/*Panel Tilt*/}
+          <Form.Item>
+            <Row>
+              <Col span={10} offset={4}>
+                <Tooltip
+                  placement="topLeft"
+                  title="Panel tilt angle"
+                >
+                  <h4>Panel Tilt <Icon type="question-circle" /></h4>
+                </Tooltip>
+              </Col>
+              <Col span={6}>
+                {getFieldDecorator('tilt', {
+                  rules: [...this.numberInputRules],
+                  initialValue: this.state.tilt
+                })(
+                  <InputNumber
+                    min={0}
+                    max={45}
+                    step={5}
+                    formatter={value => `${value}\xB0`}
+                    parser={value => value.replace('\xB0', '')}
+                    onChange = {e => this.setState({tilt:e})}
+                  />
+                )}
+              </Col>
+            </Row>
+          </Form.Item>
+          {/*Panel Orientation*/}
+          {panelOrientation}
+          {/*Row Space*/}
+          <Form.Item>
+            <Row>
+              <Col span={10} offset={4}>
+                <Tooltip
+                  placement="topLeft"
+                  title="The spacing between each row of panels"
+                >
+                  <h4>Row Spacing <Icon type="question-circle" /></h4>
+                </Tooltip>
+              </Col>
+              <Col span={6}>
+                {getFieldDecorator('rowSpace', {
+                  rules: [...this.numberInputRules],
+                  initialValue: this.state.rowSpace
+                })(
+                  <InputNumber
+                    min={0}
+                    max={30}
+                    step={5}
+                    formatter={value => `${value}m`}
+                    parser={value => value.replace('m', '')}
+                    onChange = {e => this.setState({rowSpace:e})}
+                  />
+                )}
+              </Col>
+            </Row>
+          </Form.Item>
+          {/*Col Space*/}
+          {colSpacing}
+          {/*Align*/}
+          {align}
 
           <Divider />
           {/*Mode*/}
@@ -542,12 +350,17 @@ class SetUpPVPanel extends Component {
 
           {/*The button to validate & process to create a new building*/}
           <Row type="flex" justify="center">
-            <Col span={16}>
-              <Button type='primary' shape='round' icon='plus' size='large'
-                htmlType="submit" block
-              >
-                Create a Building
-              </Button>
+            <Col span={20} offset={2}>
+              <ButtonGroup>
+                <Button type='primary' shape='round' size='large'
+                  htmlType="submit"
+                >
+                  Preview
+                </Button>
+                <Button type='primary' shape='round' size='large' disabled>
+                  Continue <Icon type='right' />
+                </Button>
+              </ButtonGroup>
             </Col>
           </Row>
         </Form>
@@ -561,16 +374,13 @@ const mapStateToProps = state => {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     parameters: state.undoableReducer.present.editingPVPanelManagerReducer
       .parameters,
-    workingBuilding: state.buildingManagerReducer.workingBuilding,
-    allNormalKeepout: state.keepoutManagerReducer.normalKeepout,
-    allPassageKeepout: state.keepoutManagerReducer.passageKeepout,
-    allVentKeepout: state.keepoutManagerReducer.ventKeepout
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    initEditingPanels: (panels) => dispatch(actions.initEditingPanels(panels)),
+    setupPanelParams: (values) => dispatch(actions.setupPanelParams(values)),
+    generatePanels: () => dispatch(actions.generatePanels()),
     setDebugPolylines: (polylines) => dispatch(actions.setDebugPolylines(polylines)),
     setDebugPoints: (points) => dispatch(actions.setDebugPoints(points))
   };
