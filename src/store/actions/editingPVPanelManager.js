@@ -127,8 +127,9 @@ export const generatePanels = () => (dispatch, getState) => {
   const params = getState().undoableReducer.present.editingPVPanelManagerReducer
     .parameters
 
+  let requestData = null;
   if (params.mode === 'individual') {
-    const requestData = {
+    requestData = {
       data: data,
       azimuth: params.azimuth,
       tilt: params.tilt,
@@ -139,16 +140,35 @@ export const generatePanels = () => (dispatch, getState) => {
       align: params.align,
       height: props.workingBuilding.foundationHeight,
       initArraySequenceNum: 1,
+      rowPerArray: 1,
+      panelsPerRow: 1
     }
     console.log(requestData)
-    generateFlatRoofIndividualPanels(dispatch, requestData);
+  } else {
+    requestData = {
+      data: data,
+      azimuth: params.azimuth,
+      tilt: params.tilt,
+      panelWidth: params.orientation === 'portrait' ? 2 : 1,
+      panelLength: params.orientation === 'portrait' ? 1 : 2,
+      rowSpace: params.rowSpace,
+      colSpace: params.colSpace,
+      align: params.align,
+      height: props.workingBuilding.foundationHeight,
+      initArraySequenceNum: 1,
+      rowPerArray: params.rowPerArray,
+      panelsPerRow: params.panelPerRow
+    }
+    console.log(requestData)
   }
+  generateFlatRoofIndividualPanels(dispatch, requestData);
 }
 
 const generateFlatRoofIndividualPanels = (dispatch, requestData) => {
   axios.post('/calculate-roof-pv-panels/flatroof-individual', requestData)
-  .then(response =>
-    dispatch({
+  .then(response => {
+    console.log(JSON.parse(response.data.body).panelLayout)
+    return dispatch({
       type: actionTypes.INIT_EDITING_PANELS,
       panels: JSON.parse(response.data.body).panelLayout.map(array =>
         array.map(elem => ({
@@ -161,7 +181,7 @@ const generateFlatRoofIndividualPanels = (dispatch, requestData) => {
         }))
       )
     })
-  )
+  })
   .catch(error => {
     return errorNotification(
       'Backend Error',
