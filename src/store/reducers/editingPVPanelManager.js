@@ -5,6 +5,7 @@ import ProjectInfo from '../../infrastructure/projectInfo/projectInfo';
 
 const initialState = {
   panels: [],
+  backendLoading: false,
   parameters: {
     azimuth: 180,
     tilt: 10,
@@ -34,10 +35,19 @@ const generatePanels = (state, action) => {
   }
 };
 
+const cleanPanels = (state, action) => {
+  return {
+    ...state,
+    panels: []
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SETUP_PANEL_PARAMS:
       return setupPanelParams(state, action);
+    case actionTypes.CLEAN_EDITING_PANELS:
+      return cleanPanels(state, action);
     case actionTypes.INIT_EDITING_PANELS:
       return generatePanels(state, action);
     default: return state;

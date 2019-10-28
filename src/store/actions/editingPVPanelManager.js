@@ -9,6 +9,7 @@ import FoundLine from '../../infrastructure/line/foundLine';
 import Polyline from '../../infrastructure/line/polyline';
 import PV from '../../infrastructure/Polygon/PV';
 import Polygon from '../../infrastructure/Polygon/Polygon';
+import { setBackendLoadingTrue, setBackendLoadingFalse} from './projectManager';
 
 const makeCombiGeometry = (props) => {
   const geoFoundation =
@@ -165,24 +166,28 @@ export const generatePanels = () => (dispatch, getState) => {
 }
 
 const generateFlatRoofIndividualPanels = (dispatch, requestData) => {
+  dispatch(cleanPanels());
+  dispatch(setBackendLoadingTrue());
   axios.post('/calculate-roof-pv-panels/flatroof-individual', requestData)
   .then(response => {
     console.log(JSON.parse(response.data.body).panelLayout)
-    return dispatch({
+    dispatch({
       type: actionTypes.INIT_EDITING_PANELS,
-      panels: JSON.parse(response.data.body).panelLayout.map(array =>
-        array.map(elem => ({
-          ...elem,
-          pv: new PV(
-            null, null, Polygon.makeHierarchyFromPolyline(
-              Polyline.fromPolyline(elem.pvPolyline)
-            )
-          )
-        }))
+      panels: JSON.parse(response.data.body).panelLayout.map(partialRoof =>
+        partialRoof.map(array =>
+          array.map(panel => ({
+            ...panel,
+            pv: new PV(null, null, Polygon.makeHierarchyFromPolyline(
+              Polyline.fromPolyline(panel.pvPolyline)
+            ))
+          }))
+        )
       )
-    })
+    });
+    return dispatch(setBackendLoadingFalse());
   })
   .catch(error => {
+    dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Backend Error',
       error.toString()
@@ -194,5 +199,11 @@ export const setupPanelParams = (values) => {
   return {
     type: actionTypes.SETUP_PANEL_PARAMS,
     parameters: values
+  };
+}
+
+export const cleanPanels = () => {
+  return {
+    type: actionTypes.CLEAN_EDITING_PANELS
   };
 }

@@ -71,9 +71,7 @@ export {
 export {
   createPolygonFoundationWrapper,
   createPolygonFoundationIncludeStb,
-  createWall,
-  setBackendLoadingTrue,
-  setBackendLoadingFalse,
+  createWall
 } from './drawingPolygonManager'
 
 export {
@@ -110,8 +108,14 @@ export {
 
 export {
   setupPanelParams,
-  generatePanels
+  generatePanels,
+  cleanPanels
 } from './editingPVPanelManager';
+
+export {
+  setBackendLoadingTrue,
+  setBackendLoadingFalse,
+} from './projectManager';
 
 export {
   setDebugPoints,

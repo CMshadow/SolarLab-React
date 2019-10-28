@@ -44,8 +44,7 @@ const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     CurrentBuilding: state.buildingManagerReducer.workingBuilding,
-    backendLoading:
-      state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
+    backendLoading: state.projectManagerReducer.backendLoading,
     keepoutList:
       state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
   };

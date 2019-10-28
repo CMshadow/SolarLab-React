@@ -353,7 +353,7 @@ class SetUpPVPanel extends Component {
             <Col span={20} offset={2}>
               <ButtonGroup>
                 <Button type='primary' shape='round' size='large'
-                  htmlType="submit"
+                  htmlType="submit" loading={this.props.backendLoading}
                 >
                   Preview
                 </Button>
@@ -374,6 +374,7 @@ const mapStateToProps = state => {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     parameters: state.undoableReducer.present.editingPVPanelManagerReducer
       .parameters,
+    backendLoading: state.projectManagerReducer.backendLoading,
   };
 };
 

@@ -5,6 +5,7 @@ import errorNotification from '../../components/ui/Notification/ErrorNotificatio
 import Polygon from '../../infrastructure/Polygon/Polygon';
 import Wall from '../../infrastructure/Polygon/wall';
 import FoundLine from '../../infrastructure/line/foundLine';
+import { setBackendLoadingTrue, setBackendLoadingFalse} from './projectManager';
 
 export const createPolygonFoundationWrapper = () => (dispatch, getState) => {
   const foundPolyline =
@@ -81,16 +82,4 @@ export const createWall = () => (dispatch, getState) =>{
     maximumHeight: foundHeight + parapetHeight,
     positions: positions
   })
-}
-
-export const setBackendLoadingTrue = () => {
-  return ({
-    type: actionTypes.SET_BACKENDLOADING_TRUE
-  });
-}
-
-export const setBackendLoadingFalse = () => {
-  return ({
-    type: actionTypes.SET_BACKENDLOADING_FALSE
-  });
 }
