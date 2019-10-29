@@ -1,4 +1,5 @@
 import * as actionTypes from './actionTypes';
+import * as actions from './index';
 import axios from '../../axios-setup';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Polygon from '../../infrastructure/Polygon/Polygon';
@@ -39,7 +40,9 @@ export const createPolygonFoundationWrapper = () => (dispatch, getState) => {
       height: foundHeight,
       coordinatesArrays: buildingCoordinatesArray
     })
+    dispatch(actions.createAllKeepoutPolygon());
     dispatch(setBackendLoadingFalse());
+    dispatch(actions.setUIStateEditing3D());
   })
   .catch(error => {
     dispatch(setBackendLoadingFalse());

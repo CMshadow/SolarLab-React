@@ -29,13 +29,7 @@ class DrawKeepoutList extends Component {
   };
 
   generateListItems = (item) => {
-    switch (item.type) {
-      case 'Keepout':
-        return <KeepoutListItem {...item} />
-
-      default:
-        return <KeepoutListItem {...item} />
-    }
+    return <KeepoutListItem {...item} />
   };
 
   render () {

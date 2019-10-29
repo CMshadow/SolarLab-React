@@ -73,7 +73,7 @@ export {
   createPolygonFoundationIncludeStb,
   createWall,
   setBackendLoadingTrue,
-  setBackendLoadingFalse
+  setBackendLoadingFalse,
 } from './drawingPolygonManager'
 
 
@@ -86,7 +86,8 @@ export {
 
 
 export {
-  createAllKeepoutPolygon
+  createAllKeepoutPolygon,
+  reRenderKeepoutPolygon
 } from './drawingKeepoutPolygonManager'
 
 export {
@@ -98,14 +99,23 @@ export {
   setUIStateInnerDrew,
   setUIStateDrawingKeepout,
   setUIStateEditingKeepout,
-  setPreviousUIState
+  setPreviousUIState,
+  setUIStateEditing3D,
+  setUIStateSetUpPV
 } from './uiStateManager';
 
 export {
   initBuilding,
+  updateBuilding,
   saveBuildingInfoFields,
+  bindFoundPolyline,
+  bindFoundPolygons,
   resetBuilding
 } from './buildingManager';
+
+export {
+  bindAllKeepout
+} from './keepoutManager';
 
 export {
   setDebugPoints,

@@ -1,18 +1,15 @@
 import * as Cesium from 'cesium';
-import simplepolygon from 'simplepolygon';
 
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Point from '../point/point';
 import Polyline from './polyline';
 import Coordinate from '../point/coordinate';
-import MathLineCollection from '../math/mathLineCollection';
-import MathLine from '../math/mathLine';
 
 class FoundLine extends Polyline {
 
   /**
    * A polyline
-   * @param {Point}   [points=null]   A list of Point objects, default empty
+   * @param {Point[]}   [points=null]   A list of Point objects, default empty
    * @param {string}  [id=null]       unique id of the polyline, automatic
    *                                  generate one if not provided
    * @param {string}  [name=null]     name of the polyline, automatic generate
@@ -78,6 +75,10 @@ class FoundLine extends Polyline {
       const deletedPoint = this.points.splice(position, 1);
       if (position === 0) {
         this.points.splice(this.length-1, 1);
+        this.addPoint(this.length, this.points[0]);
+      }
+      else if (position === this.length-1) {
+        this.points.splice(0, 1);
         this.addPoint(this.length, this.points[0]);
       }
       return deletedPoint[0];

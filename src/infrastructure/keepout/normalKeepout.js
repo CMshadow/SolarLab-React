@@ -5,7 +5,7 @@ import Keepout from './keepout';
 class NormalKeepout extends Keepout {
 
   constructor (
-    id=null, type=null, drew=null, editing=null, keepoutHt=null,
+    id=null, type='KEEPOUT', drew=null, editing=null, keepoutHt=null,
     keepoutStb=null, outline=null, polygon=null, polygonPart2=null
   ) {
     super(id, type, drew, editing, outline, polygon, polygonPart2);
@@ -23,8 +23,11 @@ class NormalKeepout extends Keepout {
     const newType = normalKeepout.type;
     const newDrew = normalKeepout.finishedDrawing;
     const newIsEditing = normalKeepout.isEditing;
-    const newKeepoutHt = keepoutHt ? keepoutHt : normalKeepout.height;
-    const newKeepoutStb = keepoutStb ? keepoutStb : normalKeepout.setback;
+    const newKeepoutHt = keepoutHt !== null ? keepoutHt : normalKeepout.height;
+    const newKeepoutStb =
+      keepoutStb !== null ?
+      keepoutStb :
+      normalKeepout.setback;
     const newOutlinePolyline = outline ? outline : normalKeepout.outlinePolyline;
     const newOutlinePolygon = polygon ? polygon : normalKeepout.outlinePolygon;
     const newOutlinePolygonPart2 =

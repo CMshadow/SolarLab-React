@@ -58,7 +58,7 @@ export const updateKeepout = (id, values) => (dispatch, getState) => {
 
     case 'PASSAGE':
       updateKeepout = Passage.fromKeepout(
-        keepoutList[updateIndex], values.width
+        keepoutList[updateIndex], values.passageWidth
       );
       break;
 

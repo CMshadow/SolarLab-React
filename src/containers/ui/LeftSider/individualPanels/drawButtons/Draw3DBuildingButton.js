@@ -1,9 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/pro-light-svg-icons'
 import {
-  Divider,
   Row,
   Col,
   Button,
@@ -40,7 +37,7 @@ const draw3DBuildingButton = (props) => {
         props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
         props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, props.PolylinesRelation);
       }}
-    >Test: Draw Foundation</Button>
+    >Generate 3D Model</Button>
 
   );
   return (
