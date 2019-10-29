@@ -128,40 +128,25 @@ export const generatePanels = () => (dispatch, getState) => {
   const params = getState().undoableReducer.present.editingPVPanelManagerReducer
     .parameters
 
-  let requestData = null;
-  if (params.mode === 'individual') {
-    requestData = {
-      data: data,
-      azimuth: params.azimuth,
-      tilt: params.tilt,
-      panelWidth: params.orientation === 'portrait' ? 2 : 1,
-      panelLength: params.orientation === 'portrait' ? 1 : 2,
-      rowSpace: params.rowSpace,
-      colSpace: params.colSpace,
-      align: params.align,
-      height: props.workingBuilding.foundationHeight,
-      initArraySequenceNum: 1,
-      rowPerArray: 1,
-      panelsPerRow: 1
-    }
-    console.log(requestData)
-  } else {
-    requestData = {
-      data: data,
-      azimuth: params.azimuth,
-      tilt: params.tilt,
-      panelWidth: params.orientation === 'portrait' ? 2 : 1,
-      panelLength: params.orientation === 'portrait' ? 1 : 2,
-      rowSpace: params.rowSpace,
-      colSpace: params.colSpace,
-      align: params.align,
-      height: props.workingBuilding.foundationHeight,
-      initArraySequenceNum: 1,
-      rowPerArray: params.rowPerArray,
-      panelsPerRow: params.panelPerRow
-    }
-    console.log(requestData)
+  let requestData = {
+    data: data,
+    azimuth: params.azimuth,
+    tilt: params.tilt,
+    panelWidth: params.orientation === 'portrait' ? 2 : 1,
+    panelLength: params.orientation === 'portrait' ? 1 : 2,
+    rowSpace: params.rowSpace,
+    colSpace: params.colSpace,
+    align: params.align,
+    height: props.workingBuilding.foundationHeight,
+    initArraySequenceNum: 1,
+    rowPerArray: 1,
+    panelsPerRow: 1
+  };
+  if (params.mode === 'array') {
+    requestData.rowPerArray = params.rowPerArray;
+    requestData.panelsPerRow = params.panelPerRow;
   }
+  console.log(requestData)
   generateFlatRoofIndividualPanels(dispatch, requestData);
 }
 
