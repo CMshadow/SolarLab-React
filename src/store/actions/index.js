@@ -76,6 +76,15 @@ export {
   setBackendLoadingFalse
 } from './drawingPolygonManager'
 
+
+export {
+  build3DRoofTopModeling,
+  initEdgesMap,
+  initNodesCollection,
+  searchAllRoofPlanes
+} from './drawingRooftopManager';
+
+
 export {
   createAllKeepoutPolygon
 } from './drawingKeepoutPolygonManager'
