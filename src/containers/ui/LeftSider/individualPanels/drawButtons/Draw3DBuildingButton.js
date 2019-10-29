@@ -22,23 +22,23 @@ const draw3DBuildingButton = (props) => {
       block
       loading = {props.backendLoading}
       disabled = {
-        (props.CurrentBuilding.type === 'FLAT' ?
+        (props.currentBuilding.type === 'FLAT' ?
         !uiStateJudge.isFinishedFound(props.uiState) :
         !uiStateJudge.isFinishedInner(props.uiState)) || (
           props.keepoutList.filter(kpt => !kpt.finishedDrawing).length !== 0
         )
       }
       onClick = {() => {
-
-        props.createPolygonFoundationWrapper();
-        props.createAllKeepoutPolygon();
-
-        console.log('[Button]: Test Polygon: ');
-        let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
-        let buildingCoordinatesSize = buildingCoordinatesArray.length;
-        buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
-        props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
-        props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, props.PolylinesRelation);
+        if (props.currentBuilding.type === 'FLAT') {
+          props.createPolygonFoundationWrapper();
+          props.createAllKeepoutPolygon();
+        } else {
+          console.log('[Button]: Test Polygon: ');
+          let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
+          let buildingCoordinatesSize = buildingCoordinatesArray.length;
+          buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
+          props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, props.PolylinesRelation);
+        }
       }}
     >Test: Draw Foundation</Button>
 
@@ -55,16 +55,16 @@ const draw3DBuildingButton = (props) => {
 const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    CurrentBuilding: state.buildingManagerReducer.workingBuilding,
+    currentBuilding: state.buildingManagerReducer.workingBuilding,
     backendLoading:
       state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
     keepoutList:
       state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
-    BuildFoundation: 
+    BuildFoundation:
       state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
     PitchedBuildingRoofTop:
       state.undoableReducer.present.drawingRooftopManagerReducer,
-    PolylinesRelation: 
+    PolylinesRelation:
       state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation
   };
 };
@@ -75,9 +75,7 @@ const mapDispatchToProps = dispatch => {
       dispatch(actions.createPolygonFoundationWrapper()),
     createAllKeepoutPolygon: () =>
       dispatch(actions.createAllKeepoutPolygon()),
-    CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
-      dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray)),
-    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation) => 
+    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation) =>
       dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation))
  };
 };
