@@ -3,10 +3,12 @@ import { connect } from 'react-redux';
 
 import * as uiStateJudge from '../../../../infrastructure/ui/uiStateJudge';
 import DrawingManagerRender from './DrawingManagerRender';
-import Drawing3DFoundManagerRender from './Drawing3DFoundManagerRender/Drawing3DFoundMangerRender';
+import Drawing3DFoundManagerRender from './Drawing3DFoundMangerRender';
 import DrawingInnerManagerRender from './DrawingInnerManagerRender';
 import DrawingBuildingRooftopRender from './DrawingRooftopManagerRender/DrawingRooftopManagerRender';
 import DrawingKeepoutManagerRender from './DrawingKeepoutManagerRender';
+import DrawingKeepoutPolygonManagerRender from './DrawingKeepoutPolygonManagerRender';
+import DebugRender from './DebugRender';
 
 const CesiumRender = (props) => {
   return (
@@ -23,8 +25,9 @@ const CesiumRender = (props) => {
       }
       <Drawing3DFoundManagerRender />
       <DrawingBuildingRooftopRender />
+      <DrawingKeepoutPolygonManagerRender />
       <DrawingKeepoutManagerRender />
-
+      <DebugRender />
     </div>
   );
 };

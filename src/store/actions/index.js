@@ -69,9 +69,13 @@ export {
 } from './drawingKeepoutManager'
 
 export {
-  createPolygonFoundation,
-  setUpPolygonFoundation,
-} from './drawingPolygonManager';
+  createPolygonFoundationWrapper,
+  createPolygonFoundationIncludeStb,
+  createWall,
+  setBackendLoadingTrue,
+  setBackendLoadingFalse
+} from './drawingPolygonManager'
+
 
 export {
   build3DRoofTopModeling,
@@ -79,6 +83,11 @@ export {
   initNodesCollection,
   searchAllRoofPlanes
 } from './drawingRooftopManager';
+
+
+export {
+  createAllKeepoutPolygon
+} from './drawingKeepoutPolygonManager'
 
 export {
   setUIStateReadyDrawing,
@@ -97,3 +106,8 @@ export {
   saveBuildingInfoFields,
   resetBuilding
 } from './buildingManager';
+
+export {
+  setDebugPoints,
+  setDebugPolylines
+} from './debugRender';

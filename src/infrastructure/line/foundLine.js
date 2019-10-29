@@ -1,10 +1,12 @@
 import * as Cesium from 'cesium';
-import uuid from 'uuid/v1';
-import errorNotification from '../../components/ui/Notification/ErrorNotification';
+import simplepolygon from 'simplepolygon';
 
+import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Point from '../point/point';
 import Polyline from './polyline';
 import Coordinate from '../point/coordinate';
+import MathLineCollection from '../math/mathLineCollection';
+import MathLine from '../math/mathLine';
 
 class FoundLine extends Polyline {
 
@@ -48,7 +50,7 @@ class FoundLine extends Polyline {
     polyline, id = polyline.entityId, name = null, color = null, width = null,
     show = true
   ) {
-    const priorPoints = polyline.points.slice(0, polyline.length-1)
+    const priorPoints = polyline.points.slice(0, polyline.points.length-1)
     .map(elem => {
       return Point.fromPoint(elem);
     });
@@ -84,6 +86,28 @@ class FoundLine extends Polyline {
     }
   }
 
+  getHelpLineBearings = () => {
+    let brngSet = new Set();
+    for (let i = 0; i < this.length-2; i++) {
+      const brng = Point.bearing(this.points[i], this.points[i+1]);
+      const brng1 = (brng-180)%360 > 0 ? (brng-180)%360 : (brng-180)%360+360;
+      const brng2 = (brng+90)%360 > 0 ? (brng+90)%360 : (brng+90)%360+360;
+      const brng3 = (brng-90)%360 > 0 ? (brng-90)%360 : (brng-90)%360+360;
+      const brng4 = (brng-45)%360 > 0 ? (brng-45)%360 : (brng-45)%360+360;
+      const brng5 = (brng+45)%360 > 0 ? (brng+45)%360 : (brng+45)%360+360;
+      const brng6 = (brng-135)%360 > 0 ? (brng-135)%360 : (brng-135)%360+360;
+      const brng7 = (brng+135)%360 > 0 ? (brng+135)%360 : (brng+135)%360+360;
+      brngSet.add(parseFloat(brng.toFixed(5)));
+      brngSet.add(parseFloat(brng1.toFixed(5)));
+      brngSet.add(parseFloat(brng2.toFixed(5)));
+      brngSet.add(parseFloat(brng3.toFixed(5)));
+      brngSet.add(parseFloat(brng4.toFixed(5)));
+      brngSet.add(parseFloat(brng5.toFixed(5)));
+      brngSet.add(parseFloat(brng6.toFixed(5)));
+      brngSet.add(parseFloat(brng7.toFixed(5)));
+    }
+    return brngSet;
+  }
 }
 
 export default FoundLine;

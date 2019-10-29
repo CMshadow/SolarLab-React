@@ -9,7 +9,6 @@ import {
   Button,
 } from 'antd';
 
-import Polygon from '../../../../../infrastructure/Polygon/Polygon';
 import * as actions from '../../../../../store/actions/index';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 
@@ -21,12 +20,19 @@ const draw3DBuildingButton = (props) => {
       size = 'large'
       shape = 'round'
       block
+      loading = {props.backendLoading}
       disabled = {
-        props.CurrentBuilding.type === 'FLAT' ?
+        (props.CurrentBuilding.type === 'FLAT' ?
         !uiStateJudge.isFinishedFound(props.uiState) :
-        !uiStateJudge.isFinishedInner(props.uiState)
+        !uiStateJudge.isFinishedInner(props.uiState)) || (
+          props.keepoutList.filter(kpt => !kpt.finishedDrawing).length !== 0
+        )
       }
       onClick = {() => {
+
+        props.createPolygonFoundationWrapper();
+        props.createAllKeepoutPolygon();
+
         console.log('[Button]: Test Polygon: ');
         let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
         let buildingCoordinatesSize = buildingCoordinatesArray.length;
@@ -49,8 +55,11 @@ const draw3DBuildingButton = (props) => {
 const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    CurrentBuilding: 
-      state.buildingManagerReducer.workingBuilding,
+    CurrentBuilding: state.buildingManagerReducer.workingBuilding,
+    backendLoading:
+      state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
+    keepoutList:
+      state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
     BuildFoundation: 
       state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
     PitchedBuildingRoofTop:
@@ -62,6 +71,10 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
+    createPolygonFoundationWrapper: () =>
+      dispatch(actions.createPolygonFoundationWrapper()),
+    createAllKeepoutPolygon: () =>
+      dispatch(actions.createAllKeepoutPolygon()),
     CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
       dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray)),
     CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation) => 

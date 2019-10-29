@@ -39,6 +39,7 @@ const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    drawingFoundPolyline: state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
   };
 };
 

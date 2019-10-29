@@ -8,10 +8,9 @@ class Tree extends Keepout {
     id = null, type = null, drew = null, editing = null, ventHt = null,
     radius = null, outline = null
   ) {
-    super(id, type, drew, editing);
+    super(id, type, drew, editing, outline);
     this.height = ventHt ? ventHt : 0;
     this.radius = radius ? radius : 5;
-    this.outlinePolyline = outline ? outline : null;
   }
 
   static fromKeepout (

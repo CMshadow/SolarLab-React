@@ -7,9 +7,8 @@ class Env extends Keepout {
   constructor (id = null, type = null, drew=null, editing=null, envHt = null,
     outline = null
   ) {
-    super(id, type, drew, editing);
+    super(id, type, drew, editing, outline);
     this.height = envHt ? envHt : 0;
-    this.outlinePolyline = outline ? outline : null;
   }
 
   static fromKeepout (

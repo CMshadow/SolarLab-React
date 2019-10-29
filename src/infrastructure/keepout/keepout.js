@@ -6,11 +6,17 @@ import uuid from 'uuid/v1';
 
 class Keepout {
 
-  constructor (id = null, type = null, drew = null, editing = null) {
+  constructor (
+    id = null, type = null, drew = null, editing = null, outline = null,
+    polygon = null, polygonPart2 = null
+  ) {
     this.id = id ? id : uuid();
     this.type = type ? type : 'KEEPOUT';
     this.finishedDrawing = drew ? drew : false;
     this.isEditing = editing ? editing : false;
+    this.outlinePolyline = outline ? outline : null;
+    this.outlinePolygon = polygon ? polygon : null;
+    this.outlinePolygonPart2 = polygonPart2 ? polygonPart2 : null;
   }
 
   setFinishedDrawing = () => {

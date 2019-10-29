@@ -7,9 +7,8 @@ class Passage extends Keepout {
   constructor (id = null, type = null, drew = null, editing = null,
     passageWidth = null, outline = null
   ) {
-    super(id, type, drew, editing);
+    super(id, type, drew, editing, outline);
     this.width = passageWidth ? passageWidth : 0.5;
-    this.outlinePolyline = outline ? outline : null;
   }
 
   static fromKeepout (passage, passageWidth=null, outline=null) {
