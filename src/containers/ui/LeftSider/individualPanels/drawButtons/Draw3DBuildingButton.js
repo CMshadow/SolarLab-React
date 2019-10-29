@@ -26,7 +26,16 @@ const draw3DBuildingButton = (props) => {
         )
       }
       onClick = {() => {
+
         props.createPolygonFoundationWrapper();
+        props.createAllKeepoutPolygon();
+
+        console.log('[Button]: Test Polygon: ');
+        let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
+        let buildingCoordinatesSize = buildingCoordinatesArray.length;
+        buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
+        props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
+        props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, props.PolylinesRelation);
       }}
     >Generate 3D Model</Button>
 
@@ -48,14 +57,26 @@ const mapStateToProps = state => {
       state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
     keepoutList:
       state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
+    BuildFoundation: 
+      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+    PitchedBuildingRoofTop:
+      state.undoableReducer.present.drawingRooftopManagerReducer,
+    PolylinesRelation: 
+      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     createPolygonFoundationWrapper: () =>
-      dispatch(actions.createPolygonFoundationWrapper())
-  };
+      dispatch(actions.createPolygonFoundationWrapper()),
+    createAllKeepoutPolygon: () =>
+      dispatch(actions.createAllKeepoutPolygon()),
+    CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
+      dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray)),
+    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation) => 
+      dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation))
+ };
 };
 
 export default connect(mapStateToProps,mapDispatchToProps)(draw3DBuildingButton);
