@@ -32,7 +32,11 @@ const draw3DBuildingButton = (props) => {
         let buildingCoordinatesSize = buildingCoordinatesArray.length;
         buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
         props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
-        props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, props.PolylinesRelation);
+        props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, 
+            props.PolylinesRelation,
+            props.foundPolylines,
+            props.hipPolylines,
+            props.ridgePolylines);
       }}
     >Test: Draw Foundation</Button>
 
@@ -56,7 +60,13 @@ const mapStateToProps = state => {
     PitchedBuildingRoofTop:
       state.undoableReducer.present.drawingRooftopManagerReducer,
     PolylinesRelation: 
-      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation
+      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
+    foundPolylines:
+      state.undoableReducer.present.drawingInnerManagerReducer.foundPolylines,
+    hipPolylines:
+      state.undoableReducer.present.drawingInnerManagerReducer.hipPolylines,
+    ridgePolylines:
+      state.undoableReducer.present.drawingInnerManagerReducer.ridgePolylines
   };
 };
 
@@ -64,8 +74,8 @@ const mapDispatchToProps = dispatch => {
   return {
     CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
       dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray)),
-    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation) => 
-      dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation))
+    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation, foundPolylines, hipPolylines, ridgePolylines) => 
+      dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation, foundPolylines,hipPolylines, ridgePolylines))
  };
 };
 

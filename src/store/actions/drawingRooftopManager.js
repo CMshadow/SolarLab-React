@@ -12,12 +12,14 @@ export const initEdgesMap = () => {
 };
 
 
-export const build3DRoofTopModeling = (buildingOutline, polylinesRelation) => {
+export const build3DRoofTopModeling = (buildingOutline, polylinesRelation, foundPolylines, hipPolylines, ridgePolylines) => {
   let newNodeCollection = [];
   let newInnerEdgeCollection = [];
   let newOuterEdgeCollection = [];
   let pathCoordinatesCollection = [];
-
+  console.log("test1: "+ foundPolylines);
+  console.log("test2: "+ hipPolylines);
+  console.log("test3: "+ ridgePolylines);
   initNodesCollection(buildingOutline, newNodeCollection, newOuterEdgeCollection);
   newInnerEdgeCollection = initEdgeMap(polylinesRelation, newNodeCollection).newInnerEdgeCollection;
   pathCoordinatesCollection = searchAllRoofPlanes(newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection).pathCollection;
@@ -84,7 +86,7 @@ export const initEdgeMap = (polylinesRelation, newNodeCollection) => {
       }
     }
     if (polylinesRelation[key]['type'] === "IN") {
-      startNode = new Node(null, polylinesRelation[key]['object']['lon'], polylinesRelation[key]['object']['lat'], 7, 0 );
+      startNode = new Node(null, polylinesRelation[key]['object']['lon'], polylinesRelation[key]['object']['lat'], 7, 1 );
       for (let i = 0; i < polylinesRelation[key]['connectPolyline'].length; ++i) {
         if (polylinesRelation[key]['connectPolyline'][i]['type'] === 'RIDGE') {
           endNode = (polylinesRelation[key]['connectPolyline'][i]['points'][0]['lon'] === startNode.lon 

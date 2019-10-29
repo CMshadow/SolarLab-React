@@ -6,7 +6,8 @@ import Polygon from '../../infrastructure/Polygon/Polygon';
 
 
 const initialState = {
-	BuildingFoundation: null
+	BuildingFoundation: null,
+	
 };
 
 /**
