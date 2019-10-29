@@ -6,13 +6,14 @@ import * as actions from '../../../../store/actions/index';
 
 const drawing3DFoundManagerRender = (props) => {
 	let drawingBuildingFoundation = null;
-	if (props.DrawingBuidingFoundation !== null) {
-		drawingBuildingFoundation = (
+	if (props.DrawingBuidingFoundation !== []) {
+		drawingBuildingFoundation =
+			props.DrawingBuidingFoundation.map(individual => (
 			<PolygonVisualize
-				{...props.DrawingBuidingFoundation}
+				key={individual.entityId}
+				{...individual}
 			/>
-		);
-		props.CurrentBuilding.bindFoundPolygon(props.DrawingBuidingFoundation);
+		));
 	}
 
 	let drawingBuildingFoundationExcludeStb = null;

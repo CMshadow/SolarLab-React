@@ -1,5 +1,6 @@
 import * as actionTypes from '../actions/actionTypes';
-
+import FlatBuilding from '../../infrastructure/building/flatBuilding';
+import PitchedBuilding from '../../infrastructure/building/pitchedBuilding';
 
 const initialState = {
   workingBuilding: null,
@@ -22,6 +23,20 @@ const initBuilding = (state, action) => {
   };
 };
 
+const updateBuilding = (state, action) => {
+  let newWorkingBuilding = null;
+  if (state.workingBuilding instanceof FlatBuilding) {
+    newWorkingBuilding = FlatBuilding.fromBuilding(
+      state.workingBuilding, null, null, action.foundationHeight,
+      action.eaveSetback, action.parapetHeight
+    );
+  }
+  return {
+    ...state,
+    workingBuilding: newWorkingBuilding
+  }
+};
+
 const saveFields = (state, action) => {
   return {
     ...state,
@@ -32,11 +47,46 @@ const saveFields = (state, action) => {
   };
 };
 
+const bindFoundPolyline = (state, action) => {
+  let newWorkingBuilding = null;
+  if (state.workingBuilding instanceof FlatBuilding) {
+    newWorkingBuilding = FlatBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindFoundPolyline(action.polyline);
+  }
+
+  return {
+    ...state,
+    workingBuilding: newWorkingBuilding
+  };
+};
+
+const bindFoundPolygons = (state, action) => {
+  let newWorkingBuilding = null;
+  if (state.workingBuilding instanceof FlatBuilding) {
+    newWorkingBuilding = FlatBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindFoundPolygon(action.polygon);
+    newWorkingBuilding.bindFoundPolygonExcludeStb(action.polygonsExcludeStb);
+    newWorkingBuilding.bindParapetPolygon(action.parapet);
+  }
+
+  return {
+    ...state,
+    workingBuilding: newWorkingBuilding
+  };
+}
 
 const reducer = (state=initialState, action) => {
   switch (action.type) {
-    case actionTypes.SAVE_BUILDING_INFO_FIELDS: return saveFields(state, action);
-    case actionTypes.INIT_BUILDING: return initBuilding(state, action);
+    case actionTypes.SAVE_BUILDING_INFO_FIELDS:
+      return saveFields(state, action);
+    case actionTypes.BIND_FOUNDATION_POLYLINE:
+      return bindFoundPolyline(state, action);
+    case actionTypes.BIND_FOUNDATION_POLYGONS:
+      return bindFoundPolygons(state, action);
+    case actionTypes.INIT_BUILDING:
+      return initBuilding(state, action);
+    case actionTypes.UPDATE_BUILDING:
+      return updateBuilding(state, action);
     default: return state;
   }
 };
