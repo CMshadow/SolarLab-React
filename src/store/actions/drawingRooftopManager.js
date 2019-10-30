@@ -198,21 +198,22 @@ export const calculateObliquityAndObliquity = (NodesCollection, path) => {
     let possibleBrng2 = null;
     
     
-    if (direction === "startToEnd") {
-      brng = Coordinate.bearing(startCoord, endOuterCoord);
-      dist = Coordinate.surfaceDistance(startCoord, endOuterCoord);
-      possibleBrng1 = brng + 90;
-      possibleBrng2 = brng - 90;
-      possibleInter1 = Coordinate.intersection(startCoord, brng, endInnerNode, possibleBrng1 );
-      possibleInter2 = Coordinate.intersection(startCoord, brng, endInnerNode, possibleBrng2 );
-    } else if (direction === "endToStart") {
-      brng = Coordinate.bearing(endOuterCoord, startCoord);
-      dist = Coordinate.surfaceDistance(endOuterCoord, startCoord);
-      possibleBrng1 = brng + 90;
-      possibleBrng2 = brng - 90;
-      possibleInter1 = Coordinate.intersection(endInnerNode, possibleBrng1, startCoord, brng );
-      possibleInter2 = Coordinate.intersection(endInnerNode, possibleBrng2, startCoord, brng );
-    }
+    // if (direction === "startToEnd") {
+    brng = Coordinate.bearing(startCoord, endOuterCoord);
+    dist = Coordinate.surfaceDistance(startCoord, endOuterCoord);
+    possibleBrng1 = brng + 90;
+    possibleBrng2 = brng - 90;
+    possibleInter1 = Coordinate.intersection(startCoord, brng, endInnerNode, possibleBrng1 );
+    possibleInter2 = Coordinate.intersection(startCoord, brng, endInnerNode, possibleBrng2 );
+    // }
+    // else if (direction === "endToStart") {
+    //   brng = Coordinate.bearing(endOuterCoord, startCoord);
+    //   dist = Coordinate.surfaceDistance(endOuterCoord, startCoord);
+    //   possibleBrng1 = brng + 90;
+    //   possibleBrng2 = brng - 90;
+    //   possibleInter1 = Coordinate.intersection(endInnerNode, possibleBrng1, startCoord, brng );
+    //   possibleInter2 = Coordinate.intersection(endInnerNode, possibleBrng2, startCoord, brng );
+    // }
     console.log("endInner node " + JSON.stringify(endInnerCoord));
     console.log("start node " + JSON.stringify(startCoord));
     console.log("endOut node " + JSON.stringify(endOuterCoord));
