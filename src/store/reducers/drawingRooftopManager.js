@@ -1,9 +1,7 @@
 import * as Cesium from 'cesium';
-import uuid from 'uuid/v1';
 import * as actionTypes from '../actions/actionTypes';
-import Coordinate from '../../infrastructure/point/coordinate';
 import Polygon from '../../infrastructure/Polygon/Polygon';
-
+import RoofTop from '../../infrastructure/rooftop/rooftop';
 
 const initState = {
 	NodesCollection: null,
@@ -13,17 +11,20 @@ const initState = {
   RoofPlaneCoordinatesCollection:null,
   RooftopCollection: null,
   EnableToBuild: false,
+
 }
 
 
 
 const build3DRoofTopModeling = (state, action) => {
   console.log('create rooftop polygon: ');
-  let newRooftopCollection = [];
+  let newRooftopCollection = new RoofTop();
   for (let roofPlane of action.AllRoofPlanePaths) {
-    let newRoofPlane = new Polygon();
-    newRoofPlane.hierarchy = [...roofPlane];
-    newRooftopCollection.push(newRoofPlane);
+    let newRoofPlane = new Polygon(null,'roofPlane',null, 
+      null, null,null,null,null,null,null,null,
+      roofPlane.roofPlaneParameters[0],roofPlane.roofPlaneParameters[1]);
+    newRoofPlane.hierarchy = [...roofPlane.roofPlaneCoordinateArray];
+    newRooftopCollection.addRoofPlane(newRoofPlane);
   }
  
   

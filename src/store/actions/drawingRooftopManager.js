@@ -17,18 +17,18 @@ export const build3DRoofTopModeling = (buildingOutline, polylinesRelation, found
   let newNodeCollection = [];
   let newInnerEdgeCollection = [];
   let newOuterEdgeCollection = [];
-  let pathCoordinatesCollection = [];
+  let pathInformationCollection = [];
 
   initNodesCollection(buildingOutline, newNodeCollection, newOuterEdgeCollection);
   newInnerEdgeCollection = initEdgeMap(polylinesRelation, newNodeCollection, foundPolylines, hipPolylines, ridgePolylines).newInnerEdgeCollection;
-  pathCoordinatesCollection = searchAllRoofPlanes(newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection).pathCollection;
+  pathInformationCollection = searchAllRoofPlanes(newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection).pathCollection;
  
   return ({
     type: actionTypes.BUILD_3D_ROOFTOP_MODELING,
     nodesCollection: newNodeCollection,
     OuterEdgesCollection: newOuterEdgeCollection,
     InnerEdgeCollection: newInnerEdgeCollection,
-    AllRoofPlanePaths: pathCoordinatesCollection
+    AllRoofPlanePaths: pathInformationCollection
   });
 }
 
@@ -115,22 +115,25 @@ export const initEdgeMap = (polylinesRelation, newNodeCollection, foundPolylines
 
 export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, NodesCollection) => {
   
-  let pathCoordinatesCollection = [];
+  let pathInformationCollection = [];
   let path = MathHelper.searchAllPossibleRoofTops([InnerEdgeCollection,OuterEdgesCollection],NodesCollection);
   for (let i = 0; i < path.length; ++i) {
-    let roofPlaneCoordinateArray = [];
-    calculateObliquityAndObliquity(NodesCollection, path[i])
+    let pathParameters = {
+      roofPlaneCoordinateArray: [],
+      roofPlaneParameters: null
+    };
+    pathParameters.roofPlaneParameters = [...calculateObliquityAndObliquity(NodesCollection, path[i]).roofPlaneParameters];
     for (let nodeIndex of path[i]) {
-      roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lon);
-      roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lat);
-      roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].height);
+      pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lon);
+      pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lat);
+      pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].height);
     }
-    pathCoordinatesCollection.push(roofPlaneCoordinateArray);
+    pathInformationCollection.push(pathParameters);
   }
   
   return({
     type: actionTypes.SEARCH_ALL_ROOF_PLANES,
-    pathCollection: pathCoordinatesCollection
+    pathCollection: pathInformationCollection
   });
 }
 
@@ -138,7 +141,6 @@ export const calculateObliquityAndObliquity = (NodesCollection, path) => {
   let startNode = null;
   let endInnerNode = null;
   let endOuterNode = null;
-  let direction = null;
   let roofBrng = null;
   let obliquity = null;
   console.log("path: "+path);
@@ -152,15 +154,15 @@ export const calculateObliquityAndObliquity = (NodesCollection, path) => {
           startNode = NodesCollection[nodeIndex];
           endInnerNode = NodesCollection[path[i + 1]];
           endOuterNode = NodesCollection[path[path.length - 1]];
-          direction = "endToStart";
-          console.log('check: '+ path[i + 1] + " - " + nodeIndex + ' - ' + path[path.length - 1] + direction)
+          // direction = "endToStart";
+          // console.log('check: '+ path[i + 1] + " - " + nodeIndex + ' - ' + path[path.length - 1] + direction)
           break;
         } else if (NodesCollection[path[i + 1]].bound === 0 && NodesCollection[path[path.length - 1]].bound === 1) {
           startNode = NodesCollection[nodeIndex];
           endOuterNode = NodesCollection[path[i + 1]];
           endInnerNode = NodesCollection[path[path.length - 1]];
-          direction = "startToEnd";
-          console.log('check: '+ path[path.length - 1] + " - " + nodeIndex + ' - ' + path[i + 1] + direction)
+          // direction = "startToEnd";
+          // console.log('check: '+ path[path.length - 1] + " - " + nodeIndex + ' - ' + path[i + 1] + direction)
           break;
         }
       } 
@@ -170,15 +172,15 @@ export const calculateObliquityAndObliquity = (NodesCollection, path) => {
           startNode = NodesCollection[nodeIndex];
           endInnerNode = NodesCollection[path[i + 1]];
           endOuterNode = NodesCollection[path[i - 1]];
-          direction = "endToStart";
-          console.log('check: '+ path[i + 1] + " - " + nodeIndex + ' - ' + path[i - 1] + direction)
+          // direction = "endToStart";
+          // console.log('check: '+ path[i + 1] + " - " + nodeIndex + ' - ' + path[i - 1] + direction)
           break;
         } else if (NodesCollection[path[i + 1]].bound === 0 && NodesCollection[path[i - 1]].bound === 1) {
           startNode = NodesCollection[nodeIndex];
           endOuterNode = NodesCollection[path[i + 1]];
           endInnerNode = NodesCollection[path[i - 1]];
-          direction = "startToEnd";
-          console.log('check: '+ path[i - 1] + " - " + nodeIndex + ' - ' + path[i + 1] + direction)
+          // direction = "startToEnd";
+          // console.log('check: '+ path[i - 1] + " - " + nodeIndex + ' - ' + path[i + 1] + direction)
           break;
         }
       }
@@ -206,19 +208,12 @@ export const calculateObliquityAndObliquity = (NodesCollection, path) => {
     possibleInter1 = Coordinate.intersection(startCoord, brng, endInnerNode, possibleBrng1 );
     possibleInter2 = Coordinate.intersection(startCoord, brng, endInnerNode, possibleBrng2 );
     // }
-    // else if (direction === "endToStart") {
-    //   brng = Coordinate.bearing(endOuterCoord, startCoord);
-    //   dist = Coordinate.surfaceDistance(endOuterCoord, startCoord);
-    //   possibleBrng1 = brng + 90;
-    //   possibleBrng2 = brng - 90;
-    //   possibleInter1 = Coordinate.intersection(endInnerNode, possibleBrng1, startCoord, brng );
-    //   possibleInter2 = Coordinate.intersection(endInnerNode, possibleBrng2, startCoord, brng );
-    // }
-    console.log("endInner node " + JSON.stringify(endInnerCoord));
-    console.log("start node " + JSON.stringify(startCoord));
-    console.log("endOut node " + JSON.stringify(endOuterCoord));
+  
+    // console.log("endInner node " + JSON.stringify(endInnerCoord));
+    // console.log("start node " + JSON.stringify(startCoord));
+    // console.log("endOut node " + JSON.stringify(endOuterCoord));
 
-    console.log("intersection test: "+JSON.stringify(possibleInter1) + " and " + JSON.stringify(possibleInter2));
+    // console.log("intersection test: "+JSON.stringify(possibleInter1) + " and " + JSON.stringify(possibleInter2));
     if (possibleInter1 === undefined) {
       roofBrng = possibleBrng2;
       shortestDist = Coordinate.surfaceDistance(endInnerCoord, possibleInter2);

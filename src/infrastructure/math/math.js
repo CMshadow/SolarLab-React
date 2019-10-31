@@ -3,12 +3,6 @@ import * as Cesium from 'cesium';
 import Coordinate from '../point/coordinate';
 
 
-export const math_make_a_line = (x1, y1, x2, y2) => {
-  var line_a = ((y2 - y1) / (x2 - x1));
-  var line_b = (y1 - (line_a * x1));
-  return [line_a, line_b, [x1, y1], [x2, y2]];
-}
-
 export const coordinateToVector = (coordinate) => {
   var latRadians = Cesium.Math.toRadians(coordinate.lat);
   var lonRadians = Cesium.Math.toRadians(coordinate.lon);

@@ -15,7 +15,7 @@ const initialState = {
  *  CREATE 3D Building Foundation Polygon
  */
 const createBuildingFoundationPolygon = (state, action) => {
-	let newFoundation = new Polygon(null, null, action.height, action.coordinatesArray)
+	let newFoundation = new Polygon(null, "BuildingFoundation", action.height, action.coordinatesArray)
 	return{
 		...state,
 		BuildingFoundation: newFoundation
