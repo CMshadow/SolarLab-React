@@ -1,15 +1,11 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/pro-light-svg-icons'
 import {
-  Divider,
   Row,
   Col,
   Button,
 } from 'antd';
 
-import Polygon from '../../../../../infrastructure/Polygon/Polygon';
 import * as actions from '../../../../../store/actions/index';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 
@@ -21,24 +17,31 @@ const draw3DBuildingButton = (props) => {
       size = 'large'
       shape = 'round'
       block
+      loading = {props.backendLoading}
       disabled = {
-        props.CurrentBuilding.type === 'FLAT' ?
+        (props.currentBuilding.type === 'FLAT' ?
         !uiStateJudge.isFinishedFound(props.uiState) :
-        !uiStateJudge.isFinishedInner(props.uiState)
+        !uiStateJudge.isFinishedInner(props.uiState)) || (
+          props.keepoutList.filter(kpt => !kpt.finishedDrawing).length !== 0
+        )
       }
       onClick = {() => {
-        console.log('[Button]: Test Polygon: ');
-        let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
-        let buildingCoordinatesSize = buildingCoordinatesArray.length;
-        buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
-        props.CreateBuildingFoundationPolygon(props.CurrentBuilding.foundationHeight, buildingCoordinatesArray);
-        props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, 
+        if (props.currentBuilding.type === 'FLAT') {
+          props.createPolygonFoundationWrapper();
+          props.createAllKeepoutPolygon();
+        } else {
+          console.log('[Button]: Test Polygon: ');
+          let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
+          let buildingCoordinatesSize = buildingCoordinatesArray.length;
+          buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
+          props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, 
             props.PolylinesRelation,
             props.foundPolylines,
             props.hipPolylines,
             props.ridgePolylines);
+        }
       }}
-    >Test: Draw Foundation</Button>
+    >Generate 3D Model</Button>
 
   );
   return (
@@ -53,9 +56,12 @@ const draw3DBuildingButton = (props) => {
 const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    CurrentBuilding: 
-      state.buildingManagerReducer.workingBuilding,
-    BuildFoundation: 
+    currentBuilding: state.buildingManagerReducer.workingBuilding,
+    backendLoading:
+      state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
+    keepoutList:
+      state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
+    BuildFoundation:
       state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
     PitchedBuildingRoofTop:
       state.undoableReducer.present.drawingRooftopManagerReducer,
@@ -76,6 +82,10 @@ const mapDispatchToProps = dispatch => {
       dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray)),
     CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation, foundPolylines, hipPolylines, ridgePolylines) => 
       dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation, foundPolylines,hipPolylines, ridgePolylines))
+    createPolygonFoundationWrapper: () =>
+      dispatch(actions.createPolygonFoundationWrapper()),
+    createAllKeepoutPolygon: () =>
+      dispatch(actions.createAllKeepoutPolygon()),
  };
 };
 

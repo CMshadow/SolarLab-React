@@ -22,7 +22,8 @@ const DrawingKeepoutManagerRender = (props) => {
         props.drawingKeepoutPolyline.points.slice(0, -1).map(elem => (
         <CustomPoint key={elem.entityId} {...elem} />
       ));
-    } else if (props.drawingKeepoutPolyline instanceof Circle) {
+    }
+    else if (props.drawingKeepoutPolyline instanceof Circle) {
       const showPoints = [
         props.drawingKeepoutPolyline.points[0],
         props.drawingKeepoutPolyline.centerPoint
@@ -31,7 +32,8 @@ const DrawingKeepoutManagerRender = (props) => {
         showPoints.map(elem => (
         <CustomPoint key={elem.entityId} {...elem} />
       ));
-    } else if (props.drawingKeepoutPolyline instanceof Sector) {
+    }
+    else if (props.drawingKeepoutPolyline instanceof Sector) {
       let showPoints = [];
       if (props.drawingKeepoutPolyline.points.length > 4) {
         showPoints = [
@@ -53,7 +55,8 @@ const DrawingKeepoutManagerRender = (props) => {
         showPoints.map(elem => (
         <CustomPoint key={elem.entityId} {...elem} />
       ));
-    }else {
+    }
+    else {
       drawingKeepoutPoints =
         props.drawingKeepoutPolyline.points.map(elem => (
         <CustomPoint key={elem.entityId} {...elem} />

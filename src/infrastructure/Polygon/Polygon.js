@@ -147,12 +147,18 @@ class Polygon {
   };
 
   /**
-   * [makeHierarchyFromPolyline description]
-   * @param  {[type]} polyline               [description]
-   * @param  {[type]} [overwriteHeight=null] [description]
-   * @return {[type]}                        [description]
+   * create the hierarchy for a Polygon object by a given Polyline object
+   * @param  {Polyline} polyline             the given Polyline object
+   * @param  {NUmber} [overwriteHeight=null] overwriteheight to overwirte the
+   *                                         height of the points on the polyline
+   * @param  {Number} [heightOffset=0] heightoffset addition to overwriteHeight
+   * @return {Number[]}                      the array can be used as the hierarchy
+   *                                         of a Polygon object.
+   *                                         i.e. [lon, lat, height, lon, lat, height ...]
    */
-  static makeHierarchyFromPolyline = (polyline, overwriteHeight = null) => {
+  static makeHierarchyFromPolyline = (
+    polyline, overwriteHeight = null, heightOffset = 0
+  ) => {
     let polylineHierarchy = null;
 
     if (polyline instanceof FoundLine) {
@@ -164,9 +170,19 @@ class Polygon {
     }
     if (overwriteHeight) {
       for (let i = 0; i < polylineHierarchy.length; i+=3){
-        polylineHierarchy[i+2] = overwriteHeight;
+        polylineHierarchy[i+2] = overwriteHeight + heightOffset;
       }
     }
+    return polylineHierarchy;
+  }
+
+  static makeHierarchyFromGeoJSON = (GeoJSON, height, heightOffset = 0) => {
+    let polylineHierarchy = [];
+    GeoJSON.geometry.coordinates[0].forEach(cor => {
+      polylineHierarchy = polylineHierarchy.concat(
+        [cor[0], cor[1], height + heightOffset]
+      );
+    });
     return polylineHierarchy;
   }
 
@@ -199,8 +215,22 @@ class Polygon {
    * @param {Color} newColor new Cesium.Color or RGBA color
    */
   setColor = (newColor) => {
-    this.color = newColor;
+    this.material = newColor;
   };
+
+  toFoundLine = () => {
+    const firstAndLastPoint = new Point(
+      this.hierarchy[0], this.hierarchy[1], this.hierarchy[2]
+    );
+    let points = [firstAndLastPoint];
+    for (let i = 3; i < this.hierarchy.length; i+=3) {
+      points.push(
+        new Point(this.hierarchy[i], this.hierarchy[i+1], this.hierarchy[i+2])
+      );
+    }
+    points.push(firstAndLastPoint);
+    return new FoundLine(points);
+  }
 
 }
 export default Polygon;

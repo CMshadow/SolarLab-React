@@ -233,7 +233,6 @@ const dragKeepoutPolyline = (state, action) => {
       );
       break;
   }
-
   let auxPolyline = null;
   if (existPoints.length >= 2) {
     // Create Aux polyline
@@ -364,9 +363,18 @@ const addPointOnKeepoutPolyline = (state, action) => {
   const existPoints = state.fixedPoints.map(elem => {
     return Point.fromPoint(elem);
   });
-  let newPoint = state.drawingKeepoutPolyline.points[
-    state.drawingKeepoutPolyline.length-1
-  ];
+  let newPoint = Point.fromCoordinate(
+    state.drawingKeepoutPolyline.points[state.drawingKeepoutPolyline.length-1],
+    null, null, null,
+    state.drawingKeepoutPolyline.points[state.drawingKeepoutPolyline.length-1]
+    .color
+  );
+  const trailingPoint = Point.fromCoordinate(
+    state.drawingKeepoutPolyline.points[state.drawingKeepoutPolyline.length-1],
+    null, null, null,
+    state.drawingKeepoutPolyline.points[state.drawingKeepoutPolyline.length-1]
+    .color
+  );
 
   let polyline = null;
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
@@ -374,13 +382,15 @@ const addPointOnKeepoutPolyline = (state, action) => {
     case 'ENV':
     case 'KEEPOUT':
       polyline = new FoundLine(
-        [...existPoints, newPoint], null, null, Cesium.Color.YELLOW
+        [...existPoints, newPoint, trailingPoint], null, null,
+        Cesium.Color.YELLOW
       );
       break;
 
     case 'PASSAGE':
       polyline = new Polyline(
-        [...existPoints, newPoint], null, null, Cesium.Color.WHEAT
+        [...existPoints, newPoint, trailingPoint], null, null,
+        Cesium.Color.WHEAT
       );
       break;
   }
