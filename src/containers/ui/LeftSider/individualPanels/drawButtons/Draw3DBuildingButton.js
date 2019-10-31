@@ -34,7 +34,7 @@ const draw3DBuildingButton = (props) => {
           let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
           let buildingCoordinatesSize = buildingCoordinatesArray.length;
           buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
-          props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray, 
+          props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray,
             props.PolylinesRelation,
             props.foundPolylines,
             props.hipPolylines,
@@ -65,7 +65,7 @@ const mapStateToProps = state => {
       state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
     PitchedBuildingRoofTop:
       state.undoableReducer.present.drawingRooftopManagerReducer,
-    PolylinesRelation: 
+    PolylinesRelation:
       state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
     foundPolylines:
       state.undoableReducer.present.drawingInnerManagerReducer.foundPolylines,
@@ -78,12 +78,9 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    CreateBuildingFoundationPolygon: (newHeight, coordinatesArray) => 
-      dispatch(actions.createPolygonFoundation(newHeight, coordinatesArray)),
-    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation, foundPolylines, hipPolylines, ridgePolylines) => 
-      dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation, foundPolylines,hipPolylines, ridgePolylines))
-    createPolygonFoundationWrapper: () =>
-      dispatch(actions.createPolygonFoundationWrapper()),
+    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation, foundPolylines, hipPolylines, ridgePolylines) =>
+      dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation, foundPolylines,hipPolylines, ridgePolylines)),
+    createPolygonFoundationWrapper: () => dispatch(actions.createPolygonFoundationWrapper()),
     createAllKeepoutPolygon: () =>
       dispatch(actions.createAllKeepoutPolygon()),
  };
