@@ -23,11 +23,15 @@ export const createAllKeepoutPolygon = () => (dispatch, getState) => {
   const ventKeepout = allKeepout.filter(kpt => kpt.type === 'VENT');
   const treeKeepout = allKeepout.filter(kpt => kpt.type === 'TREE');
   const envKeepout = allKeepout.filter(kpt => kpt.type === 'ENV');
-  dispatch(createNormalKeepoutPolygon(normalKeepout));
-  dispatch(createPassageKeepoutPolygon(passageKeepout));
-  dispatch(createVentKeepoutPolygon(ventKeepout));
-  dispatch(createTreeKeepoutPolygon(treeKeepout));
-  dispatch(createEnvKeepoutPolygon(envKeepout));
+  if (getState().buildingManagerReducer.workingBuilding.type === 'FLAT') {
+    dispatch(createNormalKeepoutPolygon(normalKeepout));
+    dispatch(createPassageKeepoutPolygon(passageKeepout));
+    dispatch(createVentKeepoutPolygon(ventKeepout));
+    dispatch(createTreeKeepoutPolygon(treeKeepout));
+    dispatch(createEnvKeepoutPolygon(envKeepout));
+  } else {
+    dispatch(createNormalKeepoutPolygonPitched(normalKeepout))
+  }
 }
 
 export const createNormalKeepoutPolygon = (normalKeepout) =>
@@ -90,6 +94,640 @@ export const createNormalKeepoutPolygon = (normalKeepout) =>
       error
     )
   });
+}
+
+export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
+(dispatch, getState) => {
+  // const pitchedRoofs =
+  //   getState().undoableReducer.present.drawingRooftopManagerReducer
+  //   .RooftopCollection.rooftopCollection;
+  // const pitchedRoofsFoundLine = pitchedRoofs.map(polygon => polygon.toFoundLine())
+  // const keepoutPolylines = normalKeepout.map(kpt => kpt.outlinePolyline);
+  // const keepoutStb = normalKeepout.map(kpt => kpt.setback);
+  let pitchedRoofsFoundLine = [
+    {
+    "points": [
+      {
+        "lon": -117.84126053273,
+        "lat": 33.647202018835,
+        "height": 5,
+        "heightOffset": 0,
+        "entityId": "7b245ce0-fbaf-11e9-af2a-ab6af2449303",
+        "name": "vertex",
+        "color": {
+          "red": 1,
+          "green": 1,
+          "blue": 1,
+          "alpha": 1
+        },
+        "pixelSize": 15,
+        "show": true,
+        "render": true
+      },
+      {
+        "lon": -117.841241586523,
+        "lat": 33.647069374757,
+        "height": 7,
+        "heightOffset": 0,
+        "entityId": "7b245ce1-fbaf-11e9-af2a-ab6af2449303",
+        "name": "vertex",
+        "color": {
+          "red": 1,
+          "green": 1,
+          "blue": 1,
+          "alpha": 1
+        },
+        "pixelSize": 15,
+        "show": true,
+        "render": true
+      },
+      {
+        "lon": -117.841118506894,
+        "lat": 33.646992031502,
+        "height": 7,
+        "heightOffset": 0,
+        "entityId": "7b245ce2-fbaf-11e9-af2a-ab6af2449303",
+        "name": "vertex",
+        "color": {
+          "red": 1,
+          "green": 1,
+          "blue": 1,
+          "alpha": 1
+        },
+        "pixelSize": 15,
+        "show": true,
+        "render": true
+      },
+      {
+        "lon": -117.840961034805,
+        "lat": 33.647013814134,
+        "height": 5,
+        "heightOffset": 0,
+        "entityId": "7b245ce3-fbaf-11e9-af2a-ab6af2449303",
+        "name": "vertex",
+        "color": {
+          "red": 1,
+          "green": 1,
+          "blue": 1,
+          "alpha": 1
+        },
+        "pixelSize": 15,
+        "show": true,
+        "render": true
+      },
+      {
+        "lon": -117.84126053273,
+        "lat": 33.647202018835,
+        "height": 5,
+        "heightOffset": 0,
+        "entityId": "7b245ce0-fbaf-11e9-af2a-ab6af2449303",
+        "name": "vertex",
+        "color": {
+          "red": 1,
+          "green": 1,
+          "blue": 1,
+          "alpha": 1
+        },
+        "pixelSize": 15,
+        "show": true,
+        "render": true
+      }
+    ],
+    "entityId": "7b245ce4-fbaf-11e9-af2a-ab6af2449303",
+    "name": "polyline",
+    "color": {
+      "red": 1,
+      "green": 1,
+      "blue": 1,
+      "alpha": 1
+    },
+    "show": true,
+    "width": 4
+    },
+    {
+      "points": [
+        {
+          "lon": -117.841398656684,
+          "lat": 33.647049695275,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "7b245ce5-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841241586523,
+          "lat": 33.647069374757,
+          "height": 7,
+          "heightOffset": 0,
+          "entityId": "7b245ce6-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.84126053273,
+          "lat": 33.647202018835,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "7b245ce7-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841398656684,
+          "lat": 33.647049695275,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "7b245ce5-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "7b245ce8-fbaf-11e9-af2a-ab6af2449303",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4
+    },
+    {
+      "points": [
+        {
+          "lon": -117.84109915899,
+          "lat": 33.646861490386,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "7b245ce9-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841118506894,
+          "lat": 33.646992031502,
+          "height": 7,
+          "heightOffset": 0,
+          "entityId": "7b245cea-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841241586523,
+          "lat": 33.647069374757,
+          "height": 7,
+          "heightOffset": 0,
+          "entityId": "7b245ceb-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841398656684,
+          "lat": 33.647049695275,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "7b245cec-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.84109915899,
+          "lat": 33.646861490386,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "7b245ce9-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "7b245ced-fbaf-11e9-af2a-ab6af2449303",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4
+    },
+    {
+      "points": [
+        {
+          "lon": -117.840961034805,
+          "lat": 33.647013814134,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "7b245cee-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841118506894,
+          "lat": 33.646992031502,
+          "height": 7,
+          "heightOffset": 0,
+          "entityId": "7b245cef-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.84109915899,
+          "lat": 33.646861490386,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "7b245cf0-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.840961034805,
+          "lat": 33.647013814134,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "7b245cee-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "7b245cf1-fbaf-11e9-af2a-ab6af2449303",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4
+    }
+  ]
+  pitchedRoofsFoundLine = pitchedRoofsFoundLine.map(p => FoundLine.fromPolyline(p))
+  let pitchedRoofs = [
+    {
+      "entityId": "7b203e31-fbaf-11e9-af2a-ab6af2449303",
+      "name": "roofPlane",
+      "height": 0,
+      "hierarchy": [
+        -117.84126053273,
+        33.647202018835,
+        5,
+        -117.841241586523,
+        33.647069374757,
+        7,
+        -117.841118506894,
+        33.646992031502,
+        7,
+        -117.840961034805,
+        33.647013814134,
+        5
+      ],
+      "perPositionHeight": true,
+      "extrudedHeight": 0,
+      "material": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "outlineColor": {
+        "red": 0,
+        "green": 0,
+        "blue": 0,
+        "alpha": 1
+      },
+      "outlineWidth": 4,
+      "shadow": 0,
+      "show": true,
+      "brng": 37.0478499465861,
+      "obliquity": 10.572527233167175
+    },
+    {
+      "entityId": "7b203e32-fbaf-11e9-af2a-ab6af2449303",
+      "name": "roofPlane",
+      "height": 0,
+      "hierarchy": [
+        -117.841398656684,
+        33.647049695275,
+        5,
+        -117.841241586523,
+        33.647069374757,
+        7,
+        -117.84126053273,
+        33.647202018835,
+        5
+      ],
+      "perPositionHeight": true,
+      "extrudedHeight": 0,
+      "material": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "outlineColor": {
+        "red": 0,
+        "green": 0,
+        "blue": 0,
+        "alpha": 1
+      },
+      "outlineWidth": 4,
+      "shadow": 0,
+      "show": true,
+      "brng": -52.95222228052478,
+      "obliquity": 11.003284628902636
+    },
+    {
+      "entityId": "7b203e33-fbaf-11e9-af2a-ab6af2449303",
+      "name": "roofPlane",
+      "height": 0,
+      "hierarchy": [
+        -117.84109915899,
+        33.646861490386,
+        5,
+        -117.841118506894,
+        33.646992031502,
+        7,
+        -117.841241586523,
+        33.647069374757,
+        7,
+        -117.841398656684,
+        33.647049695275,
+        5
+      ],
+      "perPositionHeight": true,
+      "extrudedHeight": 0,
+      "material": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "outlineColor": {
+        "red": 0,
+        "green": 0,
+        "blue": 0,
+        "alpha": 1
+      },
+      "outlineWidth": 4,
+      "shadow": 0,
+      "show": true,
+      "brng": 217.04801591090023,
+      "obliquity": 10.778031041523404
+    },
+    {
+      "entityId": "7b203e34-fbaf-11e9-af2a-ab6af2449303",
+      "name": "roofPlane",
+      "height": 0,
+      "hierarchy": [
+        -117.840961034805,
+        33.647013814134,
+        5,
+        -117.841118506894,
+        33.646992031502,
+        7,
+        -117.84109915899,
+        33.646861490386,
+        5
+      ],
+      "perPositionHeight": true,
+      "extrudedHeight": 0,
+      "material": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "outlineColor": {
+        "red": 0,
+        "green": 0,
+        "blue": 0,
+        "alpha": 1
+      },
+      "outlineWidth": 4,
+      "shadow": 0,
+      "show": true,
+      "brng": 127.04792656142067,
+      "obliquity": 11.12056367835131
+    }
+  ]
+  pitchedRoofs = pitchedRoofs.map(p => Polygon.copyPolygon(p))
+  let keepoutPolylines = [
+    {
+      "points": [
+        {
+          "lon": -117.841186765742,
+          "lat": 33.647056379321,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "76b82920-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841216529375,
+          "lat": 33.647023142729,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "77296180-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841185768391,
+          "lat": 33.647003673554,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "77814580-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841154841091,
+          "lat": 33.647036353917,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "77d5a710-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841186765742,
+          "lat": 33.647056379321,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "76b82920-fbaf-11e9-af2a-ab6af2449303",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "78101800-fbaf-11e9-af2a-ab6af2449303",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 0,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4
+    }
+  ]
+  keepoutPolylines = keepoutPolylines.map(p => FoundLine.fromPolyline(p))
+  const keepoutStb = [1]
+  console.log(pitchedRoofsFoundLine)
+  console.log(pitchedRoofs)
+  console.log(keepoutPolylines)
+  console.log(keepoutStb)
+  keepoutPolylines.forEach(kptPly => {
+
+  })
 }
 
 export const createPassageKeepoutPolygon = (passageKeepout) =>

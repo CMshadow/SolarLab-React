@@ -61,7 +61,7 @@ class Polygon {
     this.outlineColor = outlineColor ? outlineColor : Cesium.Color.BLACK;
     this.outlineWidth = outlineWidth ? outlineWidth : 4;
     this.shadow = shadow ? Cesium.ShadowMode.ENABLED : Cesium.ShadowMode.DISABLED;
-    this.show = show? show: true; 
+    this.show = show? show: true;
     this.brng = brng ? brng : null;
     this.obliquity = obliquity ? obliquity : 0;
   }
@@ -137,8 +137,8 @@ class Polygon {
     const newOutLineWidth = outlineWidth ? outlineWidth : polygon.outlineWidth;
     const newShadow = shadow? shadow: true;
     const newShow = show? show: true;
-    const newBrng = brng? brng: null;
-    const newObliquily = obliquity? obliquity: 0;
+    const newBrng = brng? brng: polygon.brng;
+    const newObliquily = obliquity? obliquity: polygon.obliquity;
     return new Polygon(
       newID, newName, newHeight, newHierarchy, newPerPositionHeight,
       newExtrudedHeight, newMaterial, newOutLineColor, newOutLineWidth,

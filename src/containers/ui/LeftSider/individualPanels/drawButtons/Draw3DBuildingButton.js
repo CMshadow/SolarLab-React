@@ -28,7 +28,6 @@ const draw3DBuildingButton = (props) => {
       onClick = {() => {
         if (props.currentBuilding.type === 'FLAT') {
           props.createPolygonFoundationWrapper();
-          props.createAllKeepoutPolygon();
         } else {
           console.log('[Button]: Test Polygon: ');
           let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
@@ -40,6 +39,7 @@ const draw3DBuildingButton = (props) => {
             props.hipPolylines,
             props.ridgePolylines);
         }
+        props.createAllKeepoutPolygon();
       }}
     >Generate 3D Model</Button>
 

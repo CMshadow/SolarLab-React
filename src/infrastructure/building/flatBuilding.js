@@ -43,8 +43,10 @@ class FlatBuilding extends Building {
     const newName = name ? name : flatBuilding.name;
     const newSerial = serial ? serial : flatBuilding.serial;
     const newFoundHt = foundHt ? foundHt : flatBuilding.foundationHeight;
-    const newEaveStb = eaveStb ? eaveStb : flatBuilding.eaveSetback;
-    const newParapetHt = parapetHt ? parapetHt : flatBuilding.parapetHeight;
+    const newEaveStb =
+      eaveStb !== null ? eaveStb : flatBuilding.eaveSetback;
+    const newParapetHt =
+      parapetHt !== null ? parapetHt : flatBuilding.parapetHeight;
     const newPolyline = polyline ? polyline : flatBuilding.polyline;
     const newFoundPolygon =
       foundPolygon ?

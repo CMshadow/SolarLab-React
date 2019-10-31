@@ -23,9 +23,7 @@ export const createPolygonFoundationWrapper = () => (dispatch, getState) => {
     direction: 'inside'
   })
   .then(response => {
-    if (parapetHt !== 0){
-      dispatch(createWall());
-    }
+    dispatch(createWall());
     if (stbDist !== 0){
       dispatch(createPolygonFoundationIncludeStb());
     }
