@@ -17,14 +17,21 @@ const initialState = {
     rowPerArray: 2,
     panelPerRow: 11
   },
+  userPanels: [],
+  selectPanelIndex: -1
 };
 
 const setupPanelParams = (state, action) => {
+  const panelID = action.parameters.panelID;
+  const selectPanelIndex = state.userPanels.reduce((findIndex, elem, i) =>
+    elem.panelID === panelID ? i : findIndex, -1
+  );
   return {
     ...state,
     parameters: {
       ...action.parameters
-    }
+    },
+    selectPanelIndex: selectPanelIndex
   };
 }
 
@@ -42,6 +49,13 @@ const cleanPanels = (state, action) => {
   };
 }
 
+const fetchUserPanels = (state, action) => {
+  return {
+    ...state,
+    userPanels: action.panelData
+  }
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SETUP_PANEL_PARAMS:
@@ -50,6 +64,8 @@ const reducer = (state=initialState, action) => {
       return cleanPanels(state, action);
     case actionTypes.INIT_EDITING_PANELS:
       return generatePanels(state, action);
+    case actionTypes.FETCH_USER_PANELS:
+      return fetchUserPanels(state, action);
     default: return state;
   }
 };

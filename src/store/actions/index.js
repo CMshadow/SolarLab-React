@@ -109,7 +109,8 @@ export {
 export {
   setupPanelParams,
   generatePanels,
-  cleanPanels
+  cleanPanels,
+  fetchUserPanels
 } from './editingPVPanelManager';
 
 export {

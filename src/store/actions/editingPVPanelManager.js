@@ -10,6 +10,7 @@ import Polyline from '../../infrastructure/line/polyline';
 import PV from '../../infrastructure/Polygon/PV';
 import Polygon from '../../infrastructure/Polygon/Polygon';
 import { setBackendLoadingTrue, setBackendLoadingFalse} from './projectManager';
+import { setUIStateSetUpPV } from './uiStateManager';
 
 const makeCombiGeometry = (props) => {
   const geoFoundation =
@@ -86,7 +87,6 @@ const makeRequestData = (props) => {
   const requestData = []
   finalCombi.forEach(roof => {
     roof.geometry.coordinates.forEach(partialRoof => {
-      // console.log(partialRoof)
       const startAndLastPoint = new Point(
         partialRoof[0][0][0], partialRoof[0][0][1],
         props.workingBuilding.foundationHeight
@@ -116,6 +116,27 @@ const makeRequestData = (props) => {
   return requestData;
 }
 
+export const fetchUserPanels = () => (dispatch, getState) => {
+  const userID = getState().authReducer.userID;
+  dispatch(setBackendLoadingTrue());
+  axios.get(`/${userID}/panel`)
+  .then(response => {
+
+    dispatch({
+      type: actionTypes.FETCH_USER_PANELS,
+      panelData: response.data.Items
+    })
+    dispatch(setUIStateSetUpPV());
+    return dispatch(setBackendLoadingFalse());
+  })
+  .catch(error => {
+    dispatch(setBackendLoadingFalse());
+    return errorNotification(
+      'Backend Error',
+      error.toString()
+    )
+  })
+}
 
 export const generatePanels = () => (dispatch, getState) => {
   const props = {
@@ -127,13 +148,21 @@ export const generatePanels = () => (dispatch, getState) => {
   const data = makeRequestData(props);
   const params = getState().undoableReducer.present.editingPVPanelManagerReducer
     .parameters
+  const selectPanelIndex = getState().undoableReducer.present
+    .editingPVPanelManagerReducer.selectPanelIndex;
+  const panelX = +getState().undoableReducer.present.editingPVPanelManagerReducer
+    .userPanels[selectPanelIndex].panelWidth;
+  const panelY = +getState().undoableReducer.present.editingPVPanelManagerReducer
+    .userPanels[selectPanelIndex].panelLength;
+  const panelWidth = panelX > panelY ? panelX : panelY;
+  const panelLength = panelX < panelY ? panelX : panelY;
 
   let requestData = {
     data: data,
     azimuth: params.azimuth,
     tilt: params.tilt,
-    panelWidth: params.orientation === 'portrait' ? 2 : 1,
-    panelLength: params.orientation === 'portrait' ? 1 : 2,
+    panelWidth: params.orientation === 'portrait' ? panelWidth : panelLength,
+    panelLength: params.orientation === 'portrait' ? panelLength : panelWidth,
     rowSpace: params.rowSpace,
     colSpace: params.colSpace,
     align: params.align,
@@ -146,7 +175,6 @@ export const generatePanels = () => (dispatch, getState) => {
     requestData.rowPerArray = params.rowPerArray;
     requestData.panelsPerRow = params.panelPerRow;
   }
-  console.log(requestData)
   generateFlatRoofIndividualPanels(dispatch, requestData);
 }
 
@@ -155,7 +183,6 @@ const generateFlatRoofIndividualPanels = (dispatch, requestData) => {
   dispatch(setBackendLoadingTrue());
   axios.post('/calculate-roof-pv-panels/flatroof-individual', requestData)
   .then(response => {
-    console.log(JSON.parse(response.data.body).panelLayout)
     dispatch({
       type: actionTypes.INIT_EDITING_PANELS,
       panels: JSON.parse(response.data.body).panelLayout.map(partialRoof =>

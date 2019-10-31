@@ -223,6 +223,35 @@ class SetUpPVPanel extends Component {
             </TabPane>
           </Tabs>
 
+          {/*Select Panel*/}
+          <Form.Item>
+            <Row>
+              <Col span={20} offset={2}>
+              {getFieldDecorator('panelID', {
+                rules: [{
+                  required: true,
+                  message: 'Please select one'
+                }]
+              })(
+                <Select
+                  showSearch
+                  optionFilterProp='children'
+                  placeholder='Select a panel'
+                >
+                  {this.props.userPanels.map(d =>
+                    <Option
+                      key={d.panelID}
+                      value={d.panelID}
+                    >
+                      {d.panelName}
+                    </Option>
+                  )}
+                </Select>
+              )}
+              </Col>
+            </Row>
+          </Form.Item>
+
           {/*Panel Azimuth*/}
           <Form.Item>
             <Row>
@@ -375,6 +404,7 @@ const mapStateToProps = state => {
     parameters: state.undoableReducer.present.editingPVPanelManagerReducer
       .parameters,
     backendLoading: state.projectManagerReducer.backendLoading,
+    userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels
   };
 };
 
