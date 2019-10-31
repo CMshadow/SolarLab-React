@@ -14,6 +14,11 @@ import Passage from '../../infrastructure/keepout/passage';
 import Vent from '../../infrastructure/keepout/vent';
 import Tree from '../../infrastructure/keepout/tree';
 import Env from '../../infrastructure/keepout/env';
+import Polyline from '../../infrastructure/line/polyline';
+import InnerLine from '../../infrastructure/line/innerLine';
+import MathLine from '../../infrastructure/math/mathLine';
+import MathLineCollection from '../../infrastructure/math/mathLineCollection';
+import Coordinate from '../../infrastructure/point/coordinate';
 
 export const createAllKeepoutPolygon = () => (dispatch, getState) => {
   const allKeepout =
@@ -102,116 +107,25 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
   //   getState().undoableReducer.present.drawingRooftopManagerReducer
   //   .RooftopCollection.rooftopCollection;
   // const pitchedRoofsFoundLine = pitchedRoofs.map(polygon => polygon.toFoundLine())
-  // const keepoutPolylines = normalKeepout.map(kpt => kpt.outlinePolyline);
+  // const keepoutFoundLines = normalKeepout.map(kpt => kpt.outlinePolyline);
   // const keepoutStb = normalKeepout.map(kpt => kpt.setback);
+  // const foundPolylines = getState().undoableReducer.present.drawingInnerManagerReducer
+  // .foundPolylines;
+  // const hipPolylines = getState().undoableReducer.present.drawingInnerManagerReducer
+  // .hipPolylines;
+  // const ridgePolylines = getState().undoableReducer.present.drawingInnerManagerReducer
+  // .ridgePolylines;
+
+
   let pitchedRoofsFoundLine = [
     {
-    "points": [
-      {
-        "lon": -117.84126053273,
-        "lat": 33.647202018835,
-        "height": 5,
-        "heightOffset": 0,
-        "entityId": "7b245ce0-fbaf-11e9-af2a-ab6af2449303",
-        "name": "vertex",
-        "color": {
-          "red": 1,
-          "green": 1,
-          "blue": 1,
-          "alpha": 1
-        },
-        "pixelSize": 15,
-        "show": true,
-        "render": true
-      },
-      {
-        "lon": -117.841241586523,
-        "lat": 33.647069374757,
-        "height": 7,
-        "heightOffset": 0,
-        "entityId": "7b245ce1-fbaf-11e9-af2a-ab6af2449303",
-        "name": "vertex",
-        "color": {
-          "red": 1,
-          "green": 1,
-          "blue": 1,
-          "alpha": 1
-        },
-        "pixelSize": 15,
-        "show": true,
-        "render": true
-      },
-      {
-        "lon": -117.841118506894,
-        "lat": 33.646992031502,
-        "height": 7,
-        "heightOffset": 0,
-        "entityId": "7b245ce2-fbaf-11e9-af2a-ab6af2449303",
-        "name": "vertex",
-        "color": {
-          "red": 1,
-          "green": 1,
-          "blue": 1,
-          "alpha": 1
-        },
-        "pixelSize": 15,
-        "show": true,
-        "render": true
-      },
-      {
-        "lon": -117.840961034805,
-        "lat": 33.647013814134,
-        "height": 5,
-        "heightOffset": 0,
-        "entityId": "7b245ce3-fbaf-11e9-af2a-ab6af2449303",
-        "name": "vertex",
-        "color": {
-          "red": 1,
-          "green": 1,
-          "blue": 1,
-          "alpha": 1
-        },
-        "pixelSize": 15,
-        "show": true,
-        "render": true
-      },
-      {
-        "lon": -117.84126053273,
-        "lat": 33.647202018835,
-        "height": 5,
-        "heightOffset": 0,
-        "entityId": "7b245ce0-fbaf-11e9-af2a-ab6af2449303",
-        "name": "vertex",
-        "color": {
-          "red": 1,
-          "green": 1,
-          "blue": 1,
-          "alpha": 1
-        },
-        "pixelSize": 15,
-        "show": true,
-        "render": true
-      }
-    ],
-    "entityId": "7b245ce4-fbaf-11e9-af2a-ab6af2449303",
-    "name": "polyline",
-    "color": {
-      "red": 1,
-      "green": 1,
-      "blue": 1,
-      "alpha": 1
-    },
-    "show": true,
-    "width": 4
-    },
-    {
       "points": [
         {
-          "lon": -117.841398656684,
-          "lat": 33.647049695275,
+          "lon": -117.841259585591,
+          "lat": 33.647202271445,
           "height": 5,
           "heightOffset": 0,
-          "entityId": "7b245ce5-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e230-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -224,11 +138,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.841241586523,
-          "lat": 33.647069374757,
+          "lon": -117.841237357642,
+          "lat": 33.647069663841,
           "height": 7,
           "heightOffset": 0,
-          "entityId": "7b245ce6-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e231-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -241,11 +155,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.84126053273,
-          "lat": 33.647202018835,
-          "height": 5,
+          "lon": -117.841116288708,
+          "lat": 33.646993560883,
+          "height": 7,
           "heightOffset": 0,
-          "entityId": "7b245ce7-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e232-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -258,11 +172,28 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.841398656684,
-          "lat": 33.647049695275,
+          "lon": -117.840957145979,
+          "lat": 33.647012160158,
           "height": 5,
           "heightOffset": 0,
-          "entityId": "7b245ce5-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e233-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841259585591,
+          "lat": 33.647202271445,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "2e01e230-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -275,7 +206,7 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         }
       ],
-      "entityId": "7b245ce8-fbaf-11e9-af2a-ab6af2449303",
+      "entityId": "2e01e234-fc1c-11e9-ad7f-9f854a898ee7",
       "name": "polyline",
       "color": {
         "red": 1,
@@ -289,11 +220,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
     {
       "points": [
         {
-          "lon": -117.84109915899,
-          "lat": 33.646861490386,
+          "lon": -117.841398017643,
+          "lat": 33.647049654679,
           "height": 5,
           "heightOffset": 0,
-          "entityId": "7b245ce9-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e235-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -306,11 +237,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.841118506894,
-          "lat": 33.646992031502,
+          "lon": -117.841237357642,
+          "lat": 33.647069663841,
           "height": 7,
           "heightOffset": 0,
-          "entityId": "7b245cea-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e236-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -323,28 +254,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.841241586523,
-          "lat": 33.647069374757,
-          "height": 7,
-          "heightOffset": 0,
-          "entityId": "7b245ceb-fbaf-11e9-af2a-ab6af2449303",
-          "name": "vertex",
-          "color": {
-            "red": 1,
-            "green": 1,
-            "blue": 1,
-            "alpha": 1
-          },
-          "pixelSize": 15,
-          "show": true,
-          "render": true
-        },
-        {
-          "lon": -117.841398656684,
-          "lat": 33.647049695275,
+          "lon": -117.841259585591,
+          "lat": 33.647202271445,
           "height": 5,
           "heightOffset": 0,
-          "entityId": "7b245cec-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e237-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -357,11 +271,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.84109915899,
-          "lat": 33.646861490386,
+          "lon": -117.841398017643,
+          "lat": 33.647049654679,
           "height": 5,
           "heightOffset": 0,
-          "entityId": "7b245ce9-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e235-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -374,7 +288,7 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         }
       ],
-      "entityId": "7b245ced-fbaf-11e9-af2a-ab6af2449303",
+      "entityId": "2e01e238-fc1c-11e9-ad7f-9f854a898ee7",
       "name": "polyline",
       "color": {
         "red": 1,
@@ -388,11 +302,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
     {
       "points": [
         {
-          "lon": -117.840961034805,
-          "lat": 33.647013814134,
+          "lon": -117.841095578278,
+          "lat": 33.64685954321,
           "height": 5,
           "heightOffset": 0,
-          "entityId": "7b245cee-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e239-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -405,11 +319,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.841118506894,
-          "lat": 33.646992031502,
+          "lon": -117.841116288708,
+          "lat": 33.646993560883,
           "height": 7,
           "heightOffset": 0,
-          "entityId": "7b245cef-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e23a-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -422,11 +336,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.84109915899,
-          "lat": 33.646861490386,
-          "height": 5,
+          "lon": -117.841237357642,
+          "lat": 33.647069663841,
+          "height": 7,
           "heightOffset": 0,
-          "entityId": "7b245cf0-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e23b-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -439,11 +353,28 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.840961034805,
-          "lat": 33.647013814134,
+          "lon": -117.841398017643,
+          "lat": 33.647049654679,
           "height": 5,
           "heightOffset": 0,
-          "entityId": "7b245cee-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "2e01e23c-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841095578278,
+          "lat": 33.64685954321,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "2e01e239-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -456,7 +387,89 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         }
       ],
-      "entityId": "7b245cf1-fbaf-11e9-af2a-ab6af2449303",
+      "entityId": "2e01e23d-fc1c-11e9-ad7f-9f854a898ee7",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4
+    },
+    {
+      "points": [
+        {
+          "lon": -117.840957145979,
+          "lat": 33.647012160158,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "2e01e23e-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841116288708,
+          "lat": 33.646993560883,
+          "height": 7,
+          "heightOffset": 0,
+          "entityId": "2e01e23f-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841095578278,
+          "lat": 33.64685954321,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "2e01e240-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.840957145979,
+          "lat": 33.647012160158,
+          "height": 5,
+          "heightOffset": 0,
+          "entityId": "2e01e23e-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "2e01e241-fc1c-11e9-ad7f-9f854a898ee7",
       "name": "polyline",
       "color": {
         "red": 1,
@@ -469,23 +482,24 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
     }
   ]
   pitchedRoofsFoundLine = pitchedRoofsFoundLine.map(p => FoundLine.fromPolyline(p))
+
   let pitchedRoofs = [
     {
-      "entityId": "7b203e31-fbaf-11e9-af2a-ab6af2449303",
+      "entityId": "2e0145f0-fc1c-11e9-ad7f-9f854a898ee7",
       "name": "roofPlane",
       "height": 0,
       "hierarchy": [
-        -117.84126053273,
-        33.647202018835,
+        -117.841259585591,
+        33.647202271445,
         5,
-        -117.841241586523,
-        33.647069374757,
+        -117.841237357642,
+        33.647069663841,
         7,
-        -117.841118506894,
-        33.646992031502,
+        -117.841116288708,
+        33.646993560883,
         7,
-        -117.840961034805,
-        33.647013814134,
+        -117.840957145979,
+        33.647012160158,
         5
       ],
       "perPositionHeight": true,
@@ -505,22 +519,22 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
       "outlineWidth": 4,
       "shadow": 0,
       "show": true,
-      "brng": 37.0478499465861,
-      "obliquity": 10.572527233167175
+      "brng": 37.05626005496464,
+      "obliquity": 10.756769470679378
     },
     {
-      "entityId": "7b203e32-fbaf-11e9-af2a-ab6af2449303",
+      "entityId": "2e0145f1-fc1c-11e9-ad7f-9f854a898ee7",
       "name": "roofPlane",
       "height": 0,
       "hierarchy": [
-        -117.841398656684,
-        33.647049695275,
+        -117.841398017643,
+        33.647049654679,
         5,
-        -117.841241586523,
-        33.647069374757,
+        -117.841237357642,
+        33.647069663841,
         7,
-        -117.84126053273,
-        33.647202018835,
+        -117.841259585591,
+        33.647202271445,
         5
       ],
       "perPositionHeight": true,
@@ -540,25 +554,25 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
       "outlineWidth": 4,
       "shadow": 0,
       "show": true,
-      "brng": -52.95222228052478,
-      "obliquity": 11.003284628902636
+      "brng": -52.94381705702858,
+      "obliquity": 10.75676952496147
     },
     {
-      "entityId": "7b203e33-fbaf-11e9-af2a-ab6af2449303",
+      "entityId": "2e0145f2-fc1c-11e9-ad7f-9f854a898ee7",
       "name": "roofPlane",
       "height": 0,
       "hierarchy": [
-        -117.84109915899,
-        33.646861490386,
+        -117.841095578278,
+        33.64685954321,
         5,
-        -117.841118506894,
-        33.646992031502,
+        -117.841116288708,
+        33.646993560883,
         7,
-        -117.841241586523,
-        33.647069374757,
+        -117.841237357642,
+        33.647069663841,
         7,
-        -117.841398656684,
-        33.647049695275,
+        -117.841398017643,
+        33.647049654679,
         5
       ],
       "perPositionHeight": true,
@@ -578,22 +592,22 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
       "outlineWidth": 4,
       "shadow": 0,
       "show": true,
-      "brng": 217.04801591090023,
-      "obliquity": 10.778031041523404
+      "brng": 217.0564276595186,
+      "obliquity": 10.551408827696784
     },
     {
-      "entityId": "7b203e34-fbaf-11e9-af2a-ab6af2449303",
+      "entityId": "2e0145f3-fc1c-11e9-ad7f-9f854a898ee7",
       "name": "roofPlane",
       "height": 0,
       "hierarchy": [
-        -117.840961034805,
-        33.647013814134,
+        -117.840957145979,
+        33.647012160158,
         5,
-        -117.841118506894,
-        33.646992031502,
+        -117.841116288708,
+        33.646993560883,
         7,
-        -117.84109915899,
-        33.646861490386,
+        -117.841095578278,
+        33.64685954321,
         5
       ],
       "perPositionHeight": true,
@@ -613,20 +627,21 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
       "outlineWidth": 4,
       "shadow": 0,
       "show": true,
-      "brng": 127.04792656142067,
-      "obliquity": 11.12056367835131
+      "brng": 127.05633679777276,
+      "obliquity": 10.774378649971004
     }
   ]
   pitchedRoofs = pitchedRoofs.map(p => Polygon.copyPolygon(p))
-  let keepoutPolylines = [
+
+  let keepoutFoundLines = [
     {
       "points": [
         {
-          "lon": -117.841186765742,
-          "lat": 33.647056379321,
+          "lon": -117.841184634639,
+          "lat": 33.64705643171,
           "height": 0.05,
           "heightOffset": 0,
-          "entityId": "76b82920-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "0ed0f590-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -639,11 +654,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.841216529375,
-          "lat": 33.647023142729,
+          "lon": -117.84120879853,
+          "lat": 33.647027222538,
           "height": 0.05,
           "heightOffset": 0,
-          "entityId": "77296180-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "0f369530-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -656,11 +671,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.841185768391,
-          "lat": 33.647003673554,
+          "lon": -117.8411737118,
+          "lat": 33.647006935004,
           "height": 0.05,
           "heightOffset": 0,
-          "entityId": "77814580-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "0fd76910-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -673,11 +688,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.841154841091,
-          "lat": 33.647036353917,
+          "lon": -117.841148498601,
+          "lat": 33.647041706385,
           "height": 0.05,
           "heightOffset": 0,
-          "entityId": "77d5a710-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "1052daa0-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -690,11 +705,11 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         },
         {
-          "lon": -117.841186765742,
-          "lat": 33.647056379321,
+          "lon": -117.841184634639,
+          "lat": 33.64705643171,
           "height": 0.05,
           "heightOffset": 0,
-          "entityId": "76b82920-fbaf-11e9-af2a-ab6af2449303",
+          "entityId": "0ed0f590-fc1c-11e9-ad7f-9f854a898ee7",
           "name": "vertex",
           "color": {
             "red": 1,
@@ -707,7 +722,7 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           "render": true
         }
       ],
-      "entityId": "78101800-fbaf-11e9-af2a-ab6af2449303",
+      "entityId": "10d8ac70-fc1c-11e9-ad7f-9f854a898ee7",
       "name": "polyline",
       "color": {
         "red": 1,
@@ -719,13 +734,495 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
       "width": 4
     }
   ]
-  keepoutPolylines = keepoutPolylines.map(p => FoundLine.fromPolyline(p))
+  keepoutFoundLines = keepoutFoundLines.map(p => FoundLine.fromPolyline(p))
+
   const keepoutStb = [1]
-  console.log(pitchedRoofsFoundLine)
-  console.log(pitchedRoofs)
-  console.log(keepoutPolylines)
-  console.log(keepoutStb)
-  keepoutPolylines.forEach(kptPly => {
+
+  let foundPolylines = [
+    {
+      "points": [
+        {
+          "lon": -117.841259585591,
+          "lat": 33.647202271445,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fb48a770-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841398017643,
+          "lat": 33.647049654679,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fc16cce0-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "2cc3bce0-fc1c-11e9-ad7f-9f854a898ee7",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4
+    },
+    {
+      "points": [
+        {
+          "lon": -117.841398017643,
+          "lat": 33.647049654679,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fc16cce0-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841095578278,
+          "lat": 33.64685954321,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fd307a41-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "2cc3bce1-fc1c-11e9-ad7f-9f854a898ee7",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4
+    },
+    {
+      "points": [
+        {
+          "lon": -117.841095578278,
+          "lat": 33.64685954321,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fd307a41-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.840957145979,
+          "lat": 33.647012160158,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fe1eaad7-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "2cc3bce2-fc1c-11e9-ad7f-9f854a898ee7",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4
+    },
+    {
+      "points": [
+        {
+          "lon": -117.840957145979,
+          "lat": 33.647012160158,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fe1eaad7-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        },
+        {
+          "lon": -117.841259585591,
+          "lat": 33.647202271445,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fb48a770-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "2cc3bce3-fc1c-11e9-ad7f-9f854a898ee7",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 1,
+        "blue": 1,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4
+    }
+  ]
+  foundPolylines = foundPolylines.map(p => Polyline.fromPolyline(p))
+
+  let hipPolylines = [
+    {
+      "points": [
+        {
+          "lon": -117.841259585591,
+          "lat": 33.647202271445,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fb48a770-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 0.6470588235294118,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": null,
+          "render": false
+        },
+        {
+          "lon": -117.841237357642,
+          "lat": 33.647069663841,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "0216e711-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "00318540-fc1c-11e9-ad7f-9f854a898ee7",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 0.8431372549019608,
+        "blue": 0,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4,
+      "type": "HIP"
+    },
+    {
+      "points": [
+        {
+          "lon": -117.841237357642,
+          "lat": 33.647069663841,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "0216e711-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 0.6470588235294118,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": null,
+          "render": false
+        },
+        {
+          "lon": -117.841398017643,
+          "lat": 33.647049654679,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fc16cce0-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 0.6470588235294118,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": null,
+          "render": false
+        }
+      ],
+      "entityId": "02caf4d0-fc1c-11e9-ad7f-9f854a898ee7",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 0.8431372549019608,
+        "blue": 0,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4,
+      "type": "HIP"
+    },
+    {
+      "points": [
+        {
+          "lon": -117.841116288708,
+          "lat": 33.646993560883,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "056c2c91-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 0.6470588235294118,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": null,
+          "render": false
+        },
+        {
+          "lon": -117.840957145979,
+          "lat": 33.647012160158,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fe1eaad7-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 0.6470588235294118,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": null,
+          "render": false
+        }
+      ],
+      "entityId": "063262c0-fc1c-11e9-ad7f-9f854a898ee7",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 0.8431372549019608,
+        "blue": 0,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4,
+      "type": "HIP"
+    },
+    {
+      "points": [
+        {
+          "lon": -117.841116288708,
+          "lat": 33.646993560883,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "056c2c91-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 0.6470588235294118,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": null,
+          "render": false
+        },
+        {
+          "lon": -117.841095578278,
+          "lat": 33.64685954321,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "fd307a41-fc1b-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 0.6470588235294118,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": null,
+          "render": false
+        }
+      ],
+      "entityId": "07fbd820-fc1c-11e9-ad7f-9f854a898ee7",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 0.8431372549019608,
+        "blue": 0,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4,
+      "type": "HIP"
+    }
+  ]
+  hipPolylines = hipPolylines.map(p => InnerLine.fromPolyline(p))
+  const hipMathLines = hipPolylines.map(hip => MathLine.fromPolyline(hip));
+
+  let ridgePolylines = [
+    {
+      "points": [
+        {
+          "lon": -117.841237357642,
+          "lat": 33.647069663841,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "0216e711-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 0.6470588235294118,
+            "blue": 0,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": null,
+          "render": false
+        },
+        {
+          "lon": -117.841116288708,
+          "lat": 33.646993560883,
+          "height": 0.05,
+          "heightOffset": 0,
+          "entityId": "056c2c91-fc1c-11e9-ad7f-9f854a898ee7",
+          "name": "vertex",
+          "color": {
+            "red": 1,
+            "green": 1,
+            "blue": 1,
+            "alpha": 1
+          },
+          "pixelSize": 15,
+          "show": true,
+          "render": true
+        }
+      ],
+      "entityId": "04691470-fc1c-11e9-ad7f-9f854a898ee7",
+      "name": "polyline",
+      "color": {
+        "red": 1,
+        "green": 0,
+        "blue": 0,
+        "alpha": 1
+      },
+      "show": true,
+      "width": 4,
+      "type": "RIDGE"
+    }
+  ]
+  ridgePolylines = ridgePolylines.map(p => InnerLine.fromPolyline(p))
+  const ridgeMathLines = ridgePolylines.map(ridge => MathLine.fromPolyline(ridge));
+
+  const hipAndRidgeMathLines = hipMathLines.concat(ridgeMathLines)
+  // console.log(pitchedRoofsFoundLine)
+  // console.log(pitchedRoofs)
+  // console.log(keepoutFoundLines)
+  // console.log(keepoutStb)
+  // console.log(foundPolylines)
+  // console.log(hipPolylines)
+  // console.log(ridgePolylines)
+  keepoutFoundLines.forEach(kptPly => {
+    const kptMathLineCollection = MathLineCollection.fromPolyline(kptPly)
+    const augmentCors = [];
+    kptMathLineCollection.mathLineCollection.forEach((mathLine, index) => {
+      hipAndRidgeMathLines.forEach(inner => {
+        const possibleInter = Coordinate.intersection(
+          mathLine.originCor, mathLine.brng, inner.originCor, inner.brng
+        );
+        if (
+          possibleInter !== undefined && Coordinate.surfaceDistance(
+          possibleInter, mathLine.originCor) < mathLine.dist &&
+          Coordinate.surfaceDistance(possibleInter, inner.originCor) < inner.dist
+        ) {
+          augmentCors.push({segmentIndex: index, augment: possibleInter})
+        }
+      })
+
+    });
+    const newKptPlyPoints = kptPly.points;
+    augmentCors.forEach((elem,i) =>
+      newKptPlyPoints.splice(
+        elem.segmentIndex + i + 1, 0, Point.fromCoordinate(elem.augment)
+      )
+    );
+    const newKptPly = new FoundLine(newKptPlyPoints);
+
 
   })
 }
