@@ -11,6 +11,7 @@ const initialState = {
 	BuildingParapet: null,
 
 	backendLoading: false
+
 };
 
 /**

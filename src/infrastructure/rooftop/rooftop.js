@@ -12,16 +12,7 @@ import Coordinate from '../point/coordinate';
    * @param {string}  [id=null]       unique id of the rooftop collection, automatic
    *                                  generate one if not provided
    * @param {string}  [name=null]     name of the  rooftop collection, using default name 'RoofTop Collection' if not provided
-   * @param {Double}  [height=0.0]     the height of the inner points, using default value, 2.0,  if not provided
    * @param {Polygon}   [rooftopCollection= [] ]   A list of Polygon objects, each polygon represents a rooftop ,default empty list                               
-   * @param {Boolean} [perPositionHeight=null]  whether to adjust each point
-   * @param {Double} [extrudeHeight=true] The distance between the Rooftop and the ground
-   *                                  default true
-   * @param {Color}   [material=null]  GRBA color, Cesium.Color.WHITE if not
-   *                                  provided
-   * @param {Color}   [outlineColor=null]  GRBA color, Cesium.Color.Black if not
-   *                                  provided
-   * @param {Integer}   [outlineWidth=null]  The outline width of Polygon, 4 if not
    *                                  provided
    * @param {Boolean} [show=true]     whether to show the Rooftop,
    *                                  default true
@@ -31,26 +22,12 @@ class RoofTop {
   constructor(
     id = null,
     name = null,
-    height= null,
     rooftopCollection = null,
-    perPositionHeight = true,
-    extrudedHeight = null,
-    material=null,
-    outlineColor= null,
-    outlineWidth= null,
-    shadow=null,
     show=null
   ){
     this.entityId = id ? id : uuid();
     this.name = name ? name: 'RoofTop Collection';
-    this.height = height ? height : 0.0;
     this.rooftopCollection = rooftopCollection ? [...rooftopCollection] : [];
-    this.perPositionHeight = perPositionHeight ? perPositionHeight: true;
-    this.extrudedHeight = extrudedHeight ? extrudedHeight: 0.0;
-    this.material = material ? material: Cesium.Color.WHITE;
-    this.outlineColor = outlineColor ? outlineColor : Cesium.Color.BLACK;
-    this.outlineWidth = outlineWidth ? outlineWidth : 4;
-    this.shadow = shadow ? shadow : Cesium.ShadowMode.ENABLED;
     this.show = show? show: true;
   }
 
@@ -60,13 +37,7 @@ class RoofTop {
   * @param {string}  [id=null]       unique id of the RoofTop Collection, automatic
   *                                  generate one if not provided
   * @param {string}  [name=null]     name of the RoofTop Collection, using default name if not provided
-  * @param {Double}  [height=0.0]     the height of the inner points, using default value, 2.0,  if not provided
   * @param {Polygon}   [rooftopCollection= [] ]   A list of Polygon object, each polygon represents a rooftop ,default empty list                               
-  * @param {Color}   [materia=null]  GRBA color, Cesium.Color.WHITE if not
-  *                                  provided
-  * @param {Boolean} [perPositionHeight=true]  whether to adjust each point
-  * @param {Double} [extrudeHeight=0.0] The distance between the Rooftop and the ground
-  *                                  default true
   * @param {Boolean} [show=true]     whether to show the Rooftop,
   *                                  default true
 * 
@@ -75,31 +46,31 @@ class RoofTop {
   static CopyPolygon (RoofTop, 
     id = null,
     name = null,
-    height= null,
     rooftopCollection = null,
-    perPositionHeight = true,
-    extrudedHeight = null,
-    material=null,
-    outlineColor= null,
-    outlineWidth= null,
-    shadow=null,
     show=null) 
     {
       let newID = id ? id : RoofTop.id;
       let newName = name ? name : RoofTop.name;
-      let newHeight = height ? height: RoofTop.height;
       let newRooftopCollection = rooftopCollection ? [...rooftopCollection]: RoofTop.rooftopCollection;
-      let newPerPositionHeight = perPositionHeight ? perPositionHeight: RoofTop.perPositionHeight;
-      let newExtrudedHeight = extrudedHeight ? extrudedHeight: RoofTop.extrudedHeight;
-      let newMaterial = material ? material: RoofTop.material;
-      let newOutLineColor = outlineColor ? outlineColor : RoofTop.outlineColor;
-      let newOutLineWidth = outlineWidth ? outlineWidth : RoofTop.outlineWidth;
-      let newShadow = shadow? shadow: true;
       let newShow = show? show: true;
-      return new RoofTop(newID, newName, newHeight, newRooftopCollection, newPerPositionHeight, newExtrudedHeight,
-        newMaterial, newOutLineColor, newOutLineWidth, newShadow, newShow);
+      return new RoofTop(newID, newName, newRooftopCollection, newShow);
   };
 
+  /**
+   * Add a roof plane to the rooftop collection
+   * @param {Roof}  Polygon The Polygon that represent a roof plane
+   */
+  addRoofPlane = (roof) => {
+    this.rooftopCollection.push(roof);
+  }
+  /**
+   * Return all roof planes 
+   * @param {List of Polygon}  List The list of all Polygons, each polygon represents a roof plane
+   */
+  getAllRoofTops = () => {
+    return this.rooftopCollection;
+  }
 
 }
 
+export default RoofTop;
