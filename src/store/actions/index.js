@@ -81,7 +81,10 @@ export {
   build3DRoofTopModeling,
   initEdgesMap,
   initNodesCollection,
-  searchAllRoofPlanes
+  searchAllRoofPlanes,
+  calculateHighestandLowestNodes,
+  calculateObliquityAndObliquity,
+  checkEdgeTypeOfPath
 } from './drawingRooftopManager';
 
 

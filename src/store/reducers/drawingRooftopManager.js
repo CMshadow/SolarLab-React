@@ -22,8 +22,12 @@ const build3DRoofTopModeling = (state, action) => {
   for (let roofPlane of action.AllRoofPlanePaths) {
     let newRoofPlane = new Polygon(null,'roofPlane',null, 
       null, null,null,null,null,null,null,null,
-      roofPlane.roofPlaneParameters[0],roofPlane.roofPlaneParameters[1]);
-    newRoofPlane.hierarchy = [...roofPlane.roofPlaneCoordinateArray];
+      roofPlane.roofPlaneParameters[0],roofPlane.roofPlaneParameters[1],
+      roofPlane.roofHighestLowestNodes[0], roofPlane.roofHighestLowestNodes[1], roofPlane.roofEdgesTypeList);
+
+      newRoofPlane.hierarchy = [...roofPlane.roofPlaneCoordinateArray];
+      console.log("test highest node  "+ newRoofPlane.highestNode)
+      console.log("test edgeType  "+ newRoofPlane.edgesType)
     newRooftopCollection.addRoofPlane(newRoofPlane);
   }
  

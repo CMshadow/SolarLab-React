@@ -120,15 +120,21 @@ export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, N
   for (let i = 0; i < path.length; ++i) {
     let pathParameters = {
       roofPlaneCoordinateArray: [],
-      roofPlaneParameters: null
+      roofPlaneParameters: null,
+      roofHighestLowestNodes: null,
+      roofEdgesTypeList: null
     };
     pathParameters.roofPlaneParameters = [...calculateObliquityAndObliquity(NodesCollection, path[i]).roofPlaneParameters];
+    pathParameters.roofEdgesTypeList = [...checkEdgeTypeOfPath(path[i], NodesCollection).edgeTypeList];
+    console.log("Roof Edge Type: "+ pathParameters.roofEdgesTypeList )
     for (let nodeIndex of path[i]) {
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lon);
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lat);
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].height);
     }
+    pathParameters.roofHighestLowestNodes = calculateHighestandLowestNodes(pathParameters.roofPlaneCoordinateArray).highestAndLowestNodes;
     pathInformationCollection.push(pathParameters);
+
   }
   
   return({
@@ -213,7 +219,6 @@ export const calculateObliquityAndObliquity = (NodesCollection, path) => {
     // console.log("start node " + JSON.stringify(startCoord));
     // console.log("endOut node " + JSON.stringify(endOuterCoord));
 
-    // console.log("intersection test: "+JSON.stringify(possibleInter1) + " and " + JSON.stringify(possibleInter2));
     if (possibleInter1 === undefined) {
       roofBrng = possibleBrng2;
       shortestDist = Coordinate.surfaceDistance(endInnerCoord, possibleInter2);
@@ -241,3 +246,55 @@ export const calculateObliquityAndObliquity = (NodesCollection, path) => {
   }); 
 }
 
+
+export const calculateHighestandLowestNodes = (path) => {
+  let hightest = {
+    height: Number.MIN_VALUE,
+    index: null,
+    coordinate: null
+  };
+  let lowest = {
+    height: Number.MAX_VALUE,
+    index: null,
+    coordinate: null
+  };
+  for (let i = 2; i < path.length; i+=3) {
+    if (path[i] > hightest.height) {
+      hightest.height = path[i];
+      hightest.index = i;
+    }
+    if (path[i] < lowest.height) {
+      lowest.height = path[i];
+      lowest.index = i;
+    }
+  }
+  return({
+    type: actionTypes.CALCULATE_HIGHEST_LOWEST_NODES,
+    highestAndLowestNodes: [[path[hightest.index - 2],path[hightest.index - 1], path[hightest.index - 0] ],
+          [path[lowest.index - 2],path[lowest.index - 1], path[lowest.index - 0] ]]
+  }); 
+}
+
+export const checkEdgeTypeOfPath = (path, nodesCollection) => {
+  let edgeTypeList = [];
+  for (let nodeIndex = 0; nodeIndex < path.length; ++nodeIndex) {
+    let startNode = path[nodeIndex];
+    let endNode = null;
+    if (nodeIndex === path.length - 1) {
+      endNode = path[0];
+    } else {
+      endNode = path[nodeIndex + 1];
+    }
+    if (nodesCollection[startNode].bound + nodesCollection[endNode].bound === 0) {
+      edgeTypeList.push("OuterEdge");
+    } else if (nodesCollection[startNode].bound + nodesCollection[endNode].bound === 1) {
+      edgeTypeList.push("Hip");
+    } else if (nodesCollection[startNode].bound + nodesCollection[endNode].bound === 2) {
+      edgeTypeList.push("Ridge");
+    }
+  }
+  return({
+    type: actionTypes.CHECK_EDGE_TYPE_OF_PATH,
+    edgeTypeList: edgeTypeList
+  }); 
+}

@@ -29,7 +29,7 @@ const draw3DBuildingButton = (props) => {
         if (props.currentBuilding.type === 'FLAT') {
           props.createPolygonFoundationWrapper();
         } else {
-          console.log('[Button]: Test Polygon: ');
+          console.log('[Button]: Test RoofTop Polygon: ');
           let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
           let buildingCoordinatesSize = buildingCoordinatesArray.length;
           buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);

@@ -256,6 +256,21 @@ class Coordinate {
     return undefined;
   }
 
+  /**
+   * the possible intersection Coordinate of two Coordinates traveling towards
+   * @param  {Polygon}     path the polygon that represents an rooftop
+   * @param  {Coordinate} point  the coordiatne of an arbitrary point created by mouse click
+   * @return {Number}       the height from this point to the builidng foundation plane
+   */
+  static intersection = (path, point) => {
+    // let obliquity = path.obliquity;
+
+
+
+    // let interPoint = Coordinate.intersection(point, path.brng, outerEdgeNode, possibleBrng1 );
+
+  }
+
 }
 
 export default Coordinate;

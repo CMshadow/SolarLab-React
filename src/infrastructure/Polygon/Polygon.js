@@ -49,7 +49,10 @@ class Polygon {
     shadow = null,
     show = null,
     brng = null,
-    obliquity = null
+    obliquity = null,
+    highestNode = null,
+    lowestNode = null,
+    edgesType = null
   ) {
     this.entityId = id ? id : uuid();
     this.name = name ? name: 'Polygon';
@@ -64,6 +67,9 @@ class Polygon {
     this.show = show? show: true;
     this.brng = brng ? brng : null;
     this.obliquity = obliquity ? obliquity : 0;
+    this.highestNode = highestNode? highestNode : null;
+    this.lowestNode = lowestNode? lowestNode : null;
+    this.edgesType = edgesType? [...edgesType] : null;
   }
 
   /**
@@ -118,7 +124,10 @@ class Polygon {
     shadow=null,
     show=null,
     brng = null,
-    obliquity = null
+    obliquity = null,
+    highestNode = null,
+    lowestNode = null,
+    edgesType = null
   ){
     const newID = id ? id : polygon.id;
     const newName = name ? name : polygon.name;
@@ -139,10 +148,13 @@ class Polygon {
     const newShow = show? show: true;
     const newBrng = brng? brng: polygon.brng;
     const newObliquily = obliquity? obliquity: polygon.obliquity;
+    const newHighestNode = highestNode? highestNode: polygon.highestNode;
+    const newLowestNode = lowestNode? lowestNode: polygon.lowestNode;
+    const newEdgesType = edgesType? [...edgesType]: polygon.edgesType;
     return new Polygon(
       newID, newName, newHeight, newHierarchy, newPerPositionHeight,
       newExtrudedHeight, newMaterial, newOutLineColor, newOutLineWidth,
-      newShadow, newShow, newBrng, newObliquily
+      newShadow, newShow, newBrng, newObliquily, newHighestNode, newLowestNode, newEdgesType
     );
   };
 
