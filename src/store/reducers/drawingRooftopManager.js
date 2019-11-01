@@ -2,6 +2,7 @@ import * as Cesium from 'cesium';
 import * as actionTypes from '../actions/actionTypes';
 import Polygon from '../../infrastructure/Polygon/Polygon';
 import RoofTop from '../../infrastructure/rooftop/rooftop';
+import Coordinate from '../../infrastructure/point/coordinate';
 
 const initState = {
 	NodesCollection: null,
@@ -28,6 +29,7 @@ const build3DRoofTopModeling = (state, action) => {
       newRoofPlane.hierarchy = [...roofPlane.roofPlaneCoordinateArray];
       console.log("test highest node  "+ newRoofPlane.highestNode)
       console.log("test edgeType  "+ newRoofPlane.edgesType)
+      // console.log("test height of arbitrary node: " + Coordinate.heightOfArbitraryNode(newRoofPlane, new Coordinate(newRoofPlane.hierarchy[3], newRoofPlane.hierarchy[4], newRoofPlane.hierarchy[5])));
     newRooftopCollection.addRoofPlane(newRoofPlane);
   }
  
