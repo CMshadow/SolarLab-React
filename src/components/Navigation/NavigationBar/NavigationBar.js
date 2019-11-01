@@ -14,10 +14,15 @@ const NavigationBar = (props) => {
       mode='horizontal'
       style={{ lineHeight: '50px' }}
     >
-      <Menu.Item key='1'><Link to="/">Home</Link></Menu.Item>
-      <Menu.Item key='2'><Link to="/modeling">Modeling</Link></Menu.Item>
-      <Menu.Item key='3'><Link to="/diagram">2D Diagram</Link></Menu.Item>
-      <Menu.Item key='4'><Link to="/report">Report</Link></Menu.Item>
+      {props.projectID ? (
+        <Menu.Item key='1'><Link to="/">Home</Link></Menu.Item>,
+        <Menu.Item key='2'><Link to="/modeling">Modeling</Link></Menu.Item>,
+        <Menu.Item key='3'><Link to="/diagram">2D Diagram</Link></Menu.Item>,
+        <Menu.Item key='4'><Link to="/report">Report</Link></Menu.Item>
+        ) :
+        null
+      }
+      
       <SubMenu
         title={
           <Avatar
@@ -26,9 +31,9 @@ const NavigationBar = (props) => {
         }
         style={{ float: 'right' }}
       >
-          <Menu.Item key="setting:3">Option 1</Menu.Item>
-          <Menu.Item key="setting:4">Option 2</Menu.Item>
-        </SubMenu>
+        <Menu.Item key="setting:3">Option 1</Menu.Item>
+        <Menu.Item key="setting:4">Option 2</Menu.Item>
+      </SubMenu>
     </Menu>
   )
 }
