@@ -21,16 +21,16 @@ const ModelingPage = (props) => {
         <Menu theme="dark" mode="inline" defaultSelectedKeys={['1']}>
           <Menu.Item key="1">
             <Icon type="project" />
-            <span className="nav-text">Projects</span>
+            <span>Projects</span>
           </Menu.Item>
           <Menu.Item key="2">
-            <span className="nav-text">Panel Library</span>
+            <span>Panel Library</span>
           </Menu.Item>
           <Menu.Item key="3">
-            <span className="nav-text">Inverter Library</span>
+            <span>Inverter Library</span>
           </Menu.Item>
           <Menu.Item key="4">
-            <span className="nav-text">My Drone Models</span>
+            <span>My Drone Models</span>
           </Menu.Item>
         </Menu>
       </Sider>
