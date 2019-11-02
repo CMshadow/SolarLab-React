@@ -10,6 +10,9 @@ const initialState = {
   drawingInnerPolyline: null,
   fixedInnerPolylines: [],
   pointsRelation: {},
+  foundPolylines: [],
+  hipPolylines: [],
+  ridgePolylines: [],
   brngCollection: null,
   auxPolyline: null,
 
@@ -42,6 +45,8 @@ const passFoundPolyline = (state, action) => {
 };
 
 const updatePointsRelation = (state, action) => {
+  const hipPolylines = [];
+  const ridgePolylines = [];
   const polylineArray = action.foundPolyline.getSegmentPolyline();
   const newPointsRelation = action.foundPolyline.points.reduce((map, point) => {
     map[point.entityId] = {
@@ -60,6 +65,11 @@ const updatePointsRelation = (state, action) => {
     return map;
   }, {})
   const complementPointsRelation = state.fixedInnerPolylines.flatMap(polyline => {
+    if (polyline.type === 'HIP') {
+      hipPolylines.push(polyline);
+    } else if (polyline.type === 'RIDGE') {
+      ridgePolylines.push(polyline)
+    }
     return polyline.points.map(point => {
       return {
         [point.entityId]: {
@@ -79,9 +89,15 @@ const updatePointsRelation = (state, action) => {
       newPointsRelation[Object.keys(obj)[0]] = Object.values(obj)[0];
     }
   }
+  console.log(polylineArray)
+  console.log(hipPolylines)
+  console.log(ridgePolylines)
   return {
     ...state,
-    pointsRelation: newPointsRelation
+    pointsRelation: newPointsRelation,
+    foundPolylines: polylineArray,
+    hipPolylines: hipPolylines,
+    ridgePolylines: ridgePolylines
   };
 };
 

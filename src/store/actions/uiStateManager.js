@@ -53,3 +53,15 @@ export const setPreviousUIState = () => {
     type: actionTypes.SET_PREVIOUS_UI_STATE
   };
 };
+
+export const setUIStateEditing3D = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_EDITING_3D
+  };
+};
+
+export const setUIStateSetUpPV = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_SETUP_PV
+  };
+};

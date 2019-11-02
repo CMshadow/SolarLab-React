@@ -3,6 +3,7 @@ import { Entity } from 'resium';
 import * as Cesium from 'cesium';
 
 
+
 /* 
     Polygon: Create Basic 3D Polygon
 */
@@ -10,13 +11,13 @@ import * as Cesium from 'cesium';
 const polygonVisualize = (props) => {
 	return (
 		<Entity
-			id={props.id}
+			id={props.entityId}
 			name={props.name}
 			polygon={{
 				hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(props.hierarchy),
 				perPositionHeight: props.perPositionHeight,
 				extrudedHeight: props.extrudedHeight,
-				outline: true,
+				outline: false,
 				outlineColor: props.outlineColor,
 				outlineWidth: props.outlineWidth,
 				material: props.material,

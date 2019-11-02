@@ -1,7 +1,9 @@
 import * as Cesium from 'cesium';
 import uuid from 'uuid/v1';
-import errorNotification from '../../components/ui/Notification/ErrorNotification';
+import * as turf from '@turf/turf';
+import simplepolygon from 'simplepolygon';
 
+import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Point from '../point/point';
 import Coordinate from '../point/coordinate';
 
@@ -9,7 +11,7 @@ class Polyline {
 
   /**
    * A polyline
-   * @param {Point}   [points=null]   A list of Point objects, default empty
+   * @param {Point[]}   [points=null]   A list of Point objects, default empty
    * @param {string}  [id=null]       unique id of the polyline, automatic
    *                                  generate one if not provided
    * @param {string}  [name=null]     name of the polyline, automatic generate
@@ -255,7 +257,7 @@ class Polyline {
   getSegmentDistance = () => {
     let distArray = [];
     for (let i = 0; i < this.length-1; i++) {
-      distArray.push(Point.distance(this.points[i], this.points[i+1]));
+      distArray.push(Point.surfaceDistance(this.points[i], this.points[i+1]));
     }
     return distArray;
   }
@@ -279,7 +281,7 @@ class Polyline {
    */
   getHelpLineBearings = () => {
     let brngSet = new Set();
-    for (let i = 0; i < this.length-1; i++) {
+    for (let i = 0; i < this.length-2; i++) {
       const brng = Point.bearing(this.points[i], this.points[i+1]);
       const brng1 = (brng-180)%360 > 0 ? (brng-180)%360 : (brng-180)%360+360;
       const brng2 = (brng+90)%360 > 0 ? (brng+90)%360 : (brng+90)%360+360;
@@ -299,6 +301,26 @@ class Polyline {
     }
     return brngSet;
   }
+
+  makeGeoJSON = () => {
+    const coordinates = this.getPointsCoordinatesArray(false);
+    const geoJSON = {
+      type: 'Feature',
+      geometry: {
+        type: 'Polygon',
+        coordinates: [
+          coordinates
+        ]
+      }
+    }
+    return geoJSON;
+  };
+
+  isSelfIntersection = () => {
+    const geoJson = this.makeGeoJSON();
+    const selfIntersectionDetect = simplepolygon(geoJson);
+    return selfIntersectionDetect.features.length >= 2;
+  };
 }
 
 export default Polyline;

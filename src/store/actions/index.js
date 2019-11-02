@@ -69,16 +69,29 @@ export {
 } from './drawingKeepoutManager'
 
 export {
-  createPolygonFoundation,
-  setUpPolygonFoundation,
-} from './drawingPolygonManager';
+  createPolygonFoundationWrapper,
+  createPolygonFoundationIncludeStb,
+  createWall,
+  setBackendLoadingTrue,
+  setBackendLoadingFalse,
+} from './drawingPolygonManager'
+
 
 export {
   build3DRoofTopModeling,
   initEdgesMap,
   initNodesCollection,
-  searchAllRoofPlanes
+  searchAllRoofPlanes,
+  calculateHighestandLowestNodes,
+  calculateObliquityAndObliquity,
+  checkEdgeTypeOfPath
 } from './drawingRooftopManager';
+
+
+export {
+  createAllKeepoutPolygon,
+  reRenderKeepoutPolygon
+} from './drawingKeepoutPolygonManager'
 
 export {
   setUIStateReadyDrawing,
@@ -89,11 +102,25 @@ export {
   setUIStateInnerDrew,
   setUIStateDrawingKeepout,
   setUIStateEditingKeepout,
-  setPreviousUIState
+  setPreviousUIState,
+  setUIStateEditing3D,
+  setUIStateSetUpPV
 } from './uiStateManager';
 
 export {
   initBuilding,
+  updateBuilding,
   saveBuildingInfoFields,
+  bindFoundPolyline,
+  bindFoundPolygons,
   resetBuilding
 } from './buildingManager';
+
+export {
+  bindAllKeepout
+} from './keepoutManager';
+
+export {
+  setDebugPoints,
+  setDebugPolylines
+} from './debugRender';

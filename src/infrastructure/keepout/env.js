@@ -4,25 +4,25 @@ import Keepout from './keepout';
 
 class Env extends Keepout {
 
-  constructor (id = null, type = null, drew=null, editing=null, envHt = null,
-    outline = null
+  constructor (id = null, type = 'ENV', drew=null, editing=null, envHt = null,
+    outline = null, polygon = null
   ) {
-    super(id, type, drew, editing);
+    super(id, type, drew, editing, outline, polygon);
     this.height = envHt ? envHt : 0;
-    this.outlinePolyline = outline ? outline : null;
   }
 
   static fromKeepout (
-    normalKeepout, keepoutHt=null, outline=null
+    env, keepoutHt=null, outline=null, polygon=null
   ) {
-    const newId = normalKeepout.id;
-    const newType = normalKeepout.type;
-    const newDrew = normalKeepout.finishedDrawing;
-    const newIsEditing = normalKeepout.isEditing;
-    const newKeepoutHt = keepoutHt ? keepoutHt : normalKeepout.height;
-    const newoutlinePolyline = outline ? outline : normalKeepout.outlinePolyline;
+    const newId = env.id;
+    const newType = env.type;
+    const newDrew = env.finishedDrawing;
+    const newIsEditing = env.isEditing;
+    const newKeepoutHt = keepoutHt ? keepoutHt : env.height;
+    const newOutlinePolyline = outline ? outline : env.outlinePolyline;
+    const newOutlinePolygon = polygon ? polygon : env.outlinePolygon;
     return new Env(newId, newType, newDrew, newIsEditing, newKeepoutHt,
-      newoutlinePolyline
+      newOutlinePolyline, newOutlinePolygon
     );
   }
 }

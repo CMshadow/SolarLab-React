@@ -10,7 +10,7 @@ const drawingRooftopManagerRender = (props) => {
   let drawingBuildingRooftop = [];
   if (props.PitchedBuildingRoofTop.EnableToBuild && props.CurrentBuilding.type === 'PITCHED') {
     console.log('[Pitched Building: start]');
-    for (let RoofPlane of props.PitchedBuildingRoofTop.RooftopCollection) {
+    for (let RoofPlane of props.PitchedBuildingRoofTop.RooftopCollection.getAllRoofTops()) {
       drawingBuildingRooftop.push(<PolygonVisualize
       {...RoofPlane}/>);
     }
