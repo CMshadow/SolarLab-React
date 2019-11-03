@@ -105,100 +105,77 @@ export const createNormalKeepoutPolygon = (normalKeepout) =>
 
 export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
 (dispatch, getState) => {
-  let pitchedRoofs =
+  let pitchedRoofPolygons =
     getState().undoableReducer.present.drawingRooftopManagerReducer
     .RooftopCollection.rooftopCollection;
-  let pitchedRoofsFoundLine = pitchedRoofs.map(polygon => polygon.toFoundLine())
+  let pitchedRoofsFoundLine = pitchedRoofPolygons.map(polygon => polygon.toFoundLine())
   let keepoutFoundLines = normalKeepout.map(kpt => kpt.outlinePolyline);
   let keepoutStb = normalKeepout.map(kpt => kpt.setback);
-  let foundPolylines = getState().undoableReducer.present.drawingInnerManagerReducer
-    .foundPolylines;
-  let hipPolylines = getState().undoableReducer.present.drawingInnerManagerReducer
-    .hipPolylines;
-  let ridgePolylines = getState().undoableReducer.present.drawingInnerManagerReducer
-    .ridgePolylines;
+  // let foundPolylines = getState().undoableReducer.present.drawingInnerManagerReducer
+  //   .foundPolylines;
+  // let hipPolylines = getState().undoableReducer.present.drawingInnerManagerReducer
+  //   .hipPolylines;
+  // let ridgePolylines = getState().undoableReducer.present.drawingInnerManagerReducer
+  //   .ridgePolylines;
 
 
 
-  pitchedRoofs = pitchedRoofs.map(p => Polygon.copyPolygon(p))
-
+  pitchedRoofPolygons = pitchedRoofPolygons.map(p => Polygon.copyPolygon(p))
   pitchedRoofsFoundLine = pitchedRoofsFoundLine.map(p => FoundLine.fromPolyline(p))
-  const pitchedRoofsMathLineCollection = pitchedRoofsFoundLine.map(p => MathLineCollection.fromPolyline(p))
-
-
+  const pitchedRoofsMathLineCollection = pitchedRoofsFoundLine.map(l =>
+    MathLineCollection.fromPolyline(l)
+  );
   keepoutFoundLines = keepoutFoundLines.map(p => FoundLine.fromPolyline(p))
+  // foundPolylines = foundPolylines.map(p => Polyline.fromPolyline(p))
 
-
-  foundPolylines = foundPolylines.map(p => Polyline.fromPolyline(p))
-
-
-  hipPolylines = hipPolylines.map(p => InnerLine.fromPolyline(p))
-  const hipMathLines = hipPolylines.map(hip => MathLine.fromPolyline(hip));
-
-  ridgePolylines = ridgePolylines.map(p => InnerLine.fromPolyline(p))
-  const ridgeMathLines = ridgePolylines.map(ridge => MathLine.fromPolyline(ridge));
-
-  const hipAndRidgeMathLines = hipMathLines.concat(ridgeMathLines)
-
-
-  const newKeepoutFoundLines = keepoutFoundLines.map((kptPly, kptIndex) => {
-    const kptMathLineCollection = MathLineCollection.fromPolyline(kptPly)
-    const augmentCors = [];
-    kptMathLineCollection.mathLineCollection.forEach((mathLine, index) => {
-      hipAndRidgeMathLines.forEach(inner => {
-        const possibleInter = Coordinate.intersection(
-          mathLine.originCor, mathLine.brng, inner.originCor, inner.brng
-        );
-        if (
-          possibleInter !== undefined && Coordinate.surfaceDistance(
-          possibleInter, mathLine.originCor) < mathLine.dist &&
-          Coordinate.surfaceDistance(possibleInter, inner.originCor) < inner.dist
-        ) {
-          augmentCors.push({segmentIndex: index, augment: possibleInter})
+  const newNormalKeepout = keepoutFoundLines.map((kptFoundLine, kptIndex) => {
+    const inWhichRoof = [];
+    kptFoundLine.points.forEach(kptP => {
+      pitchedRoofsMathLineCollection.forEach((roof, roofIndex) => {
+        if (corWithinLineCollectionPolygon(roof, kptP)) {
+          inWhichRoof.push(roofIndex);
         }
       })
-
-    });
-    const newKptPlyPoints = kptPly.points;
-    augmentCors.forEach((elem,i) =>
-      newKptPlyPoints.splice(
-        elem.segmentIndex + i + 1, 0, Point.fromCoordinate(elem.augment)
-      )
-    );
-    const augmentHtKptPlyPoints = newKptPlyPoints.map(p => {
-      console.log('===================')
-      console.log(p)
-      let newPoint = Point.fromPoint(p);
-      pitchedRoofsMathLineCollection.forEach((m, i) => {
-        if (corWithinLineCollectionPolygon(m, p)) {
-          newPoint.setCoordinate(
-            null, null,
-            pitchedRoofs[i].lowestNode[2] + Coordinate.heightOfArbitraryNode(pitchedRoofs[i], p) + normalKeepout[kptIndex].height
-          );
-        }
-      })
-      console.log(newPoint)
-      return newPoint;
     })
+    const indexCount = inWhichRoof.reduce((acc, val) => {
+      acc[val] = acc[val] === undefined ? 1 : acc[val] += 1;
+      return acc;
+    }, {});
+    const maxCount = Math.max(...Object.values(indexCount));
+    const roofIndex = Object.keys(indexCount).filter(k => indexCount[k] === maxCount);
 
-    return new FoundLine(augmentHtKptPlyPoints);
-  })
-  const newNormalKeepout = normalKeepout.map((kpt, index) => {
-    const hierarchy = Polygon.makeHierarchyFromPolyline(
-      newKeepoutFoundLines[index]
-    )
+    let newKptCors = martinez.intersection(
+      kptFoundLine.makeGeoJSON().geometry.coordinates,
+      pitchedRoofsFoundLine[roofIndex].makeGeoJSON().geometry.coordinates
+    )[0][0]
+
+    let hierarchy = [];
+    newKptCors.forEach(cor => {
+      const newHeight = Coordinate.heightOfArbitraryNode(
+        pitchedRoofPolygons[roofIndex], new Coordinate(cor[0], cor[1], 0)
+      ) + pitchedRoofPolygons[roofIndex].lowestNode[2] + 0.005;
+      if (cor[2]) {
+        cor[2] = newHeight;
+      } else {
+        cor.push(newHeight);
+      }
+      hierarchy = hierarchy.concat(cor);
+    })
+    console.log(newKptCors)
     console.log(hierarchy)
+
     return NormalKeepout.fromKeepout(
-      kpt, null, null, null,
+      normalKeepout[kptIndex], null, null, null,
       new Polygon(
-        null, null, kpt.height, hierarchy, null, null,
+        null, null, normalKeepout[kptIndex].height + pitchedRoofPolygons[roofIndex].lowestNode[2], hierarchy, null, null,
         Color.GOLD
       ),
-      kpt.setback !== 0 ?
+      normalKeepout[kptIndex].setback !== 0 ?
       null :
       null
     )
-  });
+  })
+
   dispatch({
     type: actionTypes.CREATE_ALL_NORMAL_KEEPOUT_POLYGON,
     normalKeepout: newNormalKeepout
