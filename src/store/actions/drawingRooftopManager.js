@@ -13,7 +13,14 @@ export const initEdgesMap = () => {
 };
 
 
-export const build3DRoofTopModeling = (buildingOutline, polylinesRelation, foundPolylines, hipPolylines, ridgePolylines) => {
+export const build3DRoofTopModeling = () => (dispatch, getState) => {
+  let buildingOutline = getState().undoableReducer.present.drawingManagerReducer.drawingPolyline.getPointsCoordinatesArray();
+  let buildingCoordinatesSize = buildingOutline.length;
+  buildingOutline.splice(buildingCoordinatesSize - 3,3);
+  const polylinesRelation = getState().undoableReducer.present.drawingInnerManagerReducer.pointsRelation;
+  const foundPolylines = getState().undoableReducer.present.drawingInnerManagerReducer.foundPolylines;
+  const hipPolylines = getState().undoableReducer.present.drawingInnerManagerReducer.hipPolylines;
+  const ridgePolylines = getState().undoableReducer.present.drawingInnerManagerReducer.ridgePolylines;
   let newNodeCollection = [];
   let newInnerEdgeCollection = [];
   let newOuterEdgeCollection = [];
@@ -23,7 +30,7 @@ export const build3DRoofTopModeling = (buildingOutline, polylinesRelation, found
   newInnerEdgeCollection = initEdgeMap(polylinesRelation, newNodeCollection, foundPolylines, hipPolylines, ridgePolylines).newInnerEdgeCollection;
   pathInformationCollection = searchAllRoofPlanes(newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection).pathCollection;
  
-  return ({
+  return dispatch({
     type: actionTypes.BUILD_3D_ROOFTOP_MODELING,
     nodesCollection: newNodeCollection,
     OuterEdgesCollection: newOuterEdgeCollection,
@@ -41,11 +48,11 @@ export const initNodesCollection = (buildingOutline, newNodeCollection, newOuter
 
   for (let noteIndex = 0; noteIndex < newNodeCollection.length; ++noteIndex) {
     if (noteIndex === (newNodeCollection.length - 1) ) {
-      newOuterEdgeCollection.push(new Edge(noteIndex, 0, null, null));
+      newOuterEdgeCollection.push(new Edge(noteIndex, 0, null, null, "OuterEdge", newNodeCollection[noteIndex], newNodeCollection[0] ));
       newNodeCollection[noteIndex].addChild(0);
       newNodeCollection[0].addChild(noteIndex);
     } else {
-      newOuterEdgeCollection.push(new Edge(noteIndex, noteIndex + 1, null, null) );
+      newOuterEdgeCollection.push(new Edge(noteIndex, noteIndex + 1, null, null, "OuterEdge", newNodeCollection[noteIndex], newNodeCollection[noteIndex + 1]) );
       newNodeCollection[noteIndex].addChild(noteIndex+1);
       newNodeCollection[noteIndex+1].addChild(noteIndex);
     }
@@ -84,7 +91,7 @@ export const initEdgeMap = (polylinesRelation, newNodeCollection, foundPolylines
         if (startNode !== null && endNode !== null ) {
           indexStart = MathHelper.findNodeIndex(newNodeCollection, startNode.lon, startNode.lat);
           indexEnd = MathHelper.findNodeIndex(newNodeCollection, endNode['lon'], endNode['lat']);
-          newInnerEdgeCollection.push(new Edge(indexStart, indexEnd, null, null));
+          newInnerEdgeCollection.push(new Edge(indexStart, indexEnd, null, null, "Hip" ,newNodeCollection[indexStart], newNodeCollection[indexEnd] ));
           newNodeCollection[indexStart].addChild(indexEnd);
           newNodeCollection[indexEnd].addChild(indexStart);
         } 
@@ -99,7 +106,7 @@ export const initEdgeMap = (polylinesRelation, newNodeCollection, foundPolylines
     if (startNode !== null && endNode !== null ) {
       let indexStart = MathHelper.findNodeIndex(newNodeCollection, startNode.lon, startNode.lat);
       let indexEnd = MathHelper.findNodeIndex(newNodeCollection, endNode.lon, endNode.lat);
-      newInnerEdgeCollection.push(new Edge(indexStart, indexEnd, null, null));
+      newInnerEdgeCollection.push(new Edge(indexStart, indexEnd, null, null, "Ridge" ,newNodeCollection[indexStart], newNodeCollection[indexEnd]));
       newNodeCollection[indexStart].addChild(indexEnd);
       newNodeCollection[indexEnd].addChild(indexStart);
     } 
@@ -125,8 +132,8 @@ export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, N
       roofEdgesTypeList: null
     };
     pathParameters.roofPlaneParameters = [...calculateObliquityAndObliquity(NodesCollection, path[i]).roofPlaneParameters];
-    pathParameters.roofEdgesTypeList = [...checkEdgeTypeOfPath(path[i], NodesCollection).edgeTypeList];
-    console.log("Roof Edge Type: "+ pathParameters.roofEdgesTypeList )
+    pathParameters.roofEdgesTypeList = [...checkEdgeTypeOfPath(path[i], NodesCollection, OuterEdgesCollection, InnerEdgeCollection).edgeTypeList];
+    // console.log("Roof Edge Type: "+ pathParameters.roofEdgesTypeList )
     for (let nodeIndex of path[i]) {
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lon);
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lat);
@@ -275,7 +282,7 @@ export const calculateHighestandLowestNodes = (path) => {
   }); 
 }
 
-export const checkEdgeTypeOfPath = (path, nodesCollection) => {
+export const checkEdgeTypeOfPath = (path, NodesCollection ,OuterEdgesCollection, InnerEdgeCollection) => {
   let edgeTypeList = [];
   for (let nodeIndex = 0; nodeIndex < path.length; ++nodeIndex) {
     let startNode = path[nodeIndex];
@@ -285,13 +292,25 @@ export const checkEdgeTypeOfPath = (path, nodesCollection) => {
     } else {
       endNode = path[nodeIndex + 1];
     }
-    if (nodesCollection[startNode].bound + nodesCollection[endNode].bound === 0) {
-      edgeTypeList.push("OuterEdge");
-    } else if (nodesCollection[startNode].bound + nodesCollection[endNode].bound === 1) {
-      edgeTypeList.push("Hip");
-    } else if (nodesCollection[startNode].bound + nodesCollection[endNode].bound === 2) {
-      edgeTypeList.push("Ridge");
+    if (NodesCollection[startNode].bound + NodesCollection[endNode].bound === 0) {
+
+      for (let edge of OuterEdgesCollection) {
+        // console.log('compare out: ' + startNode + " - " + edge.startNode + ', and ' + endNode + ' - ' + edge.endNode)
+        if ( (startNode === edge.startNode && endNode === edge.endNode) 
+            || (startNode === edge.endNode && endNode === edge.startNode) ) {
+          edgeTypeList.push(edge);
+        }
+      }
+    } else {
+        for (let edge of InnerEdgeCollection) {
+          // console.log('compare in: ' + startNode + " - " + edge.startNode + ', and ' + endNode + ' - ' + edge.endNode)
+          if ( (startNode === edge.startNode && endNode === edge.endNode) 
+          || (startNode === edge.endNode && endNode === edge.startNode) ) {
+            edgeTypeList.push(edge);
+          }
+        }
     }
+
   }
   return({
     type: actionTypes.CHECK_EDGE_TYPE_OF_PATH,

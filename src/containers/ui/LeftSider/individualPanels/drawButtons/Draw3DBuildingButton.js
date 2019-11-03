@@ -30,14 +30,7 @@ const draw3DBuildingButton = (props) => {
           props.createPolygonFoundationWrapper();
         } else {
           console.log('[Button]: Test RoofTop Polygon: ');
-          let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
-          let buildingCoordinatesSize = buildingCoordinatesArray.length;
-          buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
-          props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray,
-            props.PolylinesRelation,
-            props.foundPolylines,
-            props.hipPolylines,
-            props.ridgePolylines);
+          props.CreatePitchedBuildingRoofTopPolygon();
         }
         props.createAllKeepoutPolygon();
       }}
@@ -61,25 +54,14 @@ const mapStateToProps = state => {
       state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
     keepoutList:
       state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
-    BuildFoundation:
-      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
-    PitchedBuildingRoofTop:
-      state.undoableReducer.present.drawingRooftopManagerReducer,
-    PolylinesRelation:
-      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
-    foundPolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer.foundPolylines,
-    hipPolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer.hipPolylines,
-    ridgePolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer.ridgePolylines
+
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation, foundPolylines, hipPolylines, ridgePolylines) =>
-      dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation, foundPolylines,hipPolylines, ridgePolylines)),
+    CreatePitchedBuildingRoofTopPolygon: () =>
+      dispatch(actions.build3DRoofTopModeling()),
     createPolygonFoundationWrapper: () => dispatch(actions.createPolygonFoundationWrapper()),
     createAllKeepoutPolygon: () =>
       dispatch(actions.createAllKeepoutPolygon()),
