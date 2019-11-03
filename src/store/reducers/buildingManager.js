@@ -2,6 +2,7 @@ import * as actionTypes from '../actions/actionTypes';
 import FlatBuilding from '../../infrastructure/building/flatBuilding';
 import PitchedBuilding from '../../infrastructure/building/pitchedBuilding';
 
+
 const initialState = {
   workingBuilding: null,
   buildingInfoFields: {
@@ -30,6 +31,7 @@ const updateBuilding = (state, action) => {
       state.workingBuilding, null, null, action.foundationHeight,
       action.eaveSetback, action.parapetHeight
     );
+
   }
   return {
     ...state,

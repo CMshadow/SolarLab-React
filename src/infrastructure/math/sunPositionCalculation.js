@@ -166,3 +166,8 @@ export const sun_position = (year, month, day, hour, longitude, latitude, UTCOff
   // console.log("ApparentSunEl: "+ApparentSunEl);
   return [ApparentSunEl, SunAz];
 }
+
+export const calculateSunPositionWrapper = () => {
+  let sunPosition = sun_position(2019, 6, 23, 10, -117.841232, 33.647001, -7);
+  return [sunPosition];//[ApparentSunEl, SunAz]
+}
