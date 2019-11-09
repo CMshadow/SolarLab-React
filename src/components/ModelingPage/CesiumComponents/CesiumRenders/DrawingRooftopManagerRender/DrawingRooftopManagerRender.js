@@ -8,19 +8,37 @@ import * as actions from '../../../../../store/actions/index';
 
 const drawingRooftopManagerRender = (props) => {
   let drawingBuildingRooftop = [];
+  const drawingBuildingRoofTopExcludeStb = [];
   if (props.PitchedBuildingRoofTop.EnableToBuild && props.CurrentBuilding.type === 'PITCHED') {
-    console.log('[Pitched Building: start]');
     for (let RoofPlane of props.PitchedBuildingRoofTop.RooftopCollection.getAllRoofTops()) {
-      drawingBuildingRooftop.push(<PolygonVisualize
-      {...RoofPlane}/>);
+      drawingBuildingRooftop.push(
+        <PolygonVisualize
+          key={RoofPlane.entityId}
+          {...RoofPlane}
+        />
+      );
     }
+    props.PitchedBuildingRoofTop.RooftopCollection.rooftopExcludeStb.forEach(
+      elem => {
+        elem.forEach(e =>
+        drawingBuildingRoofTopExcludeStb.push(
+          <PolygonVisualize
+            key={e.entityId}
+            {...e}
+          />
+        )
+      )}
+    );
   }
-  return <div>{drawingBuildingRooftop.map((roofPlane,index) => (
-    <li key={index}>{roofPlane}</li>
-  ))}</div>
+  return (
+    <div>
+      {drawingBuildingRooftop}
+      {drawingBuildingRoofTopExcludeStb}
+    </div>
+  );
 };
 
-const mapStateToProps = state => { 
+const mapStateToProps = state => {
   return{
     CurrentBuilding:
       state.buildingManagerReducer.workingBuilding,

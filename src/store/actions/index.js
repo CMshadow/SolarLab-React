@@ -42,7 +42,8 @@ export {
   setHoverInnerLine,
   releaseHoverInnerLine,
   setHoverInnerPoint,
-  releaseHoverInnerPoint
+  releaseHoverInnerPoint,
+  checkInnerTypesProvided
 } from './drawingInnerManager';
 
 export {

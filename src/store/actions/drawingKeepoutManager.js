@@ -144,18 +144,22 @@ export const releaseLinkedKeepoutIndex = () => {
   };
 };
 
-export const addPointOnKeepoutPolyline = (mousePosition, viewer, fixedMode=false) => {
+export const addPointOnKeepoutPolyline =
+(mousePosition, viewer, fixedMode=false) => (dispatch, getState) =>
+{
+  console.log(getState().undoableReducer.present.drawingKeepoutManagerReducer.drawingKeepoutPolyline)
+  console.log(getState().undoableReducer.present.drawingInnerManagerReducer.hipPolylines)
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
   if (Cesium.defined(cartesian3)) {
-    return {
+    return dispatch({
       type: actionTypes.KEEPOUT_ADD_POINT,
       fixedMode: fixedMode,
       cartesian3: cartesian3
-    };
+    });
   } else {
-    return {
+    return dispatch({
       type: actionTypes.DO_NOTHING
-    };
+    });
   }
 };
 

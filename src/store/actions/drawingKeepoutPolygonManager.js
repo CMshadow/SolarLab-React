@@ -128,7 +128,7 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
       FoundLine.fromPolyline(l[0])
     );
 
-    const newNormalKeepout = stbPolylines.map((kptFoundLine, kptIndex) => {
+    const newNormalKeepout = stbPolylines.map((stbFoundLine, kptIndex) => {
       const inWhichRoof = [];
       keepoutFoundLines[kptIndex].points.forEach(kptP => {
         pitchedRoofsMathLineCollection.forEach((roof, roofIndex) => {
@@ -146,13 +146,13 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
         k => indexCount[k] === maxCount
       )[0];
 
-      let newKptCors = martinez.intersection(
-        kptFoundLine.makeGeoJSON().geometry.coordinates,
+      let clippedStbCors = martinez.intersection(
+        stbFoundLine.makeGeoJSON().geometry.coordinates,
         pitchedRoofsFoundLine[roofIndex].makeGeoJSON().geometry.coordinates
       )[0][0]
 
       let stbHierarchy = [];
-      newKptCors.forEach(cor => {
+      clippedStbCors.forEach(cor => {
         const newHeight = Coordinate.heightOfArbitraryNode(
           pitchedRoofPolygons[roofIndex], new Coordinate(cor[0], cor[1], 0)
         ) + pitchedRoofPolygons[roofIndex].lowestNode[2] + 0.005;
@@ -166,12 +166,18 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
 
       let kptHierarchy = [];
       let kptAvgHeight = 0;
+      let kptAvgHeightDenominator = 0;
       keepoutFoundLines[kptIndex].points.forEach(p => {
-        kptAvgHeight += (Coordinate.heightOfArbitraryNode(
-          pitchedRoofPolygons[roofIndex], p
-        ) + foundHeight);
+        if (corWithinLineCollectionPolygon(
+          pitchedRoofsMathLineCollection[roofIndex], p
+        )) {
+          kptAvgHeight += (Coordinate.heightOfArbitraryNode(
+            pitchedRoofPolygons[roofIndex], p
+          ) + foundHeight);
+          kptAvgHeightDenominator += 1;
+        }
       })
-      kptAvgHeight = kptAvgHeight / kptFoundLine.length;
+      kptAvgHeight = kptAvgHeight / kptAvgHeightDenominator;
       keepoutFoundLines[kptIndex].points.forEach(p => {
         let cor = p.getCoordinate(true);
         cor[2] = normalKeepout[kptIndex].height + kptAvgHeight
