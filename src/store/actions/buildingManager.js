@@ -111,6 +111,15 @@ export const bindFoundPolygons = () => (dispatch, getState) => {
   });
 };
 
+export const bindPitchedPolygons = () => (dispatch, getState) => {
+  console.log(getState().undoableReducer.present.drawingRooftopManagerReducer
+  .RooftopCollection)
+  // const buildingFoundation =
+  //   getState().undoableReducer.present.drawingRooftopManagerReducer
+  //   .RooftopCollection.rooftopCollection.map(polygon =>
+  //     Polygon.copyPolygon(polygon)
+  //   );
+}
 /**
  * Reset buildingManager to its initial state
  * @return {Redux action}        tell buildingManager reducer to reset to init

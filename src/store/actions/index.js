@@ -114,6 +114,7 @@ export {
   saveBuildingInfoFields,
   bindFoundPolyline,
   bindFoundPolygons,
+  bindPitchedPolygons,
   resetBuilding
 } from './buildingManager';
 

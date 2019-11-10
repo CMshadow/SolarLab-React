@@ -2,16 +2,52 @@
 import Building from './building';
 
 class PitchedBuilding extends Building {
-  constructor (name, serial, foundHt, eaveStb, hipStb, ridgeStb) {
+  constructor (
+    name, serial, foundHt, eaveStb, hipStb, ridgeStb, pitchedRoofPolygons=null,
+    pitchedRoofPolygonsExcludeStb=null
+  ) {
     super(name, serial, foundHt, eaveStb);
     this.type = 'PITCHED';
     this.hipSetback = hipStb;
     this.ridgeSetback = ridgeStb;
-    this.foundationPolygon = null;
+    this.pitchedRoofPolygons = pitchedRoofPolygons;
+    this.pitchedRoofPolygonsExcludeStb = pitchedRoofPolygonsExcludeStb;
   }
 
-  bindFoundPolygon = (Polygon) => {
-    this.foundationPolygon = Polygon;
+  bindPitchedPolygon = (polygons) => {
+    this.pitchedRoofPolygons = polygons;
+  }
+
+  bindPitchedPolygonExcludeStb = (polygons) => {
+    this.pitchedRoofPolygonsExcludeStb = polygons;
+  }
+
+  static fromBuilding (
+    pitchedBuilding, name=null, serial=null, foundHt=null, eaveStb=null,
+    hipStb=null, ridgeStb=null, pitchedRoofPolygons=null,
+    pitchedRoofPolygonsExcludeStb=null
+  ) {
+    const newName = name ? name : pitchedBuilding.name;
+    const newSerial = serial ? serial : pitchedBuilding.serial;
+    const newFoundHt = foundHt ? foundHt : pitchedBuilding.foundationHeight;
+    const newEaveStb =
+      eaveStb !== null ? eaveStb : pitchedBuilding.eaveSetback;
+    const newHipStb =
+      hipStb !== null ? hipStb : pitchedBuilding.hipSetback;
+    const newRidgeStb =
+      ridgeStb !== null ? ridgeStb : pitchedBuilding.ridgeSetback;
+    const newpitchedRoofPolygons =
+      pitchedRoofPolygons ?
+      pitchedRoofPolygons :
+      pitchedBuilding.pitchedRoofPolygons;
+    const newpitchedRoofPolygonsExcludeStb =
+      pitchedRoofPolygonsExcludeStb ?
+      pitchedRoofPolygonsExcludeStb :
+      pitchedBuilding.pitchedRoofPolygonsExcludeStb;
+    return new PitchedBuilding(newName, newSerial, newFoundHt, newEaveStb,
+      newHipStb, newRidgeStb, newpitchedRoofPolygons,
+      newpitchedRoofPolygonsExcludeStb
+    );
   }
 }
 
