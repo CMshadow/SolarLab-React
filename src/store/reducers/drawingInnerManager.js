@@ -4,12 +4,16 @@ import * as actionTypes from '../actions/actionTypes';
 import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
 import InnerLine from '../../infrastructure/line/innerLine';
+import ErrorNotification from '../../components/ui/Notification/ErrorNotification';
 import { createAuxPolyline } from './drawingManager';
 
 const initialState = {
   drawingInnerPolyline: null,
   fixedInnerPolylines: [],
   pointsRelation: {},
+  foundPolylines: [],
+  hipPolylines: [],
+  ridgePolylines: [],
   brngCollection: null,
   auxPolyline: null,
 
@@ -21,10 +25,12 @@ const passFoundPolyline = (state, action) => {
   const polylineArray = action.foundPolyline.getSegmentPolyline();
   return {
     ...state,
+    foundPolylines: polylineArray,
     brngCollection: action.brngCollection,
     pointsRelation: action.foundPolyline.points.reduce((map, point) => {
       map[point.entityId] = {
         object: Point.fromPoint(point),
+        type: 'OUT',
         connectPolyline: polylineArray.reduce((acc, line) => {
           if (
             line.points[0].entityId === point.entityId ||
@@ -41,10 +47,13 @@ const passFoundPolyline = (state, action) => {
 };
 
 const updatePointsRelation = (state, action) => {
+  const hipPolylines = [];
+  const ridgePolylines = [];
   const polylineArray = action.foundPolyline.getSegmentPolyline();
   const newPointsRelation = action.foundPolyline.points.reduce((map, point) => {
     map[point.entityId] = {
       object: Point.fromPoint(point),
+      type: 'OUT',
       connectPolyline: polylineArray.reduce((acc, line) => {
         if (
           line.points[0].entityId === point.entityId ||
@@ -58,10 +67,16 @@ const updatePointsRelation = (state, action) => {
     return map;
   }, {})
   const complementPointsRelation = state.fixedInnerPolylines.flatMap(polyline => {
+    if (polyline.type === 'HIP') {
+      hipPolylines.push(polyline);
+    } else if (polyline.type === 'RIDGE') {
+      ridgePolylines.push(polyline)
+    }
     return polyline.points.map(point => {
       return {
         [point.entityId]: {
           object: point,
+          type: 'IN',
           connectPolyline: [polyline]
         }
       }
@@ -76,9 +91,12 @@ const updatePointsRelation = (state, action) => {
       newPointsRelation[Object.keys(obj)[0]] = Object.values(obj)[0];
     }
   }
+
   return {
     ...state,
-    pointsRelation: newPointsRelation
+    pointsRelation: newPointsRelation,
+    hipPolylines: hipPolylines,
+    ridgePolylines: ridgePolylines
   };
 };
 
@@ -119,6 +137,7 @@ const addStartPointOnNew = (state, action) => {
       ...state.pointsRelation,
       [newPoint.entityId]: {
         object: newPoint,
+        type: 'IN',
         connectPolyline: [newPolyline]
       }
     }
@@ -139,6 +158,7 @@ const addStartPointOnFoundPolyline = (state, action) => {
       ...state.pointsRelation,
       [newPoint.entityId]: {
         object: newPoint,
+        type: 'OUT',
         connectPolyline: [newPolyline]
       }
     }
@@ -205,21 +225,36 @@ const addEndPointOnExist = (state, action) => {
   );
   newPolyline.updatePoint(1, newPoint);
   const pointId = action.point.entityId;
-  return {
-    ...state,
-    fixedInnerPolylines: [...newFixedInnerPolyline, newPolyline],
-    drawingInnerPolyline: null,
-    auxPolyline: null,
-    pointsRelation: {
-      ...state.pointsRelation,
-      [pointId]:{
-        ...state.pointsRelation[pointId],
-        connectPolyline: [
-          ...state.pointsRelation[pointId].connectPolyline, newPolyline
-        ]
+
+  let intersect = false;
+  state.fixedInnerPolylines.forEach(inner => {
+    if (inner.intersectPolyline(newPolyline)) intersect = true;
+  })
+  state.foundPolylines.forEach(found => {
+    if (found.intersectPolyline(newPolyline)) intersect = true;
+  })
+  if (intersect) {
+    ErrorNotification(
+      'Drawing Error', 'Drawing Line cannot intersect others'
+    );
+    return state;
+  } else {
+    return {
+      ...state,
+      fixedInnerPolylines: [...newFixedInnerPolyline, newPolyline],
+      drawingInnerPolyline: null,
+      auxPolyline: null,
+      pointsRelation: {
+        ...state.pointsRelation,
+        [pointId]:{
+          ...state.pointsRelation[pointId],
+          connectPolyline: [
+            ...state.pointsRelation[pointId].connectPolyline, newPolyline
+          ]
+        }
       }
-    }
-  };
+    };
+  }
 }
 
 const addEndPointOnNew = (state, action) => {
@@ -229,19 +264,36 @@ const addEndPointOnNew = (state, action) => {
   const newPolyline = InnerLine.fromPolyline(state.drawingInnerPolyline);
   const newPoint = Point.fromPoint(newPolyline.points[1]);
   newPolyline.updatePoint(1, newPoint);
-  return {
-    ...state,
-    fixedInnerPolylines: [...newFixedInnerPolyline, newPolyline],
-    drawingInnerPolyline: null,
-    auxPolyline: null,
-    pointsRelation: {
-      ...state.pointsRelation,
-      [newPoint.entityId]: {
-        object: newPoint,
-        connectPolyline: [newPolyline]
+
+  let intersect = false;
+  state.fixedInnerPolylines.forEach(inner => {
+    if (inner.intersectPolyline(newPolyline)) intersect = true;
+  })
+  state.foundPolylines.forEach(found => {
+
+    if (found.intersectPolyline(newPolyline)) intersect = true;
+  })
+  if (intersect) {
+    ErrorNotification(
+      'Drawing Error', 'Drawing Line cannot intersect others'
+    );
+    return state;
+  } else {
+    return {
+      ...state,
+      fixedInnerPolylines: [...newFixedInnerPolyline, newPolyline],
+      drawingInnerPolyline: null,
+      auxPolyline: null,
+      pointsRelation: {
+        ...state.pointsRelation,
+        [newPoint.entityId]: {
+          object: newPoint,
+          type: 'IN',
+          connectPolyline: [newPolyline]
+        }
       }
-    }
-  };
+    };
+  }
 }
 
 const addEndPointOnFoundPolyline = (state, action) => {
@@ -253,19 +305,35 @@ const addEndPointOnFoundPolyline = (state, action) => {
     Coordinate.fromCartesian(action.cartesian3, 0.05), null, action.uniqueId
   );
   newPolyline.updatePoint(1, newPoint);
-  return {
-    ...state,
-    fixedInnerPolylines: [...newFixedInnerPolyline, newPolyline],
-    drawingInnerPolyline: null,
-    auxPolyline: null,
-    pointsRelation: {
-      ...state.pointsRelation,
-      [newPoint.entityId]: {
-        object: newPoint,
-        connectPolyline: [newPolyline]
+
+  let intersect = false;
+  state.fixedInnerPolylines.forEach(inner => {
+    if (inner.intersectPolyline(newPolyline)) intersect = true;
+  })
+  state.foundPolylines.forEach(found => {
+    if (found.intersectPolyline(newPolyline)) intersect = true;
+  })
+  if (intersect) {
+    ErrorNotification(
+      'Drawing Error', 'Drawing Line cannot intersect others'
+    );
+    return state;
+  } else {
+    return {
+      ...state,
+      fixedInnerPolylines: [...newFixedInnerPolyline, newPolyline],
+      drawingInnerPolyline: null,
+      auxPolyline: null,
+      pointsRelation: {
+        ...state.pointsRelation,
+        [newPoint.entityId]: {
+          object: newPoint,
+          type: 'OUT',
+          connectPolyline: [newPolyline]
+        }
       }
-    }
-  };
+    };
+  }
 }
 
 const addEndPoint = (state, action) => {

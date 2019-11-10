@@ -19,14 +19,18 @@ const draw3DBuildingButton = (props) => {
       block
       loading = {props.backendLoading}
       disabled = {
-        (props.CurrentBuilding.type === 'FLAT' ?
+        (props.currentBuilding.type === 'FLAT' ?
         !uiStateJudge.isFinishedFound(props.uiState) :
         !uiStateJudge.isFinishedInner(props.uiState)) || (
           props.keepoutList.filter(kpt => !kpt.finishedDrawing).length !== 0
         )
       }
       onClick = {() => {
-        props.createPolygonFoundationWrapper();
+        if (props.currentBuilding.type === 'FLAT') {
+          props.createPolygonFoundationWrapper();
+        } else {
+          props.CreatePitchedBuildingRoofTopPolygon();
+        }
       }}
     >Generate 3D Model</Button>
 
@@ -47,14 +51,17 @@ const mapStateToProps = state => {
     backendLoading: state.projectManagerReducer.backendLoading,
     keepoutList:
       state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
+
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
+    CreatePitchedBuildingRoofTopPolygon: () =>
+      dispatch(actions.build3DRoofTopModeling()),
     createPolygonFoundationWrapper: () =>
       dispatch(actions.createPolygonFoundationWrapper())
-  };
+ };
 };
 
 export default connect(mapStateToProps,mapDispatchToProps)(draw3DBuildingButton);

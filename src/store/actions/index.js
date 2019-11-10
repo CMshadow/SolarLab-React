@@ -42,7 +42,8 @@ export {
   setHoverInnerLine,
   releaseHoverInnerLine,
   setHoverInnerPoint,
-  releaseHoverInnerPoint
+  releaseHoverInnerPoint,
+  checkInnerTypesProvided
 } from './drawingInnerManager';
 
 export {
@@ -74,6 +75,18 @@ export {
   createWall
 } from './drawingPolygonManager'
 
+
+export {
+  build3DRoofTopModeling,
+  initEdgesMap,
+  initNodesCollection,
+  searchAllRoofPlanes,
+  calculateHighestandLowestNodes,
+  calculateObliquityAndObliquity,
+  checkEdgeTypeOfPath
+} from './drawingRooftopManager';
+
+
 export {
   createAllKeepoutPolygon,
   reRenderKeepoutPolygon
@@ -99,6 +112,7 @@ export {
   saveBuildingInfoFields,
   bindFoundPolyline,
   bindFoundPolygons,
+  bindPitchedPolygons,
   resetBuilding
 } from './buildingManager';
 

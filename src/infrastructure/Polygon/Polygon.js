@@ -47,7 +47,12 @@ class Polygon {
     outlineColor = null,
     outlineWidth = null,
     shadow = null,
-    show = null
+    show = null,
+    brng = null,
+    obliquity = null,
+    highestNode = null,
+    lowestNode = null,
+    edgesCollection = null
   ) {
     this.entityId = id ? id : uuid();
     this.name = name ? name: 'Polygon';
@@ -60,6 +65,11 @@ class Polygon {
     this.outlineWidth = outlineWidth ? outlineWidth : 4;
     this.shadow = shadow ? Cesium.ShadowMode.ENABLED : Cesium.ShadowMode.DISABLED;
     this.show = show? show: true;
+    this.brng = brng ? brng : null;
+    this.obliquity = obliquity ? obliquity : 0;
+    this.highestNode = highestNode? highestNode : null;
+    this.lowestNode = lowestNode? lowestNode : null;
+    this.edgesCollection = edgesCollection? [...edgesCollection] : null;
   }
 
   /**
@@ -112,7 +122,12 @@ class Polygon {
     outlineColor= null,
     outlineWidth= null,
     shadow=null,
-    show=null
+    show=null,
+    brng = null,
+    obliquity = null,
+    highestNode = null,
+    lowestNode = null,
+    edgesCollection = null
   ){
     const newID = id ? id : polygon.id;
     const newName = name ? name : polygon.name;
@@ -131,10 +146,15 @@ class Polygon {
     const newOutLineWidth = outlineWidth ? outlineWidth : polygon.outlineWidth;
     const newShadow = shadow? shadow: true;
     const newShow = show? show: true;
+    const newBrng = brng? brng: polygon.brng;
+    const newObliquily = obliquity? obliquity: polygon.obliquity;
+    const newHighestNode = highestNode? highestNode: polygon.highestNode;
+    const newLowestNode = lowestNode? lowestNode: polygon.lowestNode;
+    const newEdgesCollection = edgesCollection? [...edgesCollection]: polygon.edgesCollection;
     return new Polygon(
       newID, newName, newHeight, newHierarchy, newPerPositionHeight,
       newExtrudedHeight, newMaterial, newOutLineColor, newOutLineWidth,
-      newShadow, newShow
+      newShadow, newShow, newBrng, newObliquily, newHighestNode, newLowestNode, newEdgesCollection
     );
   };
 

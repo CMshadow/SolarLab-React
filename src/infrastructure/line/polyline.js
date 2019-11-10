@@ -1,7 +1,6 @@
 import * as Cesium from 'cesium';
 import uuid from 'uuid/v1';
 import * as turf from '@turf/turf';
-import simplepolygon from 'simplepolygon';
 
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Point from '../point/point';
@@ -318,9 +317,31 @@ class Polyline {
 
   isSelfIntersection = () => {
     const geoJson = this.makeGeoJSON();
-    const selfIntersectionDetect = simplepolygon(geoJson);
-    return selfIntersectionDetect.features.length >= 2;
-  };
+    const selfIntersectionDetect = turf.kinks(geoJson);
+    if (selfIntersectionDetect.features.length > 0) {
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  intersectPolyline = (polyline2) => {
+    const geoJson = this.makeGeoJSON();
+    const geoJson2 = polyline2.makeGeoJSON();
+    const intersect = turf.lineIntersect(geoJson, geoJson2);
+    if (intersect.features.length === 0) {
+      return false;
+    } else {
+      const intersectCor = intersect.features[0].geometry.coordinates;
+      let matchExist = false;
+      polyline2.points.forEach(p => {
+        if (p.lon === intersectCor[0] && p.lat === intersectCor[1]) {
+          matchExist = true;
+        }
+      })
+      return !matchExist;
+    }
+  }
 }
 
 export default Polyline;
