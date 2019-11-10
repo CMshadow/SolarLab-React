@@ -304,6 +304,8 @@ class Polyline {
 
   makeGeoJSON = () => {
     const coordinates = this.getPointsCoordinatesArray(false);
+    console.log("coordinates:");
+    console.log(coordinates);
     const geoJSON = {
       type: 'Feature',
       geometry: {
