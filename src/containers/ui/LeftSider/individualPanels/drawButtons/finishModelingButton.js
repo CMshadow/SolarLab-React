@@ -14,6 +14,7 @@ const FinishModelingButton = (props) => {
       type = 'primary'
       size = 'large'
       shape = 'round'
+      loading = {props.backendLoading}
       block
       onClick = {() => {
         if (props.workingBuilding.type === 'FLAT') {
@@ -23,7 +24,7 @@ const FinishModelingButton = (props) => {
           props.bindPitchedPolygons();
         }
         props.bindAllKeepout();
-        props.setUIStateSetUpPV();
+        props.fetchUserPanels();
       }}
     >Finish Modeling</Button>
 
@@ -41,6 +42,7 @@ const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     workingBuilding: state.buildingManagerReducer.workingBuilding,
+    backendLoading:  state.projectManagerReducer.backendLoading
   };
 };
 
@@ -50,7 +52,7 @@ const mapDispatchToProps = dispatch => {
     bindFoundPolygons: () => dispatch(actions.bindFoundPolygons()),
     bindPitchedPolygons: () => dispatch(actions.bindPitchedPolygons()),
     bindAllKeepout: () => dispatch(actions.bindAllKeepout()),
-    setUIStateSetUpPV: () => dispatch(actions.setUIStateSetUpPV())
+    fetchUserPanels: () => dispatch(actions.fetchUserPanels())
   };
 };
 

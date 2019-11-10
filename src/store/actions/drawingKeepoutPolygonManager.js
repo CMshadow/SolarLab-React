@@ -102,7 +102,7 @@ export const createNormalKeepoutPolygon = (normalKeepout) =>
   .catch(error => {
     return errorNotification(
       'Backend Error',
-      error
+      error.toString()
     )
   });
 }
@@ -267,7 +267,7 @@ export const createPassageKeepoutPolygon = (passageKeepout) =>
   .catch(error => {
     return errorNotification(
       'Backend Error',
-      error
+      error.toString()
     )
   });
 }

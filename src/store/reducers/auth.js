@@ -2,7 +2,7 @@ import * as actionTypes from '../actions/actionTypes';
 
 const initialStat = {
   token: null,
-  userId: null,
+  userID: '0000-0000-0000-0000',
   error: null,
   loading: false
 };

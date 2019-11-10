@@ -16,7 +16,7 @@ import {
 
 import * as classes from './createBuildingPanel.module.css';
 import * as actions from '../../../../store/actions/index';
-
+import FoundLine from '../../../../infrastructure/line/foundLine';
 const { Option } = Select;
 
 class CreateBuildingPanel extends PureComponent {
@@ -60,14 +60,7 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title="The height of the building foundation"
             >
-              <Row>
-                <Col span={20}>
-                  <h4>Building Height</h4>
-                </Col>
-                <Col span={4}>
-                  <Icon type="question-circle" />
-                </Col>
-              </Row>
+              <h4>Building Height <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -96,14 +89,7 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title="The height of parapet beyond the rooftop"
             >
-              <Row>
-                <Col span={20}>
-                  <h4>Parapet Height</h4>
-                </Col>
-                <Col span={4}>
-                  <Icon type="question-circle" />
-                </Col>
-              </Row>
+              <h4>Parapet Height <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -132,14 +118,7 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title="The setback distance from hips towards fields of the roof"
             >
-              <Row>
-                <Col span={20}>
-                  <h4>Hip Setback</h4>
-                </Col>
-                <Col span={4}>
-                  <Icon type="question-circle" />
-                </Col>
-              </Row>
+              <h4>Hip Setback <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -168,14 +147,7 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title="The setback distance from ridges towards fields of the roof"
             >
-              <Row>
-                <Col span={20}>
-                  <h4>Ridge Setback</h4>
-                </Col>
-                <Col span={4}>
-                  <Icon type="question-circle" />
-                </Col>
-              </Row>
+              <h4>Ridge Setback <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -198,6 +170,7 @@ class CreateBuildingPanel extends PureComponent {
     );
 
     return (
+      <div>
       <Form onSubmit={this.handleSubmit}>
         {/*Bulding name Input*/}
         <Form.Item>
@@ -289,14 +262,7 @@ class CreateBuildingPanel extends PureComponent {
                 placement="topLeft"
                 title="The setback distance from eaves towards building inside"
               >
-                <Row>
-                  <Col span={20}>
-                    <h4>Eave Setback</h4>
-                  </Col>
-                  <Col span={4}>
-                    <Icon type="question-circle" />
-                  </Col>
-                </Row>
+                <h4>Eave Setback <Icon type="question-circle" /></h4>
               </Tooltip>
             </Col>
             <Col {...this.rowLayout.field}>
@@ -336,6 +302,7 @@ class CreateBuildingPanel extends PureComponent {
           </Col>
         </Row>
       </Form>
+    </div>
     );
   }
 };
@@ -350,7 +317,7 @@ const mapDispatchToProps = dispatch => {
   return {
     setUIStateReadyDrawing: () => dispatch(actions.setUIStateReadyDrawing()),
     initBuilding: (values) => dispatch(actions.initBuilding(values)),
-    saveBuildingInfoFields: (values) => dispatch(actions.saveBuildingInfoFields(values))
+    saveBuildingInfoFields: (values) => dispatch(actions.saveBuildingInfoFields(values)),
   };
 };
 
