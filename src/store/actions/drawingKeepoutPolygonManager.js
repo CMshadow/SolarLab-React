@@ -36,7 +36,11 @@ export const createAllKeepoutPolygon = () => (dispatch, getState) => {
     dispatch(createTreeKeepoutPolygon(treeKeepout));
     dispatch(createEnvKeepoutPolygon(envKeepout));
   } else {
-    dispatch(createNormalKeepoutPolygonPitched(normalKeepout))
+    dispatch(createNormalKeepoutPolygonPitched(normalKeepout));
+    dispatch(createPassageKeepoutPolygonPitched(passageKeepout));
+    dispatch(createVentKeepoutPolygonPitched(ventKeepout));
+    dispatch(createTreeKeepoutPolygon(treeKeepout));
+    dispatch(createEnvKeepoutPolygon(envKeepout));
   }
 }
 
@@ -268,6 +272,88 @@ export const createPassageKeepoutPolygon = (passageKeepout) =>
   });
 }
 
+export const createPassageKeepoutPolygonPitched = (passageKeepout) =>
+(dispatch, getState) => {
+  const pitchedRoofPolygons = getState().undoableReducer.present
+    .drawingRooftopManagerReducer.RooftopCollection.rooftopCollection;
+  const pitchedRoofsFoundLine = pitchedRoofPolygons.map(polygon =>
+    polygon.toFoundLine()
+  );
+  const pitchedRoofsMathLineCollection = pitchedRoofsFoundLine.map(l =>
+    MathLineCollection.fromPolyline(l)
+  );
+  const foundHeight =
+    getState().buildingManagerReducer.workingBuilding.foundationHeight;
+  const keepoutPolylines = passageKeepout.map(kpt => kpt.outlinePolyline);
+  const keepoutWidth = passageKeepout.map(kpt => kpt.width/2);
+
+  axios.post('/calculate-passage-coordinate', {
+    originPolylines: keepoutPolylines,
+    stbDists: keepoutWidth,
+    direction: 'outside'
+  })
+  .then(response => {
+    const stbPolylines = JSON.parse(response.data.body).stbPolylines.map(l => {
+      l[0].points.push(l[0].points[0]);
+      return FoundLine.fromPolyline(l[0])
+    });
+    const newPassageKeepout = stbPolylines.map((stbFoundline, kptIndex) => {
+      const inWhichRoof = [];
+      keepoutPolylines[kptIndex].points.forEach(kptP => {
+        pitchedRoofsMathLineCollection.forEach((roof, roofIndex) => {
+          if (corWithinLineCollectionPolygon(roof, kptP)) {
+            inWhichRoof.push(roofIndex);
+          }
+        })
+      })
+      const indexCount = inWhichRoof.reduce((acc, val) => {
+        acc[val] = acc[val] === undefined ? 1 : acc[val] += 1;
+        return acc;
+      }, {});
+      const maxCount = Math.max(...Object.values(indexCount));
+      const roofIndex = +Object.keys(indexCount).filter(
+        k => indexCount[k] === maxCount
+      )[0];
+
+      let clippedPassageCors = martinez.intersection(
+        stbFoundline.makeGeoJSON().geometry.coordinates,
+        pitchedRoofsFoundLine[roofIndex].makeGeoJSON().geometry.coordinates
+      )[0][0]
+
+      let stbHierarchy = [];
+      clippedPassageCors.forEach(cor => {
+        const newHeight = Coordinate.heightOfArbitraryNode(
+          pitchedRoofPolygons[roofIndex], new Coordinate(cor[0], cor[1], 0)
+        ) + pitchedRoofPolygons[roofIndex].lowestNode[2] + 0.005;
+        if (cor[2]) {
+          cor[2] = newHeight;
+        } else {
+          cor.push(newHeight);
+        }
+        stbHierarchy = stbHierarchy.concat(cor);
+      })
+
+      return Passage.fromKeepout(
+        passageKeepout[kptIndex], null, null,
+        new Polygon(
+          null, null, foundHeight, stbHierarchy, null, null,
+          Color.ORANGE
+        )
+      )
+    })
+    dispatch({
+      type: actionTypes.CREATE_ALL_PASSAGE_KEEPOUT_POLYGON,
+      passageKeepout: newPassageKeepout
+    })
+  })
+  .catch(error => {
+    return errorNotification(
+      'Backend Error',
+      error
+    )
+  });
+}
+
 export const createVentKeepoutPolygon = (ventKeepout) =>
 (dispatch, getState) => {
   const foundPolyline =
@@ -288,6 +374,58 @@ export const createVentKeepoutPolygon = (ventKeepout) =>
     const hierarchy = Polygon.makeHierarchyFromGeoJSON(
       trimedStbTurfPolygon, foundHeight, 0.005
     );
+    return Vent.fromKeepout(
+      kpt, null, null, null, null,
+      new Polygon(
+        null, null, foundHeight, hierarchy, null, null,
+        Color.ORANGE
+      )
+    )
+  });
+  dispatch({
+    type: actionTypes.CREATE_ALL_VENT_KEEPOUT_POLYGON,
+    ventKeepout: newVentKeepout
+  })
+}
+
+export const createVentKeepoutPolygonPitched = (ventKeepout) =>
+(dispatch, getState) => {
+  const pitchedRoofPolygons = getState().undoableReducer.present
+    .drawingRooftopManagerReducer.RooftopCollection.rooftopCollection;
+  const pitchedRoofsFoundLine = pitchedRoofPolygons.map(polygon =>
+    polygon.toFoundLine()
+  );
+  const pitchedRoofsMathLineCollection = pitchedRoofsFoundLine.map(l =>
+    MathLineCollection.fromPolyline(l)
+  );
+  const foundHeight =
+    getState().buildingManagerReducer.workingBuilding.foundationHeight;
+  const newVentKeepout = ventKeepout.map((kpt, index) => {
+    let roofIndex = 0;
+    pitchedRoofsMathLineCollection.forEach((roof, ind) => {
+      if (corWithinLineCollectionPolygon(roof, kpt.outlinePolyline.points[0])) {
+        roofIndex = ind;
+      }
+    })
+
+    let clippedPassageCors = martinez.intersection(
+      kpt.outlinePolyline.makeGeoJSON().geometry.coordinates,
+      pitchedRoofsFoundLine[roofIndex].makeGeoJSON().geometry.coordinates
+    )[0][0]
+
+    let hierarchy = [];
+    clippedPassageCors.forEach(cor => {
+      const newHeight = Coordinate.heightOfArbitraryNode(
+        pitchedRoofPolygons[roofIndex], new Coordinate(cor[0], cor[1], 0)
+      ) + pitchedRoofPolygons[roofIndex].lowestNode[2] + 0.005;
+      if (cor[2]) {
+        cor[2] = newHeight;
+      } else {
+        cor.push(newHeight);
+      }
+      hierarchy = hierarchy.concat(cor);
+    })
+
     return Vent.fromKeepout(
       kpt, null, null, null, null,
       new Polygon(
