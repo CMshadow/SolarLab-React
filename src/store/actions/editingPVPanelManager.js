@@ -125,10 +125,9 @@ export const fetchUserPanels = () => (dispatch, getState) => {
     }
   })
   .then(response => {
-
     dispatch({
       type: actionTypes.FETCH_USER_PANELS,
-      panelData: response.data.Items
+      panelData: response.data.data
     })
     dispatch(setUIStateSetUpPV());
     return dispatch(setBackendLoadingFalse());
@@ -137,7 +136,7 @@ export const fetchUserPanels = () => (dispatch, getState) => {
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Backend Error',
-      error.toString()
+      error.response.data.errorMessage
     )
   })
 }

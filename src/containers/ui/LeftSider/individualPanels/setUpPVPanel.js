@@ -57,6 +57,34 @@ class SetUpPVPanel extends Component {
   render = () => {
     const { getFieldDecorator } = this.props.form;
 
+    const pitchedRoofSelect = (
+      <Form.Item>
+        <Row>
+          <Col span={20} offset={2}>
+          {getFieldDecorator('pitchedRoofIndex', {
+            rules: [{
+              required: true,
+              message: 'Please select one'
+            }]
+          })(
+            <Select
+              placeholder='Select a pitched roof'
+            >
+              {this.props.rooftopCollection.map((r,ind) =>
+                <Option
+                  key={ind}
+                  value={ind}
+                >
+                  {`Pitched Roof {ind}`}
+                </Option>
+              )}
+            </Select>
+          )}
+          </Col>
+        </Row>
+      </Form.Item>
+    );
+
     const panelOrientation = (
       <Form.Item>
         <Row>
@@ -222,6 +250,8 @@ class SetUpPVPanel extends Component {
             <TabPane tab="Max Eco" key="eco">
             </TabPane>
           </Tabs>
+
+          
 
           {/*Select Panel*/}
           <Form.Item>
@@ -404,7 +434,9 @@ const mapStateToProps = state => {
     parameters: state.undoableReducer.present.editingPVPanelManagerReducer
       .parameters,
     backendLoading: state.projectManagerReducer.backendLoading,
-    userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels
+    userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
+    rooftopCollection: state.undoableReducer.present.drawingRooftopManager
+      .RooftopCollection.rooftopCollection
   };
 };
 
