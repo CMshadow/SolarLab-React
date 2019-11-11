@@ -259,6 +259,7 @@ class Coordinate {
 
   static isEqual = (cor1, cor2) => {
     return (cor1.lon === cor2.lon & cor1.lat === cor2.lat);
+  }
 
   /**
    * the possible intersection Coordinate of two Coordinates traveling towards

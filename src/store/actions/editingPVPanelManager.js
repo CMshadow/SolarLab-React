@@ -118,15 +118,25 @@ const makeRequestData = (props) => {
 
 export const fetchUserPanels = () => (dispatch, getState) => {
   const userID = getState().authReducer.userID;
+  console.log(JSON.stringify(['panelName', 'panelID', 'panelWidth', 'panelLength']))
   dispatch(setBackendLoadingTrue());
-  axios.get(`/${userID}/panel`)
+  axios.get(`/${userID}/panel`, {
+    params: {
+      attributes: JSON.stringify(['panelName', 'panelID', 'panelWidth', 'panelLength'])
+    },
+    paramsSerializer: function(params) {
+      console.log(params)
+    return params;
+  }
+  })
   .then(response => {
 
     dispatch({
       type: actionTypes.FETCH_USER_PANELS,
       panelData: response.data.Items
     })
-    dispatch(setUIStateSetUpPV());
+    // dispatch(setUIStateSetUpPV());
+    console.log(response.data.Items)
     return dispatch(setBackendLoadingFalse());
   })
   .catch(error => {

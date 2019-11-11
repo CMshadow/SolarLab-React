@@ -47,7 +47,7 @@ const draw3DBuildingButton = (props) => {
 const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    CurrentBuilding: state.buildingManagerReducer.workingBuilding,
+    currentBuilding: state.buildingManagerReducer.workingBuilding,
     backendLoading: state.projectManagerReducer.backendLoading,
     keepoutList:
       state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
