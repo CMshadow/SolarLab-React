@@ -3,6 +3,7 @@ import { connect } from 'react-redux';
 
 import CustomPoint from '../point/point';
 import CustomPolyline from '../polyline/polyline';
+import polygonVisualize from '../Polygon/Polygon';
 
 const DebugRender = (props) => {
   let renderPolylines = null;
@@ -22,10 +23,18 @@ const DebugRender = (props) => {
     )
   }
 
+  let renderPolygons = null;
+  if (props.debugPolygons.length !== 0) {
+    renderPolygons = props.debugPolygons.map(elem =>
+      (<polygonVisualize key={elem.entityId} {...elem} />)
+    )
+  }
+
   return (
     <div>
       {renderPolylines}
       {renderPoints}
+      {renderPolygons}
     </div>
   );
 };
@@ -36,6 +45,8 @@ const mapStateToProps = state => {
       state.debugRenderReducer.debugPolylines,
     debugPoints:
       state.debugRenderReducer.debugPoints,
+    debugPolygons:
+      state.debugRenderReducer.debugPolygons
   };
 }
 

@@ -13,3 +13,10 @@ export const setDebugPoints = (points) => {
     debugPoints: points
   });
 };
+
+export const setDebugPolygons = (polygons) => {
+  return ({
+    type: actionTypes.SET_DEBUGPOLYGONS,
+    debugPolygons: polygons
+  });
+};
