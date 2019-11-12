@@ -8,6 +8,10 @@ import FinishedModelingButton from './drawButtons/finishModelingButton';
 import * as actions from "../../../../store/actions/index";
 
 import Point from '../../../../infrastructure/point/point';
+import Polygon from "../../../../infrastructure/Polygon/Polygon";
+import Polyline from '../../../../infrastructure/line/polyline';
+
+import * as Cesium from 'cesium';
 
 import { projectPlaneOnAnother } from "../../../../infrastructure/math/shadowHelper";
 
@@ -17,19 +21,20 @@ const Editing3DPanel = (props) => {
         const allKptList = props.keepoutList;
         const foundationPolyline = props.foundationPolyline;
 
-        const coordinates = allKptList[0].outlinePolygon.hierarchy;
-        var keepoutPoints = [];
-        for (var i = 0; i < coordinates.length; i = i + 3) {
-            keepoutPoints.push(new Point(coordinates[i], coordinates[i + 1], coordinates[i + 2]));
-        }
+        var foundationPoints = foundationPolyline[0].convertHierarchyToPoints();
 
         for (var i = 0; i < allKptList.length; ++i) {
-            var shadow = projectPlaneOnAnother(keepoutPoints, foundationPolyline.points);
-            props.setDebugPolylines(shadow);
+            var keepoutPoints = allKptList[0].outlinePolygon.convertHierarchyToPoints();
+            var shadow = projectPlaneOnAnother(keepoutPoints, foundationPoints);
+            for (var i = 0; i < shadow.length; ++i) {
+                shadow[i].height += 0.01;
+            }
+            var shadow_line = new Polyline(shadow);
+            shadow_line.color = Cesium.Color.BLACK;
+            console.log("shadow_line");
+            console.log(shadow_line);
+            props.setDebugPolylines([shadow_line]);
         }
-
-         // props.setDebugPoints([0, 0, 0]);
-         // props.setDebugPolylines([0, 0, 0])
     }
 
   return (
