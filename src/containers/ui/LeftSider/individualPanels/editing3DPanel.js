@@ -33,7 +33,15 @@ const Editing3DPanel = (props) => {
             shadow_line.color = Cesium.Color.BLACK;
             console.log("shadow_line");
             console.log(shadow_line);
-            props.setDebugPolylines([shadow_line]);
+            const shadowHier = Polygon.makeHierarchyFromPolyline(
+              shadow_line, foundationPolyline[0].height, 0.005
+            );
+            const shadowPolygon = new Polygon(
+              null, null, foundationPolyline[0].height, shadowHier, null, null,
+              Cesium.Color.DARKGREY.withAlpha(0.75)
+            );
+            console.log(shadowPolygon)
+            props.setDebugPolygons([shadowPolygon]);
         }
     }
 
@@ -63,7 +71,8 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
     return {
         setDebugPoints: (points) => dispatch(actions.setDebugPoints(points)),
-        setDebugPolylines: (plys) => dispatch(actions.setDebugPolylines(plys))
+        setDebugPolylines: (plys) => dispatch(actions.setDebugPolylines(plys)),
+        setDebugPolygons: (plygons) => dispatch(actions.setDebugPolygons(plygons))
     }
 }
 
