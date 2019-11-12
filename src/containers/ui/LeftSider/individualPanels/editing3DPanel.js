@@ -7,7 +7,9 @@ import KeepoutList3D from './edit3D/keepoutList3D';
 import FinishedModelingButton from './drawButtons/finishModelingButton';
 import * as actions from "../../../../store/actions/index";
 
-import { projectPlaneOnAnother } from "../../../../infrastructure/math/shadowHelper"
+import Point from '../../../../infrastructure/point/point';
+
+import { projectPlaneOnAnother } from "../../../../infrastructure/math/shadowHelper";
 
 const Editing3DPanel = (props) => {
 
@@ -15,17 +17,14 @@ const Editing3DPanel = (props) => {
         const allKptList = props.keepoutList;
         const foundationPolyline = props.foundationPolyline;
 
-        //console.log("allKptList:");
-        //console.log(allKptList[0]);
-        //console.log(allKptList[0].outlinePolyline);
-        //console.log(allKptList[0].outlinePolyline.points);
-        //console.log("foundationPolyline:");
-        //console.log(foundationPolyline);
-        //console.log(foundationPolyline.points);
-
+        const coordinates = allKptList[0].outlinePolygon.hierarchy;
+        var keepoutPoints = [];
+        for (var i = 0; i < coordinates.length; i = i + 3) {
+            keepoutPoints.push(new Point(coordinates[i], coordinates[i + 1], coordinates[i + 2]));
+        }
 
         for (var i = 0; i < allKptList.length; ++i) {
-            var shadow = projectPlaneOnAnother(allKptList[i].outlinePolyline.points, foundationPolyline.points);
+            var shadow = projectPlaneOnAnother(keepoutPoints, foundationPolyline.points);
             props.setDebugPolylines(shadow);
         }
 
@@ -51,8 +50,8 @@ const mapStateToProps = state => {
     workingBuilding: state.buildingManagerReducer.workingBuilding,
     allNormalKeepout: state.keepoutManagerReducer.normalKeepout,
     allPassageKeepout: state.keepoutManagerReducer.passageKeepout,
-    keepoutList: state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
-    foundationPolyline: state.undoableReducer.present.drawingManagerReducer.drawingPolyline
+    keepoutList: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.normalKeepout,
+    foundationPolyline: state.undoableReducer.present.drawingPolygonManagerReducer.BuildingFoundation
   };
 };
 
