@@ -63,19 +63,19 @@ class SetUpPVPanel extends Component {
           <Col span={20} offset={2}>
           {getFieldDecorator('pitchedRoofIndex', {
             rules: [{
-              required: true,
+              required: this.props.workingBuilding.type === 'PITCHED',
               message: 'Please select one'
             }]
           })(
             <Select
               placeholder='Select a pitched roof'
             >
-              {this.props.rooftopCollection.map((r,ind) =>
+              {this.props.workingBuilding.pitchedRoofPolygons.map((r,ind) =>
                 <Option
                   key={ind}
                   value={ind}
                 >
-                  {`Pitched Roof {ind}`}
+                  {`Pitched Roof ${ind}`}
                 </Option>
               )}
             </Select>
@@ -440,8 +440,6 @@ const mapStateToProps = state => {
     backendLoading: state.projectManagerReducer.backendLoading,
     workingBuilding: state.buildingManagerReducer.workingBuilding,
     userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
-    rooftopCollection: state.undoableReducer.present.drawingRooftopManagerReducer
-      .RooftopCollection.rooftopCollection
   };
 };
 

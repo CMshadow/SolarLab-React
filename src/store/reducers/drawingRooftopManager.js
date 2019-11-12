@@ -1,5 +1,6 @@
 import * as Cesium from 'cesium';
 import * as actionTypes from '../actions/actionTypes';
+import RoofTop from '../../infrastructure/rooftop/rooftop';
 
 const initState = {
 	NodesCollection: null,
@@ -7,7 +8,7 @@ const initState = {
 	InnerEdgesCollection: null,
   OuterEdgesCollection: null,
   RoofPlaneCoordinatesCollection:null,
-  RooftopCollection: null,
+  RooftopCollection: new RoofTop(),
   EnableToBuild: false,
 
 }

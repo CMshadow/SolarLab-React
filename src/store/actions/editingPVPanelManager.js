@@ -14,7 +14,7 @@ import { setUIStateSetUpPV } from './uiStateManager';
 
 const makeCombiGeometry = (props) => {
   const geoFoundation =
-    props.workingBuilding.foundationPolygonExcludeStb.map(polygon =>
+    props.workingRoof.map(polygon =>
       polygon.toFoundLine().makeGeoJSON()
     );
   const geoNormalKeepout = props.allNormalKeepout.map(kpt =>
@@ -84,28 +84,30 @@ const makeCombiGeometry = (props) => {
 
 const makeRequestData = (props) => {
   const finalCombi = makeCombiGeometry(props);
+  console.log('finalCombi')
+  console.log(finalCombi)
   const requestData = []
   finalCombi.forEach(roof => {
     roof.geometry.coordinates.forEach(partialRoof => {
       const startAndLastPoint = new Point(
         partialRoof[0][0][0], partialRoof[0][0][1],
-        props.workingBuilding.foundationHeight
+        0
       );
       const roofFoundLine = new FoundLine([
         startAndLastPoint,
         ...(partialRoof[0].slice(1,-1).map(cor => new Point(
-          cor[0], cor[1], props.workingBuilding.foundationHeight
+          cor[0], cor[1], 0
         ))),
         startAndLastPoint
       ]);
       const allKeepoutFoundLine = partialRoof.slice(1).map(kpt => {
         const startAndLastPoint = new Point(
-          kpt[0][0], kpt[0][1], props.workingBuilding.foundationHeight
+          kpt[0][0], kpt[0][1], 0
         );
         return new FoundLine([
           startAndLastPoint,
           ...(kpt.slice(1,-1).map(cor => new Point(
-            cor[0], cor[1], props.workingBuilding.foundationHeight
+            cor[0], cor[1], 0
           ))),
           startAndLastPoint
         ]);
@@ -142,51 +144,93 @@ export const fetchUserPanels = () => (dispatch, getState) => {
 }
 
 export const generatePanels = () => (dispatch, getState) => {
+  const workingBuilding = getState().buildingManagerReducer.workingBuilding;
+  const pitchedRoofIndex = getState().undoableReducer.present
+    .editingPVPanelManagerReducer.parameters.pitchedRoofIndex
   const props = {
-    workingBuilding: getState().buildingManagerReducer.workingBuilding,
+    workingRoof:
+      workingBuilding.type === 'FLAT' ?
+      workingBuilding.foundationPolygonExcludeStb :
+      workingBuilding.pitchedRoofPolygonsExcludeStb[pitchedRoofIndex],
     allNormalKeepout: getState().keepoutManagerReducer.normalKeepout,
     allPassageKeepout: getState().keepoutManagerReducer.passageKeepout,
     allVentKeepout: getState().keepoutManagerReducer.ventKeepout
   }
-  console.log(props.workingBuilding)
-  // const data = makeRequestData(props);
-  // const params = getState().undoableReducer.present.editingPVPanelManagerReducer
-  //   .parameters
-  // const selectPanelIndex = getState().undoableReducer.present
-  //   .editingPVPanelManagerReducer.selectPanelIndex;
-  // const panelX = +getState().undoableReducer.present.editingPVPanelManagerReducer
-  //   .userPanels[selectPanelIndex].panelWidth;
-  // const panelY = +getState().undoableReducer.present.editingPVPanelManagerReducer
-  //   .userPanels[selectPanelIndex].panelLength;
-  // const panelWidth = panelX > panelY ? panelX : panelY;
-  // const panelLength = panelX < panelY ? panelX : panelY;
-  //
-  // let requestData = {
-  //   data: data,
-  //   azimuth: params.azimuth,
-  //   tilt: params.tilt,
-  //   panelWidth: params.orientation === 'portrait' ? panelWidth : panelLength,
-  //   panelLength: params.orientation === 'portrait' ? panelLength : panelWidth,
-  //   rowSpace: params.rowSpace,
-  //   colSpace: params.colSpace,
-  //   align: params.align,
-  //   height: props.workingBuilding.foundationHeight,
-  //   initArraySequenceNum: 1,
-  //   rowPerArray: 1,
-  //   panelsPerRow: 1
-  // };
-  // if (params.mode === 'array') {
-  //   requestData.rowPerArray = params.rowPerArray;
-  //   requestData.panelsPerRow = params.panelPerRow;
-  // }
-  //
-  // generateFlatRoofPanels(dispatch, requestData);
+  const data = makeRequestData(props);
+  console.log(data)
+  const params = getState().undoableReducer.present.editingPVPanelManagerReducer
+    .parameters
+  const selectPanelIndex = getState().undoableReducer.present
+    .editingPVPanelManagerReducer.selectPanelIndex;
+  const panelX = +getState().undoableReducer.present.editingPVPanelManagerReducer
+    .userPanels[selectPanelIndex].panelWidth;
+  const panelY = +getState().undoableReducer.present.editingPVPanelManagerReducer
+    .userPanels[selectPanelIndex].panelLength;
+  const panelWidth = panelX > panelY ? panelX : panelY;
+  const panelLength = panelX < panelY ? panelX : panelY;
+
+  const requestData = {
+    data: data,
+    azimuth: params.azimuth,
+    tilt: params.tilt,
+    panelWidth: params.orientation === 'portrait' ? panelWidth : panelLength,
+    panelLength: params.orientation === 'portrait' ? panelLength : panelWidth,
+    rowSpace: params.rowSpace,
+    colSpace: params.colSpace,
+    align: params.align,
+    height: workingBuilding.foundationHeight,
+    initArraySequenceNum: 1,
+    rowPerArray: 1,
+    panelsPerRow: 1
+  };
+  if (params.mode === 'array') {
+    requestData.rowPerArray = params.rowPerArray;
+    requestData.panelsPerRow = params.panelPerRow;
+  }
+
+  if (workingBuilding.type === 'FLAT') {
+    generateFlatRoofPanels(dispatch, requestData);
+  } else {
+    requestData.pitchedRoofPolygon =
+      workingBuilding.pitchedRoofPolygons[pitchedRoofIndex];
+    console.log(requestData)
+    // generatePitchedRoofPanels(dispatch, requestData);
+  }
 }
 
 const generateFlatRoofPanels = (dispatch, requestData) => {
   dispatch(cleanPanels());
   dispatch(setBackendLoadingTrue());
   axios.post('/calculate-roof-pv-panels/flatroof-individual', requestData)
+  .then(response => {
+    dispatch({
+      type: actionTypes.INIT_EDITING_PANELS,
+      panels: JSON.parse(response.data.body).panelLayout.map(partialRoof =>
+        partialRoof.map(array =>
+          array.map(panel => ({
+            ...panel,
+            pv: new PV(null, null, Polygon.makeHierarchyFromPolyline(
+              Polyline.fromPolyline(panel.pvPolyline)
+            ))
+          }))
+        )
+      )
+    });
+    return dispatch(setBackendLoadingFalse());
+  })
+  .catch(error => {
+    dispatch(setBackendLoadingFalse());
+    return errorNotification(
+      'Backend Error',
+      error.toString()
+    )
+  });
+}
+
+const generatePitchedRoofPanels = (dispatch, requestData) => {
+  dispatch(cleanPanels());
+  dispatch(setBackendLoadingTrue());
+  axios.post('/calculate-roof-pv-panels/pitchedroof', requestData)
   .then(response => {
     dispatch({
       type: actionTypes.INIT_EDITING_PANELS,
