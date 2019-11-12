@@ -148,40 +148,42 @@ export const generatePanels = () => (dispatch, getState) => {
     allPassageKeepout: getState().keepoutManagerReducer.passageKeepout,
     allVentKeepout: getState().keepoutManagerReducer.ventKeepout
   }
-  const data = makeRequestData(props);
-  const params = getState().undoableReducer.present.editingPVPanelManagerReducer
-    .parameters
-  const selectPanelIndex = getState().undoableReducer.present
-    .editingPVPanelManagerReducer.selectPanelIndex;
-  const panelX = +getState().undoableReducer.present.editingPVPanelManagerReducer
-    .userPanels[selectPanelIndex].panelWidth;
-  const panelY = +getState().undoableReducer.present.editingPVPanelManagerReducer
-    .userPanels[selectPanelIndex].panelLength;
-  const panelWidth = panelX > panelY ? panelX : panelY;
-  const panelLength = panelX < panelY ? panelX : panelY;
-
-  let requestData = {
-    data: data,
-    azimuth: params.azimuth,
-    tilt: params.tilt,
-    panelWidth: params.orientation === 'portrait' ? panelWidth : panelLength,
-    panelLength: params.orientation === 'portrait' ? panelLength : panelWidth,
-    rowSpace: params.rowSpace,
-    colSpace: params.colSpace,
-    align: params.align,
-    height: props.workingBuilding.foundationHeight,
-    initArraySequenceNum: 1,
-    rowPerArray: 1,
-    panelsPerRow: 1
-  };
-  if (params.mode === 'array') {
-    requestData.rowPerArray = params.rowPerArray;
-    requestData.panelsPerRow = params.panelPerRow;
-  }
-  generateFlatRoofIndividualPanels(dispatch, requestData);
+  console.log(props.workingBuilding)
+  // const data = makeRequestData(props);
+  // const params = getState().undoableReducer.present.editingPVPanelManagerReducer
+  //   .parameters
+  // const selectPanelIndex = getState().undoableReducer.present
+  //   .editingPVPanelManagerReducer.selectPanelIndex;
+  // const panelX = +getState().undoableReducer.present.editingPVPanelManagerReducer
+  //   .userPanels[selectPanelIndex].panelWidth;
+  // const panelY = +getState().undoableReducer.present.editingPVPanelManagerReducer
+  //   .userPanels[selectPanelIndex].panelLength;
+  // const panelWidth = panelX > panelY ? panelX : panelY;
+  // const panelLength = panelX < panelY ? panelX : panelY;
+  //
+  // let requestData = {
+  //   data: data,
+  //   azimuth: params.azimuth,
+  //   tilt: params.tilt,
+  //   panelWidth: params.orientation === 'portrait' ? panelWidth : panelLength,
+  //   panelLength: params.orientation === 'portrait' ? panelLength : panelWidth,
+  //   rowSpace: params.rowSpace,
+  //   colSpace: params.colSpace,
+  //   align: params.align,
+  //   height: props.workingBuilding.foundationHeight,
+  //   initArraySequenceNum: 1,
+  //   rowPerArray: 1,
+  //   panelsPerRow: 1
+  // };
+  // if (params.mode === 'array') {
+  //   requestData.rowPerArray = params.rowPerArray;
+  //   requestData.panelsPerRow = params.panelPerRow;
+  // }
+  //
+  // generateFlatRoofPanels(dispatch, requestData);
 }
 
-const generateFlatRoofIndividualPanels = (dispatch, requestData) => {
+const generateFlatRoofPanels = (dispatch, requestData) => {
   dispatch(cleanPanels());
   dispatch(setBackendLoadingTrue());
   axios.post('/calculate-roof-pv-panels/flatroof-individual', requestData)
