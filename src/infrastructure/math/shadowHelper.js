@@ -79,12 +79,12 @@ export const getParallelogramsForPlane = (point_list, s_vec, plane_equation) => 
         point_pair_list.push(point_pair);
     }
     var parallelograms = [];
-    for (var i = 0; i < point_pair_list.length - 1; ++i) {
+    for (var i = 0; i < point_pair_list.length; ++i) {
         var parallelogram = [];
         parallelogram.push(point_pair_list[i][0]);
         parallelogram.push(point_pair_list[i][1]);
-        parallelogram.push(point_pair_list[i+1][1]);
-        parallelogram.push(point_pair_list[i+1][0]);
+        parallelogram.push(point_pair_list[(i+1)%point_pair_list.length][1]);
+        parallelogram.push(point_pair_list[(i+1)%point_pair_list.length][0]);
         parallelogram.push(point_pair_list[i][0]);
         parallelograms.push(parallelogram);
     }
