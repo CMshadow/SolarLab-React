@@ -20,14 +20,17 @@ const Editing3DPanel = (props) => {
     const shadowFunc = () => {
         const allKptList = props.keepoutList;
         const foundationPolyline = props.foundationPolyline;
+        console.log("allKptList");
+        console.log(allKptList);
 
         var foundationPoints = foundationPolyline[0].convertHierarchyToPoints();
+        var list_of_shadows = [];
 
         for (var i = 0; i < allKptList.length; ++i) {
-            var keepoutPoints = allKptList[0].outlinePolygon.convertHierarchyToPoints();
+            var keepoutPoints = allKptList[i].outlinePolygon.convertHierarchyToPoints();
             var shadow = projectPlaneOnAnother(keepoutPoints, foundationPoints);
-            for (var i = 0; i < shadow.length; ++i) {
-                shadow[i].height += 0.01;
+            for (var j = 0; j < shadow.length; ++j) {
+                shadow[j].height += 0.01;
             }
             var shadow_line = new Polyline(shadow);
             shadow_line.color = Cesium.Color.BLACK;
@@ -40,9 +43,9 @@ const Editing3DPanel = (props) => {
               null, null, foundationPolyline[0].height, shadowHier, null, null,
               Cesium.Color.DARKGREY.withAlpha(0.75)
             );
-            console.log(shadowPolygon)
-            props.setDebugPolygons([shadowPolygon]);
+            list_of_shadows.push(shadowPolygon);
         }
+        props.setDebugPolygons(list_of_shadows);
     }
 
   return (
