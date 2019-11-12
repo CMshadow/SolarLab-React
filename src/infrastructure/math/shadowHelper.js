@@ -129,6 +129,7 @@ export const intersectPolygons = (point_list1, point_list2, plane_equation) => {
 
 export const projectPlaneOnAnother = (point_list1, point_list2) => {
     if (point_list1.length < 3 || point_list2.length < 3) return null;
+    point_list2.push(point_list2[0]);
     const plane_equation = getPlaneEquation(point_list2[0], point_list2[1], point_list2[2]);
     const s_vec = calculateSunPositionWrapper()
     var parallelograms = getParallelogramsForPlane(point_list1, s_vec, plane_equation);
