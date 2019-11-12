@@ -251,7 +251,11 @@ class SetUpPVPanel extends Component {
             </TabPane>
           </Tabs>
 
-          
+          {
+            this.props.workingBuilding.type === 'PITCHED' ?
+            pitchedRoofSelect :
+            null
+          }
 
           {/*Select Panel*/}
           <Form.Item>
@@ -434,8 +438,9 @@ const mapStateToProps = state => {
     parameters: state.undoableReducer.present.editingPVPanelManagerReducer
       .parameters,
     backendLoading: state.projectManagerReducer.backendLoading,
+    workingBuilding: state.buildingManagerReducer.workingBuilding,
     userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
-    rooftopCollection: state.undoableReducer.present.drawingRooftopManager
+    rooftopCollection: state.undoableReducer.present.drawingRooftopManagerReducer
       .RooftopCollection.rooftopCollection
   };
 };
