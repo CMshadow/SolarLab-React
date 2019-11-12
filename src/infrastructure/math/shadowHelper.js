@@ -36,10 +36,6 @@ export const getPlaneLineIntersectPointPosition = (point1, point2, plane_equatio
     var c = plane_equation[2];
     var d = plane_equation[3];
 
-    console.log(l1 + " " + l2 + " " + l3);
-    console.log(m1 + " " + m2 + " " + m3);
-    console.log(a + " " + b + " " + c + " " + d);
-
     if (l1 == 0 && l2 == 0) {
         var z = 0 - (a * m1 + b * m2 + d) / c;
         return new Point(m1, m2, z);
@@ -67,11 +63,7 @@ export const getShadowLineForPoint = (point, s_ratio, plane_equation) => {
     var vertical_point = new Point(point.lon, point.lat, 0);
     var shadow_x = point.lon + s_ratio[0] * point.height;
     var shadow_y = point.lat + s_ratio[1] * point.height;
-    console.log("point.lon: " + point.lon + "; point.lat: " + point.lat + "; point.height: " + point.height);
-    console.log("s_ratio[0]: " + s_ratio[0] + "; s_ratio[1]: " + s_ratio[1]);
     var shadow_point = new Point(shadow_x, shadow_y, 0);
-    console.log("shadow_point");
-    console.log(shadow_point);
     var plane_point1 = getPlaneLineIntersectPointPosition(point, vertical_point, plane_equation);
     var plane_point2 = getPlaneLineIntersectPointPosition(point, shadow_point, plane_equation);
     return [plane_point1, plane_point2]
@@ -83,7 +75,8 @@ export const getParallelogramsForPlane = (point_list, s_vec, plane_equation) => 
     var ratio = getRatio(point_list[0].lon, point_list[0].lat);
     var s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
     for (var i = 0; i < point_list.length; ++i) {
-        point_pair_list.push(getShadowLineForPoint(point_list[i], s_ratio, plane_equation));
+        var point_pair = getShadowLineForPoint(point_list[i], s_ratio, plane_equation);
+        point_pair_list.push(point_pair);
     }
     var parallelograms = [];
     for (var i = 0; i < point_pair_list.length - 1; ++i) {
@@ -91,7 +84,8 @@ export const getParallelogramsForPlane = (point_list, s_vec, plane_equation) => 
         parallelogram.push(point_pair_list[i][0]);
         parallelogram.push(point_pair_list[i][1]);
         parallelogram.push(point_pair_list[i+1][1]);
-        parallelogram.push(point_pair_list[i + 1][0]);
+        parallelogram.push(point_pair_list[i+1][0]);
+        parallelogram.push(point_pair_list[i][0]);
         parallelograms.push(parallelogram);
     }
     return parallelograms
@@ -100,23 +94,27 @@ export const getParallelogramsForPlane = (point_list, s_vec, plane_equation) => 
 export const unionPolygons = (point_list1, point_list2, plane_equation) => {
     const polyline1 = new Polyline(point_list1, false);
     const polyline2 = new Polyline(point_list2, false);
-    console.log("polyline1.makeGeoJSON():");
-    console.log(polyline1.makeGeoJSON());
     var union = turf.union(polyline1.makeGeoJSON(),
-        polyline2.makeGeoJSON()).geometry.coordinates;
+        polyline2.makeGeoJSON()).geometry.coordinates[0];
+    console.log("union:");
+    console.log(union);
     var result_point_list = [];
     for (var i = 0; i < union.length; ++i) {
-        var height = getPlaneLineIntersectPointPosition(
-            new Point(union[i][0], union[i][1], 0),
-            new Point(union[i][0], union[i][1], 5),
+        var joint = getPlaneLineIntersectPointPosition(
+            new Point(union[i][0], union[i][1], 0.0),
+            new Point(union[i][0], union[i][1], 5.0),
             plane_equation
         );
-        result_point_list.push(new Point(union[i][0], union[i][1], height));
+        result_point_list.push([joint.lon, joint.lat, joint.height]);
     }
     return result_point_list;
 }
 
 export const intersectPolygons = (point_list1, point_list2, plane_equation) => {
+    console.log("point_list1:");
+    console.log(point_list1);
+    console.log("point_list2:");
+    console.log(point_list2);
     const polyline1 = new Polyline(point_list1, false);
     const polyline2 = new Polyline(point_list2, false);
     var intersection = martinez.intersection(
@@ -125,19 +123,23 @@ export const intersectPolygons = (point_list1, point_list2, plane_equation) => {
     )[0];
     var result_point_list = [];
     for (var i = 0; i < intersection.length; ++i) {
-        var height = getPlaneLineIntersectPointPosition(
-            new Point(intersection[i][0], intersection[i][1], 0),
-            new Point(intersection[i][0], intersection[i][1], 5),
+        var joint = getPlaneLineIntersectPointPosition(
+            new Point(intersection[i][0], intersection[i][1], 0.0),
+            new Point(intersection[i][0], intersection[i][1], 5.0),
             plane_equation
         );
-        result_point_list.push(new Point(intersection[i][0], intersection[i][1], height));
+        result_point_list.push([joint.lon, joint.lat, joint.height]);
     }
     return result_point_list;
 }
 
 export const projectPlaneOnAnother = (point_list1, point_list2) => {
+    console.log("point_list1:");
+    console.log(point_list1);
+    console.log("point_list2:");
+    console.log(point_list2);
     if (point_list1.length < 3 || point_list2.length < 3) return null;
-    const plane_equation = getPlaneEquation(point_list1[0], point_list1[1], point_list1[2]);
+    const plane_equation = getPlaneEquation(point_list2[0], point_list2[1], point_list2[2]);
     const s_vec = calculateSunPositionWrapper()
     var parallelograms = getParallelogramsForPlane(point_list1, s_vec, plane_equation);
     console.log("parallelograms");
@@ -146,6 +148,10 @@ export const projectPlaneOnAnother = (point_list1, point_list2) => {
     for (var i = 1; i < parallelograms.length; ++i) {
         union = unionPolygons(union, parallelograms[i], plane_equation);
     }
-    var result_shadow = intersectPolygons(union, point_list2);
-    return result_shadow;
+    var result_coordinates = intersectPolygons(union, point_list2);
+    var result_points = [];
+    for (var i = 0; i < result_coordinates.length; ++i) {
+        result_points.push(new Point(result_coordinates[i][0], result_coordinates[i][1], result_coordinates[i][2]));
+    }
+    return result_points;
 }
