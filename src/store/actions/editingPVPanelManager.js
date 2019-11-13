@@ -194,14 +194,14 @@ export const generatePanels = () => (dispatch, getState) => {
     requestData.pitchedRoofPolygon =
       workingBuilding.pitchedRoofPolygons[pitchedRoofIndex];
     console.log(requestData)
-    // generatePitchedRoofPanels(dispatch, requestData);
+    generatePitchedRoofPanels(dispatch, requestData);
   }
 }
 
 const generateFlatRoofPanels = (dispatch, requestData) => {
   dispatch(cleanPanels());
   dispatch(setBackendLoadingTrue());
-  axios.post('/calculate-roof-pv-panels/flatroof-individual', requestData)
+  axios.post('/calculate-roof-pv-panels/flatroof', requestData)
   .then(response => {
     dispatch({
       type: actionTypes.INIT_EDITING_PANELS,

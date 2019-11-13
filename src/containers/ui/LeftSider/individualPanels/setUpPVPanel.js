@@ -57,7 +57,8 @@ class SetUpPVPanel extends Component {
   render = () => {
     const { getFieldDecorator } = this.props.form;
 
-    const pitchedRoofSelect = (
+    const pitchedRoofSelect = this.props.workingBuilding.type === 'PITCHED' ?
+    (
       <Form.Item>
         <Row>
           <Col span={20} offset={2}>
@@ -83,7 +84,8 @@ class SetUpPVPanel extends Component {
           </Col>
         </Row>
       </Form.Item>
-    );
+    ) :
+    null;
 
     const panelOrientation = (
       <Form.Item>
@@ -251,11 +253,7 @@ class SetUpPVPanel extends Component {
             </TabPane>
           </Tabs>
 
-          {
-            this.props.workingBuilding.type === 'PITCHED' ?
-            pitchedRoofSelect :
-            null
-          }
+          {pitchedRoofSelect}
 
           {/*Select Panel*/}
           <Form.Item>
