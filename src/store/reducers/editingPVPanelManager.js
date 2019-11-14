@@ -40,7 +40,7 @@ const generatePanels = (state, action) => {
     ...state,
     panels: {
       ...state.panels,
-      'action.roofIndex': action.panels
+      [action.roofIndex]: action.panels
     }
   }
 };
@@ -48,7 +48,10 @@ const generatePanels = (state, action) => {
 const cleanPanels = (state, action) => {
   return {
     ...state,
-    panels: []
+    panels: {
+      ...state.panels,
+      [action.roofIndex]: []
+    }
   };
 }
 

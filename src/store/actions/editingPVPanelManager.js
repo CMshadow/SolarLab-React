@@ -84,8 +84,6 @@ const makeCombiGeometry = (props) => {
 
 const makeRequestData = (props) => {
   const finalCombi = makeCombiGeometry(props);
-  console.log('finalCombi')
-  console.log(finalCombi)
   const requestData = []
   finalCombi.forEach(roof => {
     roof.geometry.coordinates.forEach(partialRoof => {
