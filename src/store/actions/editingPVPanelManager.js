@@ -189,6 +189,7 @@ export const generatePanels = () => (dispatch, getState) => {
   }
 
   if (workingBuilding.type === 'FLAT') {
+    console.log(requestData)
     generateFlatRoofPanels(dispatch, requestData);
   } else {
     requestData.pitchedRoofPolygon =
