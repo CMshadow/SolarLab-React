@@ -17,8 +17,8 @@ const initialState = {
     rowPerArray: 2,
     panelPerRow: 11
   },
+  roofSpecParams: {},
   userPanels: [],
-  selectPanelIndex: -1
 };
 
 const setupPanelParams = (state, action) => {
@@ -31,7 +31,14 @@ const setupPanelParams = (state, action) => {
     parameters: {
       ...action.parameters
     },
-    selectPanelIndex: selectPanelIndex
+    roofSpecParams: {
+      ...state.roofSpecParams,
+      [action.roofIndex]: {
+        ...state.parameters,
+        ...action.parameters,
+        selectPanelIndex: selectPanelIndex
+      }
+    },
   };
 }
 

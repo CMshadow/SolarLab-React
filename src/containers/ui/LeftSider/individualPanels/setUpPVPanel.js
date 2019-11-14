@@ -25,6 +25,7 @@ const ButtonGroup = Button.Group;
 class SetUpPVPanel extends Component {
   state = {
     tab: 'manual',
+    selectRoofIndex: 0,
     ...this.props.parameters
   }
 
@@ -32,8 +33,8 @@ class SetUpPVPanel extends Component {
     event.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.props.setupPanelParams(values)
-        this.props.generatePanels()
+        this.props.setupPanelParams(values, this.state.selectRoofIndex)
+        this.props.generatePanels(this.state.selectRoofIndex)
       }
     });
   }
@@ -54,6 +55,42 @@ class SetUpPVPanel extends Component {
     message: 'Cannot be empty'
   }];
 
+  updateFormFields = (roofInd) => {
+    this.props.form.setFieldsValue({
+      orientation: this.props.roofSpecParams.hasOwnProperty(roofInd) ?
+        this.props.roofSpecParams[roofInd].orientation :
+        this.state.orientation,
+      colSpace: this.props.roofSpecParams.hasOwnProperty(roofInd) ?
+        this.props.roofSpecParams[roofInd].colSpace :
+        this.state.colSpace,
+      rowSpace: this.props.roofSpecParams.hasOwnProperty(roofInd) ?
+        this.props.roofSpecParams[roofInd].rowSpace :
+        this.state.rowSpace,
+      align: this.props.roofSpecParams.hasOwnProperty(roofInd) ?
+        this.props.roofSpecParams[roofInd].align :
+        this.state.align,
+      azimuth: this.props.roofSpecParams.hasOwnProperty(roofInd) ?
+        this.props.roofSpecParams[roofInd].azimuth :
+        this.state.azimuth,
+      tilt: this.props.roofSpecParams.hasOwnProperty(roofInd) ?
+        this.props.roofSpecParams[roofInd].tilt :
+        this.state.tilt,
+      mode: this.props.roofSpecParams.hasOwnProperty(roofInd) ?
+        this.props.roofSpecParams[roofInd].mode :
+        this.state.mode
+    });
+    if (this.props.form.getFieldValue('mode') === 'array') {
+      this.props.form.setFieldsValue({
+        rowPerArray: this.props.roofSpecParams.hasOwnProperty(roofInd) ?
+          this.props.roofSpecParams[roofInd].rowPerArray :
+          this.state.rowPerArray,
+        panelPerRow: this.props.roofSpecParams.hasOwnProperty(roofInd) ?
+          this.props.roofSpecParams[roofInd].panelPerRow :
+          this.state.panelPerRow
+      })
+    }
+  }
+
   render = () => {
     const { getFieldDecorator } = this.props.form;
 
@@ -62,7 +99,7 @@ class SetUpPVPanel extends Component {
       <Form.Item>
         <Row>
           <Col span={20} offset={2}>
-          {getFieldDecorator('pitchedRoofIndex', {
+          {getFieldDecorator('roofIndex', {
             rules: [{
               required: this.props.workingBuilding.type === 'PITCHED',
               message: 'Please select one'
@@ -70,6 +107,10 @@ class SetUpPVPanel extends Component {
           })(
             <Select
               placeholder='Select a pitched roof'
+              onChange={(roofInd) => {
+                this.setState({selectRoofIndex: roofInd});
+                this.updateFormFields(roofInd)
+              }}
             >
               {this.props.workingBuilding.pitchedRoofPolygons.map((r,ind) =>
                 <Option
@@ -356,7 +397,7 @@ class SetUpPVPanel extends Component {
               <Col span={6}>
                 {getFieldDecorator('rowSpace', {
                   rules: [...this.numberInputRules],
-                  initialValue: this.state.rowSpace
+                  initialValue:this.state.rowSpace
                 })(
                   <InputNumber
                     min={0}
@@ -403,10 +444,14 @@ class SetUpPVPanel extends Component {
           </Form.Item>
 
           {
-            this.state.mode === 'array' ? optionalRowPerArray : null
+            this.props.form.getFieldValue('mode') === 'array' ?
+            optionalRowPerArray :
+            null
           }
           {
-            this.state.mode === 'array' ? optionalPanelPerRow : null
+            this.props.form.getFieldValue('mode') === 'array' ?
+            optionalPanelPerRow :
+            null
           }
 
           {/*The button to validate & process to create a new building*/}
@@ -438,14 +483,18 @@ const mapStateToProps = state => {
     backendLoading: state.projectManagerReducer.backendLoading,
     workingBuilding: state.buildingManagerReducer.workingBuilding,
     userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
+    roofSpecParams: state.undoableReducer.present.editingPVPanelManagerReducer
+      .roofSpecParams
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    setupPanelParams: (values) => dispatch(actions.setupPanelParams(values)),
-    generatePanels: () => dispatch(actions.generatePanels()),
-    setDebugPolylines: (polylines) => dispatch(actions.setDebugPolylines(polylines)),
+    setupPanelParams: (values, roofIndex) =>
+      dispatch(actions.setupPanelParams(values, roofIndex)),
+    generatePanels: (roofIndex) => dispatch(actions.generatePanels(roofIndex)),
+    setDebugPolylines: (polylines) =>
+      dispatch(actions.setDebugPolylines(polylines)),
     setDebugPoints: (points) => dispatch(actions.setDebugPoints(points))
   };
 };

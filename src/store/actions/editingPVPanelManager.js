@@ -141,25 +141,21 @@ export const fetchUserPanels = () => (dispatch, getState) => {
   })
 }
 
-export const generatePanels = () => (dispatch, getState) => {
+export const generatePanels = (roofIndex) => (dispatch, getState) => {
   const workingBuilding = getState().buildingManagerReducer.workingBuilding;
-  const pitchedRoofIndex = getState().undoableReducer.present
-    .editingPVPanelManagerReducer.parameters.pitchedRoofIndex
   const props = {
     workingRoof:
       workingBuilding.type === 'FLAT' ?
       workingBuilding.foundationPolygonExcludeStb :
-      workingBuilding.pitchedRoofPolygonsExcludeStb[pitchedRoofIndex],
+      workingBuilding.pitchedRoofPolygonsExcludeStb[roofIndex],
     allNormalKeepout: getState().keepoutManagerReducer.normalKeepout,
     allPassageKeepout: getState().keepoutManagerReducer.passageKeepout,
     allVentKeepout: getState().keepoutManagerReducer.ventKeepout
   }
   const data = makeRequestData(props);
-  console.log(data)
   const params = getState().undoableReducer.present.editingPVPanelManagerReducer
-    .parameters
-  const selectPanelIndex = getState().undoableReducer.present
-    .editingPVPanelManagerReducer.selectPanelIndex;
+    .roofSpecParams[roofIndex];
+  const selectPanelIndex = params.selectPanelIndex;
   const panelX = +getState().undoableReducer.present.editingPVPanelManagerReducer
     .userPanels[selectPanelIndex].panelWidth;
   const panelY = +getState().undoableReducer.present.editingPVPanelManagerReducer
@@ -191,9 +187,9 @@ export const generatePanels = () => (dispatch, getState) => {
     generateFlatRoofPanels(dispatch, requestData);
   } else {
     requestData.pitchedRoofPolygon =
-      workingBuilding.pitchedRoofPolygons[pitchedRoofIndex];
+      workingBuilding.pitchedRoofPolygons[roofIndex];
     console.log(requestData)
-    generatePitchedRoofPanels(dispatch, requestData, pitchedRoofIndex);
+    generatePitchedRoofPanels(dispatch, requestData, roofIndex);
   }
 }
 
@@ -257,10 +253,11 @@ const generatePitchedRoofPanels = (dispatch, requestData, pitchedRoofIndex) => {
   });
 }
 
-export const setupPanelParams = (values) => {
+export const setupPanelParams = (values, roofIndex) => {
   return {
     type: actionTypes.SETUP_PANEL_PARAMS,
-    parameters: values
+    parameters: values,
+    roofIndex: roofIndex
   };
 }
 
