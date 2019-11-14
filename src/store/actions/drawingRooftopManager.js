@@ -5,6 +5,7 @@ import EdgesMap from '../../infrastructure/edgesMap/edgesMap';
 import * as MathHelper from '../../infrastructure/math/RoofTop_MathHelper';
 import * as MathCoordHelp from '../../infrastructure/math/math';
 import Coordinate from '../../infrastructure/point/coordinate';
+import  * as Cesium from 'cesium';
 
 export const initEdgesMap = () => {
   return({
@@ -316,4 +317,46 @@ export const checkEdgeTypeOfPath = (path, NodesCollection ,OuterEdgesCollection,
     type: actionTypes.CHECK_EDGE_TYPE_OF_PATH,
     edgeTypeList: edgeTypeList
   }); 
+}
+
+/**
+   * the possible intersection Coordinate of two Coordinates traveling towards
+   * @param  {Number}  roofIndex  the number that indicates the index of the specific polygon that represents an rooftop
+   * @param  {Number}  newHighest the new top height of this selected polygon
+   * @param  {Number}  newLowest  the new foundation height of this selected polygon
+   */
+  
+// 非完美版： 暂时只支持内点高度一致的屋顶面， 待优化
+ 
+export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispatch, getState) => {
+  let workingRoofTopCollection = getState().undoableReducer.present.drawingRooftopManagerReducer.RooftopCollection;
+  console.log("original hierarchy: " + workingRoofTopCollection.rooftopCollection[roofIndex].hierarchy);
+  //第 index 个 polygon
+  for (let index = 0; index < workingRoofTopCollection.rooftopCollection[roofIndex].edgesCollection.length; ++index ) {
+    // 每一个 edge
+    let currentEdge =workingRoofTopCollection.rooftopCollection[roofIndex].edgesCollection[index];
+    console.log('show edges: ' + currentEdge.type)
+    console.log('start para: ' + currentEdge.startNodePara.height)
+    console.log('end para: ' + currentEdge.endNodePara.height)
+    console.log('----------------------')
+    // 更新 坐标
+    if (currentEdge.type === 'Hip') {
+      if (workingRoofTopCollection.rooftopCollection[roofIndex].hierarchy[index * 3 + 2] === currentEdge.startNodePara.height) {
+        workingRoofTopCollection.rooftopCollection[roofIndex].hierarchy[index * 3 + 2] = newLowest;
+      } else {
+        workingRoofTopCollection.rooftopCollection[roofIndex].hierarchy[index * 3 + 2] = newHighest;
+      }
+    } else if (currentEdge.type === 'Ridge') {
+      workingRoofTopCollection.rooftopCollection[roofIndex].hierarchy[index * 3 + 2] = newHighest;
+    } else {
+        workingRoofTopCollection.rooftopCollection[roofIndex].hierarchy[index * 3 + 2] = newLowest;
+    }
+    
+    
+  }
+  console.log("update hierarchy: " + workingRoofTopCollection.rooftopCollection[roofIndex].hierarchy);
+  workingRoofTopCollection.rooftopCollection[roofIndex].material = Cesium.Color.RED;
+  return dispatch({
+    type: actionTypes.UPDATE_SINGLE_ROOF_TOP
+  });
 }

@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import Aux from '../../../../../hoc/Auxiliary/Auxiliary';
 import {
   Row,
   Col,
@@ -37,12 +38,41 @@ const draw3DBuildingButton = (props) => {
     >Generate 3D Model</Button>
 
   );
+  const TestUpdateRoofTop = (
+    <Button
+      type = 'primary'
+      size = 'large'
+      shape = 'round'
+      block
+      loading = {props.backendLoading}
+      disabled = {
+        (props.currentBuilding.type === 'FLAT' ?
+        !uiStateJudge.isFinishedFound(props.uiState) :
+        !uiStateJudge.isFinishedInner(props.uiState)) || (
+          props.keepoutList.filter(kpt => !kpt.finishedDrawing).length !== 0
+        )
+      }
+      onClick = {() => {
+        console.log("test: update the rooftop")
+        props.updateRoofTop(0, 7, 10);
+      }}
+    >Test: Update Roof Top</Button>
+  )
   return (
-    <Row>
-    <Col span={18} offset={3}>
-      {DrawBuildingPolygon}
-    </Col>
-  </Row>
+    <Aux>
+      <Row>
+        <Col span={18} offset={3}>
+          {DrawBuildingPolygon}
+        </Col>
+      </Row>
+      <br></br>
+      <Row>
+        <Col span={18} offset={3}>
+          {TestUpdateRoofTop}
+        </Col>
+      </Row>
+    </Aux>
+    
   );
 }
 
@@ -54,7 +84,7 @@ const mapStateToProps = state => {
       state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
     keepoutList:
       state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
-
+    
   };
 };
 
@@ -65,6 +95,9 @@ const mapDispatchToProps = dispatch => {
     createPolygonFoundationWrapper: () => dispatch(actions.createPolygonFoundationWrapper()),
     createAllKeepoutPolygon: () =>
       dispatch(actions.createAllKeepoutPolygon()),
+    updateRoofTop: (rooftopIndex, lowest, highest ) => 
+      dispatch(actions.updateSingleRoofTop(rooftopIndex, lowest, highest))
+      
  };
 };
 
