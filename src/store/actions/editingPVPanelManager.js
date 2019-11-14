@@ -195,17 +195,18 @@ export const generatePanels = () => (dispatch, getState) => {
     requestData.pitchedRoofPolygon =
       workingBuilding.pitchedRoofPolygons[pitchedRoofIndex];
     console.log(requestData)
-    generatePitchedRoofPanels(dispatch, requestData);
+    generatePitchedRoofPanels(dispatch, requestData, pitchedRoofIndex);
   }
 }
 
 const generateFlatRoofPanels = (dispatch, requestData) => {
-  dispatch(cleanPanels());
+  dispatch(cleanPanels(0));
   dispatch(setBackendLoadingTrue());
   axios.post('/calculate-roof-pv-panels/flatroof', requestData)
   .then(response => {
     dispatch({
       type: actionTypes.INIT_EDITING_PANELS,
+      roofIndex: 0,
       panels: JSON.parse(response.data.body).panelLayout.map(partialRoof =>
         partialRoof.map(array =>
           array.map(panel => ({
@@ -228,13 +229,14 @@ const generateFlatRoofPanels = (dispatch, requestData) => {
   });
 }
 
-const generatePitchedRoofPanels = (dispatch, requestData) => {
-  dispatch(cleanPanels());
+const generatePitchedRoofPanels = (dispatch, requestData, pitchedRoofIndex) => {
+  dispatch(cleanPanels(pitchedRoofIndex));
   dispatch(setBackendLoadingTrue());
   axios.post('/calculate-roof-pv-panels/pitchedroof', requestData)
   .then(response => {
     dispatch({
       type: actionTypes.INIT_EDITING_PANELS,
+      roofIndex: pitchedRoofIndex,
       panels: JSON.parse(response.data.body).panelLayout.map(partialRoof =>
         partialRoof.map(array =>
           array.map(panel => ({
@@ -264,8 +266,9 @@ export const setupPanelParams = (values) => {
   };
 }
 
-export const cleanPanels = () => {
+export const cleanPanels = (roofIndex) => {
   return {
-    type: actionTypes.CLEAN_EDITING_PANELS
+    type: actionTypes.CLEAN_EDITING_PANELS,
+    roofIndex: roofIndex
   };
 }

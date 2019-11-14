@@ -4,7 +4,7 @@ import * as actionTypes from '../actions/actionTypes';
 import ProjectInfo from '../../infrastructure/projectInfo/projectInfo';
 
 const initialState = {
-  panels: [],
+  panels: {},
   backendLoading: false,
   parameters: {
     azimuth: 180,
@@ -38,7 +38,10 @@ const setupPanelParams = (state, action) => {
 const generatePanels = (state, action) => {
   return {
     ...state,
-    panels: action.panels
+    panels: {
+      ...state.panels,
+      'action.roofIndex': action.panels
+    }
   }
 };
 

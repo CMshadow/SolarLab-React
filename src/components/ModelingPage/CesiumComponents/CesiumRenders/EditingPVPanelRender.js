@@ -5,7 +5,7 @@ import PVVisualize from '../Polygon/PV';
 const EditingPVPanelRender = (props) => {
 
   let allPanels = null
-  if(props.panels !== []) {
+  if(props.panels !== {}) {
     console.log(props.panels)
     allPanels = props.panels.map(roof =>
       roof.map(array =>
