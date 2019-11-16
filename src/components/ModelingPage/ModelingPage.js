@@ -23,7 +23,11 @@ const ModelingPage = (props) => {
         <ContextMenuTrigger id="cesium_context_menu">
           <CustomViewer enableTerrain={false}>
             <CesiumScreenSpaceCameraController />
-            <FlyTo flyTo={props.initialCor} />
+            <FlyTo flyTo={[
+              props.projectInfo.projectLon,
+              props.projectInfo.projectLat,
+              props.projectInfo.projectZoom]}
+            />
             <CesiumEventHandlers />
             <CesiumRender />
           </CustomViewer>
@@ -38,7 +42,7 @@ const ModelingPage = (props) => {
 
 const mapStateToProps = state => {
   return {
-    initialCor: state.cesiumReducer.initialCor,
+    projectInfo: state.projectManagerReducer.projectInfo,
   };
 }
 

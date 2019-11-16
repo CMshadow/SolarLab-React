@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRectanglePortrait, faRectangleLandscape } from '@fortawesome/pro-light-svg-icons'
 
 import * as actions from '../../../../store/actions/index';
+import BearingCollection from '../../../../infrastructure/math/bearingCollection';
 const { Option } = Select;
 const { TabPane } = Tabs;
 const ButtonGroup = Button.Group;
@@ -25,7 +26,8 @@ const ButtonGroup = Button.Group;
 class SetUpPVPanel extends Component {
   state = {
     tab: 'manual',
-    selectRoofIndex: 0,
+    selectRoofIndex: null,
+    selectPanelID: null,
     ...this.props.parameters
   }
 
@@ -91,6 +93,108 @@ class SetUpPVPanel extends Component {
     }
   }
 
+  determineRowSpace = (shadowFactor, orientation, panelID) => {
+    const panelInd = this.props.userPanels.reduce((findIndex, elem, i) =>
+      elem.panelID === panelID ? i : findIndex, -1
+    );
+    let panelEdge = 2
+    if (panelID) {
+      switch(orientation) {
+        default:
+        case 'portrait':
+          panelEdge = this.props.userPanels[panelInd].panelLength >
+            this.props.userPanels[panelInd].panelWidth ?
+            this.props.userPanels[panelInd].panelLength :
+            this.props.userPanels[panelInd].panelWidth
+          break;
+        case 'landscape':
+          panelEdge = this.props.userPanels[panelInd].panelLength <
+            this.props.userPanels[panelInd].panelWidth ?
+            this.props.userPanels[panelInd].panelLength :
+            this.props.userPanels[panelInd].panelWidth
+          break;
+      }
+    } else {
+      switch(orientation) {
+        default:
+        case 'portrait':
+          break;
+        case 'landscape':
+          panelEdge = 1;
+      }
+    }
+
+    this.props.form.setFieldsValue({
+      rowSpace: parseFloat((shadowFactor * panelEdge).toFixed(1))
+    });
+  }
+
+  updateEcoFormFields = () => {
+    this.props.form.setFieldsValue({
+      azimuth: this.props.projectInfo.globalOptimalAzimuth,
+      tilt: this.props.projectInfo.globalOptimalTilt,
+    })
+    this.determineRowSpace(1.3, this.state.orientation, this.state.selectPanelID);
+  }
+
+  updateMaxFormFields = () => {
+    let azimuth = null;
+
+    switch(this.props.workingBuilding.type) {
+      default:
+      case 'FLAT': {
+        const roofEdgesDist = this.props.workingBuilding.foundationPolygon[0]
+          .toFoundLine().getSegmentDistance();
+        const roofEdgesBrng = this.props.workingBuilding.foundationPolygon[0]
+          .toFoundLine().getSegmentBearing();
+        const distBrngCombo = roofEdgesDist.map((d,i) => {
+          return {
+            dist: d,
+            brng: roofEdgesBrng[i]
+          }
+        });
+        distBrngCombo.sort((a, b) => (b.dist - a.dist));
+
+        const brngs = [];
+        distBrngCombo.slice(0, 3).forEach(e => {
+          brngs.push(e.brng);
+          brngs.push(Math.abs((e.brng + 90) % 360));
+          brngs.push(Math.abs((e.brng - 90) % 360));
+          brngs.push(Math.abs((e.brng + 180) % 360));
+        })
+        const brngCollection = new BearingCollection(brngs)
+
+        if(this.props.projectInfo.projectLat > 0){
+          azimuth = this.props.projectInfo.globalOptimalAzimuth ?
+            Math.round(brngCollection.findClosestBrng(
+              this.props.projectInfo.globalOptimalAzimuth
+            )) :
+            Math.round(brngCollection.findClosestBrng(180));
+        } else{
+          azimuth = this.props.projectInfo.globalOptimalAzimuth ?
+            Math.round(brngCollection.findClosestBrng(
+              this.props.projectInfo.globalOptimalAzimuth
+            )) :
+            Math.round(brngCollection.findClosestBrng(0));
+        }
+        break;
+      }
+      case 'PITCHED': {
+        azimuth = this.state.selectRoofIndex ?
+          Math.round(this.props.workingBuilding
+          .pitchedRoofPolygons[this.state.selectRoofIndex].brng) :
+          this.state.azimuth
+        break;
+      }
+    }
+
+
+    this.props.form.setFieldsValue({
+      azimuth: azimuth,
+    })
+    this.determineRowSpace(1.3, this.state.orientation, this.state.selectPanelID);
+  }
+
   render = () => {
     const { getFieldDecorator } = this.props.form;
 
@@ -110,6 +214,11 @@ class SetUpPVPanel extends Component {
               onChange={(roofInd) => {
                 this.setState({selectRoofIndex: roofInd});
                 this.updateFormFields(roofInd)
+                if (this.state.tab === 'max') {
+                  this.updateMaxFormFields();
+                } else if (this.state.tab === 'eco') {
+                  this.updateEcoFormFields();
+                }
               }}
             >
               {this.props.workingBuilding.pitchedRoofPolygons.map((r,ind) =>
@@ -128,6 +237,104 @@ class SetUpPVPanel extends Component {
     ) :
     null;
 
+    const panelSelect = (
+      <Form.Item>
+        <Row>
+          <Col span={20} offset={2}>
+          {getFieldDecorator('panelID', {
+            rules: [{
+              required: true,
+              message: 'Please select one'
+            }]
+          })(
+            <Select
+              showSearch
+              optionFilterProp='children'
+              placeholder='Select a panel'
+              onChange={(e) => {
+                this.setState({selectPanelID: e});
+                if (this.state.tab !== 'manual') {
+                  this.determineRowSpace(1.3, this.state.orientation, e)
+                }
+              }}
+            >
+              {this.props.userPanels.map(d =>
+                <Option
+                  key={d.panelID}
+                  value={d.panelID}
+                >
+                  {d.panelName}
+                </Option>
+              )}
+            </Select>
+          )}
+          </Col>
+        </Row>
+      </Form.Item>
+    )
+
+    const panelAzimuth = (
+      <Form.Item>
+        <Row>
+          <Col span={10} offset={4}>
+            <Tooltip
+              placement="topLeft"
+              title="The azimuth of the panels, 180° is south, 0° is north"
+            >
+              <h4>Panel Azimuth <Icon type="question-circle" /></h4>
+            </Tooltip>
+          </Col>
+          <Col span={6}>
+            {getFieldDecorator('azimuth', {
+              rules: [...this.numberInputRules],
+              initialValue: this.state.azimuth
+            })(
+              <InputNumber
+                min={0}
+                max={360}
+                step={1}
+                formatter={value => `${value}\xB0`}
+                parser={value => value.replace('\xB0', '')}
+                onChange = {e => this.setState({azimuth:e})}
+                disabled = {this.state.tab !== 'manual'}
+              />
+            )}
+          </Col>
+        </Row>
+      </Form.Item>
+    )
+
+    const panelTilt = (
+      <Form.Item>
+        <Row>
+          <Col span={10} offset={4}>
+            <Tooltip
+              placement="topLeft"
+              title="Panel tilt angle"
+            >
+              <h4>Panel Tilt <Icon type="question-circle" /></h4>
+            </Tooltip>
+          </Col>
+          <Col span={6}>
+            {getFieldDecorator('tilt', {
+              rules: [...this.numberInputRules],
+              initialValue: this.state.tilt
+            })(
+              <InputNumber
+                min={0}
+                max={45}
+                step={5}
+                formatter={value => `${value}\xB0`}
+                parser={value => value.replace('\xB0', '')}
+                onChange = {e => this.setState({tilt:e})}
+                disabled = {this.state.tab !== 'manual'}
+              />
+            )}
+          </Col>
+        </Row>
+      </Form.Item>
+    )
+
     const panelOrientation = (
       <Form.Item>
         <Row>
@@ -143,7 +350,17 @@ class SetUpPVPanel extends Component {
             {getFieldDecorator('orientation', {
               initialValue: this.state.orientation
             })(
-              <Radio.Group buttonStyle='solid'>
+              <Radio.Group
+                buttonStyle='solid'
+                onChange={(e) => {
+                  this.setState({orientation: e.target.value})
+                  if (this.state.tab !== 'manual') {
+                    this.determineRowSpace(
+                      1.3, e.target.value, this.state.selectPanelID
+                    );
+                  }
+                }}
+              >
                 <Radio.Button value="portrait">
                   <FontAwesomeIcon icon={faRectanglePortrait} />
                 </Radio.Button>
@@ -156,6 +373,37 @@ class SetUpPVPanel extends Component {
         </Row>
       </Form.Item>
     );
+
+    const rowSpacing = (
+      <Form.Item>
+        <Row>
+          <Col span={10} offset={4}>
+            <Tooltip
+              placement="topLeft"
+              title="The spacing between each row of panels"
+            >
+              <h4>Row Spacing <Icon type="question-circle" /></h4>
+            </Tooltip>
+          </Col>
+          <Col span={6}>
+            {getFieldDecorator('rowSpace', {
+              rules: [...this.numberInputRules],
+              initialValue:this.state.rowSpace
+            })(
+              <InputNumber
+                min={0}
+                max={30}
+                step={5}
+                formatter={value => `${value}m`}
+                parser={value => value.replace('m', '')}
+                onChange = {e => this.setState({rowSpace:e})}
+                disabled = {this.state.tab !== 'manual'}
+              />
+            )}
+          </Col>
+        </Row>
+      </Form.Item>
+    )
 
     const colSpacing = (
       <Form.Item>
@@ -219,6 +467,33 @@ class SetUpPVPanel extends Component {
       </Form.Item>
     );
 
+    const mode = (
+      <Form.Item>
+        <Row>
+          <Col span={8} offset={4}>
+            <Tooltip
+              placement="topLeft"
+              title="Individual panels or a fixed number of panels to form a panel array"
+            >
+              <h4>Mode <Icon type="question-circle" /></h4>
+            </Tooltip>
+          </Col>
+          <Col span={10}>
+            {getFieldDecorator('mode', {
+              initialValue: this.state.mode
+            })(
+              <Select
+                onChange={e => this.setState({mode:e})}
+              >
+                <Option value='individual'>Individual</Option>
+                <Option value='array'>Panel Array</Option>
+              </Select>
+            )}
+          </Col>
+        </Row>
+      </Form.Item>
+    )
+
     const optionalRowPerArray = (
       <Form.Item>
         <Row>
@@ -245,6 +520,7 @@ class SetUpPVPanel extends Component {
         </Row>
       </Form.Item>
     );
+
     const optionalPanelPerRow = (
       <Form.Item>
         <Row>
@@ -279,177 +555,80 @@ class SetUpPVPanel extends Component {
         </Row>
         <Form onSubmit={this.handleSubmit}>
 
+          {pitchedRoofSelect}
+
+          {panelSelect}
+
           <Tabs
             defaultActiveKey = {this.state.tab}
             size = 'small'
             tabBarGutter = {5}
             tabBarStyle = {{textAlign: 'center'}}
-            onChange = {e => this.setState({tab:e})}
+            onChange = {e => {
+              this.setState({tab:e});
+              if (e === 'eco') {
+                this.updateEcoFormFields()
+              } else if (e === 'max') {
+                this.updateMaxFormFields();
+              }
+            }}
           >
             <TabPane tab="Manual" key="manual">
+              {panelAzimuth}
+              {panelTilt}
+              {panelOrientation}
+              {rowSpacing}
+              {colSpacing}
+              {align}
             </TabPane>
-            <TabPane tab="Max Panels" key="max">
+            <TabPane
+              tab={
+                this.props.workingBuilding.type === 'FLAT' ?
+                'Max Panels' :
+                'Roof Direction'
+              }
+              key="max">
+              {panelAzimuth}
+              {panelTilt}
+              {panelOrientation}
+              {rowSpacing}
+              {colSpacing}
+              {align}
             </TabPane>
-            <TabPane tab="Max Eco" key="eco">
+            <TabPane
+              tab={
+                this.props.projectInfo.globalOptimalTilt ?
+                'Max Eco' :
+                <Tooltip
+                  placement="topLeft"
+                  title="Maximum Economy calculation is in progress. Please \
+                  wait for a few minutes"
+                >
+                  Max Eco
+                </Tooltip>
+              }
+              key="eco"
+              disabled={!this.props.projectInfo.globalOptimalTilt}
+            >
+              {panelAzimuth}
+              {panelTilt}
+              {panelOrientation}
+              {rowSpacing}
+              {colSpacing}
+              {align}
             </TabPane>
           </Tabs>
 
-          {pitchedRoofSelect}
-
-          {/*Select Panel*/}
-          <Form.Item>
-            <Row>
-              <Col span={20} offset={2}>
-              {getFieldDecorator('panelID', {
-                rules: [{
-                  required: true,
-                  message: 'Please select one'
-                }]
-              })(
-                <Select
-                  showSearch
-                  optionFilterProp='children'
-                  placeholder='Select a panel'
-                >
-                  {this.props.userPanels.map(d =>
-                    <Option
-                      key={d.panelID}
-                      value={d.panelID}
-                    >
-                      {d.panelName}
-                    </Option>
-                  )}
-                </Select>
-              )}
-              </Col>
-            </Row>
-          </Form.Item>
-
-          {/*Panel Azimuth*/}
-          <Form.Item>
-            <Row>
-              <Col span={10} offset={4}>
-                <Tooltip
-                  placement="topLeft"
-                  title="The azimuth of the panels, 180° is south, 0° is north"
-                >
-                  <h4>Panel Azimuth <Icon type="question-circle" /></h4>
-                </Tooltip>
-              </Col>
-              <Col span={6}>
-                {getFieldDecorator('azimuth', {
-                  rules: [...this.numberInputRules],
-                  initialValue: this.state.azimuth
-                })(
-                  <InputNumber
-                    min={0}
-                    max={360}
-                    step={1}
-                    formatter={value => `${value}\xB0`}
-                    parser={value => value.replace('\xB0', '')}
-                    onChange = {e => this.setState({azimuth:e})}
-                  />
-                )}
-              </Col>
-            </Row>
-          </Form.Item>
-          {/*Panel Tilt*/}
-          <Form.Item>
-            <Row>
-              <Col span={10} offset={4}>
-                <Tooltip
-                  placement="topLeft"
-                  title="Panel tilt angle"
-                >
-                  <h4>Panel Tilt <Icon type="question-circle" /></h4>
-                </Tooltip>
-              </Col>
-              <Col span={6}>
-                {getFieldDecorator('tilt', {
-                  rules: [...this.numberInputRules],
-                  initialValue: this.state.tilt
-                })(
-                  <InputNumber
-                    min={0}
-                    max={45}
-                    step={5}
-                    formatter={value => `${value}\xB0`}
-                    parser={value => value.replace('\xB0', '')}
-                    onChange = {e => this.setState({tilt:e})}
-                  />
-                )}
-              </Col>
-            </Row>
-          </Form.Item>
-          {/*Panel Orientation*/}
-          {panelOrientation}
-          {/*Row Space*/}
-          <Form.Item>
-            <Row>
-              <Col span={10} offset={4}>
-                <Tooltip
-                  placement="topLeft"
-                  title="The spacing between each row of panels"
-                >
-                  <h4>Row Spacing <Icon type="question-circle" /></h4>
-                </Tooltip>
-              </Col>
-              <Col span={6}>
-                {getFieldDecorator('rowSpace', {
-                  rules: [...this.numberInputRules],
-                  initialValue:this.state.rowSpace
-                })(
-                  <InputNumber
-                    min={0}
-                    max={30}
-                    step={5}
-                    formatter={value => `${value}m`}
-                    parser={value => value.replace('m', '')}
-                    onChange = {e => this.setState({rowSpace:e})}
-                  />
-                )}
-              </Col>
-            </Row>
-          </Form.Item>
-          {/*Col Space*/}
-          {colSpacing}
-          {/*Align*/}
-          {align}
-
           <Divider />
-          {/*Mode*/}
-          <Form.Item>
-            <Row>
-              <Col span={8} offset={4}>
-                <Tooltip
-                  placement="topLeft"
-                  title="Individual panels or a fixed number of panels to form a panel array"
-                >
-                  <h4>Mode <Icon type="question-circle" /></h4>
-                </Tooltip>
-              </Col>
-              <Col span={10}>
-                {getFieldDecorator('mode', {
-                  initialValue: this.state.mode
-                })(
-                  <Select
-                    onChange={e => this.setState({mode:e})}
-                  >
-                    <Option value='individual'>Individual</Option>
-                    <Option value='array'>Panel Array</Option>
-                  </Select>
-                )}
-              </Col>
-            </Row>
-          </Form.Item>
+          {mode}
 
           {
-            this.props.form.getFieldValue('mode') === 'array' ?
+            this.state.mode === 'array' ?
             optionalRowPerArray :
             null
           }
           {
-            this.props.form.getFieldValue('mode') === 'array' ?
+            this.state.mode === 'array' ?
             optionalPanelPerRow :
             null
           }
@@ -484,7 +663,8 @@ const mapStateToProps = state => {
     workingBuilding: state.buildingManagerReducer.workingBuilding,
     userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
     roofSpecParams: state.undoableReducer.present.editingPVPanelManagerReducer
-      .roofSpecParams
+      .roofSpecParams,
+    projectInfo: state.projectManagerReducer.projectInfo
   };
 };
 

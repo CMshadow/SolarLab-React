@@ -5,7 +5,7 @@ import ProjectInfo from '../../infrastructure/projectInfo/projectInfo';
 
 const initialState = {
   projectId: null,
-  projectInfo: new ProjectInfo(),
+  projectInfo: new ProjectInfo(-117.841416, 33.646859, 500, 195, 30),
   backendLoading: false
 };
 
