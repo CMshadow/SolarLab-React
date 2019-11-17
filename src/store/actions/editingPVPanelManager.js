@@ -228,6 +228,7 @@ const generatePitchedRoofPanels = (dispatch, requestData, pitchedRoofIndex) => {
   dispatch(setBackendLoadingTrue());
   axios.post('/calculate-roof-pv-panels/pitchedroof', requestData)
   .then(response => {
+    console.log(JSON.parse(response.data.body).panelLayout)
     dispatch({
       type: actionTypes.INIT_EDITING_PANELS,
       roofIndex: pitchedRoofIndex,

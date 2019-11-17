@@ -4,6 +4,7 @@ import axios from '../../axios-setup';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 
 import * as actions from './index'
+import * as MyMath from '../../infrastructure/math/math';
 import Node from '../../infrastructure/edgesMap/node/node';
 import Edge from '../../infrastructure/edgesMap/edge/edge';
 import EdgesMap from '../../infrastructure/edgesMap/edgesMap';
@@ -73,7 +74,7 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
       2,
       null,
       null,
-      roofPlane.roofPlaneParameters[0],
+      MyMath.mapBrng(roofPlane.roofPlaneParameters[0]),
       roofPlane.roofPlaneParameters[1],
       roofPlane.roofHighestLowestNodes[0],
       roofPlane.roofHighestLowestNodes[1],

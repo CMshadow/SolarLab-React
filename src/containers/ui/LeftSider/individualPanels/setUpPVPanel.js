@@ -18,6 +18,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRectanglePortrait, faRectangleLandscape } from '@fortawesome/pro-light-svg-icons'
 
 import * as actions from '../../../../store/actions/index';
+import * as MyMath from '../../../../infrastructure/math/math';
 import BearingCollection from '../../../../infrastructure/math/bearingCollection';
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -81,6 +82,9 @@ class SetUpPVPanel extends Component {
         this.props.roofSpecParams[roofInd].mode :
         this.state.mode
     });
+    if (this.props.roofSpecParams.hasOwnProperty(roofInd)) {
+      this.setState({mode: this.props.roofSpecParams[roofInd].mode})
+    }
     if (this.props.form.getFieldValue('mode') === 'array') {
       this.props.form.setFieldsValue({
         rowPerArray: this.props.roofSpecParams.hasOwnProperty(roofInd) ?
@@ -137,8 +141,9 @@ class SetUpPVPanel extends Component {
     this.determineRowSpace(1.3, this.state.orientation, this.state.selectPanelID);
   }
 
-  updateMaxFormFields = () => {
+  updateMaxFormFields = (roofIndex) => {
     let azimuth = null;
+    let tilt = 30;
 
     switch(this.props.workingBuilding.type) {
       default:
@@ -158,9 +163,9 @@ class SetUpPVPanel extends Component {
         const brngs = [];
         distBrngCombo.slice(0, 3).forEach(e => {
           brngs.push(e.brng);
-          brngs.push(Math.abs((e.brng + 90) % 360));
-          brngs.push(Math.abs((e.brng - 90) % 360));
-          brngs.push(Math.abs((e.brng + 180) % 360));
+          brngs.push(MyMath.mapBrng(e.brng + 90));
+          brngs.push(MyMath.mapBrng(e.brng - 90));
+          brngs.push(MyMath.mapBrng(e.brng + 180));
         })
         const brngCollection = new BearingCollection(brngs)
 
@@ -180,17 +185,18 @@ class SetUpPVPanel extends Component {
         break;
       }
       case 'PITCHED': {
-        azimuth = this.state.selectRoofIndex ?
-          Math.round(this.props.workingBuilding
-          .pitchedRoofPolygons[this.state.selectRoofIndex].brng) :
+        azimuth = roofIndex !== null ?
+          Math.round(
+            this.props.workingBuilding.pitchedRoofPolygons[roofIndex].brng
+          ) :
           this.state.azimuth
+        tilt = 0;
         break;
       }
     }
-
-
     this.props.form.setFieldsValue({
       azimuth: azimuth,
+      tilt: tilt,
     })
     this.determineRowSpace(1.3, this.state.orientation, this.state.selectPanelID);
   }
@@ -215,7 +221,7 @@ class SetUpPVPanel extends Component {
                 this.setState({selectRoofIndex: roofInd});
                 this.updateFormFields(roofInd)
                 if (this.state.tab === 'max') {
-                  this.updateMaxFormFields();
+                  this.updateMaxFormFields(roofInd);
                 } else if (this.state.tab === 'eco') {
                   this.updateEcoFormFields();
                 }
@@ -569,7 +575,7 @@ class SetUpPVPanel extends Component {
               if (e === 'eco') {
                 this.updateEcoFormFields()
               } else if (e === 'max') {
-                this.updateMaxFormFields();
+                this.updateMaxFormFields(this.state.selectRoofIndex);
               }
             }}
           >
