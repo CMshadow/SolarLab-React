@@ -141,8 +141,8 @@ export const intersectPolygons = (point_list1, point_list2, plane_equation) => {
     var intersection = martinez.intersection(
         polyline1.makeGeoJSON().geometry.coordinates,
         polyline2.makeGeoJSON().geometry.coordinates
-    ); // if null then no intersection
-    if (intersection === null) return [];
+    );
+    if (intersection === null || intersection.length === 0) return [];
     intersection = intersection[0][0];
     var result_point_list = [];
     for (var i = 0; i < intersection.length; ++i) {
@@ -156,16 +156,32 @@ export const intersectPolygons = (point_list1, point_list2, plane_equation) => {
     return result_point_list;
 }
 
-export const projectPlaneOnAnother = (point_list1, point_list2, plane_equation, s_ratio) => {
+export const projectPlaneOnAnother = (point_list1, point_list2, plane_equation, s_ratio, cover) => {
     if (point_list1.length < 3 || point_list2.length < 3) return null;
     point_list2.push(point_list2[0]);
     var parallelograms = getParallelogramsForPlane(point_list1, s_ratio, plane_equation);
-    var union = parallelograms[0];
-    for (var i = 1; i < parallelograms.length; ++i) {
-        union = unionPolygons(union, parallelograms[i], plane_equation);
+    //if (cover === true) {
+    //    var cover_plane = [];
+    //    for (var i = 0; i < parallelograms.length; ++i) {
+    //        cover_plane.push(parallelograms[i][1]);
+    //    }
+    //    cover_plane.push(cover_plane[0]);
+    //    parallelograms.push(cover_plane);
+    //}
+    if (cover === true) {
+        var union = parallelograms[0];
+        for (var i = 1; i < parallelograms.length; ++i) {
+            union = unionPolygons(union, parallelograms[i], plane_equation);
+        }
+        var result_points = intersectPolygons(union, point_list2, plane_equation);
+        return [result_points];
     }
-    //var result_points = intersectPolygons(union, point_list2, plane_equation);
-    return union;
+    else {
+        for (var i = 0; i < parallelograms.length; ++i) {
+            parallelograms[i] = intersectPolygons(parallelograms[i], point_list2, plane_equation);
+        }
+        return parallelograms;
+    }
 }
 
 export const getSphereLineIntersection = (center_cartesian, radius, vx, vy, vz) => {
@@ -359,7 +375,7 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
     return result_point_list;
 }
 
-export const projectEverything = (allKptList, allTreeList, foundationPolyline) => {
+export const projectEverything = (allKptList, allTreeList, wall, foundationPolyline) => {
     var foundationPoints = foundationPolyline[0].convertHierarchyToPoints();
     var list_of_shadows = [];
 
@@ -372,11 +388,14 @@ export const projectEverything = (allKptList, allTreeList, foundationPolyline) =
         var keepoutPoints = allKptList[i].outlinePolygon.convertHierarchyToPoints();
         var ratio = getRatio(keepoutPoints[0].lon, keepoutPoints[0].lat);
         var s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-        var shadow = projectPlaneOnAnother(keepoutPoints, foundationPoints, plane_equation, s_ratio);
+        var shadow = projectPlaneOnAnother(keepoutPoints, foundationPoints, plane_equation, s_ratio, true);
         for (var j = 0; j < shadow.length; ++j) {
-            shadow[j].height += 0.01;
+            for (var k = 0; k < shadow[j].length; ++k) {
+                shadow[j][k].height += 0.01;
+            }
+            if (shadow[j].length != 0)
+                list_of_shadows.push(shadow[j]);
         }
-        list_of_shadows.push(shadow);
     }
 
     // tree keepout
@@ -388,9 +407,30 @@ export const projectEverything = (allKptList, allTreeList, foundationPolyline) =
         const treePoints = generateTreePolygon(center, radius, s_ratio, s_vec);
         var shadow = projectPlaneOnAnother(treePoints, foundationPoints, plane_equation, s_ratio);
         for (var j = 0; j < shadow.length; ++j) {
-            shadow[j].height += 0.01;
+            for (var k = 0; k < shadow[j].length; ++k) {
+                shadow[j][k].height += 0.01;
+            }
+            if (shadow[j].length != 0)
+                list_of_shadows.push(shadow[j]);
         }
-        list_of_shadows.push(shadow);
+    }
+
+    // wall keepout
+    var wallPoints = [];
+    for (var i = 0; i < wall.maximumHeight.length; ++i) {
+        wallPoints.push(new Point(wall.positions[i * 2], wall.positions[i * 2 + 1], wall.maximumHeight[i]));
+    }
+    for (var i = 0; i < wallPoints.length; ++i) {
+        var ratio = getRatio(wallPoints[0].lon, wallPoints[0].lat);
+        var s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
+        var shadow = projectPlaneOnAnother(wallPoints, foundationPoints, plane_equation, s_ratio, false);
+        for (var j = 0; j < shadow.length; ++j) {
+            for (var k = 0; k < shadow[j].length; ++k) {
+                shadow[j][k].height += 0.01;
+            }
+            if (shadow[j].length != 0)
+                list_of_shadows.push(shadow[j]);
+        }
     }
 
     return list_of_shadows;

@@ -20,9 +20,10 @@ const Editing3DPanel = (props) => {
     const shadowFunc = () => {
         const allKptList = props.keepoutList;
         const allTreeList = props.treeKeepoutList;
+        const wall = props.buildingParapet;
         const foundationPolyline = props.foundationPolyline;
 
-        var list_of_shadows = projectEverything(allKptList, allTreeList, foundationPolyline);
+        var list_of_shadows = projectEverything(allKptList, allTreeList, wall, foundationPolyline);
         var list_of_shadow_polygons = [];
 
         for (var i = 0; i < list_of_shadows.length; ++i) {
@@ -58,7 +59,8 @@ const mapStateToProps = state => {
     allPassageKeepout: state.keepoutManagerReducer.passageKeepout,
     keepoutList: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.normalKeepout,
     treeKeepoutList: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.treeKeepout,
-    foundationPolyline: state.undoableReducer.present.drawingPolygonManagerReducer.BuildingFoundation
+    foundationPolyline: state.undoableReducer.present.drawingPolygonManagerReducer.BuildingFoundation,
+    buildingParapet: state.undoableReducer.present.drawingPolygonManagerReducer.BuildingParapet
   };
 };
 
