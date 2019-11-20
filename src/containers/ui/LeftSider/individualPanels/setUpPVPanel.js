@@ -444,7 +444,7 @@ class SetUpPVPanel extends Component {
               <InputNumber
                 min={0}
                 max={30}
-                step={5}
+                step={0.1}
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
                 onChange = {e => this.setState({rowSpace:e})}
@@ -475,7 +475,7 @@ class SetUpPVPanel extends Component {
               <InputNumber
                 min={0}
                 max={30}
-                step={5}
+                step={0.1}
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
                 onChange = {e => this.setState({colSpace:e})}
