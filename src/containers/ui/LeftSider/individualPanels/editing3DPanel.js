@@ -13,39 +13,29 @@ import Polyline from '../../../../infrastructure/line/polyline';
 
 import * as Cesium from 'cesium';
 
-import { projectPlaneOnAnother } from "../../../../infrastructure/math/shadowHelper";
+import { projectEverything } from "../../../../infrastructure/math/shadowHelper";
 
 const Editing3DPanel = (props) => {
 
     const shadowFunc = () => {
         const allKptList = props.keepoutList;
+        const allTreeList = props.treeKeepoutList;
         const foundationPolyline = props.foundationPolyline;
-        console.log("allKptList");
-        console.log(allKptList);
 
-        var foundationPoints = foundationPolyline[0].convertHierarchyToPoints();
-        var list_of_shadows = [];
+        var list_of_shadows = projectEverything(allKptList, allTreeList, foundationPolyline);
+        var list_of_shadow_polygons = [];
 
-        for (var i = 0; i < allKptList.length; ++i) {
-            var keepoutPoints = allKptList[i].outlinePolygon.convertHierarchyToPoints();
-            var shadow = projectPlaneOnAnother(keepoutPoints, foundationPoints);
-            for (var j = 0; j < shadow.length; ++j) {
-                shadow[j].height += 0.01;
-            }
-            var shadow_line = new Polyline(shadow);
-            shadow_line.color = Cesium.Color.BLACK;
-            console.log("shadow_line");
-            console.log(shadow_line);
-            const shadowHier = Polygon.makeHierarchyFromPolyline(
-              shadow_line, foundationPolyline[0].height, 0.005
-            );
+        for (var i = 0; i < list_of_shadows.length; ++i) {
+            var shadow_line = new Polyline(list_of_shadows[i]);
+            const shadowHier = Polygon.makeHierarchyFromPolyline(shadow_line);
             const shadowPolygon = new Polygon(
-              null, null, foundationPolyline[0].height, shadowHier, null, null,
-              Cesium.Color.DARKGREY.withAlpha(0.75)
+                null, null, foundationPolyline[0].height, shadowHier, null, null,
+                Cesium.Color.DARKGREY.withAlpha(0.75)
             );
-            list_of_shadows.push(shadowPolygon);
+            list_of_shadow_polygons.push(shadowPolygon);
         }
-        props.setDebugPolygons(list_of_shadows);
+
+        props.setDebugPolygons(list_of_shadow_polygons);
     }
 
   return (
@@ -67,6 +57,7 @@ const mapStateToProps = state => {
     allNormalKeepout: state.keepoutManagerReducer.normalKeepout,
     allPassageKeepout: state.keepoutManagerReducer.passageKeepout,
     keepoutList: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.normalKeepout,
+    treeKeepoutList: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.treeKeepout,
     foundationPolyline: state.undoableReducer.present.drawingPolygonManagerReducer.BuildingFoundation
   };
 };
