@@ -16,7 +16,11 @@ const setGlobalOptimal = (state, action) => {
   );
   return {
     ...state,
-    projectInfo: newProjectInfo
+    projectInfo: {
+      ...state.projectInfo,
+      globalOptimalTilt: action.globalOptimalTilt,
+      globalOptimalAzimuth: action.globalOptimalAzimuth
+    }
   };
 }
 

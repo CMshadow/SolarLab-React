@@ -12,14 +12,17 @@ import {
   Col,
   Button,
   Radio,
-  Tabs
+  Tabs,
+  Skeleton
 } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRectanglePortrait, faRectangleLandscape } from '@fortawesome/pro-light-svg-icons'
 
 import * as actions from '../../../../store/actions/index';
+import axios from '../../../../axios-setup';
 import * as MyMath from '../../../../infrastructure/math/math';
 import BearingCollection from '../../../../infrastructure/math/bearingCollection';
+import errorNotification from '../../../../components/ui/Notification/ErrorNotification';
 const { Option } = Select;
 const { TabPane } = Tabs;
 const ButtonGroup = Button.Group;
@@ -143,7 +146,6 @@ class SetUpPVPanel extends Component {
 
   updateMaxFormFields = (roofIndex) => {
     let azimuth = null;
-    let tilt = 30;
 
     switch(this.props.workingBuilding.type) {
       default:
@@ -182,6 +184,30 @@ class SetUpPVPanel extends Component {
             )) :
             Math.round(brngCollection.findClosestBrng(0));
         }
+
+        this.props.setBackendLoadingTrue();
+        axios.get('/optimal-calculation/calculate-tilt', {
+          params: {
+            longitude: this.props.projectInfo.projectLon,
+            latitude: this.props.projectInfo.projectLat,
+            azimuth: azimuth
+          }
+        }).then(response => {
+          this.props.setBackendLoadingFalse();
+          this.props.form.setFieldsValue({
+            azimuth: azimuth,
+            tilt: response.data.optimalTilt,
+          })
+          this.determineRowSpace(
+            1.3, this.state.orientation, this.state.selectPanelID
+          );
+        }).catch(err => {
+          this.props.setBackendLoadingFalse();
+          return errorNotification(
+            'Backend Error',
+            err.response.data.errorMessage
+          );
+        })
         break;
       }
       case 'PITCHED': {
@@ -190,15 +216,16 @@ class SetUpPVPanel extends Component {
             this.props.workingBuilding.pitchedRoofPolygons[roofIndex].brng
           ) :
           this.state.azimuth
-        tilt = 0;
+        this.props.form.setFieldsValue({
+          azimuth: azimuth,
+          tilt: 0,
+        })
+        this.determineRowSpace(
+          1.3, this.state.orientation, this.state.selectPanelID
+        );
         break;
       }
     }
-    this.props.form.setFieldsValue({
-      azimuth: azimuth,
-      tilt: tilt,
-    })
-    this.determineRowSpace(1.3, this.state.orientation, this.state.selectPanelID);
   }
 
   render = () => {
@@ -593,13 +620,19 @@ class SetUpPVPanel extends Component {
                 'Max Panels' :
                 'Roof Direction'
               }
-              key="max">
-              {panelAzimuth}
-              {panelTilt}
-              {panelOrientation}
-              {rowSpacing}
-              {colSpacing}
-              {align}
+              key="max"
+            >
+              <Skeleton
+                active
+                loading={this.props.backendLoading}
+              >
+                {panelAzimuth}
+                {panelTilt}
+                {panelOrientation}
+                {rowSpacing}
+                {colSpacing}
+                {align}
+              </Skeleton>
             </TabPane>
             <TabPane
               tab={
@@ -681,7 +714,9 @@ const mapDispatchToProps = dispatch => {
     generatePanels: (roofIndex) => dispatch(actions.generatePanels(roofIndex)),
     setDebugPolylines: (polylines) =>
       dispatch(actions.setDebugPolylines(polylines)),
-    setDebugPoints: (points) => dispatch(actions.setDebugPoints(points))
+    setDebugPoints: (points) => dispatch(actions.setDebugPoints(points)),
+    setBackendLoadingTrue: () => dispatch(actions.setBackendLoadingTrue()),
+    setBackendLoadingFalse: () => dispatch(actions.setBackendLoadingFalse())
   };
 };
 
