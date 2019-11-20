@@ -13,7 +13,7 @@ import {
   Button,
   Radio,
   Tabs,
-  Skeleton
+  Spin
 } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRectanglePortrait, faRectangleLandscape } from '@fortawesome/pro-light-svg-icons'
@@ -30,9 +30,22 @@ const ButtonGroup = Button.Group;
 class SetUpPVPanel extends Component {
   state = {
     tab: 'manual',
+    isFetching: false,
     selectRoofIndex: null,
     selectPanelID: null,
     ...this.props.parameters
+  }
+
+  setIsFetchingTrue = () => {
+    this.setState({
+      isFetching: true
+    });
+  }
+
+  setIsFetchingFalse = () => {
+    this.setState({
+      isFetching: false
+    });
   }
 
   handleSubmit = (event) => {
@@ -184,8 +197,12 @@ class SetUpPVPanel extends Component {
             )) :
             Math.round(brngCollection.findClosestBrng(0));
         }
-
-        this.props.setBackendLoadingTrue();
+        console.log({
+          longitude: this.props.projectInfo.projectLon,
+          latitude: this.props.projectInfo.projectLat,
+          azimuth: azimuth
+        })
+        this.setIsFetchingTrue();
         axios.get('/optimal-calculation/calculate-tilt', {
           params: {
             longitude: this.props.projectInfo.projectLon,
@@ -193,7 +210,8 @@ class SetUpPVPanel extends Component {
             azimuth: azimuth
           }
         }).then(response => {
-          this.props.setBackendLoadingFalse();
+          console.log(response)
+          this.setIsFetchingFalse();
           this.props.form.setFieldsValue({
             azimuth: azimuth,
             tilt: response.data.optimalTilt,
@@ -202,7 +220,7 @@ class SetUpPVPanel extends Component {
             1.3, this.state.orientation, this.state.selectPanelID
           );
         }).catch(err => {
-          this.props.setBackendLoadingFalse();
+          this.setIsFetchingFalse();
           return errorNotification(
             'Backend Error',
             err.response.data.errorMessage
@@ -622,9 +640,9 @@ class SetUpPVPanel extends Component {
               }
               key="max"
             >
-              <Skeleton
-                active
-                loading={this.props.backendLoading}
+              <Spin
+                spinning={this.state.isFetching}
+                indicator={<Icon type="loading" spin />}
               >
                 {panelAzimuth}
                 {panelTilt}
@@ -632,7 +650,7 @@ class SetUpPVPanel extends Component {
                 {rowSpacing}
                 {colSpacing}
                 {align}
-              </Skeleton>
+              </Spin>
             </TabPane>
             <TabPane
               tab={
@@ -678,6 +696,7 @@ class SetUpPVPanel extends Component {
               <ButtonGroup>
                 <Button type='primary' shape='round' size='large'
                   htmlType="submit" loading={this.props.backendLoading}
+                  disabled={this.state.isFetching}
                 >
                   Preview
                 </Button>
