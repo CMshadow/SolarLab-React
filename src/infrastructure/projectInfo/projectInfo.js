@@ -31,6 +31,21 @@ class ProjectInfo {
     this.globalOptimalAzimuth = azimuth;
     this.globalOptimalTilt = tilt;
   }
+
+  static fromProjectInfo(projectInfo) {
+    const newLon = projectInfo.projectLon;
+    const newLat = projectInfo.projectLat;
+    const newZoom = projectInfo.projectZoom;
+    const newBuildingCollect = projectInfo.buildingCollection;
+    const newWeatherFileExist = projectInfo.weatherFileExist;
+    const newWeatherFileLocation = projectInfo.weatherFileLocation;
+    const newGlobalAzimuth = projectInfo.globalOptimalAzimuth;
+    const newGlobalTilt = projectInfo.globalOptimalTilt;
+    return new ProjectInfo(
+      newLon, newLat, newZoom, newBuildingCollect, newWeatherFileExist,
+      newWeatherFileLocation, newGlobalAzimuth, newGlobalTilt
+    );
+  }
 }
 
 export default ProjectInfo;

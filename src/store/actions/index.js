@@ -128,6 +128,7 @@ export {
 } from './editingPVPanelManager';
 
 export {
+  calculateOrFetchGlobalOptimal,
   setBackendLoadingTrue,
   setBackendLoadingFalse,
 } from './projectManager';

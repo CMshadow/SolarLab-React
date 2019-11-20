@@ -317,7 +317,9 @@ const mapDispatchToProps = dispatch => {
   return {
     setUIStateReadyDrawing: () => dispatch(actions.setUIStateReadyDrawing()),
     initBuilding: (values) => dispatch(actions.initBuilding(values)),
-    saveBuildingInfoFields: (values) => dispatch(actions.saveBuildingInfoFields(values)),
+    saveBuildingInfoFields: (values) => dispatch(
+      actions.saveBuildingInfoFields(values)
+    )
   };
 };
 
