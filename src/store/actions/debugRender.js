@@ -20,3 +20,10 @@ export const setDebugPolygons = (polygons) => {
     debugPolygons: polygons
   });
 };
+
+export const setDebugShadowPolygons = (shadows) => {
+  return ({
+    type: actionTypes.SET_DEBUGSHADOWPOLYGONS,
+    debugShadowPolygons: shadows
+  });
+};

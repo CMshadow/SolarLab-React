@@ -123,5 +123,6 @@ export {
 export {
   setDebugPoints,
   setDebugPolylines,
-  setDebugPolygons
+  setDebugPolygons,
+  setDebugShadowPolygons,
 } from './debugRender';

@@ -8,6 +8,7 @@ import FinishedModelingButton from './drawButtons/finishModelingButton';
 import * as actions from "../../../../store/actions/index";
 
 import Point from '../../../../infrastructure/point/point';
+import Shadow from "../../../../infrastructure/Polygon/shadow";
 import Polygon from "../../../../infrastructure/Polygon/Polygon";
 import Polyline from '../../../../infrastructure/line/polyline';
 
@@ -17,28 +18,27 @@ import { projectEverything } from "../../../../infrastructure/math/shadowHelper"
 
 const Editing3DPanel = (props) => {
 
-    const shadowFunc = () => {
-        const allKptList = props.keepoutList;
-        const allTreeList = props.treeKeepoutList;
-        const wall = props.buildingParapet;
-        const foundationPolyline = props.foundationPolyline;
+  const shadowFunc = () => {
+    const allKptList = props.keepoutList;
+    const allTreeList = props.treeKeepoutList;
+    const wall = props.buildingParapet;
+    const foundationPolyline = props.foundationPolyline;
 
-        var list_of_shadows = projectEverything(allKptList, allTreeList, wall, foundationPolyline);
-        console.log(list_of_shadows)
-        var list_of_shadow_polygons = [];
+    var list_of_shadows = projectEverything(allKptList, allTreeList, wall, foundationPolyline);
+    console.log(list_of_shadows)
+    var list_of_shadow_polygons = [];
 
-        for (var i = 0; i < list_of_shadows.length; ++i) {
-            var shadow_line = new Polyline(list_of_shadows[i]);
-            const shadowHier = Polygon.makeHierarchyFromPolyline(shadow_line, null, 0.015);
-            const shadowPolygon = new Polygon(
-                null, null, foundationPolyline[0].height, shadowHier, null, null,
-                Cesium.Color.DARKGREY.withAlpha(0.75)
-            );
-            list_of_shadow_polygons.push(shadowPolygon);
-        }
-
-        props.setDebugPolygons(list_of_shadow_polygons);
+    for (var i = 0; i < list_of_shadows.length; ++i) {
+      var shadow_line = new Polyline(list_of_shadows[i]);
+      const shadowHier = Polygon.makeHierarchyFromPolyline(shadow_line, null, 0.015);
+      const shadowPolygon = new Shadow(
+        null, null, shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
+      );
+      list_of_shadow_polygons.push(shadowPolygon);
     }
+
+    props.setDebugShadowPolygons(list_of_shadow_polygons);
+  }
 
   return (
     <div>
@@ -66,11 +66,11 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => {
-    return {
-        setDebugPoints: (points) => dispatch(actions.setDebugPoints(points)),
-        setDebugPolylines: (plys) => dispatch(actions.setDebugPolylines(plys)),
-        setDebugPolygons: (plygons) => dispatch(actions.setDebugPolygons(plygons))
-    }
+  return {
+    setDebugShadowPolygons: (plygons) => dispatch(
+      actions.setDebugShadowPolygons(plygons)
+    )
+  }
 }
 
 export default connect(mapStateToProps, mapDispatchToProps)(Editing3DPanel);
