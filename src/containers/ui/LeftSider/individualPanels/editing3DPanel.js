@@ -24,11 +24,12 @@ const Editing3DPanel = (props) => {
         const foundationPolyline = props.foundationPolyline;
 
         var list_of_shadows = projectEverything(allKptList, allTreeList, wall, foundationPolyline);
+        console.log(list_of_shadows)
         var list_of_shadow_polygons = [];
 
         for (var i = 0; i < list_of_shadows.length; ++i) {
             var shadow_line = new Polyline(list_of_shadows[i]);
-            const shadowHier = Polygon.makeHierarchyFromPolyline(shadow_line);
+            const shadowHier = Polygon.makeHierarchyFromPolyline(shadow_line, null, 0.015);
             const shadowPolygon = new Polygon(
                 null, null, foundationPolyline[0].height, shadowHier, null, null,
                 Cesium.Color.DARKGREY.withAlpha(0.75)

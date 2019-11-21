@@ -180,9 +180,11 @@ class Polygon {
     } else {
       polylineHierarchy = polyline.getPointsCoordinatesArray();
     }
-    if (overwriteHeight) {
-      for (let i = 0; i < polylineHierarchy.length; i+=3){
+    for (let i = 0; i < polylineHierarchy.length; i+=3){
+      if (overwriteHeight) {
         polylineHierarchy[i+2] = overwriteHeight + heightOffset;
+      } else {
+        polylineHierarchy[i+2] += heightOffset;
       }
     }
     return polylineHierarchy;
