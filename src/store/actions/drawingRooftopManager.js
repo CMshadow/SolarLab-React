@@ -57,7 +57,6 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
     newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection
   ).pathCollection;
 
-
   let newRooftopCollection = new RoofTop();
   pathInformationCollection.forEach(roofPlane => {
     for(let ind = 0; ind < roofPlane.roofPlaneCoordinateArray.length; ind+=3) {
@@ -126,7 +125,9 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
             ) + newRooftopCollection.rooftopCollection[roofIndex].lowestNode[2]
           )
         })
-        const stbHierarchy = Polygon.makeHierarchyFromPolyline(newStbPly)
+        const stbHierarchy = Polygon.makeHierarchyFromPolyline(
+          newStbPly, null, 0.005
+        );
         return new Polygon(null, null, null, stbHierarchy);
       })
       newRooftopCollection.rooftopExcludeStb.push(roofExcludeStbPolygons)
@@ -473,7 +474,7 @@ export const checkEdgeTypeOfPath = (path, NodesCollection ,OuterEdgesCollection,
    * @param  {Number}  newLowest  the new foundation height of this selected polygon
    */
 // 非完美版： 无法适用于纯内点面
- 
+
 export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispatch, getState) => {
   let workingRoofTopCollection = getState().undoableReducer.present.drawingRooftopManagerReducer.RooftopCollection;
   let workingRoofTopAllParameter = getState().undoableReducer.present.drawingRooftopManagerReducer.RoofPlaneCoordinatesCollection;
@@ -519,7 +520,7 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
       newHierarchyMap.set(currentEdge.startNodePara.id, newLowest);
       newHierarchyMap.set(currentEdge.endNodePara.id, newLowest);
       console.log("outerEdge brg: "+ outerEdgeBrng);
-    } 
+    }
 
     else if (currentEdge.type === 'Ridge') {
       if (!innerNodesCollection.innerNodeIDs.has(currentEdge.startNodePara.id)) {
@@ -540,11 +541,11 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
         innerNodesCollection.innerNodesList.push(innerNodeParameter);
         innerNodesCollection.innerNodeIndexs.push(currentEdge.endNode);
       }
-    } 
+    }
   }
   // console.log("inner id: "+innerNodesCollection.innerNodeIndexs)
   // console.log("inner length: "+innerNodesCollection.innerNodesList.length)
-  
+
   for (let nodeIndex = 0; nodeIndex < innerNodesCollection.innerNodesList.length; ++nodeIndex) {
     let node = innerNodesCollection.innerNodesList[nodeIndex].node;
     // console.log("selected node: " + innerNodesCollection.innerNodesList[nodeIndex].node + ", lon: " + node.lon + ', lat: '+ node.lat + ', height: '+ node.height);
@@ -562,7 +563,7 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
       hightestNode.height = newHighest;
       hightestNode.index = innerNodesCollection.innerNodeIndexs[nodeIndex];
       hightestNode.id = node.id;
-    } 
+    }
   }
   // console.log('highest dist: ' + hightestNode.dist);
   // console.log('highest height: ' + hightestNode.height);
@@ -577,7 +578,7 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
     } else {
       newHierarchyMap.set(node.node.id, hightestNode.height);
     }
-    
+
   }
 
 //   for (var [key, value] of newHierarchyMap) {
@@ -600,6 +601,9 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
   return dispatch({
     type: actionTypes.UPDATE_SINGLE_ROOF_TOP,
     newPolygonHierarchy:newHierarchy,
-    updateIndex: roofIndex
+    updateIndex: roofIndex,
+    newObliquity: newObliquity,
+    newLowestHeight: newLowest,
+    newHighestHeight: newHighest
   });
 }

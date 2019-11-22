@@ -1,5 +1,6 @@
 import * as Cesium from 'cesium';
 import * as actionTypes from '../actions/actionTypes';
+import Coordinate from '../../infrastructure/point/coordinate';
 import RoofTop from '../../infrastructure/rooftop/rooftop';
 import Polygon from '../../infrastructure/Polygon/Polygon';
 
@@ -30,45 +31,38 @@ const build3DRoofTopModeling = (state, action) => {
 }
 
 const updateSingleRoofTop = (state, action) => {
-  console.log('update rooftop polygon: ');
-  // let newRooftopCollection = this.state.RooftopCollection.CopyPolygon();
-  let newRooftopCollection = new RoofTop();
-  // console.log("bbbbbbbbbbbbbbbbbbb: "+state.RoofPlaneCoordinatesCollection.length)
-  for (let roofPlaneIndex = 0;  roofPlaneIndex < state.RoofPlaneCoordinatesCollection.length; ++roofPlaneIndex) {
-
-    if (roofPlaneIndex !== action.updateIndex){
-      let roofPlane = state.RoofPlaneCoordinatesCollection[roofPlaneIndex];
-      // console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: "+roofPlane.roofPlaneParameters[0])
-      let newRoofPlane = new Polygon(null,'roofPlane',null,
-        null, null,null,null,null,null,null,null,
-        roofPlane.roofPlaneParameters[0],roofPlane.roofPlaneParameters[1],
-        roofPlane.roofHighestLowestNodes[0], roofPlane.roofHighestLowestNodes[1], roofPlane.roofEdgesTypeList);
-
-        newRoofPlane.hierarchy = [...roofPlane.roofPlaneCoordinateArray];
-        console.log("test highest node  "+ newRoofPlane.highestNode)
-        console.log("test edgeType  "+ newRoofPlane.edgesCollection)
-        // console.log("test height of arbitrary node: " + Coordinate.heightOfArbitraryNode(newRoofPlane, new Coordinate(newRoofPlane.hierarchy[3], newRoofPlane.hierarchy[4], newRoofPlane.hierarchy[5])));
-      newRooftopCollection.addRoofPlane(newRoofPlane);
-    } else {
-      let roofPlane = state.RoofPlaneCoordinatesCollection[roofPlaneIndex];
-      let newRoofPlane = new Polygon(null,'roofPlane',null,
-        null, null,null,null,null,null,null,null,
-        roofPlane.roofPlaneParameters[0],roofPlane.roofPlaneParameters[1],
-        roofPlane.roofHighestLowestNodes[0], roofPlane.roofHighestLowestNodes[1], roofPlane.roofEdgesTypeList);
-
-        newRoofPlane.hierarchy = [...action.newPolygonHierarchy];
-        console.log("test highest node  "+ newRoofPlane.highestNode)
-        console.log("test edgeType  "+ newRoofPlane.edgesCollection)
-        // console.log("test height of arbitrary node: " + Coordinate.heightOfArbitraryNode(newRoofPlane, new Coordinate(newRoofPlane.hierarchy[3], newRoofPlane.hierarchy[4], newRoofPlane.hierarchy[5])));
-      newRooftopCollection.addRoofPlane(newRoofPlane);
-    }
-
-  }
+	const newRooftop = Polygon.copyPolygon(
+		state.RooftopCollection.rooftopCollection[action.updateIndex]
+	);
+	newRooftop.setHierarchy(action.newPolygonHierarchy);
+	newRooftop.obliquity = action.newObliquity;
+	newRooftop.lowestNode[2] = action.newLowestHeight;
+	newRooftop.highestNode[2] = action.newHighestHeight;
+	const newRooftopExcludeStb = state.RooftopCollection
+	.rooftopExcludeStb[action.updateIndex].map(stbPolyogn => {
+ 		const newStbFoundLine = stbPolyogn.toFoundLine();
+		newStbFoundLine.points.forEach(p => {
+			p.setCoordinate(
+				null, null,
+				Coordinate.heightOfArbitraryNode(newRooftop, p) +
+				newRooftop.lowestNode[2]
+			)
+		})
+		console.log(newStbFoundLine)
+		const newStbHierarchy = Polygon.makeHierarchyFromPolyline(
+			newStbFoundLine, null, 0.005
+		);
+		console.log(newStbHierarchy)
+		return new Polygon(null, null, null, newStbHierarchy);
+	})
+	console.log(newRooftopExcludeStb)
+  const newRooftopCollection = RoofTop.CopyPolygon(state.RooftopCollection);
+	newRooftopCollection.rooftopCollection[action.updateIndex] = newRooftop;
+	newRooftopCollection.rooftopExcludeStb[action.updateIndex] = newRooftopExcludeStb;
   return{
     ...state,
     RooftopCollection: newRooftopCollection
   }
-
 }
 
 const reducer = (state=initState, action) => {

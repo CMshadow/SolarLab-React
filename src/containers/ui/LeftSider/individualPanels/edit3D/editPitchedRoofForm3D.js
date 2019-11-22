@@ -12,17 +12,6 @@ import * as actions from '../../../../../store/actions/index';
 
 class EditPitchedRoofForm extends PureComponent {
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        this.props.updateBuilding(values);
-        this.props.createPolygonFoundationWrapper();
-        this.props.toggleEdit();
-      }
-    });
-  };
-
   numberInputRules = [
     {
       type: 'number',
@@ -85,17 +74,9 @@ class EditPitchedRoofForm extends PureComponent {
     );
 
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form>
         {LowestHeight}
         {HighestHeight}
-        {/*The button to validate & process to create a new building*/}
-        <Row type="flex" justify="center">
-          <Col span={16}>
-            <Button type='default' shape='round' htmlType="submit" block>
-              Update
-            </Button>
-          </Col>
-        </Row>
       </Form>
     );
   }
@@ -112,8 +93,25 @@ const mapDispatchToProps = dispatch => {
     updateBuilding: (values) =>
       dispatch(actions.updateBuilding(values)),
     createPolygonFoundationWrapper: () =>
-      dispatch(actions.createPolygonFoundationWrapper())
+      dispatch(actions.createPolygonFoundationWrapper()),
+    updateRoofTop: (rooftopIndex, lowest, highest) =>
+      dispatch(actions.updateSingleRoofTop(rooftopIndex, lowest, highest))
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'editRoof' })(EditPitchedRoofForm));
+const formOptions = {
+  name: 'editRoof',
+  onValuesChange: (props, changedValues, allValues) => {
+    if (
+      typeof(allValues.lowestHeight) === 'number' &&
+      typeof(allValues.highestHeight) === 'number' &&
+      allValues.lowestHeight < allValues.highestHeight
+    ) {
+      props.updateRoofTop(
+        props.roofIndex, allValues.lowestHeight, allValues.highestHeight
+      );
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create(formOptions)(EditPitchedRoofForm));

@@ -44,24 +44,24 @@ class RoofTop {
   *                                  default true
  */
 
-  static CopyPolygon (RoofTop,
+  static CopyPolygon (
+    rooftop,
     id = null,
     name = null,
     rooftopCollection = null,
     show=null,
     rooftopExcludeStb = null
-  )
-    {
-      let newID = id ? id : RoofTop.id;
-      let newName = name ? name : RoofTop.name;
-      let newRooftopCollection =
-        rooftopCollection ? [...rooftopCollection] : RoofTop.rooftopCollection;
-      let newShow = show? show: true;
-      const newRooftopExcludeStb =
-        rooftopExcludeStb || RoofTop.rooftopExcludeStb
-      return new RoofTop(
-        newID, newName, newRooftopCollection, newShow, newRooftopExcludeStb
-      );
+  ) {
+    let newID = id ? id : rooftop.id;
+    let newName = name ? name : rooftop.name;
+    let newRooftopCollection =
+      rooftopCollection ? [...rooftopCollection] : rooftop.rooftopCollection;
+    let newShow = show? show: true;
+    const newRooftopExcludeStb =
+      rooftopExcludeStb || rooftop.rooftopExcludeStb
+    return new RoofTop(
+      newID, newName, newRooftopCollection, newShow, newRooftopExcludeStb
+    );
   };
 
   /**

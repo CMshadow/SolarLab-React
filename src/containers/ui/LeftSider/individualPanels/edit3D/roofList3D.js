@@ -38,10 +38,10 @@ class RoofList3D extends Component {
                 this.props.buildingFoundation :
                 this.props.rooftopCollection.rooftopCollection
               }
-              renderItem={item => {
+              renderItem={(item,i) => {
                 return this.props.workingBuilding.type === 'FLAT' ?
-                <RoofListItem3D {...item} /> :
-                <PitchedRoofListItem3D {...item} />
+                <RoofListItem3D roofIndex={i} {...item} /> :
+                <PitchedRoofListItem3D roofIndex={i} {...item} />
               }}
             />
           </ConfigProvider>
