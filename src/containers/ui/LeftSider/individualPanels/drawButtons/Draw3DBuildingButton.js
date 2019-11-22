@@ -70,7 +70,7 @@ const draw3DBuildingButton = (props) => {
         </Col>
       </Row>
     </Aux>
-    
+
   );
 }
 
@@ -89,10 +89,10 @@ const mapDispatchToProps = dispatch => {
     CreatePitchedBuildingRoofTopPolygon: () =>
       dispatch(actions.build3DRoofTopModeling()),
     createPolygonFoundationWrapper: () =>
-      dispatch(actions.createPolygonFoundationWrapper())
+      dispatch(actions.createPolygonFoundationWrapper()),
     createAllKeepoutPolygon: () =>
       dispatch(actions.createAllKeepoutPolygon()),
-    updateRoofTop: (rooftopIndex, lowest, highest ) => 
+    updateRoofTop: (rooftopIndex, lowest, highest ) =>
       dispatch(actions.updateSingleRoofTop(rooftopIndex, lowest, highest))
  };
 };

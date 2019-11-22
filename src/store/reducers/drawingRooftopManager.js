@@ -1,6 +1,7 @@
 import * as Cesium from 'cesium';
 import * as actionTypes from '../actions/actionTypes';
 import RoofTop from '../../infrastructure/rooftop/rooftop';
+import Polygon from '../../infrastructure/Polygon/Polygon';
 
 const initState = {
 	NodesCollection: null,
@@ -38,7 +39,7 @@ const updateSingleRoofTop = (state, action) => {
     if (roofPlaneIndex !== action.updateIndex){
       let roofPlane = state.RoofPlaneCoordinatesCollection[roofPlaneIndex];
       // console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa: "+roofPlane.roofPlaneParameters[0])
-      let newRoofPlane = new Polygon(null,'roofPlane',null, 
+      let newRoofPlane = new Polygon(null,'roofPlane',null,
         null, null,null,null,null,null,null,null,
         roofPlane.roofPlaneParameters[0],roofPlane.roofPlaneParameters[1],
         roofPlane.roofHighestLowestNodes[0], roofPlane.roofHighestLowestNodes[1], roofPlane.roofEdgesTypeList);
@@ -50,7 +51,7 @@ const updateSingleRoofTop = (state, action) => {
       newRooftopCollection.addRoofPlane(newRoofPlane);
     } else {
       let roofPlane = state.RoofPlaneCoordinatesCollection[roofPlaneIndex];
-      let newRoofPlane = new Polygon(null,'roofPlane',null, 
+      let newRoofPlane = new Polygon(null,'roofPlane',null,
         null, null,null,null,null,null,null,null,
         roofPlane.roofPlaneParameters[0],roofPlane.roofPlaneParameters[1],
         roofPlane.roofHighestLowestNodes[0], roofPlane.roofHighestLowestNodes[1], roofPlane.roofEdgesTypeList);
@@ -61,7 +62,7 @@ const updateSingleRoofTop = (state, action) => {
         // console.log("test height of arbitrary node: " + Coordinate.heightOfArbitraryNode(newRoofPlane, new Coordinate(newRoofPlane.hierarchy[3], newRoofPlane.hierarchy[4], newRoofPlane.hierarchy[5])));
       newRooftopCollection.addRoofPlane(newRoofPlane);
     }
-    
+
   }
   return{
     ...state,
