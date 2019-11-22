@@ -39,7 +39,7 @@ class RoofTop {
   * @param {string}  [name=null]     name of the RoofTop Collection, using default name if not provided
   * @param {Polygon}   [rooftopCollection= [] ]   A list of Polygon object, each polygon represents a rooftop ,default empty list                               
   * @param {Boolean} [show=true]     whether to show the Rooftop,
-  *                                  default true
+  *                                  default true .map(polygon => Polygon.copyPolygon(polygon))
 * 
  */
 

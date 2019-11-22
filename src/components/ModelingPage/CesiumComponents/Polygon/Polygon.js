@@ -17,7 +17,7 @@ const polygonVisualize = (props) => {
 				hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(props.hierarchy),
 				perPositionHeight: props.perPositionHeight,
 				extrudedHeight: props.extrudedHeight,
-				outline: false,
+				outline: true,
 				outlineColor: props.outlineColor,
 				outlineWidth: props.outlineWidth,
 				material: props.material,

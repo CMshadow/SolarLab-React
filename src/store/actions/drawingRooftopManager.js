@@ -5,6 +5,7 @@ import EdgesMap from '../../infrastructure/edgesMap/edgesMap';
 import * as MathHelper from '../../infrastructure/math/RoofTop_MathHelper';
 import * as MathCoordHelp from '../../infrastructure/math/math';
 import Coordinate from '../../infrastructure/point/coordinate';
+import  * as Cesium from 'cesium';
 
 export const initEdgesMap = () => {
   return({
@@ -13,7 +14,14 @@ export const initEdgesMap = () => {
 };
 
 
-export const build3DRoofTopModeling = (buildingOutline, polylinesRelation, foundPolylines, hipPolylines, ridgePolylines) => {
+export const build3DRoofTopModeling = () => (dispatch, getState) => {
+  let buildingOutline = getState().undoableReducer.present.drawingManagerReducer.drawingPolyline.getPointsCoordinatesArray();
+  let buildingCoordinatesSize = buildingOutline.length;
+  buildingOutline.splice(buildingCoordinatesSize - 3,3);
+  const polylinesRelation = getState().undoableReducer.present.drawingInnerManagerReducer.pointsRelation;
+  const foundPolylines = getState().undoableReducer.present.drawingInnerManagerReducer.foundPolylines;
+  const hipPolylines = getState().undoableReducer.present.drawingInnerManagerReducer.hipPolylines;
+  const ridgePolylines = getState().undoableReducer.present.drawingInnerManagerReducer.ridgePolylines;
   let newNodeCollection = [];
   let newInnerEdgeCollection = [];
   let newOuterEdgeCollection = [];
@@ -23,7 +31,7 @@ export const build3DRoofTopModeling = (buildingOutline, polylinesRelation, found
   newInnerEdgeCollection = initEdgeMap(polylinesRelation, newNodeCollection, foundPolylines, hipPolylines, ridgePolylines).newInnerEdgeCollection;
   pathInformationCollection = searchAllRoofPlanes(newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection).pathCollection;
  
-  return ({
+  return dispatch({
     type: actionTypes.BUILD_3D_ROOFTOP_MODELING,
     nodesCollection: newNodeCollection,
     OuterEdgesCollection: newOuterEdgeCollection,
@@ -41,11 +49,11 @@ export const initNodesCollection = (buildingOutline, newNodeCollection, newOuter
 
   for (let noteIndex = 0; noteIndex < newNodeCollection.length; ++noteIndex) {
     if (noteIndex === (newNodeCollection.length - 1) ) {
-      newOuterEdgeCollection.push(new Edge(noteIndex, 0, null, null));
+      newOuterEdgeCollection.push(new Edge(noteIndex, 0, null, null, "OuterEdge", newNodeCollection[noteIndex], newNodeCollection[0] ));
       newNodeCollection[noteIndex].addChild(0);
       newNodeCollection[0].addChild(noteIndex);
     } else {
-      newOuterEdgeCollection.push(new Edge(noteIndex, noteIndex + 1, null, null) );
+      newOuterEdgeCollection.push(new Edge(noteIndex, noteIndex + 1, null, null, "OuterEdge", newNodeCollection[noteIndex], newNodeCollection[noteIndex + 1]) );
       newNodeCollection[noteIndex].addChild(noteIndex+1);
       newNodeCollection[noteIndex+1].addChild(noteIndex);
     }
@@ -84,7 +92,7 @@ export const initEdgeMap = (polylinesRelation, newNodeCollection, foundPolylines
         if (startNode !== null && endNode !== null ) {
           indexStart = MathHelper.findNodeIndex(newNodeCollection, startNode.lon, startNode.lat);
           indexEnd = MathHelper.findNodeIndex(newNodeCollection, endNode['lon'], endNode['lat']);
-          newInnerEdgeCollection.push(new Edge(indexStart, indexEnd, null, null));
+          newInnerEdgeCollection.push(new Edge(indexStart, indexEnd, null, null, "Hip" ,newNodeCollection[indexStart], newNodeCollection[indexEnd] ));
           newNodeCollection[indexStart].addChild(indexEnd);
           newNodeCollection[indexEnd].addChild(indexStart);
         } 
@@ -99,7 +107,7 @@ export const initEdgeMap = (polylinesRelation, newNodeCollection, foundPolylines
     if (startNode !== null && endNode !== null ) {
       let indexStart = MathHelper.findNodeIndex(newNodeCollection, startNode.lon, startNode.lat);
       let indexEnd = MathHelper.findNodeIndex(newNodeCollection, endNode.lon, endNode.lat);
-      newInnerEdgeCollection.push(new Edge(indexStart, indexEnd, null, null));
+      newInnerEdgeCollection.push(new Edge(indexStart, indexEnd, null, null, "Ridge" ,newNodeCollection[indexStart], newNodeCollection[indexEnd]));
       newNodeCollection[indexStart].addChild(indexEnd);
       newNodeCollection[indexEnd].addChild(indexStart);
     } 
@@ -122,19 +130,21 @@ export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, N
       roofPlaneCoordinateArray: [],
       roofPlaneParameters: null,
       roofHighestLowestNodes: null,
-      roofEdgesTypeList: null
+      roofEdgesTypeList: null,
+      roofPlaneNodeIdsList:[]
     };
     pathParameters.roofPlaneParameters = [...calculateObliquityAndObliquity(NodesCollection, path[i]).roofPlaneParameters];
-    pathParameters.roofEdgesTypeList = [...checkEdgeTypeOfPath(path[i], NodesCollection).edgeTypeList];
-    console.log("Roof Edge Type: "+ pathParameters.roofEdgesTypeList )
+    pathParameters.roofEdgesTypeList = [...checkEdgeTypeOfPath(path[i], NodesCollection, OuterEdgesCollection, InnerEdgeCollection).edgeTypeList];
+    // console.log("Roof Edge Type: "+ pathParameters.roofEdgesTypeList )
     for (let nodeIndex of path[i]) {
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lon);
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lat);
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].height);
+      pathParameters.roofPlaneNodeIdsList.push(NodesCollection[nodeIndex].id);
     }
     pathParameters.roofHighestLowestNodes = calculateHighestandLowestNodes(pathParameters.roofPlaneCoordinateArray).highestAndLowestNodes;
     pathInformationCollection.push(pathParameters);
-
+    console.log("id test: " + pathParameters.roofPlaneNodeIdsList)
   }
   
   return({
@@ -236,8 +246,8 @@ export const calculateObliquityAndObliquity = (NodesCollection, path) => {
     }
     obliquity = Math.atan2(endInnerNode.height - startNode.height, shortestDist) * 180 / Math.PI;
     
-    console.log("brng: "+ roofBrng);
-    console.log("obliquity: "+ obliquity);
+    // console.log("brng: "+ roofBrng);
+    // console.log("obliquity: "+ obliquity);
 
   }
   return({
@@ -275,7 +285,12 @@ export const calculateHighestandLowestNodes = (path) => {
   }); 
 }
 
-export const checkEdgeTypeOfPath = (path, nodesCollection) => {
+// export const predictHighestandLowestNodes = (workingRoofTopCollection) => {
+//   for ()
+
+// }
+
+export const checkEdgeTypeOfPath = (path, NodesCollection ,OuterEdgesCollection, InnerEdgeCollection) => {
   let edgeTypeList = [];
   for (let nodeIndex = 0; nodeIndex < path.length; ++nodeIndex) {
     let startNode = path[nodeIndex];
@@ -285,16 +300,166 @@ export const checkEdgeTypeOfPath = (path, nodesCollection) => {
     } else {
       endNode = path[nodeIndex + 1];
     }
-    if (nodesCollection[startNode].bound + nodesCollection[endNode].bound === 0) {
-      edgeTypeList.push("OuterEdge");
-    } else if (nodesCollection[startNode].bound + nodesCollection[endNode].bound === 1) {
-      edgeTypeList.push("Hip");
-    } else if (nodesCollection[startNode].bound + nodesCollection[endNode].bound === 2) {
-      edgeTypeList.push("Ridge");
+    if (NodesCollection[startNode].bound + NodesCollection[endNode].bound === 0) {
+
+      for (let edge of OuterEdgesCollection) {
+        // console.log('compare out: ' + startNode + " - " + edge.startNode + ', and ' + endNode + ' - ' + edge.endNode)
+        if ( (startNode === edge.startNode && endNode === edge.endNode) 
+            || (startNode === edge.endNode && endNode === edge.startNode) ) {
+          edgeTypeList.push(edge);
+        }
+      }
+    } else {
+        for (let edge of InnerEdgeCollection) {
+          // console.log('compare in: ' + startNode + " - " + edge.startNode + ', and ' + endNode + ' - ' + edge.endNode)
+          if ( (startNode === edge.startNode && endNode === edge.endNode) 
+          || (startNode === edge.endNode && endNode === edge.startNode) ) {
+            edgeTypeList.push(edge);
+          }
+        }
     }
+
   }
   return({
     type: actionTypes.CHECK_EDGE_TYPE_OF_PATH,
     edgeTypeList: edgeTypeList
   }); 
+}
+
+/**
+   * the possible intersection Coordinate of two Coordinates traveling towards
+   * @param  {Number}  roofIndex  the number that indicates the index of the specific polygon that represents an rooftop
+   * @param  {Number}  newHighest the new top height of this selected polygon
+   * @param  {Number}  newLowest  the new foundation height of this selected polygon
+   */
+// 非完美版： 无法适用于纯内点面
+ 
+export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispatch, getState) => {
+  let workingRoofTopCollection = getState().undoableReducer.present.drawingRooftopManagerReducer.RooftopCollection;
+  let workingRoofTopAllParameter = getState().undoableReducer.present.drawingRooftopManagerReducer.RoofPlaneCoordinatesCollection;
+  // console.log("original hierarchy: " + workingRoofTopCollection.rooftopCollection[roofIndex].hierarchy);
+  let outerEdgeSNode = null;
+  let outerEdgeENode = null;
+  let outerEdgeBrng = null;
+  let hightestNode = {
+    height: Number.MIN_VALUE,
+    dist: Number.MIN_VALUE,
+    index: null,
+    node: null,
+    id: null
+  };
+  let lowestNode = {
+    height: Number.MIN_VALUE,
+    index: null,
+    node: null
+  };
+  let innerNodesCollection = {
+    innerNodeIDs: new Set(),
+    innerNodesList: [],
+    innerNodeIndexs: []
+  };
+
+  let newHierarchyMap = new Map();
+  // step 1: 查找最高最低点
+  for (let index = 0; index < workingRoofTopCollection.rooftopCollection[roofIndex].edgesCollection.length; ++index ) {
+    // check out edge
+    let currentEdge =workingRoofTopCollection.rooftopCollection[roofIndex].edgesCollection[index];
+    // console.log('show edges: ' + currentEdge.type)
+    // console.log('start para: ' + currentEdge.startNodePara.height)
+    // console.log('end para: ' + currentEdge.endNodePara.height)
+    // console.log('----------------------')
+
+    if (currentEdge.type === 'OuterEdge') {
+      outerEdgeSNode = new Coordinate(currentEdge.startNodePara.lon, currentEdge.startNodePara.lat, currentEdge.startNodePara.height);
+      outerEdgeENode = new Coordinate(currentEdge.endNodePara.lon, currentEdge.endNodePara.lat, currentEdge.endNodePara.height);
+      outerEdgeBrng = Coordinate.bearing(outerEdgeSNode, outerEdgeENode);
+      lowestNode.height = outerEdgeSNode.newLowest;
+      lowestNode.index = currentEdge.startNode;
+      lowestNode.node = outerEdgeSNode;
+      newHierarchyMap.set(currentEdge.startNodePara.id, newLowest);
+      newHierarchyMap.set(currentEdge.endNodePara.id, newLowest);
+      console.log("outerEdge brg: "+ outerEdgeBrng);
+    } 
+
+    else if (currentEdge.type === 'Ridge') {
+      if (!innerNodesCollection.innerNodeIDs.has(currentEdge.startNodePara.id)) {
+        let innerNodeParameter = {
+          node: currentEdge.startNodePara,
+          dist: null
+        }
+        innerNodesCollection.innerNodeIDs.add(currentEdge.startNodePara.id);
+        innerNodesCollection.innerNodesList.push(innerNodeParameter);
+        innerNodesCollection.innerNodeIndexs.push(currentEdge.startNode);
+      }
+      if (!innerNodesCollection.innerNodeIDs.has(currentEdge.endNodePara.id)) {
+        let innerNodeParameter = {
+          node: currentEdge.endNodePara,
+          dist: null
+        }
+        innerNodesCollection.innerNodeIDs.add(currentEdge.endNodePara.id)
+        innerNodesCollection.innerNodesList.push(innerNodeParameter);
+        innerNodesCollection.innerNodeIndexs.push(currentEdge.endNode);
+      }
+    } 
+  }
+  // console.log("inner id: "+innerNodesCollection.innerNodeIndexs)
+  // console.log("inner length: "+innerNodesCollection.innerNodesList.length)
+  
+  for (let nodeIndex = 0; nodeIndex < innerNodesCollection.innerNodesList.length; ++nodeIndex) {
+    let node = innerNodesCollection.innerNodesList[nodeIndex].node;
+    // console.log("selected node: " + innerNodesCollection.innerNodesList[nodeIndex].node + ", lon: " + node.lon + ', lat: '+ node.lat + ', height: '+ node.height);
+    let nextNode = new Coordinate(node.lon, node.lat, node.height);
+    // console.log("nextNode coord: lon: " + nextNode.lon + ', lat: '+ nextNode.lat + ', height: '+ nextNode.height);
+    console.log("rooftop brg: "+ workingRoofTopCollection.rooftopCollection[roofIndex].brng);
+    let interCoord = Coordinate.intersection(outerEdgeSNode, outerEdgeBrng, nextNode, workingRoofTopCollection.rooftopCollection[roofIndex].brng);
+
+    let dist = Coordinate.surfaceDistance(nextNode, interCoord);
+    innerNodesCollection.innerNodesList[nodeIndex].dist = dist;
+    // console.log("dist: " + dist)
+    if (dist > hightestNode.dist) {
+      hightestNode.dist = dist;
+      hightestNode.node = node;
+      hightestNode.height = newHighest;
+      hightestNode.index = innerNodesCollection.innerNodeIndexs[nodeIndex];
+      hightestNode.id = node.id;
+    } 
+  }
+  // console.log('highest dist: ' + hightestNode.dist);
+  // console.log('highest height: ' + hightestNode.height);
+  // based on the highest and lowest node, recalculate the obliquity
+  let newObliquity = Math.atan2(newHighest - newLowest, hightestNode.dist) * 180 / Math.PI;
+  // calculate the accurate height for each node
+  for (let node of innerNodesCollection.innerNodesList) {
+    if (node.node.id !== hightestNode.id) {
+      node.node.height = Math.tan(newObliquity * Math.PI/180) * node.dist + newLowest;
+      console.log("after update:" + node.node.id);
+      newHierarchyMap.set(node.node.id, node.node.height);
+    } else {
+      newHierarchyMap.set(node.node.id, hightestNode.height);
+    }
+    
+  }
+
+//   for (var [key, value] of newHierarchyMap) {
+//     let comb = [key, value];
+//     console.log( "test: " +comb);
+// }
+  let newHierarchy = [];
+  // update the cesium polygon
+  for (let id = 0; id < workingRoofTopAllParameter[roofIndex].roofPlaneNodeIdsList.length; ++id) {
+    let newHeight = newHierarchyMap.get(workingRoofTopAllParameter[roofIndex].roofPlaneNodeIdsList[id]);
+    newHierarchy.push(workingRoofTopAllParameter[roofIndex].roofPlaneCoordinateArray[id * 3]);
+    newHierarchy.push(workingRoofTopAllParameter[roofIndex].roofPlaneCoordinateArray[id * 3 + 1]);
+    newHierarchy.push(newHeight);
+  }
+
+  //update rooftop hierarchy structure
+
+
+  console.log("updated new Hierarchy: "+newHierarchy);
+  return dispatch({
+    type: actionTypes.UPDATE_SINGLE_ROOF_TOP,
+    newPolygonHierarchy:newHierarchy,
+    updateIndex: roofIndex
+  });
 }

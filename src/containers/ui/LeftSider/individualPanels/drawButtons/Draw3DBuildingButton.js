@@ -1,5 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
+import Aux from '../../../../../hoc/Auxiliary/Auxiliary';
 import {
   Row,
   Col,
@@ -30,26 +31,48 @@ const draw3DBuildingButton = (props) => {
           props.createPolygonFoundationWrapper();
         } else {
           console.log('[Button]: Test RoofTop Polygon: ');
-          let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
-          let buildingCoordinatesSize = buildingCoordinatesArray.length;
-          buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
-          props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray,
-            props.PolylinesRelation,
-            props.foundPolylines,
-            props.hipPolylines,
-            props.ridgePolylines);
+          props.CreatePitchedBuildingRoofTopPolygon();
         }
         props.createAllKeepoutPolygon();
       }}
     >Generate 3D Model</Button>
 
   );
+  const TestUpdateRoofTop = (
+    <Button
+      type = 'primary'
+      size = 'large'
+      shape = 'round'
+      block
+      loading = {props.backendLoading}
+      disabled = {
+        (props.currentBuilding.type === 'FLAT' ?
+        !uiStateJudge.isFinishedFound(props.uiState) :
+        !uiStateJudge.isFinishedInner(props.uiState)) || (
+          props.keepoutList.filter(kpt => !kpt.finishedDrawing).length !== 0
+        )
+      }
+      onClick = {() => {
+        console.log("test: update the rooftop")
+        props.updateRoofTop(0, 5, 10);
+      }}
+    >Test: Update Roof Top</Button>
+  )
   return (
-    <Row>
-    <Col span={18} offset={3}>
-      {DrawBuildingPolygon}
-    </Col>
-  </Row>
+    <Aux>
+      <Row>
+        <Col span={18} offset={3}>
+          {DrawBuildingPolygon}
+        </Col>
+      </Row>
+      <br></br>
+      <Row>
+        <Col span={18} offset={3}>
+          {TestUpdateRoofTop}
+        </Col>
+      </Row>
+    </Aux>
+    
   );
 }
 
@@ -61,28 +84,20 @@ const mapStateToProps = state => {
       state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
     keepoutList:
       state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
-    BuildFoundation:
-      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
-    PitchedBuildingRoofTop:
-      state.undoableReducer.present.drawingRooftopManagerReducer,
-    PolylinesRelation:
-      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
-    foundPolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer.foundPolylines,
-    hipPolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer.hipPolylines,
-    ridgePolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer.ridgePolylines
+    
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation, foundPolylines, hipPolylines, ridgePolylines) =>
-      dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation, foundPolylines,hipPolylines, ridgePolylines)),
+    CreatePitchedBuildingRoofTopPolygon: () =>
+      dispatch(actions.build3DRoofTopModeling()),
     createPolygonFoundationWrapper: () => dispatch(actions.createPolygonFoundationWrapper()),
     createAllKeepoutPolygon: () =>
       dispatch(actions.createAllKeepoutPolygon()),
+    updateRoofTop: (rooftopIndex, lowest, highest ) => 
+      dispatch(actions.updateSingleRoofTop(rooftopIndex, lowest, highest))
+      
  };
 };
 
