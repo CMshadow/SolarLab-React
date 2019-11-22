@@ -596,7 +596,6 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
 
   //update rooftop hierarchy structure
 
-
   console.log("updated new Hierarchy: "+newHierarchy);
   return dispatch({
     type: actionTypes.UPDATE_SINGLE_ROOF_TOP,

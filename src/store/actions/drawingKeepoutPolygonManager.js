@@ -159,7 +159,7 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
       clippedStbCors.forEach(cor => {
         const newHeight = Coordinate.heightOfArbitraryNode(
           pitchedRoofPolygons[roofIndex], new Coordinate(cor[0], cor[1], 0)
-        ) + pitchedRoofPolygons[roofIndex].lowestNode[2] + 0.005;
+        ) + pitchedRoofPolygons[roofIndex].lowestNode[2] + 0.01;
         if (cor[2]) {
           cor[2] = newHeight;
         } else {
@@ -324,7 +324,7 @@ export const createPassageKeepoutPolygonPitched = (passageKeepout) =>
       clippedPassageCors.forEach(cor => {
         const newHeight = Coordinate.heightOfArbitraryNode(
           pitchedRoofPolygons[roofIndex], new Coordinate(cor[0], cor[1], 0)
-        ) + pitchedRoofPolygons[roofIndex].lowestNode[2] + 0.005;
+        ) + pitchedRoofPolygons[roofIndex].lowestNode[2] + 0.01;
         if (cor[2]) {
           cor[2] = newHeight;
         } else {
@@ -417,7 +417,7 @@ export const createVentKeepoutPolygonPitched = (ventKeepout) =>
     clippedPassageCors.forEach(cor => {
       const newHeight = Coordinate.heightOfArbitraryNode(
         pitchedRoofPolygons[roofIndex], new Coordinate(cor[0], cor[1], 0)
-      ) + pitchedRoofPolygons[roofIndex].lowestNode[2] + 0.005;
+      ) + pitchedRoofPolygons[roofIndex].lowestNode[2] + 0.01;
       if (cor[2]) {
         cor[2] = newHeight;
       } else {
