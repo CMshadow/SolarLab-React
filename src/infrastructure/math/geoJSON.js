@@ -1,5 +1,6 @@
-export const makeMultiPolygonGeoJson = (geoJsonArray) => {
-  console.log(geoJsonArray)
+import * as turf from '@turf/turf';
+
+export const makeUnionPolygonGeoJson = (geoJsonArray) => {
   let data = {
     type: 'Feature',
     geometry: {
@@ -8,8 +9,21 @@ export const makeMultiPolygonGeoJson = (geoJsonArray) => {
       ],
     }
   }
-  geoJsonArray.forEach(geo =>
-    data.geometry.coordinates.push(geo.geometry.coordinates)
-  );
-  return data;
+  let combi = null;
+  if (geoJsonArray.length !== 0) {
+    combi = turf.polygon(
+      geoJsonArray[0].geometry.coordinates
+    );
+  }
+  geoJsonArray.forEach(geo =>{
+    combi = turf.union(
+      combi, geo
+    );
+  });
+  if (combi !== null) {
+    return combi;
+  }
+  else {
+    return data;
+  }
 }

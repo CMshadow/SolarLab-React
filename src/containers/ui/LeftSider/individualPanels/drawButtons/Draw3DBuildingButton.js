@@ -30,10 +30,8 @@ const draw3DBuildingButton = (props) => {
         if (props.currentBuilding.type === 'FLAT') {
           props.createPolygonFoundationWrapper();
         } else {
-          console.log('[Button]: Test RoofTop Polygon: ');
           props.CreatePitchedBuildingRoofTopPolygon();
         }
-        props.createAllKeepoutPolygon();
       }}
     >Generate 3D Model</Button>
 
@@ -80,11 +78,9 @@ const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     currentBuilding: state.buildingManagerReducer.workingBuilding,
-    backendLoading:
-      state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
+    backendLoading: state.projectManagerReducer.backendLoading,
     keepoutList:
       state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
-    
   };
 };
 
@@ -92,12 +88,12 @@ const mapDispatchToProps = dispatch => {
   return {
     CreatePitchedBuildingRoofTopPolygon: () =>
       dispatch(actions.build3DRoofTopModeling()),
-    createPolygonFoundationWrapper: () => dispatch(actions.createPolygonFoundationWrapper()),
+    createPolygonFoundationWrapper: () =>
+      dispatch(actions.createPolygonFoundationWrapper())
     createAllKeepoutPolygon: () =>
       dispatch(actions.createAllKeepoutPolygon()),
     updateRoofTop: (rooftopIndex, lowest, highest ) => 
       dispatch(actions.updateSingleRoofTop(rooftopIndex, lowest, highest))
-      
  };
 };
 

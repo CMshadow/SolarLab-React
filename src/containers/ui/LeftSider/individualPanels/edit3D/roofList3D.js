@@ -15,12 +15,9 @@ import {
   emptyListTemplate
 } from '../../../../../components/ui/EmptyTemplate/emptyListTemplate';
 import RoofListItem3D from './roofListItem3D';
+import PitchedRoofListItem3D from './pitchedRoofListItem3D';
 
 class RoofList3D extends Component {
-
-  generateListItems = (item) => {
-    return <RoofListItem3D {...item} />
-  };
 
   render () {
     const header = (
@@ -36,8 +33,16 @@ class RoofList3D extends Component {
             <List
               header={header}
               size='large'
-              dataSource={this.props.buildingFoundation}
-              renderItem={item => (this.generateListItems(item))}
+              dataSource={
+                this.props.workingBuilding.type === 'FLAT' ?
+                this.props.buildingFoundation :
+                this.props.rooftopCollection.rooftopCollection
+              }
+              renderItem={item => {
+                return this.props.workingBuilding.type === 'FLAT' ?
+                <RoofListItem3D {...item} /> :
+                <PitchedRoofListItem3D {...item} />
+              }}
             />
           </ConfigProvider>
         </Col>
@@ -48,8 +53,14 @@ class RoofList3D extends Component {
 
 const mapStateToProps = state => {
   return {
+    workingBuilding:
+      state.buildingManagerReducer.workingBuilding,
     buildingFoundation:
-      state.undoableReducer.present.drawingPolygonManagerReducer.BuildingFoundation,
+      state.undoableReducer.present.drawingPolygonManagerReducer
+      .BuildingFoundation,
+    rooftopCollection:
+      state.undoableReducer.present.drawingRooftopManagerReducer
+      .RooftopCollection
   };
 };
 

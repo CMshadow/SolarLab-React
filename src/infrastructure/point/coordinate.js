@@ -151,8 +151,8 @@ class Coordinate {
    */
   static linearDistance = (cor1, cor2) => {
     return Cesium.Cartesian3.distance(
-      Cesium.Cartesian3.fromDegreesArrayHeights(cor1.getCoordinate(true)),
-      Cesium.Cartesian3.fromDegreesArrayHeights(cor2.getCoordinate(true))
+      Cesium.Cartesian3.fromDegrees(...cor1.getCoordinate(true)),
+      Cesium.Cartesian3.fromDegrees(...cor2.getCoordinate(true))
     );
   }
 
@@ -256,6 +256,11 @@ class Coordinate {
     return undefined;
   }
 
+
+  static isEqual = (cor1, cor2) => {
+    return (cor1.lon === cor2.lon & cor1.lat === cor2.lat);
+  }
+
   /**
    * the possible intersection Coordinate of two Coordinates traveling towards
    * @param  {Polygon}     path the polygon that represents an rooftop
@@ -290,7 +295,7 @@ class Coordinate {
     let heightOfPoint = null;
     let outerEdge = null;
     for (let edge = 0; edge < path.edgesCollection.length; ++edge) {
-      if (path.edgesCollection[edge].type === 'OuterEdge') {
+      if (path.edgesCollection[edge].type === "OuterEdge") {
         outerEdge = edge;
       }
     }

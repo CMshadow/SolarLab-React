@@ -8,6 +8,7 @@ import Vent from '../../infrastructure/keepout/vent';
 import Tree from '../../infrastructure/keepout/tree';
 import Passage from '../../infrastructure/keepout/passage';
 import NormalKeepout from '../../infrastructure/keepout/normalKeepout';
+import ErrorNotification from '../../components/ui/Notification/ErrorNotification';
 
 export const createKeepout = (values) => {
   let newKeepout = null;
@@ -144,18 +145,35 @@ export const releaseLinkedKeepoutIndex = () => {
   };
 };
 
-export const addPointOnKeepoutPolyline = (mousePosition, viewer, fixedMode=false) => {
+export const addPointOnKeepoutPolyline =
+(mousePosition, viewer, fixedMode=false) => (dispatch, getState) =>
+{
+  const drawingKptPolyline = getState().undoableReducer.present
+    .drawingKeepoutManagerReducer.drawingKeepoutPolyline;
+  const hipPolylines = getState().undoableReducer.present
+    .drawingInnerManagerReducer.hipPolylines;
+  const ridgePolylines = getState().undoableReducer.present
+    .drawingInnerManagerReducer.ridgePolylines;
+  let intersect = false;
+  hipPolylines.forEach(ply => {
+    if (ply.intersectPolyline(drawingKptPolyline)) intersect = true;
+  })
+  ridgePolylines.forEach(ply => {
+    if (ply.intersectPolyline(drawingKptPolyline)) intersect = true;
+  })
+
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
-  if (Cesium.defined(cartesian3)) {
-    return {
+  if (Cesium.defined(cartesian3) && !intersect) {
+    return dispatch({
       type: actionTypes.KEEPOUT_ADD_POINT,
       fixedMode: fixedMode,
       cartesian3: cartesian3
-    };
+    });
   } else {
-    return {
+    ErrorNotification('Drawing Error', 'Keepout cannot cross multiple surfaces')
+    return dispatch({
       type: actionTypes.DO_NOTHING
-    };
+    });
   }
 };
 

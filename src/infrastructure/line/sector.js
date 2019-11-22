@@ -161,7 +161,7 @@ class Sector extends Polyline {
       (this.brng-mouseBearing > 0 ?
       this.brng-mouseBearing :
       360+(this.brng-mouseBearing))-this.angle/2
-    const newAngle = this.angle + brngChange;
+    const newAngle = (this.angle + brngChange) % 360;
     const newPoints = Sector.calculatePoints(
       this.originCor, (mouseBearing+newAngle/2)%360, this.radius, newAngle, this.color
     );

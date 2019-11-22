@@ -42,7 +42,8 @@ export {
   setHoverInnerLine,
   releaseHoverInnerLine,
   setHoverInnerPoint,
-  releaseHoverInnerPoint
+  releaseHoverInnerPoint,
+  checkInnerTypesProvided
 } from './drawingInnerManager';
 
 export {
@@ -71,9 +72,7 @@ export {
 export {
   createPolygonFoundationWrapper,
   createPolygonFoundationIncludeStb,
-  createWall,
-  setBackendLoadingTrue,
-  setBackendLoadingFalse,
+  createWall
 } from './drawingPolygonManager'
 
 
@@ -114,12 +113,26 @@ export {
   saveBuildingInfoFields,
   bindFoundPolyline,
   bindFoundPolygons,
+  bindPitchedPolygons,
   resetBuilding
 } from './buildingManager';
 
 export {
   bindAllKeepout
 } from './keepoutManager';
+
+export {
+  setupPanelParams,
+  generatePanels,
+  cleanPanels,
+  fetchUserPanels
+} from './editingPVPanelManager';
+
+export {
+  calculateOrFetchGlobalOptimal,
+  setBackendLoadingTrue,
+  setBackendLoadingFalse,
+} from './projectManager';
 
 export {
   setDebugPoints,
