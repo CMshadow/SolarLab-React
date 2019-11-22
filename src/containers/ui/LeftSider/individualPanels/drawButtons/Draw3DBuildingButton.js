@@ -54,7 +54,7 @@ const draw3DBuildingButton = (props) => {
       }
       onClick = {() => {
         console.log("test: update the rooftop")
-        props.updateRoofTop(0, 7, 10);
+        props.updateRoofTop(0, 5, 10);
       }}
     >Test: Update Roof Top</Button>
   )
