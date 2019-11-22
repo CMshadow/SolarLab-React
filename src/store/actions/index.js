@@ -83,7 +83,8 @@ export {
   searchAllRoofPlanes,
   calculateHighestandLowestNodes,
   calculateObliquityAndObliquity,
-  checkEdgeTypeOfPath
+  checkEdgeTypeOfPath,
+  updateSingleRoofTop
 } from './drawingRooftopManager';
 
 
