@@ -542,6 +542,29 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
         innerNodesCollection.innerNodeIndexs.push(currentEdge.endNode);
       }
     }
+    else { // hip
+      if (currentEdge.startNodePara.bound === 1) {
+        if (!innerNodesCollection.innerNodeIDs.has(currentEdge.startNodePara.id)) {
+          let innerNodeParameter = {
+            node: currentEdge.startNodePara,
+            dist: null
+          }
+          innerNodesCollection.innerNodeIDs.add(currentEdge.startNodePara.id);
+          innerNodesCollection.innerNodesList.push(innerNodeParameter);
+          innerNodesCollection.innerNodeIndexs.push(currentEdge.startNode);
+        }
+      } else if (currentEdge.endNodePara.bound === 1) {
+        if (!innerNodesCollection.innerNodeIDs.has(currentEdge.endNodePara.id)) {
+          let innerNodeParameter = {
+            node: currentEdge.endNodePara,
+            dist: null
+          }
+          innerNodesCollection.innerNodeIDs.add(currentEdge.endNodePara.id)
+          innerNodesCollection.innerNodesList.push(innerNodeParameter);
+          innerNodesCollection.innerNodeIndexs.push(currentEdge.endNode);
+        }
+      }
+    }
   }
   // console.log("inner id: "+innerNodesCollection.innerNodeIndexs)
   // console.log("inner length: "+innerNodesCollection.innerNodesList.length)
