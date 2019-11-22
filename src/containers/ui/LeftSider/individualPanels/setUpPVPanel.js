@@ -378,7 +378,7 @@ class SetUpPVPanel extends Component {
                 formatter={value => `${value}\xB0`}
                 parser={value => value.replace('\xB0', '')}
                 onChange = {e => this.setState({tilt:e})}
-                disabled = {this.state.tab !== 'manual'}
+                disabled = {this.state.tab === 'eco'}
               />
             )}
           </Col>
@@ -448,7 +448,6 @@ class SetUpPVPanel extends Component {
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
                 onChange = {e => this.setState({rowSpace:e})}
-                disabled = {this.state.tab !== 'manual'}
               />
             )}
           </Col>

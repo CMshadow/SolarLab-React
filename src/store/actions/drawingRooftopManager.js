@@ -58,6 +58,7 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
 
 
   let newRooftopCollection = new RoofTop();
+  console.log(pathInformationCollection)
   pathInformationCollection.forEach(roofPlane => {
     for(let ind = 0; ind < roofPlane.roofPlaneCoordinateArray.length; ind+=3) {
       roofPlane.roofPlaneCoordinateArray[ind+2] -= 0.005
@@ -465,4 +466,17 @@ export const checkEdgeTypeOfPath = (path, NodesCollection ,OuterEdgesCollection,
     type: actionTypes.CHECK_EDGE_TYPE_OF_PATH,
     edgeTypeList: edgeTypeList
   });
+}
+
+export const showOnlyOneRoofPlane = (roofId) => {
+  return {
+    type: actionTypes.SHOW_ONLY_ONE_ROOF,
+    roofId: roofId
+  };
+}
+
+export const showAllRoofPlane = () => {
+  return {
+    type: actionTypes.SHOW_ALL_ROOF
+  };
 }

@@ -42,7 +42,10 @@ class PitchedRoofListItem3D extends Component {
             type="primary"
             shape='circle'
             size='small'
-            onClick={this.toggleEdit}
+            onClick={() => {
+              this.toggleEdit();
+              console.log(this.props)
+            }}
             ghost={!this.state.enableEdit}
           >
             <FontAwesomeIcon icon={faCog} />

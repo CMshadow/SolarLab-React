@@ -6,6 +6,7 @@ import {
   Row,
   Col,
   Button,
+  Popover
 } from 'antd';
 
 import * as actions from '../../../../../store/actions/index';
@@ -84,10 +85,33 @@ class EditPitchedRoofForm extends PureComponent {
       </Form.Item>
     );
 
+    const pointContent = (
+      <p>Pick a point</p>
+    )
+
+    const ThreePoints = (
+      <Form.Item>
+        <Row type="flex" justify="center">
+          <h4>Provide the height of three points</h4>
+        </Row>
+        <Row style={{'textAlign':'center'}}>
+          <Col span={8}>
+            <Popover content={pointContent} trigger='click'>
+              <Button type="danger" shape="circle" size='small' onClick={()=>{
+                this.props.showOnlyOneRoofPlane(this.props.entityId)
+              }}/>
+            </Popover>
+          </Col>
+        </Row>
+      </Form.Item>
+    )
+
+
     return (
       <Form onSubmit={this.handleSubmit}>
         {LowestHeight}
         {HighestHeight}
+        {ThreePoints}
         {/*The button to validate & process to create a new building*/}
         <Row type="flex" justify="center">
           <Col span={16}>
@@ -112,7 +136,9 @@ const mapDispatchToProps = dispatch => {
     updateBuilding: (values) =>
       dispatch(actions.updateBuilding(values)),
     createPolygonFoundationWrapper: () =>
-      dispatch(actions.createPolygonFoundationWrapper())
+      dispatch(actions.createPolygonFoundationWrapper()),
+    showOnlyOneRoofPlane: (roofId) =>
+      dispatch(actions.showOnlyOneRoofPlane(roofId))
   };
 };
 
