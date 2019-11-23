@@ -620,12 +620,44 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
   //update rooftop hierarchy structure
 
   console.log("updated new Hierarchy: "+newHierarchy);
+  /*
+    以下为CMshadow修改的代码
+   */
+  const newRooftop = Polygon.copyPolygon(
+    getState().undoableReducer.present.drawingRooftopManagerReducer
+    .RooftopCollection.rooftopCollection[roofIndex]
+ 	);
+ 	newRooftop.setHierarchy(newHierarchy);
+ 	newRooftop.obliquity = newObliquity;
+ 	newRooftop.lowestNode[2] = newLowest;
+ 	newRooftop.highestNode[2] = newHighest;
+
+ 	const newRooftopExcludeStb = getState().undoableReducer.present
+  .drawingRooftopManagerReducer.RooftopCollection
+ 	.rooftopExcludeStb[roofIndex].map(stbPolyogn => {
+  	const newStbFoundLine = stbPolyogn.toFoundLine();
+ 		newStbFoundLine.points.forEach(p => {
+ 			p.setCoordinate(
+ 				null, null,
+ 				Coordinate.heightOfArbitraryNode(newRooftop, p) +
+ 				newRooftop.lowestNode[2]
+ 			)
+ 		})
+ 		const newStbHierarchy = Polygon.makeHierarchyFromPolyline(
+ 			newStbFoundLine, null, 0.005
+ 		);
+ 		return new Polygon(null, null, null, newStbHierarchy);
+ 	})
+
+  const newRooftopCollection = RoofTop.CopyPolygon(
+    getState().undoableReducer.present.drawingRooftopManagerReducer
+    .RooftopCollection
+  );
+ 	newRooftopCollection.rooftopCollection[roofIndex] = newRooftop;
+ 	newRooftopCollection.rooftopExcludeStb[roofIndex] = newRooftopExcludeStb;
+
   return dispatch({
     type: actionTypes.UPDATE_SINGLE_ROOF_TOP,
-    newPolygonHierarchy:newHierarchy,
-    updateIndex: roofIndex,
-    newObliquity: newObliquity,
-    newLowestHeight: newLowest,
-    newHighestHeight: newHighest
+    newRooftopCollection: newRooftopCollection
   });
 }

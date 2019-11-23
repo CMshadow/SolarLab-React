@@ -31,37 +31,9 @@ const build3DRoofTopModeling = (state, action) => {
 }
 
 const updateSingleRoofTop = (state, action) => {
-	const newRooftop = Polygon.copyPolygon(
-		state.RooftopCollection.rooftopCollection[action.updateIndex]
-	);
-	newRooftop.setHierarchy(action.newPolygonHierarchy);
-	newRooftop.obliquity = action.newObliquity;
-	newRooftop.lowestNode[2] = action.newLowestHeight;
-	newRooftop.highestNode[2] = action.newHighestHeight;
-	const newRooftopExcludeStb = state.RooftopCollection
-	.rooftopExcludeStb[action.updateIndex].map(stbPolyogn => {
- 		const newStbFoundLine = stbPolyogn.toFoundLine();
-		newStbFoundLine.points.forEach(p => {
-			p.setCoordinate(
-				null, null,
-				Coordinate.heightOfArbitraryNode(newRooftop, p) +
-				newRooftop.lowestNode[2]
-			)
-		})
-		console.log(newStbFoundLine)
-		const newStbHierarchy = Polygon.makeHierarchyFromPolyline(
-			newStbFoundLine, null, 0.005
-		);
-		console.log(newStbHierarchy)
-		return new Polygon(null, null, null, newStbHierarchy);
-	})
-	console.log(newRooftopExcludeStb)
-  const newRooftopCollection = RoofTop.CopyPolygon(state.RooftopCollection);
-	newRooftopCollection.rooftopCollection[action.updateIndex] = newRooftop;
-	newRooftopCollection.rooftopExcludeStb[action.updateIndex] = newRooftopExcludeStb;
   return{
     ...state,
-    RooftopCollection: newRooftopCollection
+    RooftopCollection: action.newRooftopCollection
   }
 }
 

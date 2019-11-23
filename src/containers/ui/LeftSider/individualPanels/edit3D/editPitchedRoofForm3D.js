@@ -38,7 +38,7 @@ class EditPitchedRoofForm extends PureComponent {
             })(
               <InputNumber
                 min={0}
-                max={100}
+                max={this.props.highestNode[2]}
                 step={0.1}
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
@@ -61,7 +61,7 @@ class EditPitchedRoofForm extends PureComponent {
               initialValue: this.props.highestNode[2]
             })(
               <InputNumber
-                min={0}
+                min={this.props.lowestNode[2]}
                 max={100}
                 step={0.1}
                 formatter={value => `${value}m`}
