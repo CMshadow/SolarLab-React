@@ -32,9 +32,11 @@ class Vent extends Keepout {
     const newOutlinePolyline = outline ? outline : vent.outlinePolyline;
     const newOutlinePolygon = polygon ? polygon : vent.outlinePolygon
     const newBuildingBelong = buildingBelong || vent.buildingBelong
-    const newRoofIndexBelong = roofIndexBelong || vent.roofIndexBelong;
+    const newRoofIndexBelong = roofIndexBelong !== null ?
+      roofIndexBelong :
+      vent.roofIndexBelong;
     return new Vent(newId, newType, newDrew, newIsEditing, newBearing,
-      newRadius, newAngle, newOutlinePolyline, newOutlinePolygon, null,
+      newRadius, newAngle, newOutlinePolyline, newOutlinePolygon,
       newBuildingBelong, newRoofIndexBelong
     );
   }

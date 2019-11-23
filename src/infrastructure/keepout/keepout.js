@@ -19,7 +19,7 @@ class Keepout {
     this.outlinePolygon = polygon ? polygon : null;
     this.outlinePolygonPart2 = polygonPart2 ? polygonPart2 : null;
     this.buildingBelong = buildingBelong || null;
-    this.roofIndexBelong = roofIndexBelong || null;
+    this.roofIndexBelong = roofIndexBelong !== null ? roofIndexBelong : null;
   }
 
   setFinishedDrawing = () => {

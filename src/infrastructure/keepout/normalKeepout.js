@@ -38,7 +38,9 @@ class NormalKeepout extends Keepout {
       polygonPart2 :
       normalKeepout.outlinePolygonPart2;
     const newBuildingBelong = buildingBelong || normalKeepout.buildingBelong;
-    const newRoofIndexBelong = roofIndexBelong || normalKeepout.roofIndexBelong;
+    const newRoofIndexBelong = roofIndexBelong !== null ?
+      roofIndexBelong :
+      normalKeepout.roofIndexBelong;
     return new NormalKeepout(
       newId, newType, newDrew, newIsEditing, newKeepoutHt, newKeepoutStb,
       newOutlinePolyline, newOutlinePolygon, newOutlinePolygonPart2,

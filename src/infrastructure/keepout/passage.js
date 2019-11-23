@@ -26,10 +26,12 @@ class Passage extends Keepout {
     const newoutlinePolyline = outline ? outline : passage.outlinePolyline;
     const newOutlinePolygon = polygon ? polygon : passage.outlinePolygon;
     const newBuildingBelong = buildingBelong || passage.buildingBelong
-    const newRoofIndexBelong = roofIndexBelong || passage.roofIndexBelong;
+    const newRoofIndexBelong = roofIndexBelong !== null ?
+      roofIndexBelong :
+      passage.roofIndexBelong;
     return new Passage(
       newId, newType, newDrew, newIsEditing, newPassageWidth,
-      newoutlinePolyline, newOutlinePolygon, null, newBuildingBelong,
+      newoutlinePolyline, newOutlinePolygon, newBuildingBelong,
       newRoofIndexBelong
     );
   }

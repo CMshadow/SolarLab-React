@@ -90,7 +90,8 @@ export {
 
 export {
   createAllKeepoutPolygon,
-  reRenderKeepoutPolygon
+  reRenderKeepoutPolygon,
+  updateKeepoutOnRoof
 } from './drawingKeepoutPolygonManager'
 
 export {

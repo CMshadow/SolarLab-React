@@ -95,7 +95,9 @@ const mapDispatchToProps = dispatch => {
     createPolygonFoundationWrapper: () =>
       dispatch(actions.createPolygonFoundationWrapper()),
     updateRoofTop: (rooftopIndex, lowest, highest) =>
-      dispatch(actions.updateSingleRoofTop(rooftopIndex, lowest, highest))
+      dispatch(actions.updateSingleRoofTop(rooftopIndex, lowest, highest)),
+    updateKeepoutOnRoof: (rooftopIndex) =>
+      dispatch(actions.updateKeepoutOnRoof(rooftopIndex))
   };
 };
 
@@ -110,6 +112,7 @@ const formOptions = {
       props.updateRoofTop(
         props.roofIndex, allValues.lowestHeight, allValues.highestHeight
       );
+      props.updateKeepoutOnRoof(props.roofIndex);
     }
   }
 }
