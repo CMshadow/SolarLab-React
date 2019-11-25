@@ -138,3 +138,8 @@ export {
   setDebugPoints,
   setDebugPolylines
 } from './debugRender';
+
+
+export {
+  initStage
+} from './drawingSingleLineDiagram';

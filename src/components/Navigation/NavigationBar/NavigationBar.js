@@ -13,7 +13,8 @@ const NavigationBar = (props) => {
       <Menu.Item key='1'>Home</Menu.Item>
       <Menu.Item key='2'>Modeling</Menu.Item>
       <Menu.Item key='3'>2D Diagram</Menu.Item>
-      <Menu.Item key='4'>Report</Menu.Item>
+      <Menu.Item key='4'>Single Line Diagram</Menu.Item>
+      <Menu.Item key='5'>Report</Menu.Item>
     </Menu>
   )
 }

@@ -1,0 +1,9 @@
+.leftSider {
+  /* height: 100vh; */
+  /* margin: 0px 0px 0px 0px; */
+  background-color: hsla(0, 8%, 90%, 0.85);
+  overflow: auto;
+  height: calc(100vh - 98px);
+  position: fixed;
+  left: 0,
+}
