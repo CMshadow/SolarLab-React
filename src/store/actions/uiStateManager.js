@@ -65,3 +65,9 @@ export const setUIStateSetUpPV = () => {
     type: actionTypes.SET_UI_STATE_SETUP_PV
   };
 };
+
+export const setUIStateSetUpWiring = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_SETUP_WIRING
+  };
+};

@@ -23,6 +23,12 @@ export const showSetUpPVPanel = (uiState) => {
   )
 };
 
+export const showSetUpWiringPanel = (uiState) => {
+  return (
+    uiState === 'SETUP_WIRING'
+  )
+};
+
 export const useFoundManagerRender = (uiState) => {
   return (
     uiState === 'DRAWING_FOUND' ||

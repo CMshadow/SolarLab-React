@@ -93,6 +93,13 @@ const setUIStateSetUpPV = (state, action) => {
   };
 };
 
+const setUIStateSetUpWiring = (state, action) => {
+  return {
+    ...state,
+    uiState: 'SETUP_WIRING'
+  };
+};
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_UI_STATE_READY_DRAWING:
@@ -117,6 +124,8 @@ const reducer = (state=initialState, action) => {
       return setUIstateEditing3D(state, action);
     case actionTypes.SET_UI_STATE_SETUP_PV:
       return setUIStateSetUpPV(state, action);
+    case actionTypes.SET_UI_STATE_SETUP_WIRING:
+      return setUIStateSetUpWiring(state, action);
     default: return state;
   }
 };
