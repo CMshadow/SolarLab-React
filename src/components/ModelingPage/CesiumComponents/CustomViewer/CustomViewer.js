@@ -29,9 +29,9 @@ const CustomViewer = (props) => {
       homeButton={false}
       navigationHelpButton={false}
       baseLayerPicker={false}
-      animation={false}
-      timeline={false}
-      shadows={false}
+      animation={true}
+      timeline={true}
+      shadows={true}
       sceneMode={Cesium.SceneMode.SCENE3D}
     >
       {props.children}

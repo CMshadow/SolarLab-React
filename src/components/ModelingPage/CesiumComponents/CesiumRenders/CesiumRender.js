@@ -23,9 +23,9 @@ const CesiumRender = (props) => {
         <DrawingInnerManagerRender /> :
         null
       }
-      {/* <Drawing3DFoundManagerRender /> */}
+      <Drawing3DFoundManagerRender />
       <DrawingBuildingRooftopRender />
-      {/* <DrawingKeepoutPolygonManagerRender /> */}
+      <DrawingKeepoutPolygonManagerRender />
       <DrawingKeepoutManagerRender />
       <DebugRender />
     </div>
