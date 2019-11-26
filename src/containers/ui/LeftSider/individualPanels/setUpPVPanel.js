@@ -152,7 +152,7 @@ class SetUpPVPanel extends Component {
   updateEcoFormFields = () => {
     this.props.form.setFieldsValue({
       azimuth: this.props.projectInfo.globalOptimalAzimuth,
-      tilt: this.props.projectInfo.globalOptimalTilt,
+      tilt: this.props.projectInfo.globalOptimalTilt
     })
     this.determineRowSpace(1.3, this.state.orientation, this.state.selectPanelID);
   }
@@ -236,7 +236,9 @@ class SetUpPVPanel extends Component {
           this.state.azimuth
         this.props.form.setFieldsValue({
           azimuth: azimuth,
-          tilt: 0,
+          tilt: Math.ceil(
+            this.props.workingBuilding.pitchedRoofPolygons[roofIndex].obliquity
+          ),
         })
         this.determineRowSpace(
           1.3, this.state.orientation, this.state.selectPanelID
@@ -277,7 +279,7 @@ class SetUpPVPanel extends Component {
                   key={ind}
                   value={ind}
                 >
-                  {`Pitched Roof ${ind}`}
+                  {`Pitched Roof ${ind+1}`}
                 </Option>
               )}
             </Select>
@@ -361,7 +363,7 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="Panel tilt angle"
+              title="Panel tilt respect to the ground"
             >
               <h4>Panel Tilt <Icon type="question-circle" /></h4>
             </Tooltip>
@@ -372,13 +374,20 @@ class SetUpPVPanel extends Component {
               initialValue: this.state.tilt
             })(
               <InputNumber
-                min={0}
+                min={
+                  this.state.selectRoofIndex !== null ?
+                  Math.ceil(
+                    this.props.workingBuilding
+                    .pitchedRoofPolygons[this.state.selectRoofIndex].obliquity
+                  ) :
+                  0
+                }
                 max={45}
                 step={5}
                 formatter={value => `${value}\xB0`}
                 parser={value => value.replace('\xB0', '')}
                 onChange = {e => this.setState({tilt:e})}
-                disabled = {this.state.tab !== 'manual'}
+                disabled = {this.state.tab === 'eco'}
               />
             )}
           </Col>
@@ -448,7 +457,6 @@ class SetUpPVPanel extends Component {
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
                 onChange = {e => this.setState({rowSpace:e})}
-                disabled = {this.state.tab !== 'manual'}
               />
             )}
           </Col>

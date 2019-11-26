@@ -20,16 +20,6 @@ class EditKeepoutForm extends PureComponent {
     heading: this.props.bearing ? this.props.bearing : 0,
   }
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        this.props.reRenderKeepoutPolygon(this.props.type, this.props.id, values);
-        this.props.toggleEdit();
-      }
-    });
-  };
-
   generateTypeText = () => {
     switch (this.props.type) {
       case 'VENT':
@@ -201,7 +191,7 @@ class EditKeepoutForm extends PureComponent {
     );
 
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form>
         {
           this.props.type !== 'PASSAGE' && this.props.type !== 'VENT' ?
           keepoutHeight :
@@ -216,15 +206,6 @@ class EditKeepoutForm extends PureComponent {
           keepoutRadius :
           null
         }
-
-        {/*The button to validate & process to create a new building*/}
-        <Row type="flex" justify="center">
-          <Col span={16}>
-            <Button type='default' shape='round' htmlType="submit" block>
-              Update
-            </Button>
-          </Col>
-        </Row>
       </Form>
     );
   }
@@ -242,4 +223,17 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'editKeepout' })(EditKeepoutForm));
+const formOptions = {
+  name: 'editKeepout',
+  onValuesChange: (props, changedValues, allValues) => {
+    let valueValid = true;
+    Object.keys(allValues).forEach(k => {
+      if (typeof(allValues[k]) !== 'number') valueValid = false
+    });
+    if (valueValid) {
+      props.reRenderKeepoutPolygon(props.type, props.id, allValues);
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create(formOptions)(EditKeepoutForm));

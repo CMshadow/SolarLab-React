@@ -6,11 +6,15 @@ import {
   Row,
   Col,
   Button,
+  Radio
 } from 'antd';
 
 import * as actions from '../../../../../store/actions/index';
 
 class EditPitchedRoofForm extends PureComponent {
+  state = {
+    calculateMode: 'height'
+  }
 
   numberInputRules = [
     {
@@ -38,7 +42,7 @@ class EditPitchedRoofForm extends PureComponent {
             })(
               <InputNumber
                 min={0}
-                max={100}
+                max={this.props.highestNode[2]}
                 step={0.1}
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
@@ -48,6 +52,31 @@ class EditPitchedRoofForm extends PureComponent {
         </Row>
       </Form.Item>
     );
+
+    const HeightOrAngle = (
+      <Form.Item>
+        <Row>
+          <Col span={22} offset={1} style={{textAlign: 'center'}}>
+            {getFieldDecorator('heightOrAngle', {
+              initialValue: this.state.calculateMode
+            })(
+              <Radio.Group
+                onChange={(e) => {
+                  this.setState({calculateMode: e.target.value})
+                }}
+              >
+                <Radio.Button value="height" defaultChecked>
+                  Height
+                </Radio.Button>
+                <Radio.Button value="angle">
+                  Angle
+                </Radio.Button>
+              </Radio.Group>
+            )}
+          </Col>
+        </Row>
+      </Form.Item>
+    )
 
     const HighestHeight = (
       <Form.Item>
@@ -61,7 +90,7 @@ class EditPitchedRoofForm extends PureComponent {
               initialValue: this.props.highestNode[2]
             })(
               <InputNumber
-                min={0}
+                min={this.props.lowestNode[2]}
                 max={100}
                 step={0.1}
                 formatter={value => `${value}m`}
@@ -73,10 +102,35 @@ class EditPitchedRoofForm extends PureComponent {
       </Form.Item>
     );
 
+    const PitchedAngle = (
+      <Form.Item>
+        <Row>
+          <Col span={12} offset={1}>
+            <h4>Pitched Angle</h4>
+          </Col>
+          <Col span={10}>
+            {getFieldDecorator('pitchedAngle', {
+              rules: [...this.numberInputRules],
+              initialValue: this.props.obliquity
+            })(
+              <InputNumber
+                min={0}
+                max={90}
+                step={0.1}
+                formatter={value => `${value}\xB0`}
+                parser={value => value.replace('\xB0', '')}
+              />
+            )}
+          </Col>
+        </Row>
+      </Form.Item>
+    );
+
     return (
       <Form>
         {LowestHeight}
-        {HighestHeight}
+        {HeightOrAngle}
+        {this.state.calculateMode === 'height' ? HighestHeight : PitchedAngle}
       </Form>
     );
   }
@@ -95,21 +149,42 @@ const mapDispatchToProps = dispatch => {
     createPolygonFoundationWrapper: () =>
       dispatch(actions.createPolygonFoundationWrapper()),
     updateRoofTop: (rooftopIndex, lowest, highest) =>
-      dispatch(actions.updateSingleRoofTop(rooftopIndex, lowest, highest))
+      dispatch(actions.updateSingleRoofTop(rooftopIndex, lowest, highest)),
+    updateKeepoutOnRoof: (rooftopIndex) =>
+      dispatch(actions.updateKeepoutOnRoof(rooftopIndex))
   };
 };
 
 const formOptions = {
   name: 'editRoof',
   onValuesChange: (props, changedValues, allValues) => {
-    if (
-      typeof(allValues.lowestHeight) === 'number' &&
-      typeof(allValues.highestHeight) === 'number' &&
-      allValues.lowestHeight < allValues.highestHeight
-    ) {
-      props.updateRoofTop(
-        props.roofIndex, allValues.lowestHeight, allValues.highestHeight
-      );
+    console.log(allValues)
+    let valueValid = true
+    Object.keys(allValues).forEach(k => {
+      if (typeof(allValues[k]) !== 'number' && k !== 'heightOrAngle') {
+        valueValid = false
+      }
+    })
+    if (valueValid) {
+      if (allValues.heightOrAngle === 'height' &&
+      allValues.lowestHeight <= allValues.highestHeight) {
+        props.updateRoofTop(
+          props.roofIndex, allValues.lowestHeight, allValues.highestHeight
+        );
+        props.updateKeepoutOnRoof(props.roofIndex);
+      }
+      else if (allValues.heightOrAngle === 'angle') {
+        console.log(props.obliquity)
+        const tan = Math.tan(props.obliquity * Math.PI/180);
+        const adjuentLen = (props.highestNode[2] - props.lowestNode[2]) / tan;
+        const newTan = Math.tan(allValues.pitchedAngle * Math.PI/180);
+        const newHeight = adjuentLen * newTan;
+        const newHighestHeight = newHeight + props.lowestNode[2];
+        props.updateRoofTop(
+          props.roofIndex, allValues.lowestHeight, newHighestHeight
+        );
+        props.updateKeepoutOnRoof(props.roofIndex);
+      }
     }
   }
 }

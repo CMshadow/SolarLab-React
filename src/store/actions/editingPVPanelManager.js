@@ -217,6 +217,7 @@ const generateFlatRoofPanels = (dispatch, requestData) => {
     return dispatch(setBackendLoadingFalse());
   })
   .catch(error => {
+    console.log(error)
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Backend Error',

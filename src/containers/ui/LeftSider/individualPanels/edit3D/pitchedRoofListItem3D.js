@@ -49,7 +49,7 @@ class PitchedRoofListItem3D extends Component {
           </Button>
         ]}
       >
-        Pitched Roof
+        {`Pitched Roof ${this.props.roofIndex+1}`}
       </List.Item>
     );
   }
