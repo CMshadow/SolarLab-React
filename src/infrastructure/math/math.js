@@ -55,3 +55,18 @@ export const dot = (v1,v2) => {
 export const plus = (v1,v2) => {
     return [v1[0] + v2[0], v1[1] + v2[1], v1[2] + v2[2]];
 };
+
+/**
+ * [minPanelTiltAngleOnPitchedRoof description]
+ * @param  {Number} roofBrng  斜屋面的朝向 0到360之间
+ * @param  {Number} roofTilt  斜屋面和地面之间的夹角
+ * @param  {Number} panelBrng 斜屋面要铺板的朝向 0到360之间
+ * @return {Number}           铺板和地面的的最小夹角让板不会陷入斜屋面中
+ */
+const minPanelTiltAngleOnPitchedRoof = (roofBrng, roofTilt, panelBrng) => {
+  /*
+    to be implemented
+   */
+  const minPanelTilt = null;
+  return minPanelTilt
+}
