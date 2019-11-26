@@ -12,17 +12,6 @@ import * as actions from '../../../../../store/actions/index';
 
 class EditRoofForm extends PureComponent {
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        this.props.updateBuilding(values);
-        this.props.createPolygonFoundationWrapper();
-        this.props.toggleEdit();
-      }
-    });
-  };
-
   numberInputRules = [
     {
       type: 'number',
@@ -109,18 +98,10 @@ class EditRoofForm extends PureComponent {
     );
 
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form>
         {foundationHeight}
         {eaveSetback}
         {this.props.workingBuilding.type === 'FLAT' ? parapetHeight: null}
-        {/*The button to validate & process to create a new building*/}
-        <Row type="flex" justify="center">
-          <Col span={16}>
-            <Button type='default' shape='round' htmlType="submit" block>
-              Update
-            </Button>
-          </Col>
-        </Row>
       </Form>
     );
   }
@@ -141,4 +122,18 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'editRoof' })(EditRoofForm));
+const formOptions = {
+  name: 'editRoof',
+  onValuesChange: (props, changedValues, allValues) => {
+    let valueValid = true;
+    Object.keys(allValues).forEach(k => {
+      if (typeof(allValues[k]) !== 'number') valueValid = false
+    });
+    if (valueValid) {
+      props.updateBuilding(allValues);
+      props.createPolygonFoundationWrapper();
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create(formOptions)(EditRoofForm));
