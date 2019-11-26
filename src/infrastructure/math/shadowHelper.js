@@ -167,14 +167,6 @@ export const projectPlaneOnAnother = (
   const parallelograms = getParallelogramsForPlane(
     point_list1, s_ratio, plane_equation
   );
-  // if (cover === true) {
-  //   var cover_plane = [];
-  //   for (var i = 0; i < parallelograms.length; ++i) {
-  //     cover_plane.push(parallelograms[i][1]);
-  //   }
-  //   cover_plane.push(cover_plane[0]);
-  //   parallelograms.push(cover_plane);
-  // }
   if (cover === true) {
     let union = parallelograms[0];
     parallelograms.forEach(parallel => {
@@ -191,6 +183,21 @@ export const projectPlaneOnAnother = (
     }
     return parallelograms;
   }
+}
+
+export const projectTreeOnPlane = (center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio) => {
+    let shadowPoints = treePoints.map(p => getShadowLineForPoint(p, s_ratio, plane_equation)[1]);
+    shadowPoints.push(shadowPoints[0]);
+    const parallelograms = getParallelogramsForPlane(
+        trunkPoints, s_ratio, plane_equation
+    );
+    let union = parallelograms[0];
+    parallelograms.forEach(parallel => {
+      union = unionPolygons(union, parallel, plane_equation);
+    });
+    union = unionPolygons(union, shadowPoints, plane_equation);
+    const result_points = intersectPolygons(union, foundationPoints, plane_equation);
+    return [result_points];
 }
 
 export const getSphereLineIntersection = (center_cartesian, radius, vx, vy, vz) => {
@@ -452,8 +459,9 @@ export const projectEverything = (
     const ratio = getRatio(center.lon, center.lat);
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
     const treePoints = generateTreePolygon(center, radius, s_ratio, s_vec);
-    const shadow = projectPlaneOnAnother(
-      treePoints, foundationPoints, plane_equation, s_ratio
+    const trunkPoints = generateTreePolygon(center, radius / 10, s_ratio, s_vec);
+    const shadow = projectTreeOnPlane(
+      center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio
     );
 
     shadow.forEach(s => {
