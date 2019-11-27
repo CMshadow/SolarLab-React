@@ -6,9 +6,22 @@ import Point from '../point/point';
 import Polygon from "../../infrastructure/Polygon/Polygon";
 import Polyline from '../../infrastructure/line/polyline';
 import { calculateSunPositionWrapper } from './sunPositionCalculation';
-import { cartesianToPoint } from  './math'
 import * as martinez from 'martinez-polygon-clipping';
 
+
+export const cartesianToPoint = (x, y, z) => {
+    const temp = Cesium.Cartographic.fromCartesian(
+        new Cesium.Cartesian3(x, y, z)
+    );
+    const temp_lon = parseFloat(
+        Cesium.Math.toDegrees(temp.longitude).toFixed(12)
+    );
+    const temp_lat = parseFloat(
+        Cesium.Math.toDegrees(temp.latitude).toFixed(12)
+    );
+
+    return new Point(temp_lon, temp_lat, temp.height);
+}
 
 export const getPlaneEquationForPoint = (point1, point2, point3) => {
 
