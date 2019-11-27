@@ -5,7 +5,6 @@ import ProjectInfo from '../../infrastructure/projectInfo/projectInfo';
 
 const initialState = {
   panels: {},
-  backendLoading: false,
   parameters: {
     azimuth: 180,
     tilt: 10,

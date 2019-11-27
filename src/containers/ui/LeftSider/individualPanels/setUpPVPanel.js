@@ -712,7 +712,7 @@ class SetUpPVPanel extends Component {
                     this.props.backendLoading ||
                     this.state.isFetching
                   }
-                  onClick = {this.props.setUIStateSetUpWiring}
+                  onClick = {this.props.fetchUserInverters}
                 >
                   Continue <Icon type='right' />
                 </Button>
@@ -742,7 +742,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    setUIStateSetUpWiring: () => dispatch(actions.setUIStateSetUpWiring()),
+    fetchUserInverters: () => dispatch(actions.fetchUserInverters()),
     setupPanelParams: (values, roofIndex) =>
       dispatch(actions.setupPanelParams(values, roofIndex)),
     generatePanels: (roofIndex) => dispatch(actions.generatePanels(roofIndex)),

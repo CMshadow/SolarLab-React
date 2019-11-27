@@ -131,6 +131,10 @@ export {
 } from './editingPVPanelManager';
 
 export {
+  fetchUserInverters
+} from './editingWiringManager';
+
+export {
   calculateOrFetchGlobalOptimal,
   setBackendLoadingTrue,
   setBackendLoadingFalse,

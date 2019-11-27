@@ -137,6 +137,11 @@ export const CLEAN_EDITING_PANELS = 'CLEAN_EDITING_PANELS';
 export const FETCH_USER_PANELS = 'FETCH_USER_PANELS';
 
 /*
+  editingWiringManager.js
+ */
+export const FETCH_USER_INVERTERS = 'FETCH_USER_INVERTERS';
+
+/*
   projectManager.js
  */
 export const SET_GLOBAL_OPTIMAL = 'SET_GLOBAL_OPTIMAL';
