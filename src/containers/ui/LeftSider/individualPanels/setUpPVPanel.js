@@ -197,11 +197,6 @@ class SetUpPVPanel extends Component {
             )) :
             Math.round(brngCollection.findClosestBrng(0));
         }
-        console.log({
-          longitude: this.props.projectInfo.projectLon,
-          latitude: this.props.projectInfo.projectLat,
-          azimuth: azimuth
-        })
         this.setIsFetchingTrue();
         axios.get('/optimal-calculation/calculate-tilt', {
           params: {
@@ -708,7 +703,17 @@ class SetUpPVPanel extends Component {
                 >
                   Preview
                 </Button>
-                <Button type='primary' shape='round' size='large' disabled>
+                <Button
+                  type='primary'
+                  shape='round'
+                  size='large'
+                  disabled = {
+                    Object.keys(this.props.panels).length === 0 ||
+                    this.props.backendLoading ||
+                    this.state.isFetching
+                  }
+                  onClick = {this.props.setUIStateSetUpWiring}
+                >
                   Continue <Icon type='right' />
                 </Button>
               </ButtonGroup>
@@ -730,12 +735,14 @@ const mapStateToProps = state => {
     userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
     roofSpecParams: state.undoableReducer.present.editingPVPanelManagerReducer
       .roofSpecParams,
-    projectInfo: state.projectManagerReducer.projectInfo
+    projectInfo: state.projectManagerReducer.projectInfo,
+    panels: state.undoableReducer.present.editingPVPanelManagerReducer.panels
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
+    setUIStateSetUpWiring: () => dispatch(actions.setUIStateSetUpWiring()),
     setupPanelParams: (values, roofIndex) =>
       dispatch(actions.setupPanelParams(values, roofIndex)),
     generatePanels: (roofIndex) => dispatch(actions.generatePanels(roofIndex)),

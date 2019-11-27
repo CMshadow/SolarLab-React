@@ -228,8 +228,8 @@ class CreateBuildingPanel extends PureComponent {
               <h3>Working on </h3>
             </Col>
           </Row>
-          <Row type="flex" justify="center">
-            <Col span={20}>
+          <Row>
+            <Col span={20} offset={2} style={{textAlign: 'center'}}>
               {getFieldDecorator('mode', {
                 initialValue: this.state.mode
               })(
