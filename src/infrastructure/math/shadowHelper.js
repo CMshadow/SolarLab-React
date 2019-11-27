@@ -6,6 +6,7 @@ import Point from '../point/point';
 import Polygon from "../../infrastructure/Polygon/Polygon";
 import Polyline from '../../infrastructure/line/polyline';
 import { calculateSunPositionWrapper } from './sunPositionCalculation';
+import { cartesianToPoint } from  './math'
 import * as martinez from 'martinez-polygon-clipping';
 
 
@@ -295,6 +296,39 @@ export const rotatePoint = (T, Rx, Ry, Rz, current) => {
   return result;
 }
 
+export const rotatePointWrapper = (vx, vy, vz, center_cartesian, current_matrix, theta) => {
+    const a = vx;
+    const b = vy;
+    const c = vz;
+    const d = Math.sqrt(b * b + c * c);
+
+    const T = [
+        [1, 0, 0, -center_cartesian.x],
+        [0, 1, 0, -center_cartesian.y],
+        [0, 0, 1, -center_cartesian.z],
+        [0, 0, 0, 1]
+    ];
+    const Rx = [
+        [1, 0, 0, 0],
+        [0, c / d, -b / d, 0],
+        [0, b / d, c / d, 0],
+        [0, 0, 0, 1]
+    ];
+    const Ry = [
+        [d, 0, -a, 0],
+        [0, 1, 0, 0],
+        [a, 0, d, 0],
+        [0, 0, 0, 1]
+    ];
+    const Rz = [
+        [Math.cos(theta), -Math.sin(theta), 0, 0],
+        [Math.sin(theta), Math.cos(theta), 0, 0],
+        [0, 0, 1, 0],
+        [0, 0, 0, 1],
+    ];
+    return rotatePoint(T, Rx, Ry, Rz, current_matrix)
+}
+
 export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
   const center_cartesian = Cesium.Cartesian3.fromDegrees(
     centerPoint.lon, centerPoint.lat, centerPoint.height
@@ -313,23 +347,6 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
   const a3 = Cesium.Cartesian3.fromDegrees(
     centerPoint.lon, centerPoint.lat, centerPoint.height + radius
   );
-
-  console.log("centerPoint:");
-  console.log(centerPoint);
-
-  console.log("a1:");
-  const temp_a1 = Cesium.Cartographic.fromCartesian(a1a2[0]);
-  console.log(parseFloat(Cesium.Math.toDegrees(temp_a1.longitude).toFixed(12)));
-  console.log(parseFloat(Cesium.Math.toDegrees(temp_a1.latitude).toFixed(12)));
-  console.log(temp_a1.height);
-  console.log(a1a2[0]);
-
-  console.log("a2:");
-  const temp_a2 = Cesium.Cartographic.fromCartesian(a1a2[1]);
-  console.log(parseFloat(Cesium.Math.toDegrees(temp_a2.longitude).toFixed(12)));
-  console.log(parseFloat(Cesium.Math.toDegrees(temp_a2.latitude).toFixed(12)));
-  console.log(temp_a2.height);
-  console.log(a1a2[1]);
 
   const vertical_plane = getPlaneEquationForCartesian(a1a2[0], a1a2[1], a3);
   const horizontal_d = - vx * center_cartesian.x - vy * center_cartesian.y -
@@ -361,37 +378,8 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
     center_cartesian.y + ky * x,
     center_cartesian.z + kz * x
   ));
-
-  const a = vx;
-  const b = vy;
-  const c = vz;
-  const d = Math.sqrt(b * b + c * c);
-
-  const T = [
-    [1, 0, 0, -center_cartesian.x],
-    [0, 1, 0, -center_cartesian.y],
-    [0, 0, 1, -center_cartesian.z],
-    [0, 0, 0, 1]
-  ];
-  const Rx = [
-    [1, 0, 0, 0],
-    [0, c / d, -b / d, 0],
-    [0, b / d, c / d, 0],
-    [0, 0, 0, 1]
-  ];
-  const Ry = [
-    [d, 0, -a, 0],
-    [0, 1, 0, 0],
-    [a, 0, d, 0],
-    [0, 0, 0, 1]
-  ];
+  
   const theta = 0.349066; // 20 degrees = 0.349066 radians
-  const Rz = [
-    [Math.cos(theta), -Math.sin(theta), 0, 0],
-    [Math.sin(theta), Math.cos(theta), 0, 0],
-    [0, 0, 1, 0],
-    [0, 0, 0, 1],
-  ];
 
   for (let i = 0; i < 17; ++i) {
     const current_matrix = [
@@ -400,7 +388,7 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
       [result_cartesian_list[i].z],
       [1]
     ];
-    const new_matrix = rotatePoint(T, Rx, Ry, Rz, current_matrix);
+    const new_matrix = rotatePointWrapper(vx, vy, vz, center_cartesian, current_matrix, theta);
     result_cartesian_list.push(
       new Cesium.Cartesian3(new_matrix[0][0], new_matrix[1][0], new_matrix[2][0]));
   }
@@ -420,7 +408,9 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
     const temp_lat = parseFloat(
       Cesium.Math.toDegrees(temp.latitude).toFixed(12)
     );
-    result_point_list.push(new Point(temp_lon, temp_lat, temp.height));
+    result_point_list.push(
+        cartesianToPoint(result_cartesian_list[i].x, result_cartesian_list[i].y, result_cartesian_list[i].z)
+    );
   }
 
   return result_point_list;
