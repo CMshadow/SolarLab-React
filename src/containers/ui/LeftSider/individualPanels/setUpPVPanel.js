@@ -52,8 +52,8 @@ class SetUpPVPanel extends Component {
     event.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.props.setupPanelParams(values, this.state.selectRoofIndex)
-        this.props.generatePanels(this.state.selectRoofIndex)
+        this.props.setupPanelParams(values, this.state.selectRoofIndex || 0)
+        this.props.generatePanels(this.state.selectRoofIndex || 0)
       }
     });
   }

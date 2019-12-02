@@ -131,7 +131,9 @@ export {
 } from './editingPVPanelManager';
 
 export {
-  fetchUserInverters
+  fetchUserInverters,
+  calculateAutoInverter,
+  calculateManualInverter
 } from './editingWiringManager';
 
 export {

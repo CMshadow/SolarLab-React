@@ -18,18 +18,19 @@ import {
 
 import * as actions from '../../../../store/actions/index';
 import axios from '../../../../axios-setup';
+import InverterTable from './wiring/inverterTable';
 const { Option } = Select;
 const { TabPane } = Tabs;
 
 class SetUpWiringPanel extends Component {
   state = {
     tab: 'manual',
+    selectRoofIndex: 0,
     selectInverterID: null,
   }
 
   render() {
     const { getFieldDecorator } = this.props.form;
-
     const InverterSelect = (
       <Form.Item>
         <Row>
@@ -46,6 +47,9 @@ class SetUpWiringPanel extends Component {
               placeholder='Select a inverter'
               onChange={(e) => {
                 this.setState({selectInverterID: e});
+                this.props.calculateManualInverter(
+                  this.state.selectRoofIndex, e
+                );
               }}
             >
               {this.props.userInverters.map(i =>
@@ -76,18 +80,34 @@ class SetUpWiringPanel extends Component {
             tabBarStyle = {{textAlign: 'center'}}
             onChange = {e => {
               this.setState({tab:e});
+              if (e === 'auto')
+                this.props.calculateAutoInverter(this.state.selectRoofIndex)
             }}
           >
             <TabPane tab="Manual" key="manual">
-              {InverterSelect}
+              <Spin
+                spinning={this.props.backendLoading}
+                indicator={<Icon type="loading" spin />}
+              >
+                {InverterSelect}
+              </Spin>
             </TabPane>
             <TabPane
               tab='Auto'
               key="auto"
             >
+              <Row>
+                <Col span={24} style={{textAlign: 'center'}} >
+                  <Spin
+                    spinning={this.props.backendLoading}
+                    indicator={<Icon type="loading" spin />}
+                  />
+                </Col>
+              </Row>
             </TabPane>
           </Tabs>
         </Form>
+        <InverterTable roofIndex={this.state.selectRoofIndex} />
       </div>
     );
   }
@@ -99,6 +119,7 @@ const mapStateToProps = state => {
     backendLoading: state.projectManagerReducer.backendLoading,
     workingBuilding: state.buildingManagerReducer.workingBuilding,
     userInverters: state.undoableReducer.present.editingWiringManager.userInverters,
+    panels: state.undoableReducer.present.editingPVPanelManagerReducer.panels,
     roofSpecParams: state.undoableReducer.present.editingPVPanelManagerReducer
       .roofSpecParams,
     projectInfo: state.projectManagerReducer.projectInfo
@@ -107,14 +128,12 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    setupPanelParams: (values, roofIndex) =>
-      dispatch(actions.setupPanelParams(values, roofIndex)),
-    generatePanels: (roofIndex) => dispatch(actions.generatePanels(roofIndex)),
-    setDebugPolylines: (polylines) =>
-      dispatch(actions.setDebugPolylines(polylines)),
-    setDebugPoints: (points) => dispatch(actions.setDebugPoints(points)),
-    setBackendLoadingTrue: () => dispatch(actions.setBackendLoadingTrue()),
-    setBackendLoadingFalse: () => dispatch(actions.setBackendLoadingFalse())
+    calculateAutoInverter: (roofIndex) => dispatch(
+      actions.calculateAutoInverter(roofIndex)
+    ),
+    calculateManualInverter: (roofIndex, inverterID) => dispatch(
+      actions.calculateManualInverter(roofIndex, inverterID)
+    )
   };
 };
 

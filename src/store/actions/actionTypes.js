@@ -140,6 +140,7 @@ export const FETCH_USER_PANELS = 'FETCH_USER_PANELS';
   editingWiringManager.js
  */
 export const FETCH_USER_INVERTERS = 'FETCH_USER_INVERTERS';
+export const SET_UP_INVERTER = 'SET_UP_INVERTER';
 
 /*
   projectManager.js
