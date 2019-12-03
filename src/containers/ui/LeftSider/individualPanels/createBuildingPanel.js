@@ -16,6 +16,7 @@ import {
 
 import * as classes from './createBuildingPanel.module.css';
 import * as actions from '../../../../store/actions/index';
+import { minPanelTiltAngleOnPitchedRoof } from '../../../../infrastructure/math/pointCalculation.js'
 
 const { Option } = Select;
 
@@ -197,6 +198,84 @@ class CreateBuildingPanel extends PureComponent {
       </Form.Item>
     );
 
+    var plane_points = [
+        {
+            "lon": -117.841259347461,
+            "lat": 33.647203672471,
+            "height": 4.995,
+            "heightOffset": 0,
+            "entityId": "bb583c00-1171-11ea-bb69-3d7ec9a0797c",
+            "name": "vertex",
+            "color": {
+                "red": 1,
+                "green": 1,
+                "blue": 1,
+                "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+        },
+        {
+            "lon": -117.841239958975,
+            "lat": 33.647070370923,
+            "height": 6.995,
+            "heightOffset": 0,
+            "entityId": "bb583c01-1171-11ea-bb69-3d7ec9a0797c",
+            "name": "vertex",
+            "color": {
+                "red": 1,
+                "green": 1,
+                "blue": 1,
+                "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+        },
+        {
+            "lon": -117.841118085773,
+            "lat": 33.646994124261,
+            "height": 6.995,
+            "heightOffset": 0,
+            "entityId": "bb583c02-1171-11ea-bb69-3d7ec9a0797c",
+            "name": "vertex",
+            "color": {
+                "red": 1,
+                "green": 1,
+                "blue": 1,
+                "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+        },
+        {
+            "lon": -117.840962356035,
+            "lat": 33.647017867687,
+            "height": 4.995,
+            "heightOffset": 0,
+            "entityId": "bb583c03-1171-11ea-bb69-3d7ec9a0797c",
+            "name": "vertex",
+            "color": {
+                "red": 1,
+                "green": 1,
+                "blue": 1,
+                "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+        }
+    ];
+
+    var tilt = minPanelTiltAngleOnPitchedRoof(plane_points, 36.92588);
+    var points = [tilt[1], tilt[2], tilt[3]];
+    console.log("points");
+    console.log(points);
+    this.props.setDebugPoints(points);
+    console.log(tilt[0]);
+
     return (
       <Form onSubmit={this.handleSubmit}>
         {/*Bulding name Input*/}
@@ -350,7 +429,8 @@ const mapDispatchToProps = dispatch => {
   return {
     setUIStateReadyDrawing: () => dispatch(actions.setUIStateReadyDrawing()),
     initBuilding: (values) => dispatch(actions.initBuilding(values)),
-    saveBuildingInfoFields: (values) => dispatch(actions.saveBuildingInfoFields(values))
+    saveBuildingInfoFields: (values) => dispatch(actions.saveBuildingInfoFields(values)),
+    setDebugPoints: (points) => dispatch(actions.setDebugPoints(points))
   };
 };
 

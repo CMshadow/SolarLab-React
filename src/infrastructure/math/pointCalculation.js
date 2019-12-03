@@ -2,22 +2,31 @@ import * as Cesium from 'cesium';
 
 import Coordinate from '../point/coordinate';
 import Point from '../point/point';
-import { cartesianToPoint, getPlaneEquationForPoint, rotatePointWrapper } from './shadowHelper';
+import { cartesianToPoint, getPlaneEquationForPoint, getPlaneEquationForCartesian, getPlaneLineIntersectPointPosition, rotatePointWrapper } from './shadowHelper';
 
 /**
  * [minPanelTiltAngleOnPitchedRoof description]
  * @param  {Point[]} plane_points  斜屋面顶点集
  * @param  {Number} panelBrng 斜屋面要铺板的朝向 0到360之间
- * @return {Number}           铺板和地面的的最小夹角让板不会陷入斜屋面中 in radians
+ * @return {Number}           铺板和地面的的最小夹角让板不会陷入斜屋面中
  */
-const minPanelTiltAngleOnPitchedRoof = (plane_points, panelBrng) => {
+export const minPanelTiltAngleOnPitchedRoof = (plane_points, panelBrng) => {
 
-    const plane = getPlaneEquationForPoint(plane_points[0], plane_points[1], plane_points[2]);
-    const center = plane_points[0];
+    const plane_for_point = getPlaneEquationForPoint(plane_points[0], plane_points[1], plane_points[2]);
+    const plane_for_cartesian = getPlaneEquationForCartesian(
+        Cesium.Cartesian3.fromDegrees(plane_points[0].lon, plane_points[0].lat, plane_points[0].height),
+        Cesium.Cartesian3.fromDegrees(plane_points[1].lon, plane_points[1].lat, plane_points[1].height),
+        Cesium.Cartesian3.fromDegrees(plane_points[2].lon, plane_points[2].lat, plane_points[2].height)
+    );
+    const center = Point.fromPoint(plane_points[0]);
     const center_cartesian = Cesium.Cartesian3.fromDegrees(
         center.lon, center.lat, center.height
     );
-    const north_point = new Point(center.lon + 0.001, center.lat, center.height);
+    const north_point = getPlaneLineIntersectPointPosition(
+        new Point(center.lon, center.lat + 0.00001, 0),
+        new Point(center.lon, center.lat + 0.00001, 5),
+        plane_for_point
+    );
     const north_point_cartesian = Cesium.Cartesian3.fromDegrees(
         north_point.lon, north_point.lat, north_point.height
     );
@@ -29,7 +38,7 @@ const minPanelTiltAngleOnPitchedRoof = (plane_points, panelBrng) => {
         [1]
     ];
     const theta = panelBrng / 180 * Math.PI;
-    const new_matrix = rotatePointWrapper(plane[0], plane[1], plane[2], center_cartesian, current_matrix, theta);
+    const new_matrix = rotatePointWrapper(plane_for_cartesian[0], plane_for_cartesian[1], plane_for_cartesian[2], center_cartesian, current_matrix, theta);
     const new_point = cartesianToPoint(new_matrix[0][0], new_matrix[1][0], new_matrix[2][0]);
 
     // segment between new_point and center
@@ -41,6 +50,13 @@ const minPanelTiltAngleOnPitchedRoof = (plane_points, panelBrng) => {
     const center_reference_cartesian = Cesium.Cartesian3.fromDegrees(
         center_reference.lon, center_reference.lat, center_reference.height
     );
+
+    console.log("center:");
+    console.log(center);
+    console.log("north_point:");
+    console.log(north_point);
+    console.log("new_point:");
+    console.log(new_point);
 
     const vx1 = new_matrix[0][0] - center_cartesian.x;
     const vy1 = new_matrix[1][0] - center_cartesian.y;
@@ -56,5 +72,5 @@ const minPanelTiltAngleOnPitchedRoof = (plane_points, panelBrng) => {
     const cos_theta = dot_product / (mod_1 * mod_2);
     const minPanelTilt = Math.acos(cos_theta);
 
-    return minPanelTilt
+    return [minPanelTilt * 180 / Math.PI, center, north_point, new_point];
 }
