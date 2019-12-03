@@ -16,6 +16,7 @@ import {
 
 import * as classes from './createBuildingPanel.module.css';
 import * as actions from '../../../../store/actions/index';
+import Point from '../../../../infrastructure/point/point';
 import { minPanelTiltAngleOnPitchedRoof } from '../../../../infrastructure/math/pointCalculation.js'
 
 const { Option } = Select;
@@ -269,15 +270,21 @@ class CreateBuildingPanel extends PureComponent {
         }
     ];
 
-    var tilt = minPanelTiltAngleOnPitchedRoof(plane_points, 36.92588);
-    var points = [tilt[1], tilt[2], tilt[3]];
-    console.log("points");
-    console.log(points);
-    this.props.setDebugPoints(points);
-    console.log(tilt[0]);
 
     return (
       <Form onSubmit={this.handleSubmit}>
+        <Button onClick={() => {
+          var tilt = minPanelTiltAngleOnPitchedRoof(plane_points, 36.92588);
+          var points = [
+            Point.fromPoint(tilt[1]),
+            Point.fromPoint(tilt[2]),
+            Point.fromPoint(tilt[3])
+          ];
+          console.log("points");
+          console.log(points);
+          this.props.setDebugPoints(points);
+          console.log(tilt[0]);
+        }}/>
         {/*Bulding name Input*/}
         <Form.Item>
           <Row>
