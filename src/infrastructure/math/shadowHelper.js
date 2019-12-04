@@ -310,9 +310,11 @@ export const rotatePoint = (T, Rx, Ry, Rz, current) => {
 }
 
 export const rotatePointWrapper = (vx, vy, vz, center_cartesian, current_matrix, theta) => {
-    const a = vx;
-    const b = vy;
-    const c = vz;
+    const mod = Math.sqrt(vx * vx + vy * vy + vz * vz);
+
+    const a = vx / mod;
+    const b = vy / mod;
+    const c = vz / mod;
     const d = Math.sqrt(b * b + c * c);
 
     const T = [

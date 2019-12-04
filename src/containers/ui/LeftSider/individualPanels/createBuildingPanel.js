@@ -201,28 +201,11 @@ class CreateBuildingPanel extends PureComponent {
 
     var plane_points = [
         {
-            "lon": -117.841259347461,
-            "lat": 33.647203672471,
+            "lon": -117.841101211316,
+            "lat": 33.64686405792,
             "height": 4.995,
             "heightOffset": 0,
-            "entityId": "bb583c00-1171-11ea-bb69-3d7ec9a0797c",
-            "name": "vertex",
-            "color": {
-                "red": 1,
-                "green": 1,
-                "blue": 1,
-                "alpha": 1
-            },
-            "pixelSize": 15,
-            "show": true,
-            "render": true
-        },
-        {
-            "lon": -117.841239958975,
-            "lat": 33.647070370923,
-            "height": 6.995,
-            "heightOffset": 0,
-            "entityId": "bb583c01-1171-11ea-bb69-3d7ec9a0797c",
+            "entityId": "f7df3ac0-1171-11ea-bb69-3d7ec9a0797c",
             "name": "vertex",
             "color": {
                 "red": 1,
@@ -239,7 +222,7 @@ class CreateBuildingPanel extends PureComponent {
             "lat": 33.646994124261,
             "height": 6.995,
             "heightOffset": 0,
-            "entityId": "bb583c02-1171-11ea-bb69-3d7ec9a0797c",
+            "entityId": "f7df3ac1-1171-11ea-bb69-3d7ec9a0797c",
             "name": "vertex",
             "color": {
                 "red": 1,
@@ -252,11 +235,28 @@ class CreateBuildingPanel extends PureComponent {
             "render": true
         },
         {
-            "lon": -117.840962356035,
-            "lat": 33.647017867687,
+            "lon": -117.841239958975,
+            "lat": 33.647070370923,
+            "height": 6.995,
+            "heightOffset": 0,
+            "entityId": "f7df3ac2-1171-11ea-bb69-3d7ec9a0797c",
+            "name": "vertex",
+            "color": {
+                "red": 1,
+                "green": 1,
+                "blue": 1,
+                "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+        },
+        {
+            "lon": -117.841398202502,
+            "lat": 33.647049862886,
             "height": 4.995,
             "heightOffset": 0,
-            "entityId": "bb583c03-1171-11ea-bb69-3d7ec9a0797c",
+            "entityId": "f7df3ac3-1171-11ea-bb69-3d7ec9a0797c",
             "name": "vertex",
             "color": {
                 "red": 1,
@@ -270,12 +270,8 @@ class CreateBuildingPanel extends PureComponent {
         }
     ];
 
-    var tilt = minPanelTiltAngleOnPitchedRoof(plane_points, 36.92588);
-    var points = [tilt[1], tilt[2], tilt[3]];
-    console.log("points");
-    console.log(points);
-    this.props.setDebugPoints(points);
-    console.log(tilt[0]);
+    var tilt = minPanelTiltAngleOnPitchedRoof(plane_points, 216.92605);
+    console.log(tilt);
 
     return (
       <Form onSubmit={this.handleSubmit}>
