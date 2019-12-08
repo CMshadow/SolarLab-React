@@ -164,3 +164,4 @@ export const UPDATE_SINGLE_ROOF_TOP = 'UPDATE_SINGLE_ROOF_TOP';
  *  drawingSingleLineDiagram.js
  */
 export const INIT_STAGE = 'INIT_STAGE';
+export const PANEL_ARRAY_COLLECTION = 'PANEL_ARRAY_COLLECTION';

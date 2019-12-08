@@ -141,5 +141,6 @@ export {
 
 
 export {
-  initStage
+  initStage,
+  panelArrayCollection
 } from './drawingSingleLineDiagram';
