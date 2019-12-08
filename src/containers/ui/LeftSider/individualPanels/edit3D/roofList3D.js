@@ -18,6 +18,21 @@ import RoofListItem3D from './roofListItem3D';
 import PitchedRoofListItem3D from './pitchedRoofListItem3D';
 
 class RoofList3D extends Component {
+  state = {
+    editingRoofIndex: null
+  };
+
+  setEditingRoofIndex = (roofIndex) => {
+    this.setState({
+      editingRoofIndex: roofIndex
+    });
+  };
+
+  releaseEditingRoofIndex = () => {
+    this.setState({
+      editingRoofIndex: null
+    });
+  };
 
   render () {
     const header = (
@@ -41,7 +56,13 @@ class RoofList3D extends Component {
               renderItem={(item,i) => {
                 return this.props.workingBuilding.type === 'FLAT' ?
                 <RoofListItem3D roofIndex={i} {...item} /> :
-                <PitchedRoofListItem3D roofIndex={i} {...item} />
+                <PitchedRoofListItem3D
+                  roofIndex={i}
+                  editingRoofIndex={this.state.editingRoofIndex}
+                  setEditingRoofIndex={this.setEditingRoofIndex}
+                  releaseEditingRoofIndex={this.releaseEditingRoofIndex}
+                  {...item}
+                />
               }}
             />
           </ConfigProvider>

@@ -84,7 +84,13 @@ export {
   calculateHighestandLowestNodes,
   calculateObliquityAndObliquity,
   checkEdgeTypeOfPath,
-  updateSingleRoofTop
+  updateSingleRoofTop,
+  showOnlyOneRoofPlane,
+  showAllRoofPlane,
+  setHoverRoofTopPointIndex,
+  releaseHoverRoofTopPointIndex,
+  setPickedRoofTopPointIndex,
+  releasePickedRoofTopPointIndex
 } from './drawingRooftopManager';
 
 
@@ -105,6 +111,7 @@ export {
   setUIStateEditingKeepout,
   setPreviousUIState,
   setUIStateEditing3D,
+  setUIStateEditingRoofTop,
   setUIStateSetUpPV
 } from './uiStateManager';
 

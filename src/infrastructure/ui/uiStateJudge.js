@@ -13,7 +13,8 @@ export const showDrawingPanel = (uiState) => {
 
 export const showEditing3DPanel = (uiState) => {
   return (
-    uiState === 'EDITING_3D'
+    uiState === 'EDITING_3D' ||
+    uiState === 'EDITING_ROOFTOP'
   )
 };
 

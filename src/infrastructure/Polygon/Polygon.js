@@ -246,5 +246,20 @@ class Polygon {
     return new FoundLine(points);
   }
 
+  convertHierarchyToPoints = () => {
+    const points = [];
+    for (let i = 0; i < this.hierarchy.length; i+=3) {
+      points.push(
+        new Point(this.hierarchy[i], this.hierarchy[i+1], this.hierarchy[i+2])
+      );
+    }
+    return points
+  }
+
+  convertHierarchyToFoundLine = () => {
+    const points = this.convertHierarchyToPoints();
+    return new FoundLine([...points, points[0]]);
+  }
+
 }
 export default Polygon;
