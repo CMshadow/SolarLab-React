@@ -51,7 +51,6 @@ const showOnlyOneRoofPlane = (state, action) => {
 		, 0);
 	const innerPlanePoints = state.RooftopCollection.rooftopCollection[showIndex]
 		.convertHierarchyToPoints();
-	console.log(state.threePointsInfo[showIndex])
 	if (state.threePointsInfo[showIndex]) {
 		Object.keys(state.threePointsInfo[showIndex]).forEach(k => {
 			let color = Cesium.Color.SLATEBLUE ;

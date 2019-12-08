@@ -58,7 +58,6 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
   ).pathCollection;
 
   let newRooftopCollection = new RoofTop();
-  console.log(pathInformationCollection)
   pathInformationCollection.forEach(roofPlane => {
     for(let ind = 0; ind < roofPlane.roofPlaneCoordinateArray.length; ind+=3) {
       roofPlane.roofPlaneCoordinateArray[ind+2] -= 0.005

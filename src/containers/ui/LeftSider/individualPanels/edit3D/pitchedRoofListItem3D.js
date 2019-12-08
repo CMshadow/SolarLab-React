@@ -49,7 +49,7 @@ class PitchedRoofListItem3D extends Component {
             }
             onClick={() => {
               this.toggleEdit(this.props.roofIndex);
-              this.props.editingRoofIndex ?
+              this.props.editingRoofIndex !== null ?
               this.props.releaseEditingRoofIndex() :
               this.props.setEditingRoofIndex(this.props.roofIndex)
             }}

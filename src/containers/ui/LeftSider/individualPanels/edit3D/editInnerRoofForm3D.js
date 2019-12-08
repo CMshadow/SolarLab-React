@@ -174,7 +174,10 @@ const formOptions = {
         valueValid = false
       }
     })
-    console.log(allValues)
+    if (valueValid && Object.keys(allValues).length === 3) {
+      console.log(allValues)
+      console.log(props.threePointsInfo)
+    }
   }
 }
 

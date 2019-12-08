@@ -66,8 +66,6 @@ const LeftClickHandler = (props) => {
         break;
 
       case 'EDITING_ROOFTOP':
-        console.log(pickedObjectIdArray)
-        console.log(props.rooftopHoverPoint)
         if (pickedObjectIdArray.includes(props.rooftopHoverPoint.entityId)) {
           props.setPickedRoofTopPointIndex();
         }
