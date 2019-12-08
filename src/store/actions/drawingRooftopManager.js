@@ -155,7 +155,6 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
 export const initNodesCollection = (
   buildingOutline, newNodeCollection, newOuterEdgeCollection
 ) => {
-
   // Build outer edges-points relations
   for (let i = 0; i < buildingOutline.length; i+=3) {
     newNodeCollection.push(
@@ -478,5 +477,39 @@ export const showOnlyOneRoofPlane = (roofId) => {
 export const showAllRoofPlane = () => {
   return {
     type: actionTypes.SHOW_ALL_ROOF
+  };
+}
+
+export const setHoverRoofTopPointIndex = (point) => {
+  return {
+    type: actionTypes.SET_HOVER_ROOFTOP_POINT,
+    point: point
+  };
+}
+
+export const releaseHoverRoofTopPointIndex = () => {
+  return {
+    type: actionTypes.RELEASE_HOVER_ROOFTOP_POINT,
+  };
+}
+
+export const setPickedRoofTopPointIndex = () => (dispatch, getState) => {
+	const editingInnerPlanePoints =
+    getState().undoableReducer.present.drawingRooftopManagerReducer
+    .editingInnerPlanePoints;
+  const hoverPoint =
+    getState().undoableReducer.present.drawingRooftopManagerReducer.hoverPoint;
+  const pointIndex = editingInnerPlanePoints.reduce((matchInd, p, i) =>
+    p.entityId === hoverPoint.entityId ? i : matchInd
+  , 0);
+  return dispatch({
+    type: actionTypes.SET_PICKED_ROOFTOP_POINT,
+    pointIndex: pointIndex
+  })
+}
+
+export const releasePickedRoofTopPointIndex = () => {
+	return {
+    type: actionTypes.RELEASE_PICKED_ROOFTOP_POINT
   };
 }

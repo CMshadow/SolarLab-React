@@ -97,9 +97,15 @@ class EditPitchedRoofForm extends PureComponent {
         <Row style={{'textAlign':'center'}}>
           <Col span={8}>
             <Popover content={pointContent} trigger='click'>
-              <Button type="danger" shape="circle" size='small' onClick={()=>{
-                this.props.showOnlyOneRoofPlane(this.props.entityId)
-              }}/>
+              <Button
+                type="danger"
+                shape="circle"
+                size='small'
+                onClick={()=>{
+                  this.props.showOnlyOneRoofPlane(this.props.entityId);
+                  this.props.setUIStateEditingRoofTop()
+                }}
+              />
             </Popover>
           </Col>
         </Row>
@@ -138,7 +144,9 @@ const mapDispatchToProps = dispatch => {
     createPolygonFoundationWrapper: () =>
       dispatch(actions.createPolygonFoundationWrapper()),
     showOnlyOneRoofPlane: (roofId) =>
-      dispatch(actions.showOnlyOneRoofPlane(roofId))
+      dispatch(actions.showOnlyOneRoofPlane(roofId)),
+    setUIStateEditingRoofTop: () =>
+      dispatch(actions.setUIStateEditingRoofTop())
   };
 };
 

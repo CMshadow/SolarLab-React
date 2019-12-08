@@ -11,12 +11,10 @@ const drawingRooftopManagerRender = (props) => {
   const drawingBuildingRooftop = [];
   const drawingBuildingRoofTopExcludeStb = [];
   const editingInnerPlanePoints = [];
-  let editingInnerPlaneIndex  = null;
   if (props.PitchedBuildingRoofTop.EnableToBuild && props.CurrentBuilding.type === 'PITCHED') {
     props.PitchedBuildingRoofTop.RooftopCollection.getAllRoofTops()
     .forEach((RoofPlane, ind) => {
       if (RoofPlane.show) {
-        editingInnerPlaneIndex = ind
         drawingBuildingRooftop.push(
           <PolygonVisualize
             key={RoofPlane.entityId}
@@ -39,11 +37,8 @@ const drawingRooftopManagerRender = (props) => {
         }
       )}
     );
-    if (drawingBuildingRooftop.length === 1) {
-      console.log(editingInnerPlaneIndex)
-      const innerPlanePoints = props.PitchedBuildingRoofTop.RooftopCollection
-      .rooftopCollection[editingInnerPlaneIndex].convertHierarchyToPoints();
-      innerPlanePoints.forEach(p =>
+    if (props.editingInnerPlanePoints) {
+      props.editingInnerPlanePoints.forEach(p =>
         editingInnerPlanePoints.push(
           <CustomPoint key={p.entityId} {...p}/>
         )
@@ -64,7 +59,13 @@ const mapStateToProps = state => {
     CurrentBuilding:
       state.buildingManagerReducer.workingBuilding,
     PitchedBuildingRoofTop:
+      state.undoableReducer.present.drawingRooftopManagerReducer,
+    editingInnerPlaneIndex:
       state.undoableReducer.present.drawingRooftopManagerReducer
+      .editingInnerPlaneIndex,
+    editingInnerPlanePoints:
+      state.undoableReducer.present.drawingRooftopManagerReducer
+      .editingInnerPlanePoints,
   }
 };
 

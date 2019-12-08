@@ -85,7 +85,11 @@ export {
   calculateObliquityAndObliquity,
   checkEdgeTypeOfPath,
   showOnlyOneRoofPlane,
-  showAllRoofPlane
+  showAllRoofPlane,
+  setHoverRoofTopPointIndex,
+  releaseHoverRoofTopPointIndex,
+  setPickedRoofTopPointIndex,
+  releasePickedRoofTopPointIndex
 } from './drawingRooftopManager';
 
 
@@ -105,6 +109,7 @@ export {
   setUIStateEditingKeepout,
   setPreviousUIState,
   setUIStateEditing3D,
+  setUIStateEditingRoofTop,
   setUIStateSetUpPV
 } from './uiStateManager';
 

@@ -65,6 +65,14 @@ const LeftClickHandler = (props) => {
         }
         break;
 
+      case 'EDITING_ROOFTOP':
+        console.log(pickedObjectIdArray)
+        console.log(props.rooftopHoverPoint)
+        if (pickedObjectIdArray.includes(props.rooftopHoverPoint.entityId)) {
+          props.setPickedRoofTopPointIndex();
+        }
+        break;
+
       default:
         break;
     }
@@ -93,6 +101,8 @@ const mapStateToProps = state => {
     linkedKeepoutType:
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .linkedKeepoutType,
+    rooftopHoverPoint:
+      state.undoableReducer.present.drawingRooftopManagerReducer.hoverPoint
   };
 };
 
@@ -119,6 +129,9 @@ const mapDispatchToProps = dispatch => {
     ),
     addOrClickPoint: (cartesian, viewer, pickedObject) => dispatch(
       actions.addOrClickPoint(cartesian, viewer, pickedObject)
+    ),
+    setPickedRoofTopPointIndex: () => dispatch(
+      actions.setPickedRoofTopPointIndex()
     )
   };
 };
