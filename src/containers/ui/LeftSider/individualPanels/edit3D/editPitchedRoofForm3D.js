@@ -54,7 +54,6 @@ class EditPitchedRoofForm extends PureComponent {
     );
 
     const HeightOrAngle = (
-      <Form.Item>
         <Row>
           <Col span={22} offset={1} style={{textAlign: 'center'}}>
             {getFieldDecorator('heightOrAngle', {
@@ -75,7 +74,6 @@ class EditPitchedRoofForm extends PureComponent {
             )}
           </Col>
         </Row>
-      </Form.Item>
     )
 
     const HighestHeight = (
@@ -158,14 +156,14 @@ const mapDispatchToProps = dispatch => {
 const formOptions = {
   name: 'editRoof',
   onValuesChange: (props, changedValues, allValues) => {
-    console.log(allValues)
     let valueValid = true
     Object.keys(allValues).forEach(k => {
       if (typeof(allValues[k]) !== 'number' && k !== 'heightOrAngle') {
         valueValid = false
       }
     })
-    if (valueValid) {
+    if (valueValid && Object.keys(changedValues)[0] !== 'heightOrAngle') {
+      console.log(allValues)
       if (allValues.heightOrAngle === 'height' &&
       allValues.lowestHeight <= allValues.highestHeight) {
         props.updateRoofTop(

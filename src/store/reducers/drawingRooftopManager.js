@@ -15,9 +15,11 @@ const initState = {
   EnableToBuild: false,
 
 	editingInnerPlaneIndex: null,
+	threePointsIndex: null,
 	editingInnerPlanePoints: null,
 	hoverPoint: null,
-	pickedPointIndex: null
+	pickedPointIndex: null,
+	threePointsInfo: {}
 }
 
 
@@ -43,45 +45,46 @@ const updateSingleRoofTop = (state, action) => {
 }
 
 const showOnlyOneRoofPlane = (state, action) => {
-	const newRoofTopCollection = RoofTop.CopyPolygon(state.RooftopCollection);
-	let showIndex = 0;
-	newRoofTopCollection.rooftopCollection.forEach((roof, ind) => {
-		if (roof.entityId !== action.roofId) {
-			roof.show = false;
-		} else {
-			showIndex = ind;
-		}
-	});
-	newRoofTopCollection.rooftopExcludeStb.forEach((roofInd, ind) => {
-		roofInd.forEach(roof => {
-			if (showIndex !== ind) {
-				roof.show = false;
-			}
-		});
-	});
-	const innerPlanePoints = newRoofTopCollection.rooftopCollection[showIndex]
+	const showIndex =
+		state.RooftopCollection.rooftopCollection.reduce((acc, roof, ind) =>
+			roof.entityId === action.roofId ? ind : acc
+		, 0);
+	const innerPlanePoints = state.RooftopCollection.rooftopCollection[showIndex]
 		.convertHierarchyToPoints();
+	console.log(state.threePointsInfo[showIndex])
+	if (state.threePointsInfo[showIndex]) {
+		Object.keys(state.threePointsInfo[showIndex]).forEach(k => {
+			let color = Cesium.Color.SLATEBLUE ;
+			switch (k) {
+				default:
+					break;
+				case '1':
+					color = Cesium.Color.PLUM;
+					break;
+				case '2':
+					color = Cesium.Color.OLIVEDRAB;
+			}
+			innerPlanePoints[state.threePointsInfo[showIndex][k].pointIndex].setColor(
+				color
+			)
+		});
+	}
 	return {
 		...state,
-		RooftopCollection: newRoofTopCollection,
 		editingInnerPlaneIndex: showIndex,
+		threePointsIndex: action.threePointIndex,
 		editingInnerPlanePoints: innerPlanePoints
 	};
 }
 
 const showAllRoofPlane = (state, action) => {
-	const newRoofTopCollection = RoofTop.CopyPolygon(state.RooftopCollection);
-	newRoofTopCollection.rooftopCollection.forEach(roof => {
-		roof.show = true;
-	});
-	newRoofTopCollection.rooftopExcludeStb.forEach(roofInd => {
-		roofInd.forEach(roof => {
-			roof.show = true;
-		});
-	});
 	return {
 		...state,
-		RooftopCollection: newRoofTopCollection
+		editingInnerPlaneIndex: null,
+		threePointsIndex: null,
+		editingInnerPlanePoints: null,
+		hoverPoint: null,
+		pickedPointIndex: null,
 	};
 }
 
@@ -120,16 +123,43 @@ const releaseHoverRoofTopPointIndex = (state, action) => {
 }
 
 const setPickedRoofTopPointIndex = (state, action) => {
+	let color = Cesium.Color.SLATEBLUE;
+	switch (state.threePointsIndex) {
+		default:
+			break;
+		case 1:
+			color = Cesium.Color.PLUM;
+			break;
+		case 2:
+			color = Cesium.Color.OLIVEDRAB;
+	};
+	const newEditingInnerPlanePoints = state.editingInnerPlanePoints.map((p, i) =>
+		i === action.pointIndex ?
+		Point.fromPoint(p, null, null, null, null, null, null, color) :
+		p
+	);
 	return {
 		...state,
-		pickedPointIndex: action.pointIndex
+		editingInnerPlanePoints: newEditingInnerPlanePoints,
+		pickedPointIndex: action.pointIndex,
+		hoverPoint: null,
+		threePointsInfo : {
+			...state.threePointsInfo,
+			[state.editingInnerPlaneIndex]: {
+				...state.threePointsInfo[state.editingInnerPlaneIndex],
+				[state.threePointsIndex]: {
+					pointIndex: action.pointIndex,
+				}
+			}
+		}
 	}
 }
 
 const releasePickedRoofTopPointIndex = (state, action) => {
 	return {
 		...state,
-		pickedPointIndex: null
+		pickedPointIndex: null,
+		hoverPoint: null
 	};
 }
 

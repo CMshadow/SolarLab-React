@@ -662,10 +662,11 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
   });
 }
 
-export const showOnlyOneRoofPlane = (roofId) => {
+export const showOnlyOneRoofPlane = (roofId, threePointIndex) => {
   return {
     type: actionTypes.SHOW_ONLY_ONE_ROOF,
-    roofId: roofId
+    roofId: roofId,
+    threePointIndex: threePointIndex
   };
 }
 
@@ -688,7 +689,7 @@ export const releaseHoverRoofTopPointIndex = () => {
   };
 }
 
-export const setPickedRoofTopPointIndex = () => (dispatch, getState) => {
+export const setPickedRoofTopPointIndex = (threePointInd) => (dispatch, getState) => {
 	const editingInnerPlanePoints =
     getState().undoableReducer.present.drawingRooftopManagerReducer
     .editingInnerPlanePoints;
@@ -697,9 +698,11 @@ export const setPickedRoofTopPointIndex = () => (dispatch, getState) => {
   const pointIndex = editingInnerPlanePoints.reduce((matchInd, p, i) =>
     p.entityId === hoverPoint.entityId ? i : matchInd
   , 0);
+  dispatch(actions.setUIStateEditing3D());
   return dispatch({
     type: actionTypes.SET_PICKED_ROOFTOP_POINT,
-    pointIndex: pointIndex
+    pointIndex: pointIndex,
+    threePointsIndex: threePointInd
   })
 }
 

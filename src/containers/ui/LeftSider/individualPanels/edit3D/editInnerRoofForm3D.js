@@ -13,17 +13,6 @@ import * as actions from '../../../../../store/actions/index';
 
 class EditInnerRoofForm extends PureComponent {
 
-  handleSubmit = (event) => {
-    event.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        this.props.updateBuilding(values);
-        this.props.createPolygonFoundationWrapper();
-        this.props.toggleEdit();
-      }
-    });
-  };
-
   numberInputRules = [
     {
       type: 'number',
@@ -34,98 +23,119 @@ class EditInnerRoofForm extends PureComponent {
     }
   ];
 
+  buttonColor = (ind) => {
+    switch (ind) {
+      default:
+        return '#6A5ACD';
+      case 1:
+        return '#DDA0DD';
+      case 2:
+        return '#6B8E23';
+    }
+  }
+
   render () {
     const { getFieldDecorator } = this.props.form;
 
-    const LowestHeight = (
-      <Form.Item>
-        <Row>
-          <Col span={12} offset={1}>
-            <h4>Lowest Height</h4>
-          </Col>
-          <Col span={10}>
-            {getFieldDecorator('lowestHeight', {
-              rules: [...this.numberInputRules],
-              initialValue: this.props.lowestNode[2]
-            })(
-              <InputNumber
-                min={0}
-                max={100}
-                step={0.1}
-                formatter={value => `${value}m`}
-                parser={value => value.replace('m', '')}
-              />
-            )}
-          </Col>
-        </Row>
-      </Form.Item>
-    );
+    const clickPoint = (<p>Select a Point</p>)
 
-    const HighestHeight = (
-      <Form.Item>
-        <Row>
-          <Col span={12} offset={1}>
-            <h4>Lowest Height</h4>
-          </Col>
-          <Col span={10}>
-            {getFieldDecorator('highestHeight', {
-              rules: [...this.numberInputRules],
-              initialValue: this.props.highestNode[2]
-            })(
-              <InputNumber
-                min={0}
-                max={100}
-                step={0.1}
-                formatter={value => `${value}m`}
-                parser={value => value.replace('m', '')}
-              />
-            )}
-          </Col>
-        </Row>
-      </Form.Item>
-    );
+    const giveHeight = (ind) => (
+        <Form.Item>
+          <Row>
+            <Col span={24} style={{textAlign: 'center'}}>
+              <h4>Height</h4>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={24} style={{textAlign: 'center'}}>
+              {getFieldDecorator(`height${ind}`, {
+                rules: [...this.numberInputRules],
+                initialValue: this.props.editingInnerPlanePoints ?
+                  this.props.editingInnerPlanePoints[
+                    this.props.threePointsInfo[this.props.roofIndex][ind].pointIndex
+                  ].height :
+                  0
+              })(
+                <InputNumber
+                  min={0}
+                  max={100}
+                  step={0.1}
+                  formatter={value => `${value}m`}
+                  parser={value => value.replace('m', '')}
+                />
+              )}
+            </Col>
+          </Row>
+        </Form.Item>
+    )
 
-    const pointContent = (
-      <p>Pick a point</p>
+    const OnePoint = (ind) => (
+      <Col span={8}>
+        <Popover
+          content={
+            this.props.threePointsInfo[this.props.roofIndex] &&
+            Object.keys(this.props.threePointsInfo[this.props.roofIndex]).includes(ind.toString()) ?
+            giveHeight(ind) :
+            clickPoint
+          }
+          trigger='click'
+          arrowPointAtCenter={true}
+          onVisibleChange={vis => {
+            if (vis === false) this.props.showAllRoofPlane();
+          }}
+        >
+          <Button
+            type={
+              this.props.threePointsInfo[this.props.roofIndex] &&
+              Object.keys(this.props.threePointsInfo[this.props.roofIndex])
+              .includes(ind.toString()) ?
+              'default' :
+              'danger'
+            }
+            style={{
+              backgroundColor:
+                this.props.threePointsInfo[this.props.roofIndex] &&
+                Object.keys(this.props.threePointsInfo[this.props.roofIndex])
+                .includes(ind.toString()) ?
+                this.buttonColor(ind) :
+                null
+            }}
+            shape="circle"
+            size='small'
+            onClick={() => {
+              if (this.props.threePointsInfo[this.props.roofIndex]) {
+                this.props.showOnlyOneRoofPlane(this.props.entityId, ind);
+                if (
+                  !Object.keys(this.props.threePointsInfo[this.props.roofIndex])
+                  .includes(ind.toString())
+                ) this.props.setUIStateEditingRoofTop();
+              } else {
+                this.props.showOnlyOneRoofPlane(this.props.entityId, ind);
+                this.props.setUIStateEditingRoofTop()
+              }
+            }}
+          />
+        </Popover>
+      </Col>
     )
 
     const ThreePoints = (
-      <Form.Item>
+      <div>
         <Row type="flex" justify="center">
           <h4>Provide the height of three points</h4>
         </Row>
         <Row style={{'textAlign':'center'}}>
-          <Col span={8}>
-            <Popover content={pointContent} trigger='click'>
-              <Button
-                type="danger"
-                shape="circle"
-                size='small'
-                onClick={()=>{
-                  this.props.showOnlyOneRoofPlane(this.props.entityId);
-                  this.props.setUIStateEditingRoofTop()
-                }}
-              />
-            </Popover>
-          </Col>
+          {OnePoint(0)}
+          {OnePoint(1)}
+          {OnePoint(2)}
         </Row>
-      </Form.Item>
-    )
+    </div>
+  )
 
 
     return (
-      <Form onSubmit={this.handleSubmit}>
-        {LowestHeight}
-        {HighestHeight}
+      <Form>
         {ThreePoints}
-        {/*The button to validate & process to create a new building*/}
-        <Row type="flex" justify="center">
-          <Col span={16}>
-            <Button type='default' shape='round' htmlType="submit" block>
-              Update
-            </Button>
-          </Col>
-        </Row>
       </Form>
     );
   }
@@ -133,7 +143,11 @@ class EditInnerRoofForm extends PureComponent {
 
 const mapStateToProps = state => {
   return {
-    workingBuilding: state.buildingManagerReducer.workingBuilding
+    editingInnerPlanePoints:
+      state.undoableReducer.present.drawingRooftopManagerReducer
+      .editingInnerPlanePoints,
+    threePointsInfo:
+      state.undoableReducer.present.drawingRooftopManagerReducer.threePointsInfo
   };
 };
 
@@ -143,11 +157,25 @@ const mapDispatchToProps = dispatch => {
       dispatch(actions.updateBuilding(values)),
     createPolygonFoundationWrapper: () =>
       dispatch(actions.createPolygonFoundationWrapper()),
-    showOnlyOneRoofPlane: (roofId) =>
-      dispatch(actions.showOnlyOneRoofPlane(roofId)),
+    showOnlyOneRoofPlane: (roofId, threePointIndex) =>
+      dispatch(actions.showOnlyOneRoofPlane(roofId, threePointIndex)),
+    showAllRoofPlane: () => dispatch(actions.showAllRoofPlane()),
     setUIStateEditingRoofTop: () =>
       dispatch(actions.setUIStateEditingRoofTop())
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'editRoof' })(EditInnerRoofForm));
+const formOptions = {
+  name: 'editRoof',
+  onValuesChange: (props, changedValues, allValues) => {
+    let valueValid = true
+    Object.keys(allValues).forEach(k => {
+      if (typeof(allValues[k]) !== 'number') {
+        valueValid = false
+      }
+    })
+    console.log(allValues)
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create(formOptions)(EditInnerRoofForm));
