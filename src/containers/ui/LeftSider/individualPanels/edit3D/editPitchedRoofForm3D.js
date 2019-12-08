@@ -80,7 +80,7 @@ class EditPitchedRoofForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4>Lowest Height</h4>
+            <h4>Highest Height</h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('highestHeight', {

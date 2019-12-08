@@ -175,8 +175,15 @@ const formOptions = {
       }
     })
     if (valueValid && Object.keys(allValues).length === 3) {
-      console.log(allValues)
-      console.log(props.threePointsInfo)
+      const requestData = {
+        [props.threePointsInfo[props.roofIndex][0].pointIndex]:
+          allValues['height0'],
+        [props.threePointsInfo[props.roofIndex][1].pointIndex]:
+          allValues['height1'],
+        [props.threePointsInfo[props.roofIndex][2].pointIndex]: 
+          allValues['height2'],
+      };
+      console.log(requestData)
     }
   }
 }

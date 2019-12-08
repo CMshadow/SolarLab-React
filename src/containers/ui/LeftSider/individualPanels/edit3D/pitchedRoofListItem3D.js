@@ -32,9 +32,16 @@ class PitchedRoofListItem3D extends Component {
         bordered={false}
         bodyStyle={{padding: '5px'}}
       >
-        <EditInnerRoofForm {...this.props}/>
+        {
+          this.props.edgesCollection.reduce((acc, val) =>
+            val.type === 'Ridge' ? acc + 1 : acc
+          , 0) !== this.props.edgesCollection.length ?
+          <EditPitchedRoofForm {...this.props} /> :
+          <EditInnerRoofForm {...this.props} />
+        }
       </Card>
     );
+
     return (
       <List.Item
         extra={this.state.enableEdit ? editCard : null}
