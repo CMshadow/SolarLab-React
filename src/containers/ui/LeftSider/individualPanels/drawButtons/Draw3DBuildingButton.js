@@ -35,12 +35,13 @@ const draw3DBuildingButton = (props) => {
     >Generate 3D Model</Button>
 
   );
+
   return (
     <Row>
-    <Col span={18} offset={3}>
-      {DrawBuildingPolygon}
-    </Col>
-  </Row>
+      <Col span={18} offset={3}>
+        {DrawBuildingPolygon}
+      </Col>
+    </Row>
   );
 }
 
@@ -51,7 +52,6 @@ const mapStateToProps = state => {
     backendLoading: state.projectManagerReducer.backendLoading,
     keepoutList:
       state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
-
   };
 };
 
@@ -60,7 +60,9 @@ const mapDispatchToProps = dispatch => {
     CreatePitchedBuildingRoofTopPolygon: () =>
       dispatch(actions.build3DRoofTopModeling()),
     createPolygonFoundationWrapper: () =>
-      dispatch(actions.createPolygonFoundationWrapper())
+      dispatch(actions.createPolygonFoundationWrapper()),
+    createAllKeepoutPolygon: () =>
+      dispatch(actions.createAllKeepoutPolygon())
  };
 };
 

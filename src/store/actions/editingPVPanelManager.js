@@ -188,6 +188,8 @@ export const generatePanels = (roofIndex) => (dispatch, getState) => {
   } else {
     requestData.pitchedRoofPolygon =
       workingBuilding.pitchedRoofPolygons[roofIndex];
+    requestData.height =
+      workingBuilding.pitchedRoofPolygons[roofIndex].lowestNode[2];
     console.log(requestData)
     generatePitchedRoofPanels(dispatch, requestData, roofIndex);
   }
@@ -215,6 +217,7 @@ const generateFlatRoofPanels = (dispatch, requestData) => {
     return dispatch(setBackendLoadingFalse());
   })
   .catch(error => {
+    console.log(error)
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Backend Error',

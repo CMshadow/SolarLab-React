@@ -84,6 +84,7 @@ export {
   calculateHighestandLowestNodes,
   calculateObliquityAndObliquity,
   checkEdgeTypeOfPath,
+  updateSingleRoofTop,
   showOnlyOneRoofPlane,
   showAllRoofPlane,
   setHoverRoofTopPointIndex,
@@ -95,7 +96,8 @@ export {
 
 export {
   createAllKeepoutPolygon,
-  reRenderKeepoutPolygon
+  reRenderKeepoutPolygon,
+  updateKeepoutOnRoof
 } from './drawingKeepoutPolygonManager'
 
 export {

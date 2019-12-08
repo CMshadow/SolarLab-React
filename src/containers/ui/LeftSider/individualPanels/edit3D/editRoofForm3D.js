@@ -126,11 +126,11 @@ const mapDispatchToProps = dispatch => {
 const formOptions = {
   name: 'editRoof',
   onValuesChange: (props, changedValues, allValues) => {
-    let validation = true;
+    let valueValid = true;
     Object.keys(allValues).forEach(k => {
-      if (typeof(allValues[k]) !== 'number') validation = false
+      if (typeof(allValues[k]) !== 'number') valueValid = false
     });
-    if (validation) {
+    if (valueValid) {
       props.updateBuilding(allValues);
       props.createPolygonFoundationWrapper();
     }

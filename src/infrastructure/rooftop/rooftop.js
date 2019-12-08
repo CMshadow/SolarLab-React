@@ -42,7 +42,6 @@ class RoofTop {
   * @param {Polygon}   [rooftopCollection= [] ]   A list of Polygon object, each polygon represents a rooftop ,default empty list
   * @param {Boolean} [show=true]     whether to show the Rooftop,
   *                                  default true
-*
  */
 
   static CopyPolygon (
