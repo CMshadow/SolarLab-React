@@ -14,7 +14,6 @@ const SingleLineDiagramPage = () => {
     <Layout>
         <Content>
           <SingleLineDiagramStage
-
           />
       </Content>
       
