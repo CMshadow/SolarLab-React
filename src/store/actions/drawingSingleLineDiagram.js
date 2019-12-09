@@ -62,7 +62,7 @@ export const initStage = (layer) => {
 
     let pancelCollection = panelArrayCollection(layer, 4);
     let combinerCollection = CombinerBoxCollections(layer, 250, pancelCollection.connectPoint1, pancelCollection.connectPoint2, 4);
-    DisconnectCollection(layer, combinerCollection.distance, 3 ,2);
+    DisconnectCollection(layer, combinerCollection.distance, 3, 2);
   return({
     type: actionTypes.INIT_STAGE,
     stageWidth: window.innerWidth,
@@ -727,7 +727,7 @@ export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterA
     let circleAccessOutList = [];
     for (let i = 1; i <= inverterAccess; ++i) {
       let circle1 = new Konva.Circle({
-        x: startX + 0.2 * w_min, 
+        x: startX + 0.25 * w_min, 
         y: startY + (h_min / (inverterAccess + 1)) * i,
         radius: 5,
         fill: 'white',
@@ -751,7 +751,7 @@ export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterA
       let switchOffsetY = h_min / (inverterAccess + 1);
       let switchOffsetX = startX + 0.3 * w_min;
       let switchLine = new Konva.Line({
-        points: [switchOffsetX, startY + (switchOffsetY) * (i - 0.3), startX + 0.8 * w_min, startY + (h_min / (inverterAccess + 1)) * i ],
+        points: [switchOffsetX, startY + (switchOffsetY) * (i - 0.5), startX + 0.8 * w_min, startY + (h_min / (inverterAccess + 1)) * i ],
         stroke: 'white',
         strokeWidth: stroke_Width,
         lineCap: 'round',
