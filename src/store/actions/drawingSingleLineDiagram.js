@@ -61,7 +61,7 @@ export const initStage = (layer) => {
     }
 
     let pancelCollection = panelArrayCollection(layer, 4);
-    let combinerCollection = CombinerBoxCollections(layer, 250, pancelCollection.connectPoint1, pancelCollection.connectPoint2, 4);
+    let combinerCollection = CombinerBoxCollections(layer, pancelCollection.distance, pancelCollection.connectPoint1, pancelCollection.connectPoint2, 4);
     let disconnectCellection = DisconnectCollection(layer, combinerCollection.distance, 3, 2);
     let InvertersCollection = InverterCollection(layer, disconnectCellection.distance, 3);
     let inverterConnecterComponent = InterConnecter(layer, InvertersCollection.distance, InvertersCollection.connectPoint );
@@ -78,10 +78,10 @@ export const initStage = (layer) => {
 }
 
 export const panelArrayCollection = (layer, numOfArray) =>{
-  let w_min = 250;
-  let h_min = 125;
+  let w_min = 150;
+  let h_min = 75;
   let stroke_Width = 2;
-  let font_size = 15;
+  let font_size = Math.floor(h_min / 7);
   let connectAccess1 = [];
   let connectAccess2 = [];
   for (let i = 0; i < numOfArray; ++i) {
@@ -301,7 +301,7 @@ export const panelArrayCollection = (layer, numOfArray) =>{
 
     let ModuleCount = new Konva.Text({
       x: startPanelPointX,
-      y: startPanelPointY + firstPanelHeight * 1.5 + 30,
+      y: startPanelPointY + firstPanelHeight * 1.5 + font_size,
       text: 'Module Count: 42',
       fontSize: font_size,
       fontFamily: 'Calibri',
@@ -392,7 +392,7 @@ export const panelArrayCollection = (layer, numOfArray) =>{
 
     let panelIndex2SecondRow = new Konva.Text({
       x: secondPanelStartPointXSecondRow + secondPanelWidthSecondRow * 0.5,
-      y: secondPanelStartPointYSecondRow + secondPanelHeightSecondRow * 0.1,
+      y: secondPanelStartPointYSecondRow + secondPanelHeightSecondRow * 0.1 ,
       text: '2',
       fontSize: font_size,
       fontFamily: 'Calibri',
@@ -470,7 +470,7 @@ export const panelArrayCollection = (layer, numOfArray) =>{
   return({
     type: actionTypes.PANEL_ARRAY_COLLECTION,
     layer: layer,
-    distance: w_min,
+    distance: [w_min, h_min],
     connectPoint1: connectAccess1,
     connectPoint2: connectAccess2
   });
@@ -478,10 +478,10 @@ export const panelArrayCollection = (layer, numOfArray) =>{
 
 
 export const CombinerBoxCollections = (layer, distance, connectPoint1, connectPoint2, numOfCombiner) => {
-  let w_min = 125;
-  let h_min = 125;
+  let w_min = 65;
+  let h_min = 65;
   let stroke_Width = 2;
-  let font_size = 15;
+  let font_size = Math.floor(h_min / 7);
   let nextDistance = 0;
   // startPoint
   for (let i = 0; i < numOfCombiner; ++i) {
@@ -493,8 +493,8 @@ export const CombinerBoxCollections = (layer, distance, connectPoint1, connectPo
     //   h_min = window.innerHeight * 0.1
     // }
     
-    let startX = window.innerWidth * 0.1 + distance * 1.3;
-    let startY = (window.innerHeight * 0.15) + (h_min * 1.8) * i;
+    let startX = window.innerWidth * 0.1 + distance[0] * 1.3;
+    let startY = (window.innerHeight * 0.15) + (distance[1] * 1.8) * i;
 
     let panelArrayBounary = new Konva.Rect({
         x: startX,
@@ -693,7 +693,7 @@ export const CombinerBoxCollections = (layer, distance, connectPoint1, connectPo
   return({
     type: actionTypes.COMBINER_BOX_COLLECTIONS,
     connectPoint: null,
-    distance: nextDistance,
+    distance: [nextDistance, h_min],
     layer: layer
   });
 
@@ -701,10 +701,10 @@ export const CombinerBoxCollections = (layer, distance, connectPoint1, connectPo
 
 
 export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterAccess) => {
-  let w_min = 100;
-  let h_min = 125 + (inverterAccess - 2) * 15;
+  let w_min = 50;
+  let h_min = 65 + (inverterAccess - 2) * 15;
   let stroke_Width = 2;
-  let font_size = 15;
+  let font_size = Math.floor(h_min / 7);
   let nextDistance = 0;
   let outConnectPoint = null;
   for (let i = 0; i < numOfDisconnect; ++i) {
@@ -716,8 +716,8 @@ export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterA
     //   h_min = window.innerHeight * 0.1
     // }
     
-    let startX = window.innerWidth * 0.1 + distance;
-    let startY = (window.innerHeight * 0.15) + (h_min * 1.8) * i;
+    let startX = window.innerWidth * 0.1 + distance[0];
+    let startY = (window.innerHeight * 0.15) + (distance[1] * 1.8) * i;
     nextDistance = startX + w_min;
     let panelArrayBounary = new Konva.Rect({
       x: startX,
@@ -783,16 +783,16 @@ export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterA
   return({
     type: actionTypes.DISCONNECT_CELLECTION,
     connectPoint: outConnectPoint,
-    distance: nextDistance,
+    distance: [nextDistance, distance[1] * 1.8],
     layer: layer
   });
 }
 
 export const InverterCollection = (layer, distance, numOfInverter) => {
-  let w_min = 125;
-  let h_min = 125;
+  let w_min = 65;
+  let h_min = 65;
   let stroke_Width = 2;
-  let font_size = 15;
+  let font_size = Math.floor(h_min / 7);
   let connectPointList = [];
   let nextDistance = 0;
   for (let i = 0; i < numOfInverter; ++i) {
@@ -800,8 +800,8 @@ export const InverterCollection = (layer, distance, numOfInverter) => {
       w_min = window.innerWidth * 0.05;
     }
 
-    let startX = window.innerWidth * 0.05 + distance;
-    let startY = (window.innerHeight * 0.15) + (h_min * 1.8) * i;
+    let startX = window.innerWidth * 0.05 + distance[0];
+    let startY = (window.innerHeight * 0.15) + (distance[1]) * i;
 
     let inverterArrayBounary = new Konva.Rect({
       x: startX,
@@ -865,12 +865,11 @@ export const InverterCollection = (layer, distance, numOfInverter) => {
   });
 }
 
-
 export const InterConnecter = (layer, distance, connectPoints) => {
-  let w_min = 125;
-  let h_min = 200;
+  let w_min = 65;
+  let h_min = 100;
   let stroke_Width = 2;
-  let font_size = 15;
+  let font_size = Math.floor(h_min / 7);
   let connectPointList = [];
   let nextDistance = 0;
   let numOfInverter = connectPoints.length;
@@ -974,10 +973,13 @@ export const InterConnecter = (layer, distance, connectPoints) => {
 
 
 export const ACDisconnect = (layer, distance, connectPoint) => {
-  let w_min = 125;
-  let h_min = 80;
+  let w_min = 65;
+  let h_min = 40;
   let stroke_Width = 2;
-  let font_size = 15;
+  let font_size = Math.floor(h_min / 7);
+  if (font_size < 10) {
+    font_size = 10;
+  }
   let nextDistance = 0;
 
 
@@ -1085,10 +1087,10 @@ export const ACDisconnect = (layer, distance, connectPoint) => {
 }
 
 export const ServerPanel = (layer, distance, connectPoint) => {
-  let w_min = 100;
-  let h_min = 100;
+  let w_min = 70;
+  let h_min = 70;
   let stroke_Width = 2;
-  let font_size = 15;
+  let font_size = Math.floor(h_min / 7);
   let nextDistance = 0;
 
 
@@ -1261,12 +1263,14 @@ export const ServerPanel = (layer, distance, connectPoint) => {
 }
 
 export const Meter = (layer, distance, connectPoint) => {
-  let w_min = 50;
-  let h_min = 50;
+  let w_min = 30;
+  let h_min = 30;
   let stroke_Width = 2;
-  let font_size = 15;
+  let font_size = Math.floor(h_min / 7);
   let nextDistance = 0;
-
+  if (font_size < 8) {
+    font_size = 8;
+  }
 
   if (window.innerWidth * 0.02 > w_min) {
       w_min = window.innerWidth * 0.02;
