@@ -62,7 +62,13 @@ export const initStage = (layer) => {
 
     let pancelCollection = panelArrayCollection(layer, 4);
     let combinerCollection = CombinerBoxCollections(layer, 250, pancelCollection.connectPoint1, pancelCollection.connectPoint2, 4);
-    DisconnectCollection(layer, combinerCollection.distance, 3, 2);
+    let disconnectCellection = DisconnectCollection(layer, combinerCollection.distance, 3, 2);
+    let InvertersCollection = InverterCollection(layer, disconnectCellection.distance, 3);
+    let inverterConnecterComponent = InterConnecter(layer, InvertersCollection.distance, InvertersCollection.connectPoint );
+    let AC_Disconnectc_Component = ACDisconnect(layer, inverterConnecterComponent.distance, inverterConnecterComponent.connectPoint);
+    let ServerPanelComponent = ServerPanel(layer, AC_Disconnectc_Component.distance, AC_Disconnectc_Component.connectPoint);
+    let MeterComponent = Meter(layer, ServerPanelComponent.distance, ServerPanelComponent.connectPoint);
+
   return({
     type: actionTypes.INIT_STAGE,
     stageWidth: window.innerWidth,
@@ -699,7 +705,8 @@ export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterA
   let h_min = 125 + (inverterAccess - 2) * 15;
   let stroke_Width = 2;
   let font_size = 15;
- 
+  let nextDistance = 0;
+  let outConnectPoint = null;
   for (let i = 0; i < numOfDisconnect; ++i) {
     if (window.innerWidth * 0.05 > w_min) {
       w_min = window.innerWidth * 0.05;
@@ -711,7 +718,7 @@ export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterA
     
     let startX = window.innerWidth * 0.1 + distance;
     let startY = (window.innerHeight * 0.15) + (h_min * 1.8) * i;
-
+    nextDistance = startX + w_min;
     let panelArrayBounary = new Konva.Rect({
       x: startX,
       y: startY,
@@ -767,16 +774,555 @@ export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterA
         lineCap: 'round',
         lineJoin: 'round'
       });
+      outConnectPoint = [startX + 1.2 * w_min, startY + (h_min / (inverterAccess + 1)) * i];
       layer.add(accessOutLine);
     }
     
   }
   
-
-  
   return({
     type: actionTypes.DISCONNECT_CELLECTION,
-    connectPoint: null,
+    connectPoint: outConnectPoint,
+    distance: nextDistance,
+    layer: layer
+  });
+}
+
+export const InverterCollection = (layer, distance, numOfInverter) => {
+  let w_min = 125;
+  let h_min = 125;
+  let stroke_Width = 2;
+  let font_size = 15;
+  let connectPointList = [];
+  let nextDistance = 0;
+  for (let i = 0; i < numOfInverter; ++i) {
+    if (window.innerWidth * 0.05 > w_min) {
+      w_min = window.innerWidth * 0.05;
+    }
+
+    let startX = window.innerWidth * 0.05 + distance;
+    let startY = (window.innerHeight * 0.15) + (h_min * 1.8) * i;
+
+    let inverterArrayBounary = new Konva.Rect({
+      x: startX,
+      y: startY,
+      width:  w_min,
+      height: h_min,
+      stroke: 'white',
+      strokeWidth: stroke_Width
+    })
+    layer.add(inverterArrayBounary);
+    connectPointList.push([startX + w_min, startY + h_min * 0.5]);
+    nextDistance = startX + w_min;
+
+    let circle2 = new Konva.Circle({
+      x: startX + w_min, 
+      y: startY + h_min * 0.5,
+      radius: 5,
+      fill: 'white',
+      // stroke: 'black',
+      // strokeWidth: 4
+    });
+    layer.add(circle2);
+
+    let inverterDiagonalLine = new Konva.Line({
+      points: [startX + w_min, startY, startX, startY + h_min],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round'
+    });
+    layer.add(inverterDiagonalLine);
+    
+    let inverterCurveLine = new Konva.Line({
+      points: [startX + w_min * 0.5, startY + h_min * 0.75, startX + w_min * 0.6, startY + h_min * 0.65, startX + w_min * 0.75, startY + h_min * 0.85, startX + w_min * 0.85, startY + h_min * 0.75],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round',
+      tension: 0.5
+    });
+    layer.add(inverterCurveLine);
+
+    // bottom value
+    let bottomValue = new Konva.Text({
+      x: startX,
+      y: startY + h_min * 1.05,
+      text: 'Survey Triplepower \n 20000 TL-US',
+      fontSize: font_size,
+      fontFamily: 'Calibri',
+      fill: 'white'
+    });
+    layer.add(bottomValue);
+
+  }
+  
+  return({
+    type: actionTypes.INVERTER_COLLECTION,
+    connectPoint: connectPointList,
+    distance: nextDistance,
+    layer: layer
+  });
+}
+
+
+export const InterConnecter = (layer, distance, connectPoints) => {
+  let w_min = 125;
+  let h_min = 200;
+  let stroke_Width = 2;
+  let font_size = 15;
+  let connectPointList = [];
+  let nextDistance = 0;
+  let numOfInverter = connectPoints.length;
+
+  if (window.innerWidth * 0.05 > w_min) {
+      w_min = window.innerWidth * 0.05;
+  }
+
+  let startX = window.innerWidth * 0.05 + distance;
+  let startY = (window.innerHeight * 0.15);
+  nextDistance = startX + w_min;
+  // + (h_min * 1.8) * i
+  let InterConnecterBounary = new Konva.Rect({
+    x: startX,
+    y: startY,
+    width:  w_min,
+    height: h_min,
+    stroke: 'white',
+    strokeWidth: stroke_Width
+  })
+  layer.add(InterConnecterBounary);
+
+  for (let i = 1; i <= numOfInverter; ++i) {
+    let circle = new Konva.Circle({
+      x: startX, 
+      y: startY + (h_min / (numOfInverter + 1)) * i,
+      radius: 5,
+      fill: 'white',
+      // stroke: 'black',
+      // strokeWidth: 4
+    });
+    layer.add(circle);
+
+    let busLine =  new Konva.Line({
+      points: [startX + w_min * 0.65, startY + h_min * 0.15, startX + w_min * 0.5, startY + h_min * 0.15, startX + w_min * 0.5, startY + h_min * 0.85],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round',
+    });
+    layer.add(busLine);
+
+    let busLineCircle1 = new Konva.Circle({
+      x: startX + w_min * 0.65, 
+      y: startY + h_min * 0.15,
+      radius: 3,
+      fill: 'white',
+      // stroke: 'black',
+      // strokeWidth: 4
+    });
+    layer.add(busLineCircle1); 
+
+    let busCurveLine =  new Konva.Line({
+      points: [startX + w_min * 0.65, startY + h_min * 0.15, startX + w_min * 0.75, startY + h_min * 0.1, startX + w_min * 0.85, startY + h_min * 0.15],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round',
+      tension: 0.5
+    });
+    layer.add(busCurveLine);
+
+    let busLineCircle2 = new Konva.Circle({
+      x: startX + w_min * 0.85, 
+      y: startY + h_min * 0.15,
+      radius: 3,
+      fill: 'white',
+      // stroke: 'black',
+      // strokeWidth: 4
+    });
+    layer.add(busLineCircle2); 
+  }
+
+  let busConnectLine =  new Konva.Line({
+    points: [startX + w_min * 0.85, startY + h_min * 0.15, startX + w_min * 1.2, startY + h_min * 0.15 ],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  layer.add(busConnectLine);
+
+  // bottom value
+  let bottomValue = new Konva.Text({
+    x: startX,
+    y: startY + h_min * 1.05,
+    text: '20 Circut Interconnect',
+    fontSize: font_size,
+    fontFamily: 'Calibri',
+    fill: 'white'
+  });
+  layer.add(bottomValue);
+
+  return({
+    type: actionTypes.INVERTER_CONNECTER,
+    connectPoint: [startX + w_min * 1.2, startY + h_min * 0.15],
+    distance: nextDistance,
+    layer: layer
+  });
+}
+
+
+export const ACDisconnect = (layer, distance, connectPoint) => {
+  let w_min = 125;
+  let h_min = 80;
+  let stroke_Width = 2;
+  let font_size = 15;
+  let nextDistance = 0;
+
+
+  if (window.innerWidth * 0.05 > w_min) {
+      w_min = window.innerWidth * 0.05;
+  }
+
+  let startX = window.innerWidth * 0.05 + distance;
+  let startY = (window.innerHeight * 0.15);
+  nextDistance = startX + w_min;
+  // + (h_min * 1.8) * i
+  let ACDisconnecterBounary = new Konva.Rect({
+    x: startX,
+    y: startY,
+    width:  w_min,
+    height: h_min,
+    stroke: 'white',
+    strokeWidth: stroke_Width
+  })
+  layer.add(ACDisconnecterBounary);
+
+  let circle1 = new Konva.Circle({
+    x: startX + 0.25 * w_min, 
+    y: startY + (h_min / 2),
+    radius: 5,
+    fill: 'white',
+    // stroke: 'black',
+    // strokeWidth: 4
+  });
+  
+  layer.add(circle1);
+
+  let circle2 = new Konva.Circle({
+    x: startX + 0.8 * w_min, 
+    y: startY + (h_min / 2),
+    radius: 5,
+    fill: 'white',
+    // stroke: 'black',
+    // strokeWidth: 4
+  });
+
+  layer.add(circle2);
+  
+  let switchOffsetX = startX + 0.75 * w_min;
+  let switchOffsetY = startY + h_min * 0.25;
+  let switchLine = new Konva.Line({
+    points: [startX + 0.25 * w_min, startY + (h_min / 2), switchOffsetX, switchOffsetY],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  layer.add(switchLine);
+
+  // add accessOut line
+  let accessOutLine = new Konva.Line({
+    points: [startX + 0.8 * w_min, startY + (h_min / 2), startX + 1.2 * w_min, startY + (h_min / 2) ],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  layer.add(accessOutLine);
+
+  // connect to InterConnecter
+
+  if (connectPoint[1] !== startY + (h_min / 2)) {
+    // let breakPoint = [connectPoint[0], startY + (h_min / 2)]
+    let connectLineToInterConnecter = new Konva.Line({
+      points: [startX + 0.25 * w_min, startY + (h_min / 2), connectPoint[0], startY + (h_min / 2), connectPoint[0], connectPoint[1] ],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round'
+    });
+    layer.add(connectLineToInterConnecter);
+  } else {
+    let connectLineToInterConnecter = new Konva.Line({
+      points: [startX + 0.25 * w_min, startY + (h_min / 2), connectPoint[0], connectPoint[1] ],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round'
+    });
+    layer.add(connectLineToInterConnecter);
+  }
+
+  // bottom value
+  let bottomValue = new Konva.Text({
+    x: startX,
+    y: startY + h_min * 1.05,
+    text: 'AC Disconnect',
+    fontSize: font_size,
+    fontFamily: 'Calibri',
+    fill: 'white'
+  });
+  layer.add(bottomValue);
+
+  return({
+    type: actionTypes.AC_DISCONNECT,
+    connectPoint: [startX + 1.2 * w_min, startY + (h_min / 2)],
+    distance: nextDistance,
+    layer: layer
+  });
+}
+
+export const ServerPanel = (layer, distance, connectPoint) => {
+  let w_min = 100;
+  let h_min = 100;
+  let stroke_Width = 2;
+  let font_size = 15;
+  let nextDistance = 0;
+
+
+  if (window.innerWidth * 0.05 > w_min) {
+      w_min = window.innerWidth * 0.05;
+  }
+  
+  let startX = window.innerWidth * 0.05 + distance;
+  let startY = (window.innerHeight * 0.15);
+  nextDistance = startX + w_min;
+  // + (h_min * 1.8) * i
+  let ServerPanelBounary = new Konva.Rect({
+    x: startX,
+    y: startY,
+    width:  w_min,
+    height: h_min,
+    stroke: 'white',
+    strokeWidth: stroke_Width
+  })
+  layer.add(ServerPanelBounary);
+
+
+  let busLineCircle1Row1 = new Konva.Circle({
+      x: startX + w_min * 0.25, 
+      y: startY + h_min * 0.35,
+      radius: 3,
+      fill: 'white',
+      // stroke: 'black',
+      // strokeWidth: 4
+    });
+    layer.add(busLineCircle1Row1); 
+
+  let busCurveLineRow1 =  new Konva.Line({
+    points: [startX + w_min * 0.25, startY + h_min * 0.35, startX + w_min * 0.375, startY + h_min * 0.25, startX + w_min * 0.5, startY + h_min * 0.35],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round',
+    tension: 0.5
+  });
+  layer.add(busCurveLineRow1);
+
+  let busLineCircle2Row1 = new Konva.Circle({
+    x: startX + w_min * 0.5, 
+    y: startY + h_min * 0.35,
+    radius: 3,
+    fill: 'white',
+    // stroke: 'black',
+    // strokeWidth: 4
+  });
+  layer.add(busLineCircle2Row1);  
+
+  let busConnectLine1 =  new Konva.Line({
+    points: [startX + w_min * 0.5, startY + h_min * 0.35, startX + w_min * 0.65, startY + h_min * 0.35 ],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  layer.add(busConnectLine1);
+
+  // suspension points
+  let suspensionLine =  new Konva.Line({
+    points: [startX + w_min * 0.375, startY + h_min * 0.35,startX + w_min * 0.375, startY + h_min * 0.65],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round',
+    dash: [1, 10]
+  });
+  layer.add(suspensionLine); 
+
+  let busLineCircle1Row2 = new Konva.Circle({
+    x: startX + w_min * 0.25, 
+    y: startY + h_min * 0.75,
+    radius: 3,
+    fill: 'white',
+    // stroke: 'black',
+    // strokeWidth: 4
+  });
+  layer.add(busLineCircle1Row2); 
+
+  let busCurveLineRow2 =  new Konva.Line({
+    points: [startX + w_min * 0.25, startY + h_min * 0.75, startX + w_min * 0.375, startY + h_min * 0.65, startX + w_min * 0.5, startY + h_min * 0.75],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round',
+    tension: 0.5
+  });
+  layer.add(busCurveLineRow2);
+
+  let busLineCircle2Row2 = new Konva.Circle({
+    x: startX + w_min * 0.5, 
+    y: startY + h_min * 0.75,
+    radius: 3,
+    fill: 'white',
+    // stroke: 'black',
+    // strokeWidth: 4
+  });
+  layer.add(busLineCircle2Row2);  
+
+
+  let busConnectLine2 =  new Konva.Line({
+    points: [startX + w_min * 0.5, startY + h_min * 0.75, startX + w_min * 0.65, startY + h_min * 0.75 ],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  layer.add(busConnectLine2);
+
+  let busLine = new Konva.Line({
+    points: [startX + w_min * 0.65, startY + h_min * 0.15, startX + w_min * 0.65, startY + h_min * 0.75 ],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  layer.add(busLine);
+
+  let busConnectLine3 =  new Konva.Line({
+    points: [startX + w_min * 0.65, startY + h_min * 0.15, startX + w_min * 1.2, startY + h_min * 0.15 ],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  layer.add(busConnectLine3);
+
+  // access out
+  if (connectPoint[1] !== startY + h_min * 0.75) {
+    // let breakPoint = [connectPoint[0], startY + (h_min / 2)]
+    let connectLineToInterConnecter = new Konva.Line({
+      points: [startX + 0.25 * w_min, startY + h_min * 0.75, connectPoint[0], startY + h_min * 0.75, connectPoint[0], connectPoint[1] ],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round'
+    });
+    layer.add(connectLineToInterConnecter);
+  } else {
+    let connectLineToInterConnecter = new Konva.Line({
+      points: [startX + 0.25 * w_min, startY + h_min * 0.75, connectPoint[0], connectPoint[1] ],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round'
+    });
+    layer.add(connectLineToInterConnecter);
+  } 
+
+  // bottom value
+  let bottomValue = new Konva.Text({
+    x: startX,
+    y: startY + h_min * 1.05,
+    text: 'Server Panel',
+    fontSize: font_size,
+    fontFamily: 'Calibri',
+    fill: 'white'
+  });
+  layer.add(bottomValue);
+
+  return({
+    type: actionTypes.SERVERPANEL,
+    connectPoint: [startX + w_min * 1.2, startY + h_min * 0.15],
+    distance: nextDistance,
+    layer: layer
+  });
+}
+
+export const Meter = (layer, distance, connectPoint) => {
+  let w_min = 50;
+  let h_min = 50;
+  let stroke_Width = 2;
+  let font_size = 15;
+  let nextDistance = 0;
+
+
+  if (window.innerWidth * 0.02 > w_min) {
+      w_min = window.innerWidth * 0.02;
+      h_min = window.innerWidth * 0.02;
+  }
+  
+  let startX = window.innerWidth * 0.02 + distance;
+  let startY = (window.innerHeight * 0.15);
+  nextDistance = startX + w_min;
+
+  let MeterBounary = new Konva.Rect({
+    x: startX,
+    y: startY,
+    width:  w_min,
+    height: h_min,
+    stroke: 'white',
+    strokeWidth: stroke_Width
+  })
+  layer.add(MeterBounary);
+
+  let meterCicle = new Konva.Circle({
+    x: startX + w_min * 0.5, 
+    y: startY + h_min * 0.5,
+    radius: w_min * 0.35,
+    // fill: 'white',
+    stroke: 'white',
+    strokeWidth: stroke_Width
+  });
+  layer.add(meterCicle);  
+
+  if (connectPoint[1] !== startY + h_min * 0.5) {
+    // let breakPoint = [connectPoint[0], startY + (h_min / 2)]
+    let connectLineToInterConnecter = new Konva.Line({
+      points: [startX, startY + h_min * 0.5, connectPoint[0], startY + h_min * 0.5, connectPoint[0], connectPoint[1] ],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round'
+    });
+    layer.add(connectLineToInterConnecter);
+  } else {
+    let connectLineToInterConnecter = new Konva.Line({
+      points: [startX, startY + (h_min / 2), connectPoint[0], connectPoint[1] ],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round'
+    });
+    layer.add(connectLineToInterConnecter);
+  } 
+
+
+  return({
+    type: actionTypes.METER,
+    connectPoint: [startX + 0.25 * w_min, startY + h_min * 0.75],
+    distance: nextDistance,
     layer: layer
   });
 }
