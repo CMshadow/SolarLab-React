@@ -2,6 +2,7 @@ import * as actionTypes from '../actions/actionTypes';
 import axios from '../../axios-setup';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Inverter from '../../infrastructure/inverter/inverter';
+import Point from '../../infrastructure/point/point';
 import { setBackendLoadingTrue, setBackendLoadingFalse} from './projectManager';
 import { setUIStateSetUpWiring } from './uiStateManager';
 
@@ -64,7 +65,7 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
     const inverterSolutions = result.inverterSetUp.map((inverter, i) =>
       new Inverter(
         result.inverterID,
-        `${0 + i + 1 > 10 ? null : 0}${0 + i + 1} - ${inverterName} `,
+        `${0 + i + 1 >= 10 ? '' : 0}${0 + i + 1} - ${inverterName} `,
         0 + i + 1,
         inverter.panelPerString,
         inverter.stringPerInverter
@@ -87,7 +88,8 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
   })
 }
 
-export const calculateManualInverter = (roofIndex, inverterID) => (dispatch, getState) => {
+export const calculateManualInverter = (roofIndex, inverterID) =>
+(dispatch, getState) => {
   const allPanels =
     getState().undoableReducer.present.editingPVPanelManagerReducer.panels;
   const roofSpecParams =
@@ -122,8 +124,8 @@ export const calculateManualInverter = (roofIndex, inverterID) => (dispatch, get
     const inverterSolutions = result.inverterSetUp.map((inverter, i) =>
       new Inverter(
         result.inverterID,
-        inverterName,
-        0,
+        `${0 + i + 1 >= 10 ? '' : 0}${0 + i + 1} - ${inverterName} `,
+        0 + i + 1,
         inverter.panelPerString,
         inverter.stringPerInverter
       )
@@ -143,4 +145,53 @@ export const calculateManualInverter = (roofIndex, inverterID) => (dispatch, get
       error.response.data.errorMessage
     )
   })
+}
+
+export const autoWiring = (roofInd, inverterInd, wiringInd) =>
+(dispatch, getState) => {
+  const coefficient = 0.75;
+  const allPanels = getState().undoableReducer.present
+    .editingPVPanelManagerReducer.panels[roofInd];
+  const availablePanels = Object.keys(allPanels).flatMap(partial => {
+    const partialRoofPanels = allPanels[partial].map(panelArray =>
+      panelArray.filter(panel => !panel.pv.connected)
+    )
+    return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+  });
+  const inverterConfig = getState().undoableReducer.present.editingWiringManager
+    .roofSpecInverters[roofInd][inverterInd];
+
+  console.log(availablePanels)
+  const string = [availablePanels[0][0]];
+  availablePanels[0][0].pv.setConnected();
+  for (let i = 0; i < inverterConfig.panelPerString - 1; i++) {
+    const currentPanel = string.slice(-1)[0];
+    const withDist = availablePanels.map((panelArray, panelArrayInd) => {
+      let dist = null;
+      if (
+        (currentPanel.rowPos === 'start' ||
+        currentPanel.rowPos === 'end' ||
+        currentPanel.rowPos === 'single') &&
+        (panelArray[0].rowPos === 'start' ||
+        panelArray[0].rowPos === 'end' ||
+        panelArray[0].rowPos === 'single')
+      ) {
+        dist = Point.surfaceDistance(currentPanel.center, panelArray[0].center)
+          * coefficient;
+      } else {
+        dist = Point.surfaceDistance(currentPanel.center, panelArray[0].center)
+      }
+
+      return {
+        dist: dist,
+        panelArrayInd: panelArrayInd,
+        pvInfo: panelArray[0]
+      };
+    }).filter(elem => !elem.pvInfo.pv.connected);
+    withDist.sort((first, second) => first.dist > second.dist ? 1 : -1);
+    const nextPanel = withDist[0].pvInfo;
+    string.push(nextPanel);
+    availablePanels[withDist[0].panelArrayInd][0].pv.setConnected();
+  }
+  console.log(string)
 }

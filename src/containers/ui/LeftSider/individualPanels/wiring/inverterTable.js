@@ -7,29 +7,44 @@ import {
   Row,
   Col,
   Button,
-  Progress
+  Progress,
+  Dropdown,
+  Menu,
+  Icon
 } from 'antd';
 
 import {
   emptyListTemplate
 } from '../../../../../components/ui/EmptyTemplate/emptyListTemplate';
+import * as actions from '../../../../../store/actions/index';
 
 class InverterTable extends Component {
 
-  expandedRowRender = (inverter) => {
-    console.log(inverter)
+  menu = (
+    <Menu>
+      <Menu.Item key="1">
+        Manual
+      </Menu.Item>
+    </Menu>
+  );
+
+  expandedRowRender = (inverter, inverterInd) => {
     const columns = [
       {
         title: 'Status',
         key: 'state',
         width: '60%',
-        render: () => (
+        render: wiring => (
           <Progress
             strokeColor={{
               '0%': '#108ee9',
               '100%': '#87d068',
             }}
-            percent={50}
+            percent={
+              wiring.allPanels.length === 0 ?
+              0 :
+              Math.ceil(inverter.panelPerString / wiring.allPanels.length)
+            }
             size="small"
             status="active"
           />
@@ -40,8 +55,16 @@ class InverterTable extends Component {
         dataIndex: 'action',
         key: 'action',
         width: '40%',
-        render: () => (
-          <Button> edit </Button>
+        render: (wiring, record, wiringInd) => (
+          <Dropdown.Button
+            overlay={this.menu}
+            icon={<Icon type="down" />}
+            onClick = {() => {
+              this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd)
+            }}
+          >
+            Auto
+          </Dropdown.Button>
         ),
       },
     ];
@@ -49,12 +72,12 @@ class InverterTable extends Component {
     const data = inverter.wiring;
     return (
       <Table
-        size="small"
+        size="middle"
         showHeader={false}
         columns={columns}
         dataSource={data}
         pagination={false}
-        rowKey={record => record}
+        rowKey={record => record.entityId}
       />
     );
   };
@@ -64,14 +87,14 @@ class InverterTable extends Component {
       title: 'Inverter',
       dataIndex: 'inverterName',
       key: 'name',
-      width: '45%',
+      width: '60%',
       ellipsis: true
     },
     {
       title: 'P/S',
       dataIndex: 'panelPerString',
       key: 'panelPerString',
-      width: '25%',
+      width: '20%',
       ellipsis: true,
       align: 'center'
     },
@@ -79,7 +102,7 @@ class InverterTable extends Component {
       title: 'S/I',
       dataIndex: 'stringPerInverter',
       key: 'stringPerInverter',
-      width: '25%',
+      width: '20%',
       ellipsis: true,
       align: 'center'
     }
@@ -91,10 +114,13 @@ class InverterTable extends Component {
         <Col span={24}>
           <ConfigProvider renderEmpty={() => emptyListTemplate({type: 'Inverters'})}>
             <Table
-              size="small"
+              size="middle"
               pagination={false}
               columns={this.columns}
-              expandedRowRender={inverter => this.expandedRowRender(inverter)}
+              expandedRowRender={
+                (inverter, inverterInd) =>
+                this.expandedRowRender(inverter, inverterInd)
+              }
               dataSource={this.props.roofSpecInverters[this.props.roofIndex]}
               rowKey={record => record.entityId}
             />,
@@ -112,4 +138,12 @@ const mapStateToProps = state => {
   };
 };
 
-export default connect(mapStateToProps)(InverterTable);
+const mapDispatchToProps = dispatch => {
+  return {
+    autoWiring: (roofInd, inverterInd, wiringInd) => dispatch(
+      actions.autoWiring(roofInd, inverterInd, wiringInd)
+    )
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(InverterTable);

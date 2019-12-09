@@ -1,4 +1,5 @@
 import uuid from 'uuid/v1';
+import Wiring from './wiring';
 
 class Inverter {
   constructor (
@@ -12,7 +13,8 @@ class Inverter {
     this.serial = serialNum || 0;
     this.panelPerString = panelPerString || 0;
     this.stringPerInverter = stringPerInverter || 0;
-    this.wiring = wiring || Array(this.stringPerInverter).fill(0);
+    this.wiring = wiring ||
+      Array(this.stringPerInverter).fill(0).map(elem => new Wiring());
     this.bridging = bridging || [];
     this.polygon = inverterPolygon;
     this.polygonCenter = inverterPolygonCenter;

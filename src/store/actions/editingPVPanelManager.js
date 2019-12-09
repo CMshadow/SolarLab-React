@@ -205,12 +205,28 @@ const generateFlatRoofPanels = (dispatch, requestData) => {
       roofIndex: 0,
       panels: JSON.parse(response.data.body).panelLayout.map(partialRoof =>
         partialRoof.map(array =>
-          array.map(panel => ({
-            ...panel,
-            pv: new PV(null, null, Polygon.makeHierarchyFromPolyline(
-              Polyline.fromPolyline(panel.pvPolyline)
-            ))
-          }))
+          array.map(panel => {
+            const pvPolyline = Polyline.fromPolyline(panel.pvPolyline)
+            const brng = Point.bearing(
+              pvPolyline.points[0], pvPolyline.points[2]
+            );
+            const dist = Point.surfaceDistance(
+              pvPolyline.points[0], pvPolyline.points[2]
+            );
+            const center = Point.destination(
+              pvPolyline.points[0], brng, dist);
+            center.setCoordinate(
+              null, null, pvPolyline.points[0].height +
+              (pvPolyline.points[2].height - pvPolyline.points[0].height) / 2
+            )
+            return {
+              ...panel,
+              center: center,
+              pv: new PV(
+                null, null, Polygon.makeHierarchyFromPolyline(pvPolyline)
+              )
+            };
+          })
         )
       )
     });
@@ -237,12 +253,28 @@ const generatePitchedRoofPanels = (dispatch, requestData, pitchedRoofIndex) => {
       roofIndex: pitchedRoofIndex,
       panels: JSON.parse(response.data.body).panelLayout.map(partialRoof =>
         partialRoof.map(array =>
-          array.map(panel => ({
-            ...panel,
-            pv: new PV(null, null, Polygon.makeHierarchyFromPolyline(
-              Polyline.fromPolyline(panel.pvPolyline)
-            ))
-          }))
+          array.map(panel => {
+            const pvPolyline = Polyline.fromPolyline(panel.pvPolyline)
+            const brng = Point.bearing(
+              pvPolyline.points[0], pvPolyline.points[2]
+            );
+            const dist = Point.surfaceDistance(
+              pvPolyline.points[0], pvPolyline.points[2]
+            );
+            const center = Point.destination(
+              pvPolyline.points[0], brng, dist);
+            center.setCoordinate(
+              null, null, pvPolyline.points[0].height +
+              (pvPolyline.points[2].height - pvPolyline.points[0].height) / 2
+            )
+            return {
+              ...panel,
+              center: center,
+              pv: new PV(
+                null, null, Polygon.makeHierarchyFromPolyline(pvPolyline)
+              )
+            };
+          })
         )
       )
     });
