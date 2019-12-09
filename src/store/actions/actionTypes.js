@@ -141,6 +141,7 @@ export const FETCH_USER_PANELS = 'FETCH_USER_PANELS';
  */
 export const FETCH_USER_INVERTERS = 'FETCH_USER_INVERTERS';
 export const SET_UP_INVERTER = 'SET_UP_INVERTER';
+export const AUTO_WIRING = 'AUTO_WIRING';
 
 /*
   projectManager.js

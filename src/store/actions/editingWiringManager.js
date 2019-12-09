@@ -1,7 +1,9 @@
 import * as actionTypes from '../actions/actionTypes';
 import axios from '../../axios-setup';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
+import Polyline from '../../infrastructure/line/polyline';
 import Inverter from '../../infrastructure/inverter/inverter';
+import Wiring from '../../infrastructure/inverter/wiring';
 import Point from '../../infrastructure/point/point';
 import { setBackendLoadingTrue, setBackendLoadingFalse} from './projectManager';
 import { setUIStateSetUpWiring } from './uiStateManager';
@@ -153,9 +155,15 @@ export const autoWiring = (roofInd, inverterInd, wiringInd) =>
   const allPanels = getState().undoableReducer.present
     .editingPVPanelManagerReducer.panels[roofInd];
   const availablePanels = Object.keys(allPanels).flatMap(partial => {
-    const partialRoofPanels = allPanels[partial].map(panelArray =>
+    const partialRoofPanels = allPanels[partial].map(panelArray => {
       panelArray.filter(panel => !panel.pv.connected)
-    )
+      console.log(panelArray[0])
+      if (
+        panelArray[0].rowPos === 'start' &&
+        panelArray.slice(-1)[0].rowPos !== 'end'
+      ) panelArray.reverse();
+      return panelArray;
+    })
     return partialRoofPanels.filter(panelArray => panelArray.length > 0);
   });
   const inverterConfig = getState().undoableReducer.present.editingWiringManager
@@ -194,4 +202,15 @@ export const autoWiring = (roofInd, inverterInd, wiringInd) =>
     availablePanels[withDist[0].panelArrayInd][0].pv.setConnected();
   }
   console.log(string)
+  const panelsOnString = string.map(p => p.pv);
+  const panelCenterPoints = string.map(p => {
+    const center = Point.fromPoint(p.center);
+    center.setCoordinate(null, null, center.height + 0.005);
+    return center;
+  });
+  const wiringPolyline = new Polyline(panelCenterPoints);
+  const newWiring = new Wiring(
+    panelsOnString[0], panelsOnString.slice(-1)[0], panelsOnString, wiringPolyline
+  )
+  console.log(newWiring)
 }
