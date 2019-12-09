@@ -61,7 +61,8 @@ export const initStage = (layer) => {
     }
 
     let pancelCollection = panelArrayCollection(layer, 4);
-    CombinerBoxCollections(layer, 250, pancelCollection.connectPoint1, pancelCollection.connectPoint2, 4);
+    let combinerCollection = CombinerBoxCollections(layer, 250, pancelCollection.connectPoint1, pancelCollection.connectPoint2, 4);
+    DisconnectCollection(layer, combinerCollection.distance, 3 ,2);
   return({
     type: actionTypes.INIT_STAGE,
     stageWidth: window.innerWidth,
@@ -475,6 +476,7 @@ export const CombinerBoxCollections = (layer, distance, connectPoint1, connectPo
   let h_min = 125;
   let stroke_Width = 2;
   let font_size = 15;
+  let nextDistance = 0;
   // startPoint
   for (let i = 0; i < numOfCombiner; ++i) {
     if (window.innerWidth * 0.05 > w_min) {
@@ -497,6 +499,8 @@ export const CombinerBoxCollections = (layer, distance, connectPoint1, connectPo
         strokeWidth: stroke_Width
     })
     layer.add(panelArrayBounary);
+    nextDistance = startX + window.innerWidth * 0.01;
+
     // first row
     let connectPoint1X = startX + w_min * 0.25;
     let connectPoint1Y = connectPoint1[i][1];
@@ -683,7 +687,96 @@ export const CombinerBoxCollections = (layer, distance, connectPoint1, connectPo
   return({
     type: actionTypes.COMBINER_BOX_COLLECTIONS,
     connectPoint: null,
+    distance: nextDistance,
+    layer: layer
+  });
+
+}
+
+
+export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterAccess) => {
+  let w_min = 100;
+  let h_min = 125 + (inverterAccess - 2) * 15;
+  let stroke_Width = 2;
+  let font_size = 15;
+ 
+  for (let i = 0; i < numOfDisconnect; ++i) {
+    if (window.innerWidth * 0.05 > w_min) {
+      w_min = window.innerWidth * 0.05;
+    }
+    
+    // if (window.innerHeight * 0.1 > h_min) {
+    //   h_min = window.innerHeight * 0.1
+    // }
+    
+    let startX = window.innerWidth * 0.1 + distance;
+    let startY = (window.innerHeight * 0.15) + (h_min * 1.8) * i;
+
+    let panelArrayBounary = new Konva.Rect({
+      x: startX,
+      y: startY,
+      width:  w_min,
+      height: h_min,
+      stroke: 'white',
+      strokeWidth: stroke_Width
+    })
+    layer.add(panelArrayBounary);
+
+    // add switch
+    let circleAccessInList = [];
+    let circleAccessOutList = [];
+    for (let i = 1; i <= inverterAccess; ++i) {
+      let circle1 = new Konva.Circle({
+        x: startX + 0.2 * w_min, 
+        y: startY + (h_min / (inverterAccess + 1)) * i,
+        radius: 5,
+        fill: 'white',
+        // stroke: 'black',
+        // strokeWidth: 4
+      });
+      circleAccessInList.push([startX + 0.2 * w_min, startY + (h_min / (inverterAccess + 1)) * i ])
+      layer.add(circle1);
+
+      let circle2 = new Konva.Circle({
+        x: startX + 0.8 * w_min, 
+        y: startY + (h_min / (inverterAccess + 1)) * i,
+        radius: 5,
+        fill: 'white',
+        // stroke: 'black',
+        // strokeWidth: 4
+      });
+      circleAccessOutList.push([startX + 0.8 * w_min, startY + (h_min / (inverterAccess + 1)) * i ])
+      layer.add(circle2);
+
+      let switchOffsetY = h_min / (inverterAccess + 1);
+      let switchOffsetX = startX + 0.3 * w_min;
+      let switchLine = new Konva.Line({
+        points: [switchOffsetX, startY + (switchOffsetY) * (i - 0.3), startX + 0.8 * w_min, startY + (h_min / (inverterAccess + 1)) * i ],
+        stroke: 'white',
+        strokeWidth: stroke_Width,
+        lineCap: 'round',
+        lineJoin: 'round'
+      });
+      layer.add(switchLine);
+
+      // add accessOut line
+      let accessOutLine = new Konva.Line({
+        points: [startX + 0.8 * w_min, startY + (h_min / (inverterAccess + 1)) * i, startX + 1.2 * w_min, startY + (h_min / (inverterAccess + 1)) * i ],
+        stroke: 'white',
+        strokeWidth: stroke_Width,
+        lineCap: 'round',
+        lineJoin: 'round'
+      });
+      layer.add(accessOutLine);
+    }
+    
+  }
+  
+
+  
+  return({
+    type: actionTypes.DISCONNECT_CELLECTION,
+    connectPoint: null,
     layer: layer
   });
 }
-

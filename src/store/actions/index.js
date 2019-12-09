@@ -143,5 +143,6 @@ export {
 export {
   initStage,
   panelArrayCollection,
-  CombinerBoxCollections
+  CombinerBoxCollections,
+  DisconnectCollection
 } from './drawingSingleLineDiagram';
