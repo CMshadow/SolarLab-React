@@ -22,9 +22,9 @@ const Editing3DPanel = (props) => {
     const allKptList = props.keepoutList;
     const allTreeList = props.treeKeepoutList;
     const wall = props.buildingParapet;
-    const foundationPolyline = props.foundationPolyline;
+    const foundationPolygon = props.foundationPolygon;
 
-    var list_of_shadows = projectEverything(allKptList, allTreeList, wall, foundationPolyline);
+    var list_of_shadows = projectEverything(allKptList, allTreeList, wall, foundationPolygon);
     console.log(list_of_shadows)
     var list_of_shadow_polygons = [];
 
@@ -60,7 +60,7 @@ const mapStateToProps = state => {
     allPassageKeepout: state.keepoutManagerReducer.passageKeepout,
     keepoutList: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.normalKeepout,
     treeKeepoutList: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.treeKeepout,
-    foundationPolyline: state.undoableReducer.present.drawingPolygonManagerReducer.BuildingFoundation,
+    foundationPolygon: state.undoableReducer.present.drawingPolygonManagerReducer.BuildingFoundation,
     buildingParapet: state.undoableReducer.present.drawingPolygonManagerReducer.BuildingParapet
   };
 };
@@ -69,7 +69,8 @@ const mapDispatchToProps = dispatch => {
   return {
     setDebugShadowPolygons: (plygons) => dispatch(
       actions.setDebugShadowPolygons(plygons)
-    )
+    ),
+    projectAllShadow: () => dispatch(actions.projectAllShadow())
   }
 }
 

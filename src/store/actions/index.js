@@ -121,6 +121,10 @@ export {
 } from './keepoutManager';
 
 export {
+  projectAllShadow
+} from './editingShadowManager';
+
+export {
   setDebugPoints,
   setDebugPolylines,
   setDebugPolygons,

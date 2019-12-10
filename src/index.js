@@ -28,6 +28,7 @@ import drawingPolygonManagerReducer from './store/reducers/drawingPolygonManager
 import drawingKeepoutPolygonManagerReducer from './store/reducers/drawingKeepoutPolygonManager';
 import debugRenderReducer from './store/reducers/debugRender';
 import drawingRooftopManagerReducer from './store/reducers/drawingRooftopManager';
+import editingShadowManager from './store/reducers/editingShadowManager';
 
 // IMPORT MORE REDBUX REDUCERS OVER HERE
 
@@ -53,7 +54,8 @@ const rootReducer = combineReducers({
     drawingKeepoutManagerReducer: drawingKeepoutManagerReducer,
     drawingPolygonManagerReducer: drawingPolygonManagerReducer,
     drawingKeepoutPolygonManagerReducer: drawingKeepoutPolygonManagerReducer,
-    drawingRooftopManagerReducer: drawingRooftopManagerReducer
+    drawingRooftopManagerReducer: drawingRooftopManagerReducer,
+    editingShadowManager: editingShadowManager
   }), {
     initTypes: [actionTypes.SET_VIEWER],
     filter: includeAction([
