@@ -5,6 +5,7 @@ import { Divider } from 'antd';
 import RoofList3D from './edit3D/roofList3D';
 import KeepoutList3D from './edit3D/keepoutList3D';
 import FinishedModelingButton from './drawButtons/finishModelingButton';
+import ShadowRangeSlider from './edit3D/shadowRangeSlider';
 
 const Editing3DPanel = (props) => {
 
@@ -13,6 +14,8 @@ const Editing3DPanel = (props) => {
       <RoofList3D />
       <Divider />
       <KeepoutList3D />
+      <Divider />
+      <ShadowRangeSlider />
       <Divider />
       <FinishedModelingButton />
     </div>
