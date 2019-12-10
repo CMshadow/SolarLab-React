@@ -3,11 +3,11 @@ import Wiring from './wiring';
 
 class Inverter {
   constructor (
-    inverterId = null, inverterName = null, serialNum = null,
+    entityId = null, inverterId = null, inverterName = null, serialNum = null,
     panelPerString = null, stringPerInverter = null, wiring = null,
     bridging = null, inverterPolygon = null, inverterPolygonCenter = null
   ) {
-    this.entityId = uuid();
+    this.entityId = entityId || uuid();
     this.inverterId = inverterId;
     this.inverterName = inverterName;
     this.serial = serialNum || 0;
@@ -18,6 +18,27 @@ class Inverter {
     this.bridging = bridging || [];
     this.polygon = inverterPolygon;
     this.polygonCenter = inverterPolygonCenter;
+  }
+
+  static fromInverter (inverter) {
+    const newEntityId = inverter.entityId;
+    const newInverterId = inverter.inverterId;
+    const newInverterName = inverter.inverterName;
+    const newSerial = inverter.serial;
+    const newPanelPerString = inverter.panelPerString;
+    const newStringPerInverter = inverter.stringPerInverter;
+    const newWiring = inverter.wiring;
+    const newBridging = inverter.bridging;
+    const newPolygon = inverter.polygon;
+    const newPolygonCenter = inverter.polygonCenter;
+    return new Inverter(
+      newEntityId, newInverterId, newInverterName, newSerial, newPanelPerString,
+      newStringPerInverter, newWiring, newBridging, newPolygon, newPolygonCenter
+    )
+  }
+
+  setWiring = (wiringIndex, wiringObj) => {
+    this.wiring.splice(wiringIndex, 1, wiringObj);
   }
 }
 

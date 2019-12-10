@@ -1,3 +1,5 @@
+import * as Cesium from 'cesium';
+
 import * as actionTypes from '../actions/actionTypes';
 import axios from '../../axios-setup';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
@@ -5,6 +7,7 @@ import Polyline from '../../infrastructure/line/polyline';
 import Inverter from '../../infrastructure/inverter/inverter';
 import Wiring from '../../infrastructure/inverter/wiring';
 import Point from '../../infrastructure/point/point';
+import PV from '../../infrastructure/Polygon/PV';
 import { setBackendLoadingTrue, setBackendLoadingFalse} from './projectManager';
 import { setUIStateSetUpWiring } from './uiStateManager';
 
@@ -60,12 +63,15 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
   })
   .then(response => {
     const result = response.data.data;
+    console.log(getState().undoableReducer.present
+      .editingWiringManager.userInverters)
     const inverterName = getState().undoableReducer.present
       .editingWiringManager.userInverters.reduce((name, val) =>
         val.inverterID === result.inverterID ? val.inverterName : name
       , 0);
     const inverterSolutions = result.inverterSetUp.map((inverter, i) =>
       new Inverter(
+        null,
         result.inverterID,
         `${0 + i + 1 >= 10 ? '' : 0}${0 + i + 1} - ${inverterName} `,
         0 + i + 1,
@@ -81,13 +87,13 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
     })
     return dispatch(setBackendLoadingFalse());
   })
-  .catch(error => {
-    dispatch(setBackendLoadingFalse());
-    return errorNotification(
-      'Inverter Error',
-      error.response.data.errorMessage
-    )
-  })
+  // .catch(error => {
+  //   dispatch(setBackendLoadingFalse());
+  //   return errorNotification(
+  //     'Inverter Error',
+  //     error.response.data.errorMessage
+  //   )
+  // })
 }
 
 export const calculateManualInverter = (roofIndex, inverterID) =>
@@ -125,6 +131,7 @@ export const calculateManualInverter = (roofIndex, inverterID) =>
       , 0);
     const inverterSolutions = result.inverterSetUp.map((inverter, i) =>
       new Inverter(
+        null,
         result.inverterID,
         `${0 + i + 1 >= 10 ? '' : 0}${0 + i + 1} - ${inverterName} `,
         0 + i + 1,
@@ -151,27 +158,56 @@ export const calculateManualInverter = (roofIndex, inverterID) =>
 
 export const autoWiring = (roofInd, inverterInd, wiringInd) =>
 (dispatch, getState) => {
-  const coefficient = 0.75;
   const allPanels = getState().undoableReducer.present
     .editingPVPanelManagerReducer.panels[roofInd];
-  const availablePanels = Object.keys(allPanels).flatMap(partial => {
-    const partialRoofPanels = allPanels[partial].map(panelArray => {
-      panelArray.filter(panel => !panel.pv.connected)
-      console.log(panelArray[0])
+  const availablePanels = allPanels.flatMap(partial => {
+    const partialRoofPanels = partial.map(originPanelArray => {
+      const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
+      if (panelArray.length === 0) return [];
       if (
         panelArray[0].rowPos === 'start' &&
         panelArray.slice(-1)[0].rowPos !== 'end'
       ) panelArray.reverse();
-      return panelArray;
+      return panelArray.map(panel => {
+        return {
+          ...panel,
+          pv: PV.copyPolygon(panel.pv)
+        }
+      });
     })
     return partialRoofPanels.filter(panelArray => panelArray.length > 0);
   });
   const inverterConfig = getState().undoableReducer.present.editingWiringManager
     .roofSpecInverters[roofInd][inverterInd];
 
-  console.log(availablePanels)
-  const string = [availablePanels[0][0]];
-  availablePanels[0][0].pv.setConnected();
+  const string = findAWiringString(availablePanels, inverterConfig, 0);
+
+  const panelsOnString = string.map(p => p.pv);
+  const panelCenterPoints = string.map(p => {
+    const center = Point.fromPoint(p.center);
+    center.setCoordinate(null, null, center.height + 0.1);
+    return center;
+  });
+  const wiringPolyline = new Polyline(
+    panelCenterPoints, null, 'wiring', Cesium.Color.DARKORANGE
+  );
+  const newWiring = new Wiring(
+    panelsOnString[0], panelsOnString.slice(-1)[0], panelsOnString, wiringPolyline
+  )
+  dispatch({
+    type: actionTypes.AUTO_WIRING,
+    wiring: newWiring,
+    roofIndex: roofInd,
+    inverterIndex: inverterInd,
+    wiringIndex: wiringInd
+  });
+}
+
+const findAWiringString = (availablePanels, inverterConfig, startIndex) => {
+  const coefficient = 0.75;
+
+  const string = [availablePanels[startIndex][0]];
+  availablePanels[startIndex][0].pv.setConnected();
   for (let i = 0; i < inverterConfig.panelPerString - 1; i++) {
     const currentPanel = string.slice(-1)[0];
     const withDist = availablePanels.map((panelArray, panelArrayInd) => {
@@ -201,16 +237,5 @@ export const autoWiring = (roofInd, inverterInd, wiringInd) =>
     string.push(nextPanel);
     availablePanels[withDist[0].panelArrayInd][0].pv.setConnected();
   }
-  console.log(string)
-  const panelsOnString = string.map(p => p.pv);
-  const panelCenterPoints = string.map(p => {
-    const center = Point.fromPoint(p.center);
-    center.setCoordinate(null, null, center.height + 0.005);
-    return center;
-  });
-  const wiringPolyline = new Polyline(panelCenterPoints);
-  const newWiring = new Wiring(
-    panelsOnString[0], panelsOnString.slice(-1)[0], panelsOnString, wiringPolyline
-  )
-  console.log(newWiring)
+  return string;
 }

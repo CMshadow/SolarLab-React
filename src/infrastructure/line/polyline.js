@@ -71,6 +71,14 @@ class Polyline {
     return this.points.length;
   }
 
+  polylineLength = () => {
+    let length = 0;
+    for (let i = 0; i < this.points.length - 1; i++) {
+      length += Point.linearDistance(this.points[i], this.points[i + 1]);
+    }
+    return length;
+  }
+
   /**
    * change the color of the polyline
    * @param {Color} newColor new Cesium.Color or RGBA color

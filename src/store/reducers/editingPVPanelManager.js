@@ -1,7 +1,7 @@
 import * as Cesium from 'cesium';
 
 import * as actionTypes from '../actions/actionTypes';
-import ProjectInfo from '../../infrastructure/projectInfo/projectInfo';
+import PV from '../../infrastructure/Polygon/PV';
 
 const initialState = {
   panels: {},
@@ -68,6 +68,32 @@ const fetchUserPanels = (state, action) => {
   }
 }
 
+const updatePVConnected = (state, action) => {
+  const connectedPanelId = action.wiring.allPanels.map(pv => pv.entityId);
+  const newPanels = {...state.panels};
+  const changes = newPanels[action.roofIndex].map(partial =>
+    partial.map(panelArray =>
+      panelArray.map(panel => {
+        if (connectedPanelId.includes(panel.pv.entityId)) {
+          const newPV = PV.copyPolygon(panel.pv);
+          newPV.setConnected();
+          return {
+            ...panel,
+            pv: newPV
+          };
+        } else {
+          return panel;
+        }
+      })
+    )
+  );
+  newPanels[action.roofIndex] = changes;
+  return {
+    ...state,
+    panels: newPanels
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SETUP_PANEL_PARAMS:
@@ -78,6 +104,8 @@ const reducer = (state=initialState, action) => {
       return generatePanels(state, action);
     case actionTypes.FETCH_USER_PANELS:
       return fetchUserPanels(state, action);
+    case actionTypes.AUTO_WIRING:
+      return updatePVConnected(state, action);
     default: return state;
   }
 };

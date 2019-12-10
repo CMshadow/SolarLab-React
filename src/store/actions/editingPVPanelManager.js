@@ -214,7 +214,7 @@ const generateFlatRoofPanels = (dispatch, requestData) => {
               pvPolyline.points[0], pvPolyline.points[2]
             );
             const center = Point.destination(
-              pvPolyline.points[0], brng, dist);
+              pvPolyline.points[0], brng, dist / 2);
             center.setCoordinate(
               null, null, pvPolyline.points[0].height +
               (pvPolyline.points[2].height - pvPolyline.points[0].height) / 2

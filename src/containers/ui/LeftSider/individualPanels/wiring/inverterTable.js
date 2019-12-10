@@ -22,7 +22,7 @@ class InverterTable extends Component {
 
   menu = (
     <Menu>
-      <Menu.Item key="1">
+      <Menu.Item key='1'>
         Manual
       </Menu.Item>
     </Menu>
@@ -43,10 +43,14 @@ class InverterTable extends Component {
             percent={
               wiring.allPanels.length === 0 ?
               0 :
-              Math.ceil(inverter.panelPerString / wiring.allPanels.length)
+              Math.ceil(inverter.panelPerString / wiring.allPanels.length * 100)
             }
-            size="small"
-            status="active"
+            size='small'
+            status={
+              inverter.panelPerString === wiring.allPanels.length ? 
+              'success' :
+              'active'
+            }
           />
         ),
       },
@@ -58,7 +62,7 @@ class InverterTable extends Component {
         render: (wiring, record, wiringInd) => (
           <Dropdown.Button
             overlay={this.menu}
-            icon={<Icon type="down" />}
+            icon={<Icon type='down' />}
             onClick = {() => {
               this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd)
             }}
@@ -72,7 +76,7 @@ class InverterTable extends Component {
     const data = inverter.wiring;
     return (
       <Table
-        size="middle"
+        size='middle'
         showHeader={false}
         columns={columns}
         dataSource={data}
@@ -114,7 +118,7 @@ class InverterTable extends Component {
         <Col span={24}>
           <ConfigProvider renderEmpty={() => emptyListTemplate({type: 'Inverters'})}>
             <Table
-              size="middle"
+              size='middle'
               pagination={false}
               columns={this.columns}
               expandedRowRender={
