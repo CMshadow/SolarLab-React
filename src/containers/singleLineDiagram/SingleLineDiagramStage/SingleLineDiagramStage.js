@@ -50,7 +50,7 @@ class  SingleLineDiagramStage extends Component {
     return (
       <Aux>
         {this.state.button}
-        <Stage ref="stage" height={window.innerHeight * 1.5} width={window.innerWidth * 1.2} />
+        <Stage ref="stage" height={window.innerHeight * 1.5} width={window.innerWidth} />
       </Aux>
     );
   } 

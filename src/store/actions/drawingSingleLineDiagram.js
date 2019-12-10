@@ -62,8 +62,8 @@ export const initStage = (layer) => {
 
     let pancelCollection = panelArrayCollection(layer, 4);
     let combinerCollection = CombinerBoxCollections(layer, pancelCollection.distance, pancelCollection.connectPoint1, pancelCollection.connectPoint2, 4);
-    let disconnectCellection = DisconnectCollection(layer, combinerCollection.distance, 3, 2);
-    let InvertersCollection = InverterCollection(layer, disconnectCellection.distance, 3);
+    let disconnectCellection = DisconnectCollection(layer, combinerCollection.distance, 5, 2);
+    let InvertersCollection = InverterCollection(layer, disconnectCellection.distance, 5, 2, disconnectCellection.connectPoint);
     let inverterConnecterComponent = InterConnecter(layer, InvertersCollection.distance, InvertersCollection.connectPoint );
     let AC_Disconnectc_Component = ACDisconnect(layer, inverterConnecterComponent.distance, inverterConnecterComponent.connectPoint);
     let ServerPanelComponent = ServerPanel(layer, AC_Disconnectc_Component.distance, AC_Disconnectc_Component.connectPoint);
@@ -81,7 +81,7 @@ export const panelArrayCollection = (layer, numOfArray) =>{
   let w_min = 150;
   let h_min = 75;
   let stroke_Width = 2;
-  let font_size = Math.floor(h_min / 7);
+  let font_size = Math.floor(h_min / 5);
   let connectAccess1 = [];
   let connectAccess2 = [];
   for (let i = 0; i < numOfArray; ++i) {
@@ -290,9 +290,9 @@ export const panelArrayCollection = (layer, numOfArray) =>{
 
     // =====================Array Information===============
     let StringCount = new Konva.Text({
-      x: startPanelPointX,
+      x: startPanelPointX + font_size,
       y: startPanelPointY + firstPanelHeight * 1.5,
-      text: 'String Count: 2',
+      text: 'String Count: 5',
       fontSize: font_size,
       fontFamily: 'Calibri',
       fill: 'white'
@@ -300,7 +300,7 @@ export const panelArrayCollection = (layer, numOfArray) =>{
     layer.add(StringCount);
 
     let ModuleCount = new Konva.Text({
-      x: startPanelPointX,
+      x: startPanelPointX + font_size,
       y: startPanelPointY + firstPanelHeight * 1.5 + font_size,
       text: 'Module Count: 42',
       fontSize: font_size,
@@ -308,6 +308,16 @@ export const panelArrayCollection = (layer, numOfArray) =>{
       fill: 'white'
     });
     layer.add(ModuleCount);
+
+    let suspensionLine =  new Konva.Line({
+      points: [startPanelPointX, startPanelPointY + firstPanelHeight * 1.5 + 10, startPanelPointX, startPanelPointY + firstPanelHeight * 1.5 + font_size + 25],
+      stroke: 'white',
+      strokeWidth: stroke_Width * 2,
+      lineCap: 'round',
+      lineJoin: 'round',
+      dash: [1,10]
+    });
+    layer.add(suspensionLine); 
 
     // =====================SECOND ROW =====================
     // draw first panel of second row
@@ -478,8 +488,8 @@ export const panelArrayCollection = (layer, numOfArray) =>{
 
 
 export const CombinerBoxCollections = (layer, distance, connectPoint1, connectPoint2, numOfCombiner) => {
-  let w_min = 65;
-  let h_min = 65;
+  let w_min = distance[1];
+  let h_min = distance[1];
   let stroke_Width = 2;
   let font_size = Math.floor(h_min / 7);
   let nextDistance = 0;
@@ -706,7 +716,10 @@ export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterA
   let stroke_Width = 2;
   let font_size = Math.floor(h_min / 7);
   let nextDistance = 0;
-  let outConnectPoint = null;
+  let outConnectPoints = [];
+  if (font_size < 12) {
+    font_size = 12;
+  }
   for (let i = 0; i < numOfDisconnect; ++i) {
     if (window.innerWidth * 0.05 > w_min) {
       w_min = window.innerWidth * 0.05;
@@ -774,30 +787,43 @@ export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterA
         lineCap: 'round',
         lineJoin: 'round'
       });
-      outConnectPoint = [startX + 1.2 * w_min, startY + (h_min / (inverterAccess + 1)) * i];
+      outConnectPoints.push([startX + 1.2 * w_min, startY + (h_min / (inverterAccess + 1)) * i]);
       layer.add(accessOutLine);
+
+      // bottom value
+      let bottomValue = new Konva.Text({
+        x: startX,
+        y: startY + h_min * 1.05,
+        text: 'Disconnect',
+        fontSize: font_size,
+        fontFamily: 'Calibri',
+        fill: 'white'
+      });
+      layer.add(bottomValue);
     }
-    
   }
   
   return({
     type: actionTypes.DISCONNECT_CELLECTION,
-    connectPoint: outConnectPoint,
+    connectPoint: outConnectPoints,
     distance: [nextDistance, distance[1] * 1.8],
     layer: layer
   });
 }
 
-export const InverterCollection = (layer, distance, numOfInverter) => {
+export const InverterCollection = (layer, distance, numOfInverter, accessNum ,connectPoints) => {
   let w_min = 65;
   let h_min = 65;
   let stroke_Width = 2;
   let font_size = Math.floor(h_min / 7);
   let connectPointList = [];
   let nextDistance = 0;
+  // let accessNum = 2;
   for (let i = 0; i < numOfInverter; ++i) {
     if (window.innerWidth * 0.05 > w_min) {
       w_min = window.innerWidth * 0.05;
+      h_min = window.innerWidth * 0.05;
+      font_size = Math.floor(h_min / 7);
     }
 
     let startX = window.innerWidth * 0.05 + distance[0];
@@ -812,8 +838,43 @@ export const InverterCollection = (layer, distance, numOfInverter) => {
       strokeWidth: stroke_Width
     })
     layer.add(inverterArrayBounary);
-    connectPointList.push([startX + w_min, startY + h_min * 0.5]);
     nextDistance = startX + w_min;
+
+    for (let j = 1; j <= accessNum; ++j) {
+      let circle1 = new Konva.Circle({
+        x: startX, 
+        y: startY + ((h_min / (accessNum + 1)) * j),
+        radius: 5,
+        fill: 'white',
+        // stroke: 'black',
+        // strokeWidth: 4
+      });
+      layer.add(circle1);
+      let index = i * accessNum + j - 1;
+      if (connectPoints[index][1] !== startY + (h_min / (accessNum + 1)) * j ) {
+        // let breakPoint = [connectPoint[0], startY + (h_min / 2)]
+        let connectLineToInterConnecter = new Konva.Line({
+          points: [startX, startY + (h_min / (accessNum + 1)) * j, 
+            connectPoints[index][0], startY + (h_min / (accessNum + 1)) * j, 
+            connectPoints[index][0], connectPoints[index][1] ],
+          stroke: 'white',
+          strokeWidth: stroke_Width,
+          lineCap: 'round',
+          lineJoin: 'round'
+        });
+        layer.add(connectLineToInterConnecter);
+      } else {
+        let connectLineToInterConnecter = new Konva.Line({
+          points: [startX, startY + (h_min / (accessNum + 1)) * (j), connectPoints[index][0], connectPoints[index][1] ],
+          stroke: 'white',
+          strokeWidth: stroke_Width,
+          lineCap: 'round',
+          lineJoin: 'round'
+        });
+        layer.add(connectLineToInterConnecter);
+      }
+
+    }
 
     let circle2 = new Konva.Circle({
       x: startX + w_min, 
@@ -825,6 +886,17 @@ export const InverterCollection = (layer, distance, numOfInverter) => {
     });
     layer.add(circle2);
 
+    let connectOutLine = new Konva.Line({
+      points: [startX + w_min, startY + h_min * 0.5, startX + w_min * 1.5, startY + h_min * 0.5],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round',
+      tension: 0.5
+    });
+    layer.add(connectOutLine);
+    connectPointList.push([startX + w_min * 1.5, startY + h_min * 0.5]);
+    
     let inverterDiagonalLine = new Konva.Line({
       points: [startX + w_min, startY, startX, startY + h_min],
       stroke: 'white',
@@ -834,6 +906,25 @@ export const InverterCollection = (layer, distance, numOfInverter) => {
     });
     layer.add(inverterDiagonalLine);
     
+    let inverterDashLine = new Konva.Line({
+      points: [startX + w_min * 0.1, startY + h_min * 0.1, startX + w_min * 0.5, startY + h_min * 0.1],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round',
+      dash: [1, 5]
+    });
+    layer.add(inverterDashLine);
+
+    let inverterStraightLine = new Konva.Line({
+      points: [startX + w_min * 0.1, startY + h_min * 0.15, startX + w_min * 0.5, startY + h_min * 0.15],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round'
+    });
+    layer.add(inverterStraightLine);
+
     let inverterCurveLine = new Konva.Line({
       points: [startX + w_min * 0.5, startY + h_min * 0.75, startX + w_min * 0.6, startY + h_min * 0.65, startX + w_min * 0.75, startY + h_min * 0.85, startX + w_min * 0.85, startY + h_min * 0.75],
       stroke: 'white',
@@ -843,6 +934,8 @@ export const InverterCollection = (layer, distance, numOfInverter) => {
       tension: 0.5
     });
     layer.add(inverterCurveLine);
+
+    
 
     // bottom value
     let bottomValue = new Konva.Text({
@@ -873,7 +966,7 @@ export const InterConnecter = (layer, distance, connectPoints) => {
   let connectPointList = [];
   let nextDistance = 0;
   let numOfInverter = connectPoints.length;
-
+  
   if (window.innerWidth * 0.05 > w_min) {
       w_min = window.innerWidth * 0.05;
   }
@@ -902,9 +995,91 @@ export const InterConnecter = (layer, distance, connectPoints) => {
       // strokeWidth: 4
     });
     layer.add(circle);
+    
+    // connect to Inverter
+    console.log(connectPoints[i])
+    if (connectPoints[i - 1][1] !== startY + (h_min / (numOfInverter + 1)) * i ) {
+      // let breakPoint = [connectPoint[0], startY + (h_min / 2)]
+      let connectLineToInterConnecter = new Konva.Line({
+        points: [startX, startY + (h_min / (numOfInverter + 1)) * i, 
+          connectPoints[i - 1][0], startY + (h_min / (numOfInverter + 1)) * i, 
+          connectPoints[i - 1][0], connectPoints[i - 1][1] ],
+        stroke: 'white',
+        strokeWidth: stroke_Width,
+        lineCap: 'round',
+        lineJoin: 'round'
+      });
+      layer.add(connectLineToInterConnecter);
+    } else {
+      let connectLineToInterConnecter = new Konva.Line({
+        points: [startX, startY + (h_min / (numOfInverter + 1)) * (i), connectPoints[i - 1][0], connectPoints[i - 1][1] ],
+        stroke: 'white',
+        strokeWidth: stroke_Width,
+        lineCap: 'round',
+        lineJoin: 'round'
+      });
+      layer.add(connectLineToInterConnecter);
+    }
 
+
+
+    // connectLine
+    let connectLine = new Konva.Line({
+      points: [startX, startY + (h_min / (numOfInverter + 1)) * i, startX + w_min * 0.2, startY + (h_min / (numOfInverter + 1)) * i],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round',
+      tension: 0.5
+    });
+    layer.add(connectLine);
+
+    // 
+    let busLineCircle1Row1 = new Konva.Circle({
+      x: startX + w_min * 0.2, 
+      y: startY + (h_min / (numOfInverter + 1)) * i,
+      radius: 3,
+      fill: 'white',
+      // stroke: 'black',
+      // strokeWidth: 4
+    });
+    layer.add(busLineCircle1Row1); 
+
+    let busCurveLineRow1 =  new Konva.Line({
+      points: [startX + w_min * 0.2, startY + (h_min / (numOfInverter + 1)) * i,
+         startX + w_min * 0.275, startY + (h_min / (numOfInverter + 1)) * i - 10, 
+         startX + w_min * 0.35, startY + (h_min / (numOfInverter + 1)) * i],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round',
+      tension: 0.5
+    });
+    layer.add(busCurveLineRow1);
+
+    let busLineCircle2Row1 = new Konva.Circle({
+      x: startX + w_min * 0.35, 
+      y: startY + (h_min / (numOfInverter + 1)) * i,
+      radius: 3,
+      fill: 'white',
+      // stroke: 'black',
+      // strokeWidth: 4
+    });
+    layer.add(busLineCircle2Row1); 
+
+    let connectToBusLine = new Konva.Line({
+      points: [startX + w_min * 0.35, startY + (h_min / (numOfInverter + 1)) * i,
+        startX + w_min * 0.5, startY + (h_min / (numOfInverter + 1)) * i],
+      stroke: 'white',
+      strokeWidth: stroke_Width,
+      lineCap: 'round',
+      lineJoin: 'round',
+      tension: 0.5
+    });
+    layer.add(connectToBusLine);
+    //
     let busLine =  new Konva.Line({
-      points: [startX + w_min * 0.65, startY + h_min * 0.15, startX + w_min * 0.5, startY + h_min * 0.15, startX + w_min * 0.5, startY + h_min * 0.85],
+      points: [startX + w_min * 0.65, startY + h_min * 0.15, startX + w_min * 0.5, startY + h_min * 0.15, startX + w_min * 0.5, startY + (h_min / (numOfInverter + 1)) * i],
       stroke: 'white',
       strokeWidth: stroke_Width,
       lineCap: 'round',
@@ -977,16 +1152,18 @@ export const ACDisconnect = (layer, distance, connectPoint) => {
   let h_min = 40;
   let stroke_Width = 2;
   let font_size = Math.floor(h_min / 7);
-  if (font_size < 10) {
-    font_size = 10;
-  }
+  
   let nextDistance = 0;
 
 
   if (window.innerWidth * 0.05 > w_min) {
       w_min = window.innerWidth * 0.05;
+      h_min = w_min / 1.625;
+      font_size = Math.floor(h_min / 7);
   }
-
+  if (font_size < 12) {
+    font_size = 12;
+  }
   let startX = window.innerWidth * 0.05 + distance;
   let startY = (window.innerHeight * 0.15);
   nextDistance = startX + w_min;
@@ -1096,6 +1273,8 @@ export const ServerPanel = (layer, distance, connectPoint) => {
 
   if (window.innerWidth * 0.05 > w_min) {
       w_min = window.innerWidth * 0.05;
+      h_min = window.innerWidth * 0.05;
+      font_size = Math.floor(h_min / 7);
   }
   
   let startX = window.innerWidth * 0.05 + distance;
@@ -1275,8 +1454,12 @@ export const Meter = (layer, distance, connectPoint) => {
   if (window.innerWidth * 0.02 > w_min) {
       w_min = window.innerWidth * 0.02;
       h_min = window.innerWidth * 0.02;
+      font_size = Math.floor(h_min / 7);
   }
-  
+  if (font_size < 12) {
+    font_size = 12;
+  }
+
   let startX = window.innerWidth * 0.02 + distance;
   let startY = (window.innerHeight * 0.15);
   nextDistance = startX + w_min;
@@ -1322,7 +1505,16 @@ export const Meter = (layer, distance, connectPoint) => {
     layer.add(connectLineToInterConnecter);
   } 
 
-
+  // bottom value
+  let bottomValue = new Konva.Text({
+    x: startX,
+    y: startY + h_min * 1.05,
+    text: 'Meter',
+    fontSize: font_size,
+    fontFamily: 'Calibri',
+    fill: 'white'
+  });
+  layer.add(bottomValue);
   return({
     type: actionTypes.METER,
     connectPoint: [startX + 0.25 * w_min, startY + h_min * 0.75],
