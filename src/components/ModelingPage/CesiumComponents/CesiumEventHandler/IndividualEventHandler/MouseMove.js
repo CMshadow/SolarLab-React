@@ -124,7 +124,7 @@ const MouseMoveHandler = (props) => {
             }
             // If hover on tree's center point
             else if (
-              props.drawingKeepoutPolyline.centerPoint && 
+              props.drawingKeepoutPolyline.centerPoint &&
               anyPickedObject.id.id ===
               props.drawingKeepoutPolyline.centerPoint.entityId
             ) {
@@ -139,6 +139,33 @@ const MouseMoveHandler = (props) => {
             // Release hover point if it exists
             if (props.hoverKeepoutPointIndex !== null) props.releaseKeepoutHoverPointIndex();
           }
+        }
+        break;
+
+      case 'EDITING_ROOFTOP':
+        if(anyPickedObject) {
+          // Find out hover on which point
+          const onTopPoint = props.editingInnerPlanePoints.find(element => {
+            return element.entityId === anyPickedObject.id.id
+          })
+          // Set hover point if available
+          if (onTopPoint) {
+            if (props.threePointsInfo[props.editingInnerPlaneIndex]) {
+              const fixedPointsId = Object.keys(
+                props.threePointsInfo[props.editingInnerPlaneIndex]
+              ).map(k =>
+                props.editingInnerPlanePoints[
+                  props.threePointsInfo[props.editingInnerPlaneIndex][k].pointIndex
+                ].entityId
+              );
+              if (!fixedPointsId.includes(onTopPoint.entityId))
+                props.setHoverRoofTopPointIndex(onTopPoint);
+            } else {
+              props.setHoverRoofTopPointIndex(onTopPoint);
+            }
+          }
+        } else {
+          if (props.rooftopHoverPoint) props.releaseHoverRoofTopPointIndex();
         }
         break;
 
@@ -196,6 +223,18 @@ const mapStateToProps = state => {
     pickedKeepoutPointIndex:
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .pickedPointIndex,
+
+    editingInnerPlaneIndex:
+      state.undoableReducer.present.drawingRooftopManagerReducer
+      .editingInnerPlaneIndex,
+    rooftopHoverPoint:
+      state.undoableReducer.present.drawingRooftopManagerReducer.hoverPoint,
+    editingInnerPlanePoints:
+      state.undoableReducer.present.drawingRooftopManagerReducer
+      .editingInnerPlanePoints,
+    threePointsInfo:
+      state.undoableReducer.present.drawingRooftopManagerReducer
+      .threePointsInfo,
   };
 };
 
@@ -238,6 +277,12 @@ const mapDispatchToProps = dispatch => {
     ),
     moveKeepoutPickedPoint: (cartesian, viewer) => dispatch(
       actions.moveKeepoutPickedPoint(cartesian, viewer)
+    ),
+    setHoverRoofTopPointIndex: (point) => dispatch(
+      actions.setHoverRoofTopPointIndex(point)
+    ),
+    releaseHoverRoofTopPointIndex: (point) => dispatch(
+      actions.releaseHoverRoofTopPointIndex(point)
     ),
   };
 };

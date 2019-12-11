@@ -10,6 +10,7 @@ import {
 
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import * as actions from '../../../../../store/actions/index';
+import ErrorNotification from '../../../../../components/ui/Notification/ErrorNotification';
 
 const DrawInnerButton = (props) => {
 
@@ -37,13 +38,18 @@ const DrawInnerButton = (props) => {
       block
       loading={props.drawingInnerPolyline}
       onClick={() => {
-        props.updatePointsRelation();
-        props.setUIStateInnerDrew();
-        props.enableRotate();
-        console.log(props.test)
+        if (props.checkInnerTypesProvided()) {
+          props.updatePointsRelation();
+          props.setUIStateInnerDrew();
+          props.enableRotate();
+        } else {
+          ErrorNotification(
+            'Drawing Error', 'Please right click inner lines to provide types'
+          )
+        }
       }}
     >
-      ...Drawing...
+      ...Click to Finish...
     </Button>
   )
 
@@ -75,8 +81,6 @@ const DrawInnerButton = (props) => {
 const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    test:
-      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
     drawingInnerPolyline:
       state.undoableReducer.present.drawingInnerManagerReducer
       .drawingInnerPolyline,
@@ -91,6 +95,7 @@ const mapDispatchToProps = dispatch => {
     updatePointsRelation: () => dispatch(actions.updatePointsRelation()),
     setUIStateDrawingInner: () => dispatch(actions.setUIStateDrawingInner()),
     setUIStateInnerDrew: () => dispatch(actions.setUIStateInnerDrew()),
+    checkInnerTypesProvided: () => dispatch(actions.checkInnerTypesProvided()),
   };
 };
 

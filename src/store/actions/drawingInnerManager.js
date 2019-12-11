@@ -183,3 +183,14 @@ export const releaseHoverInnerPoint = () => {
     type: actionTypes.RELEASE_HOVER_INNER_POINT
   });
 };
+
+export const checkInnerTypesProvided = () => (dispatch,getState) => {
+  const fixedInnerPolylines = getState().undoableReducer.present
+    .drawingInnerManagerReducer.fixedInnerPolylines;
+
+  let emptyExist = false;
+  fixedInnerPolylines.forEach(p => {
+    if(p.type === null) emptyExist = true;
+  })
+  return !emptyExist;
+}

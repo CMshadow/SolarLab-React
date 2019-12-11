@@ -29,27 +29,19 @@ const draw3DBuildingButton = (props) => {
         if (props.currentBuilding.type === 'FLAT') {
           props.createPolygonFoundationWrapper();
         } else {
-          console.log('[Button]: Test RoofTop Polygon: ');
-          let buildingCoordinatesArray= props.BuildFoundation.getPointsCoordinatesArray();
-          let buildingCoordinatesSize = buildingCoordinatesArray.length;
-          buildingCoordinatesArray.splice(buildingCoordinatesSize - 3,3);
-          props.CreatePitchedBuildingRoofTopPolygon(buildingCoordinatesArray,
-            props.PolylinesRelation,
-            props.foundPolylines,
-            props.hipPolylines,
-            props.ridgePolylines);
+          props.CreatePitchedBuildingRoofTopPolygon();
         }
-        props.createAllKeepoutPolygon();
       }}
     >Generate 3D Model</Button>
 
   );
+
   return (
     <Row>
-    <Col span={18} offset={3}>
-      {DrawBuildingPolygon}
-    </Col>
-  </Row>
+      <Col span={18} offset={3}>
+        {DrawBuildingPolygon}
+      </Col>
+    </Row>
   );
 }
 
@@ -57,32 +49,20 @@ const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     currentBuilding: state.buildingManagerReducer.workingBuilding,
-    backendLoading:
-      state.undoableReducer.present.drawingPolygonManagerReducer.backendLoading,
+    backendLoading: state.projectManagerReducer.backendLoading,
     keepoutList:
       state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
-    BuildFoundation:
-      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
-    PitchedBuildingRoofTop:
-      state.undoableReducer.present.drawingRooftopManagerReducer,
-    PolylinesRelation:
-      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
-    foundPolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer.foundPolylines,
-    hipPolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer.hipPolylines,
-    ridgePolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer.ridgePolylines
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
-    CreatePitchedBuildingRoofTopPolygon: (buindingBoundary, polylinesRelation, foundPolylines, hipPolylines, ridgePolylines) =>
-      dispatch(actions.build3DRoofTopModeling(buindingBoundary, polylinesRelation, foundPolylines,hipPolylines, ridgePolylines)),
-    createPolygonFoundationWrapper: () => dispatch(actions.createPolygonFoundationWrapper()),
+    CreatePitchedBuildingRoofTopPolygon: () =>
+      dispatch(actions.build3DRoofTopModeling()),
+    createPolygonFoundationWrapper: () =>
+      dispatch(actions.createPolygonFoundationWrapper()),
     createAllKeepoutPolygon: () =>
-      dispatch(actions.createAllKeepoutPolygon()),
+      dispatch(actions.createAllKeepoutPolygon())
  };
 };
 

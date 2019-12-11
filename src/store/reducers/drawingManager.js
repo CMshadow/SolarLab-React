@@ -6,6 +6,7 @@ import Point from '../../infrastructure/point/point';
 import FoundLine from '../../infrastructure/line/foundLine';
 import DashedLine from '../../infrastructure/line/dashedLine';
 import BearingCollection from '../../infrastructure/math/bearingCollection';
+import ErrorNotification from '../../components/ui/Notification/ErrorNotification';
 
 const initialState = {
   drawingPolyline: null,
@@ -143,6 +144,14 @@ const dragPolylineFixedMode = (state, action) => {
 };
 
 const addPointOnPolyline = (state, action) => {
+  if (state.drawingPolyline.length > 2 &&
+    state.drawingPolyline.isSelfIntersection()
+  ) {
+    ErrorNotification(
+      'Drawing Error', 'Drawing Line cannot be self-intersected'
+    );
+    return state;
+  }
   const existPoints = state.fixedPoints.map(elem => {
     return Point.fromPoint(elem);
   });
@@ -166,6 +175,18 @@ const terminateDrawing = (state, action) => {
     return Point.fromPoint(elem);
   });
   const polyline = new FoundLine([...existPoints, existPoints[0]]);
+  if (polyline.length < 4) {
+    ErrorNotification(
+      'Drawing Error', 'Not enough vertices to build a foundation'
+    );
+    return state;
+  }
+  if (polyline.isSelfIntersection()) {
+    ErrorNotification(
+      'Drawing Error', 'Drawing Line cannot be self-intersected'
+    );
+    return state;
+  }
   return {
     ...state,
     drawingPolyline: polyline,

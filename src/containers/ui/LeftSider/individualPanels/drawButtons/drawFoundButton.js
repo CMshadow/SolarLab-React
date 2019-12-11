@@ -33,7 +33,7 @@ const DrawFoundButton = (props) => {
       block
       loading={true}
     >
-      ...Drawing...
+      ...Draw Outline on Map...
     </Button>
   )
 

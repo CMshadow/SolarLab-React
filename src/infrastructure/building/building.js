@@ -1,15 +1,13 @@
-import Time from '../Time/time';
-import * as MathHelper from '../math/sunPositionCalculation';
+import uuid from 'uuid/v1';
 
 class Building {
 
   constructor (name, serial, foundHt, eaveStb) {
+    this.entityId = uuid()
     this.name = name;
     this.serial = serial;
     this.foundationHeight = foundHt;
     this.eaveSetback = eaveStb;
-    this.location = [-117.841232,33.647001];
-    this.time = new Time(2019, 6, 23, 10, 16, -7);
   }
 
 }

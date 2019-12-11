@@ -42,7 +42,8 @@ export {
   setHoverInnerLine,
   releaseHoverInnerLine,
   setHoverInnerPoint,
-  releaseHoverInnerPoint
+  releaseHoverInnerPoint,
+  checkInnerTypesProvided
 } from './drawingInnerManager';
 
 export {
@@ -71,9 +72,7 @@ export {
 export {
   createPolygonFoundationWrapper,
   createPolygonFoundationIncludeStb,
-  createWall,
-  setBackendLoadingTrue,
-  setBackendLoadingFalse,
+  createWall
 } from './drawingPolygonManager'
 
 
@@ -84,13 +83,21 @@ export {
   searchAllRoofPlanes,
   calculateHighestandLowestNodes,
   calculateObliquityAndObliquity,
-  checkEdgeTypeOfPath
+  checkEdgeTypeOfPath,
+  updateSingleRoofTop,
+  showOnlyOneRoofPlane,
+  showAllRoofPlane,
+  setHoverRoofTopPointIndex,
+  releaseHoverRoofTopPointIndex,
+  setPickedRoofTopPointIndex,
+  releasePickedRoofTopPointIndex
 } from './drawingRooftopManager';
 
 
 export {
   createAllKeepoutPolygon,
-  reRenderKeepoutPolygon
+  reRenderKeepoutPolygon,
+  updateKeepoutOnRoof
 } from './drawingKeepoutPolygonManager'
 
 export {
@@ -104,6 +111,7 @@ export {
   setUIStateEditingKeepout,
   setPreviousUIState,
   setUIStateEditing3D,
+  setUIStateEditingRoofTop,
   setUIStateSetUpPV
 } from './uiStateManager';
 
@@ -113,6 +121,7 @@ export {
   saveBuildingInfoFields,
   bindFoundPolyline,
   bindFoundPolygons,
+  bindPitchedPolygons,
   resetBuilding
 } from './buildingManager';
 
@@ -123,6 +132,19 @@ export {
 export {
   projectAllShadow
 } from './editingShadowManager';
+
+export {
+  setupPanelParams,
+  generatePanels,
+  cleanPanels,
+  fetchUserPanels
+} from './editingPVPanelManager';
+
+export {
+  calculateOrFetchGlobalOptimal,
+  setBackendLoadingTrue,
+  setBackendLoadingFalse,
+} from './projectManager';
 
 export {
   setDebugPoints,

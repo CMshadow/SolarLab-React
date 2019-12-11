@@ -2,13 +2,7 @@ import React from 'react';
 import { Entity } from 'resium';
 import * as Cesium from 'cesium';
 
-
-
-/*
-    Polygon: Create Basic 3D Polygon
-*/
-
-const polygonVisualize = (props) => {
+const PVVisualize = (props) => {
 	return (
 		<Entity
 			id={props.entityId}
@@ -16,8 +10,7 @@ const polygonVisualize = (props) => {
 			polygon={{
 				hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(props.hierarchy),
 				perPositionHeight: props.perPositionHeight,
-				extrudedHeight: props.extrudedHeight,
-				outline: props.name === 'roofPlane' ? true : false,
+				outline: true,
 				outlineColor: props.outlineColor,
 				outlineWidth: props.outlineWidth,
 				material: props.material,
@@ -28,4 +21,4 @@ const polygonVisualize = (props) => {
 	)
 };
 
-export default polygonVisualize;
+export default PVVisualize;

@@ -9,7 +9,6 @@ const initialState = {
 };
 
 const setDebugPolylines = (state, action) => {
-  console.log(action.debugPolylines)
   return {
     ...state,
     debugPolylines: action.debugPolylines

@@ -12,7 +12,7 @@ import Coordinate from '../point/coordinate';
    * @param {string}  [id=null]       unique id of the rooftop collection, automatic
    *                                  generate one if not provided
    * @param {string}  [name=null]     name of the  rooftop collection, using default name 'RoofTop Collection' if not provided
-   * @param {Polygon}   [rooftopCollection= [] ]   A list of Polygon objects, each polygon represents a rooftop ,default empty list                               
+   * @param {Polygon}   [rooftopCollection= [] ]   A list of Polygon objects, each polygon represents a rooftop ,default empty list
    *                                  provided
    * @param {Boolean} [show=true]     whether to show the Rooftop,
    *                                  default true
@@ -23,12 +23,14 @@ class RoofTop {
     id = null,
     name = null,
     rooftopCollection = null,
-    show=null
+    show=null,
+    rooftopExcludeStb = null
   ){
     this.entityId = id ? id : uuid();
     this.name = name ? name: 'RoofTop Collection';
     this.rooftopCollection = rooftopCollection ? [...rooftopCollection] : [];
     this.show = show? show: true;
+    this.rooftopExcludeStb = rooftopExcludeStb || [];
   }
 
 /**
@@ -37,23 +39,29 @@ class RoofTop {
   * @param {string}  [id=null]       unique id of the RoofTop Collection, automatic
   *                                  generate one if not provided
   * @param {string}  [name=null]     name of the RoofTop Collection, using default name if not provided
-  * @param {Polygon}   [rooftopCollection= [] ]   A list of Polygon object, each polygon represents a rooftop ,default empty list                               
+  * @param {Polygon}   [rooftopCollection= [] ]   A list of Polygon object, each polygon represents a rooftop ,default empty list
   * @param {Boolean} [show=true]     whether to show the Rooftop,
   *                                  default true
-* 
  */
 
-  static CopyPolygon (RoofTop, 
+  static CopyPolygon (
+    rooftop,
     id = null,
     name = null,
     rooftopCollection = null,
-    show=null) 
-    {
-      let newID = id ? id : RoofTop.id;
-      let newName = name ? name : RoofTop.name;
-      let newRooftopCollection = rooftopCollection ? [...rooftopCollection]: RoofTop.rooftopCollection;
-      let newShow = show? show: true;
-      return new RoofTop(newID, newName, newRooftopCollection, newShow);
+    show=null,
+    rooftopExcludeStb = null
+  ) {
+    let newID = id ? id : rooftop.id;
+    let newName = name ? name : rooftop.name;
+    let newRooftopCollection =
+      rooftopCollection ? [...rooftopCollection] : rooftop.rooftopCollection;
+    let newShow = show? show: true;
+    const newRooftopExcludeStb =
+      rooftopExcludeStb || rooftop.rooftopExcludeStb
+    return new RoofTop(
+      newID, newName, newRooftopCollection, newShow, newRooftopExcludeStb
+    );
   };
 
   /**
@@ -64,7 +72,7 @@ class RoofTop {
     this.rooftopCollection.push(roof);
   }
   /**
-   * Return all roof planes 
+   * Return all roof planes
    * @param {List of Polygon}  List The list of all Polygons, each polygon represents a roof plane
    */
   getAllRoofTops = () => {

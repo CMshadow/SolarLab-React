@@ -9,9 +9,6 @@ const initialState = {
 	BuildingFoundation: [],
 	BuildingFoundationExcludeStb: [],
 	BuildingParapet: null,
-
-	backendLoading: false
-
 };
 
 /**
@@ -50,20 +47,6 @@ const createBuildingParapet = (state, action) => {
 	};
 }
 
-const setBackendLoadingTrue = (state, action) => {
-	return {
-		...state,
-		backendLoading: true
-	};
-}
-
-const setBackendLoadingFalse = (state, action) => {
-	return {
-		...state,
-		backendLoading: false
-	};
-}
-
 const reducer = (state=initialState, action) => {
 	switch(action.type){
 		case actionTypes.CREATE_POLYGON_FOUNDATION:
@@ -72,10 +55,6 @@ const reducer = (state=initialState, action) => {
 			return createBuildingFoundationExcludeStbPolygon(state, action);
 		case actionTypes.CREATE_WALL:
 			return createBuildingParapet(state, action);
-		case actionTypes.SET_BACKENDLOADING_TRUE:
-			return setBackendLoadingTrue(state, action);
-		case actionTypes.SET_BACKENDLOADING_FALSE:
-			return setBackendLoadingFalse(state, action);
 		default:
 			return state;
 	}

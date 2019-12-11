@@ -69,6 +69,12 @@ const bindFoundPolygons = (state, action) => {
     newWorkingBuilding.bindFoundPolygon(action.polygon);
     newWorkingBuilding.bindFoundPolygonExcludeStb(action.polygonsExcludeStb);
     newWorkingBuilding.bindParapetPolygon(action.parapet);
+  } else if (state.workingBuilding instanceof PitchedBuilding) {
+    newWorkingBuilding = PitchedBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindPitchedPolygon(action.pitchedPolygons);
+    newWorkingBuilding.bindPitchedPolygonExcludeStb(
+      action.pitchedPolygonsExcludeStb
+    );
   }
 
   return {

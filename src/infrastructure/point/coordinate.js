@@ -151,8 +151,8 @@ class Coordinate {
    */
   static linearDistance = (cor1, cor2) => {
     return Cesium.Cartesian3.distance(
-      Cesium.Cartesian3.fromDegreesArrayHeights(cor1.getCoordinate(true)),
-      Cesium.Cartesian3.fromDegreesArrayHeights(cor2.getCoordinate(true))
+      Cesium.Cartesian3.fromDegrees(...cor1.getCoordinate(true)),
+      Cesium.Cartesian3.fromDegrees(...cor2.getCoordinate(true))
     );
   }
 
@@ -256,35 +256,77 @@ class Coordinate {
     return undefined;
   }
 
+
+  static isEqual = (cor1, cor2) => {
+    return (cor1.lon === cor2.lon & cor1.lat === cor2.lat);
+  }
+
   /**
    * the possible intersection Coordinate of two Coordinates traveling towards
    * @param  {Polygon}     path the polygon that represents an rooftop
    * @param  {Coordinate} point  the coordiatne of an arbitrary point created by mouse click
    * @return {Number}       the height from this point to the builidng foundation plane
    */
-  static heightOfArbitraryNode = (path, point) => {
+  // static heightOfArbitraryNode = (path, point) => {
+  //   let heightOfPoint = null;
+  //   let outerEdge = null;
+  //   for (let edge = 0; edge < path.edgesType.length; ++edge) {
+  //     if (path.edgesType[edge] === "OuterEdge") {
+  //       outerEdge = edge;
+  //     }
+  //   }
+  //   if (outerEdge !== null) {
+  //     let startNode = new Coordinate(path.hierarchy[outerEdge * 3] , path.hierarchy[outerEdge * 3 + 1], path.hierarchy[outerEdge * 3 + 2]);
+  //     let endNode = null;
+  //     if (outerEdge === path.edgesType.length - 1) {
+  //       endNode = new Coordinate(path.hierarchy[0], path.hierarchy[1], path.hierarchy[2]);
+  //     } else {
+  //       endNode = new Coordinate(path.hierarchy[(outerEdge + 1) * 3], path.hierarchy[(outerEdge + 1) * 3 + 1], path.hierarchy[(outerEdge + 1) * 3 + 2]);
+  //     }
+  //     let edgeBrng = Coordinate.bearing(startNode, endNode);
+  //     let interPoint = Coordinate.intersection(point, path.brng, startNode, edgeBrng);
+  //     let shortestDist = Coordinate.surfaceDistance(point, interPoint);
+  //     heightOfPoint = Math.tan(path.obliquity * Math.PI/180) * shortestDist; 
+  //   }
+  //   return heightOfPoint;
+  // }
+
+  static heightOfArbitraryNode (path, point) {
     let heightOfPoint = null;
     let outerEdge = null;
-    for (let edge = 0; edge < path.edgesType.length; ++edge) {
-      if (path.edgesType[edge] === "OuterEdge") {
+    for (let edge = 0; edge < path.edgesCollection.length; ++edge) {
+      if (path.edgesCollection[edge].type === "OuterEdge") {
         outerEdge = edge;
       }
     }
     if (outerEdge !== null) {
-      let startNode = new Coordinate(path.hierarchy[outerEdge * 3] , path.hierarchy[outerEdge * 3 + 1], path.hierarchy[outerEdge * 3 + 2]);
-      let endNode = null;
-      if (outerEdge === path.edgesType.length - 1) {
-        endNode = new Coordinate(path.hierarchy[0], path.hierarchy[1], path.hierarchy[2]);
-      } else {
-        endNode = new Coordinate(path.hierarchy[(outerEdge + 1) * 3], path.hierarchy[(outerEdge + 1) * 3 + 1], path.hierarchy[(outerEdge + 1) * 3 + 2]);
-      }
-      let edgeBrng = Coordinate.bearing(startNode, endNode);
-      let interPoint = Coordinate.intersection(point, path.brng, startNode, edgeBrng);
-      let shortestDist = Coordinate.surfaceDistance(point, interPoint);
-      heightOfPoint = Math.tan(path.obliquity * Math.PI/180) * shortestDist; 
+      const startNode = new Coordinate(
+        path.edgesCollection[outerEdge].startNodePara.lon,
+        path.edgesCollection[outerEdge].startNodePara.lat,
+        path.edgesCollection[outerEdge].startNodePara.height
+      );
+      const endNode = new Coordinate(
+        path.edgesCollection[outerEdge].endNodePara.lon,
+        path.edgesCollection[outerEdge].endNodePara.lat,
+        path.edgesCollection[outerEdge].endNodePara.height
+      );
+
+      const edgeBrng = Coordinate.bearing(startNode, endNode);
+      const interPoint1 = Coordinate.intersection(
+        point, path.brng, startNode, edgeBrng
+      );
+      const interPoint2 = Coordinate.intersection(
+        point, path.brng + 180, startNode, edgeBrng
+      );
+      const shortestDist1 = Coordinate.surfaceDistance(point, interPoint1);
+      const shortestDist2 = Coordinate.surfaceDistance(point, interPoint2);
+      const shortestDist =
+        shortestDist1 < shortestDist2 ? shortestDist1 : shortestDist2;
+      heightOfPoint = Math.tan(path.obliquity * Math.PI / 180) * shortestDist;
     }
     return heightOfPoint;
   }
+
 }
 
 export default Coordinate;

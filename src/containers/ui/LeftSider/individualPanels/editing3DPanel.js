@@ -1,10 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { Divider, Button } from 'antd';
+import * as Cesium from 'cesium';
 
 import RoofList3D from './edit3D/roofList3D';
 import KeepoutList3D from './edit3D/keepoutList3D';
 import FinishedModelingButton from './drawButtons/finishModelingButton';
+import ShadowRangeSlider from './edit3D/shadowRangeSlider';
+
 import * as actions from "../../../../store/actions/index";
 
 import Point from '../../../../infrastructure/point/point';
@@ -12,9 +15,8 @@ import Shadow from "../../../../infrastructure/Polygon/shadow";
 import Polygon from "../../../../infrastructure/Polygon/Polygon";
 import Polyline from '../../../../infrastructure/line/polyline';
 
-import * as Cesium from 'cesium';
-
 import { projectEverything } from "../../../../infrastructure/math/shadowHelper";
+
 
 const Editing3DPanel = (props) => {
 
@@ -32,6 +34,8 @@ const Editing3DPanel = (props) => {
       <RoofList3D />
       <Divider />
       <KeepoutList3D />
+      <Divider />
+      <ShadowRangeSlider />
       <Divider />
       <FinishedModelingButton />
       <Button onClick={() => shadowFunc()}> TEST BUTTON </Button>

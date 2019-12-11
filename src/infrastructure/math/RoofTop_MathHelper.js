@@ -23,7 +23,7 @@ export const searchAllPossibleRoofTops = (edgeList, nodesCollection) => {
     let vertex_stact = [];
     let start_point = edgeList[0][i].startNode;
     //counterclockwise
-    if (edgeList[0][i].clockWise === 0) {
+    if (edgeList[0][i].counterWise === 0) {
       edgeList[0][i].counterWise = 1;
       path = checkClockWise(edgeList[0][i], start_point, 0, edgeList, nodesCollection, vertex_stact);
       result.push(path);
