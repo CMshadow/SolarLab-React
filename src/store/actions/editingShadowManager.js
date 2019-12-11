@@ -6,9 +6,12 @@ import Polygon from "../../infrastructure/Polygon/Polygon";
 import Polyline from '../../infrastructure/line/polyline';
 import Shadow from "../../infrastructure/Polygon/shadow";
 
-export const projectAllShadow = (allKptList, allTreeList, wall, foundationPolygon) => {
-
-  var list_of_shadows = projectEverything(allKptList, allTreeList, wall, foundationPolygon);
+export const projectAllShadow = (
+  normal, tree, env, wall, foundationPolygon, sunPositionCollection
+) => {
+  var list_of_shadows = projectEverything(
+    normal, tree, env, wall, foundationPolygon, sunPositionCollection
+  );
   var list_of_shadow_polygons = {};
 
   for (var i = 0; i < list_of_shadows.length; ++i) {

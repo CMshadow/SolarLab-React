@@ -432,7 +432,7 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
 }
 
 export const projectEverything = (
-  allKptList, allTreeList, allEnvList, wall, foundationPolyline,
+  allKptList, allTreeList, allEnvList, wall, foundationPolygon,
   sunPositionCollection
 ) => {
 
@@ -440,7 +440,7 @@ export const projectEverything = (
     shadow_vector(solar_position)
   );
 
-  const foundationPoints = foundationPolyline[0].convertHierarchyToPoints();
+  const foundationPoints = foundationPolygon[0].convertHierarchyToPoints();
   const list_of_shadows = [];
 
   const plane_equation = getPlaneEquationForPoint(
@@ -451,22 +451,34 @@ export const projectEverything = (
   allKptList.forEach(kpt => {
     const keepoutPoints = kpt.outlinePolygon.convertHierarchyToPoints();
     const ratio = getRatio(keepoutPoints[0].lon, keepoutPoints[0].lat);
-    all_s_vec.forEach(s_vec => {
-      const shadowCors = []
+    const allShadowGeoJSON = all_s_vec.map(s_vec => {
+      const shadowGeoJSON = {};
       const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
       const shadow = projectPlaneOnAnother(
         keepoutPoints, foundationPoints, plane_equation, s_ratio, true
       );
-      shadow.forEach(s => {
-        if (s.length !== 0) shadowCors.push(s);
+      shadow.forEach((s, i) => {
+        if (s.length !== 0) shadowGeoJSON[i] = new Polyline(s).makeGeoJSON();
       })
-      console.log(shadowCors)
+      return shadowGeoJSON;
+    });
+
+    const groupedShadowGeoJSON = allShadowGeoJSON.reduce((group, val) => {
+      Object.keys(val)[0] in group ?
+      group[Object.keys(val)[0]].push(val[Object.keys(val)[0]]) :
+      group[Object.keys(val)[0]] = [val[Object.keys(val)[0]]]
+      return group;
+    }, {});
+    const shadowHierarchies = Object.keys(groupedShadowGeoJSON).map(key => {
+      let combinedGeoJSON = allShadowGeoJSON[key][0];
+      groupedShadowGeoJSON[key].forEach(geoJSON => {
+        combinedGeoJSON = turf.union(combinedGeoJSON, geoJSON);
+      })
+      return Polygon.makeHierarchyFromGeoJSON(combinedGeoJSON, );
     })
+    console.log(shadowHierarchies)
 
 
-    // shadow.forEach(s => {
-    //   if (s.length !== 0) list_of_shadows.push([s, kpt.id, foundationPolyline[0].entityId]);
-    // })
   })
 
   // // tree keepout
@@ -482,7 +494,7 @@ export const projectEverything = (
   //   );
   //
   //   shadow.forEach(s => {
-  //     if (s.length !== 0) list_of_shadows.push([s, tree.id, foundationPolyline[0].entityId]);
+  //     if (s.length !== 0) list_of_shadows.push([s, tree.id, foundationPolygon[0].entityId]);
   //   })
   // })
   //
@@ -499,8 +511,8 @@ export const projectEverything = (
   //   wallPoints, foundationPoints, plane_equation, s_ratio, false
   // );
   // shadow.forEach(s => {
-  //   if (s.length !== 0) list_of_shadows.push([s, wall.entityId, foundationPolyline[0].entityId]);
+  //   if (s.length !== 0) list_of_shadows.push([s, wall.entityId, foundationPolygon[0].entityId]);
   // })
   //
-  // return list_of_shadows;
+  return list_of_shadows;
 }
