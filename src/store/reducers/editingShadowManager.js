@@ -14,12 +14,9 @@ const initialState = {
 }
 
 const projectAllShadow = (state, action) => {
-  /*
-    代码
-   */
   return {
     ...state,
-    shadows: null/*代码*/
+    shadows: action.shadows
   };
 }
 

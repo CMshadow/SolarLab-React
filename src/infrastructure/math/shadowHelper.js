@@ -453,7 +453,7 @@ export const projectEverything = (
     );
 
     shadow.forEach(s => {
-      if (s.length !== 0) list_of_shadows.push(s);
+      if (s.length !== 0) list_of_shadows.push([s, kpt.id, foundationPolyline[0].entityId]);
     })
   })
 
@@ -470,7 +470,7 @@ export const projectEverything = (
     );
 
     shadow.forEach(s => {
-      if (s.length !== 0) list_of_shadows.push(s);
+      if (s.length !== 0) list_of_shadows.push([s, tree.id, foundationPolyline[0].entityId]);
     })
   })
 
@@ -487,7 +487,7 @@ export const projectEverything = (
     wallPoints, foundationPoints, plane_equation, s_ratio, false
   );
   shadow.forEach(s => {
-    if (s.length !== 0) list_of_shadows.push(s);
+    if (s.length !== 0) list_of_shadows.push([s, wall.entityId, foundationPolyline[0].entityId]);
   })
 
   return list_of_shadows;

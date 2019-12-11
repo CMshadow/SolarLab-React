@@ -24,20 +24,7 @@ const Editing3DPanel = (props) => {
     const wall = props.buildingParapet;
     const foundationPolygon = props.foundationPolygon;
 
-    var list_of_shadows = projectEverything(allKptList, allTreeList, wall, foundationPolygon);
-    console.log(list_of_shadows)
-    var list_of_shadow_polygons = [];
-
-    for (var i = 0; i < list_of_shadows.length; ++i) {
-      var shadow_line = new Polyline(list_of_shadows[i]);
-      const shadowHier = Polygon.makeHierarchyFromPolyline(shadow_line, null, 0.015);
-      const shadowPolygon = new Shadow(
-        null, null, shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
-      );
-      list_of_shadow_polygons.push(shadowPolygon);
-    }
-
-    props.setDebugShadowPolygons(list_of_shadow_polygons);
+    props.projectAllShadow(allKptList, allTreeList, wall, foundationPolygon);
   }
 
   return (
@@ -70,7 +57,9 @@ const mapDispatchToProps = dispatch => {
     setDebugShadowPolygons: (plygons) => dispatch(
       actions.setDebugShadowPolygons(plygons)
     ),
-    projectAllShadow: () => dispatch(actions.projectAllShadow())
+    projectAllShadow: (allKptList, allTreeList, wall, foundationPolygon) => dispatch(
+        actions.projectAllShadow(allKptList, allTreeList, wall, foundationPolygon)
+    )
   }
 }
 

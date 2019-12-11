@@ -84,7 +84,7 @@ const getHighAndFixedIndex = (panel_points, p_ratio) => {
 }
 
 /**
- * [minPanelTiltAngleOnPitchedRoof description]
+ * [calculatePanelShadowLength description]
  * @param  {Point[]} plane_points  斜屋面顶点集
  * @param  {Point[]} panel_points  太阳能板顶点集 in degrees
  * @param  {Number} panel_al       太阳能板高度角 in degrees
