@@ -393,7 +393,7 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
     center_cartesian.y + ky * x,
     center_cartesian.z + kz * x
   ));
-  
+
   const theta = 0.349066; // 20 degrees = 0.349066 radians
 
   for (let i = 0; i < 17; ++i) {
@@ -432,63 +432,75 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
 }
 
 export const projectEverything = (
-  allKptList, allTreeList, wall, foundationPolyline
+  allKptList, allTreeList, allEnvList, wall, foundationPolyline,
+  sunPositionCollection
 ) => {
+
+  const all_s_vec = sunPositionCollection.map(solar_position =>
+    shadow_vector(solar_position)
+  );
+
   const foundationPoints = foundationPolyline[0].convertHierarchyToPoints();
   const list_of_shadows = [];
 
   const plane_equation = getPlaneEquationForPoint(
     foundationPoints[0], foundationPoints[1], foundationPoints[2]
   );
-  const solar_position = calculateSunPositionWrapper();
-  const s_vec = shadow_vector(solar_position);
 
   // normal keepout
   allKptList.forEach(kpt => {
     const keepoutPoints = kpt.outlinePolygon.convertHierarchyToPoints();
     const ratio = getRatio(keepoutPoints[0].lon, keepoutPoints[0].lat);
-    const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-    const shadow = projectPlaneOnAnother(
-      keepoutPoints, foundationPoints, plane_equation, s_ratio, true
-    );
-
-    shadow.forEach(s => {
-      if (s.length !== 0) list_of_shadows.push([s, kpt.id, foundationPolyline[0].entityId]);
+    all_s_vec.forEach(s_vec => {
+      const shadowCors = []
+      const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
+      const shadow = projectPlaneOnAnother(
+        keepoutPoints, foundationPoints, plane_equation, s_ratio, true
+      );
+      shadow.forEach(s => {
+        if (s.length !== 0) shadowCors.push(s);
+      })
+      console.log(shadowCors)
     })
+
+
+    // shadow.forEach(s => {
+    //   if (s.length !== 0) list_of_shadows.push([s, kpt.id, foundationPolyline[0].entityId]);
+    // })
   })
 
-  // tree keepout
-  allTreeList.forEach(tree => {
-    const center = tree.outlinePolygon.centerPoint;
-    const radius = tree.radius;
-    const ratio = getRatio(center.lon, center.lat);
-    const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-    const treePoints = generateTreePolygon(center, radius, s_ratio, s_vec);
-    const trunkPoints = generateTreePolygon(center, radius / 10, s_ratio, s_vec);
-    const shadow = projectTreeOnPlane(
-      center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio
-    );
-
-    shadow.forEach(s => {
-      if (s.length !== 0) list_of_shadows.push([s, tree.id, foundationPolyline[0].entityId]);
-    })
-  })
-
-  // wall keepout
-  const wallPoints = [];
-  for (var i = 0; i < wall.maximumHeight.length; ++i) {
-    wallPoints.push(new Point(
-      wall.positions[i * 2], wall.positions[i * 2 + 1], wall.maximumHeight[i]
-    ));
-  }
-  const ratio = getRatio(wallPoints[0].lon, wallPoints[0].lat);
-  const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-  const shadow = projectPlaneOnAnother(
-    wallPoints, foundationPoints, plane_equation, s_ratio, false
-  );
-  shadow.forEach(s => {
-    if (s.length !== 0) list_of_shadows.push([s, wall.entityId, foundationPolyline[0].entityId]);
-  })
-
-  return list_of_shadows;
+  // // tree keepout
+  // allTreeList.forEach(tree => {
+  //   const center = tree.outlinePolygon.centerPoint;
+  //   const radius = tree.radius;
+  //   const ratio = getRatio(center.lon, center.lat);
+  //   const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
+  //   const treePoints = generateTreePolygon(center, radius, s_ratio, s_vec);
+  //   const trunkPoints = generateTreePolygon(center, radius / 10, s_ratio, s_vec);
+  //   const shadow = projectTreeOnPlane(
+  //     center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio
+  //   );
+  //
+  //   shadow.forEach(s => {
+  //     if (s.length !== 0) list_of_shadows.push([s, tree.id, foundationPolyline[0].entityId]);
+  //   })
+  // })
+  //
+  // // wall keepout
+  // const wallPoints = [];
+  // for (var i = 0; i < wall.maximumHeight.length; ++i) {
+  //   wallPoints.push(new Point(
+  //     wall.positions[i * 2], wall.positions[i * 2 + 1], wall.maximumHeight[i]
+  //   ));
+  // }
+  // const ratio = getRatio(wallPoints[0].lon, wallPoints[0].lat);
+  // const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
+  // const shadow = projectPlaneOnAnother(
+  //   wallPoints, foundationPoints, plane_equation, s_ratio, false
+  // );
+  // shadow.forEach(s => {
+  //   if (s.length !== 0) list_of_shadows.push([s, wall.entityId, foundationPolyline[0].entityId]);
+  // })
+  //
+  // return list_of_shadows;
 }
