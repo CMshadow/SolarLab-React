@@ -1,5 +1,10 @@
 import * as actionTypes from '../actions/actionTypes';
+
+import * as Cesium from 'cesium';
 import { projectEverything } from '../../infrastructure/math/shadowHelper';
+import Polygon from "../../infrastructure/Polygon/Polygon";
+import Polyline from '../../infrastructure/line/polyline';
+import Shadow from "../../infrastructure/Polygon/shadow";
 
 export const projectAllShadow = (allKptList, allTreeList, wall, foundationPolygon) => {
 
