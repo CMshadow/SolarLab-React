@@ -192,3 +192,13 @@ export const clockwise_comparator = (v1, v2, b, joint, node_list, flag) => {
     }
   } 
 }
+
+
+export const innerEdgeRoofTopTest = () =>{
+  let innerPoint1 = [-117.840115555862, 33.646001090657, 6.995];
+  let innerPoint2 = [-117.839951401447, 33.64601986082, 6.995];
+  let innerPoint3 = [-117.839917727935,33.645815773787,6.995];
+  let innerPoint4 = [-117.840084461032, 33.645796708494,6.995];
+
+  
+}
