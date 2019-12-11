@@ -29,8 +29,8 @@ class ShadowControl extends Component {
       if (!err) {
 
         const sunPositionCollection = [];
-        for (let month = 1; month <= 12; month++) {
-          for (let day = 1; day <= 30 ; day ++) {
+        for (let month = 12; month <= 12; month++) {
+          for (let day = 23; day <= 23 ; day += 3) {
             if (month === 2 && day > 28) break;
             for (let hour = values.timeRange[0]; hour <= values.timeRange[1]; hour++) {
               sunPositionCollection.push(
@@ -42,7 +42,6 @@ class ShadowControl extends Component {
             }
           }
         }
-        console.log(sunPositionCollection)
         this.props.projectAllShadow(
           this.props.normalKeepout,
           this.props.treeKeepout,

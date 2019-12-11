@@ -8,27 +8,29 @@ import Shadow from "../../infrastructure/Polygon/shadow";
 
 export const projectAllShadow = (
   normal, tree, env, wall, foundationPolygon, sunPositionCollection
-) => {
+) => (dispatch, getState) => {
+  const foundationHeight = getState().buildingManagerReducer.workingBuilding
+    .foundationHeight;
   var list_of_shadows = projectEverything(
     normal, tree, env, wall, foundationPolygon, sunPositionCollection
   );
   var list_of_shadow_polygons = {};
 
-  for (var i = 0; i < list_of_shadows.length; ++i) {
-      var shadow_line = new Polyline(list_of_shadows[i][0]);
-      const shadowHier = Polygon.makeHierarchyFromPolyline(shadow_line, null, 0.015);
-      const shadowPolygon = new Shadow(
-          null, null, shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
-      );
-      var shadow_info = {};
-      shadow_info["from"] = list_of_shadows[i][1];
-      shadow_info["to"] = list_of_shadows[i][2];
-      shadow_info["polygon"] = shadowPolygon;
-      list_of_shadow_polygons[shadowPolygon.entityId] = shadow_info;
-  }
+  list_of_shadows.forEach(obj => {
+    console.log(obj)
+    const shadowHier = Polygon.makeHierarchyFromGeoJSON(obj.geoJSON, foundationHeight, 0.01);
+    const shadowPolygon = new Shadow(
+      null, null, shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
+    );
+    var shadow_info = {};
+    shadow_info["from"] = obj.kptId;
+    shadow_info["to"] = obj.foundationId;
+    shadow_info["polygon"] = shadowPolygon;
+    list_of_shadow_polygons[shadowPolygon.entityId] = shadow_info;
+  })
 
-  return {
+  return dispatch({
     type: actionTypes.PROJECT_ALL_SHADOW,
     shadows: list_of_shadow_polygons
-  };
+  });
 }

@@ -310,38 +310,38 @@ export const rotatePoint = (T, Rx, Ry, Rz, current) => {
 }
 
 export const rotatePointWrapper = (vx, vy, vz, center_cartesian, current_matrix, theta) => {
-    const mod = Math.sqrt(vx * vx + vy * vy + vz * vz);
+  const mod = Math.sqrt(vx * vx + vy * vy + vz * vz);
 
-    const a = vx / mod;
-    const b = vy / mod;
-    const c = vz / mod;
-    const d = Math.sqrt(b * b + c * c);
+  const a = vx / mod;
+  const b = vy / mod;
+  const c = vz / mod;
+  const d = Math.sqrt(b * b + c * c);
 
-    const T = [
-        [1, 0, 0, -center_cartesian.x],
-        [0, 1, 0, -center_cartesian.y],
-        [0, 0, 1, -center_cartesian.z],
-        [0, 0, 0, 1]
-    ];
-    const Rx = [
-        [1, 0, 0, 0],
-        [0, c / d, -b / d, 0],
-        [0, b / d, c / d, 0],
-        [0, 0, 0, 1]
-    ];
-    const Ry = [
-        [d, 0, -a, 0],
-        [0, 1, 0, 0],
-        [a, 0, d, 0],
-        [0, 0, 0, 1]
-    ];
-    const Rz = [
-        [Math.cos(theta), -Math.sin(theta), 0, 0],
-        [Math.sin(theta), Math.cos(theta), 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1],
-    ];
-    return rotatePoint(T, Rx, Ry, Rz, current_matrix)
+  const T = [
+    [1, 0, 0, -center_cartesian.x],
+    [0, 1, 0, -center_cartesian.y],
+    [0, 0, 1, -center_cartesian.z],
+    [0, 0, 0, 1]
+  ];
+  const Rx = [
+    [1, 0, 0, 0],
+    [0, c / d, -b / d, 0],
+    [0, b / d, c / d, 0],
+    [0, 0, 0, 1]
+  ];
+  const Ry = [
+    [d, 0, -a, 0],
+    [0, 1, 0, 0],
+    [a, 0, d, 0],
+    [0, 0, 0, 1]
+  ];
+  const Rz = [
+    [Math.cos(theta), -Math.sin(theta), 0, 0],
+    [Math.sin(theta), Math.cos(theta), 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1],
+  ];
+  return rotatePoint(T, Rx, Ry, Rz, current_matrix);
 }
 
 export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
@@ -460,6 +460,7 @@ export const projectEverything = (
       shadow.forEach((s, i) => {
         if (s.length !== 0) shadowGeoJSON[i] = new Polyline(s).makeGeoJSON();
       })
+      console.log(shadow)
       return shadowGeoJSON;
     });
 
@@ -469,16 +470,21 @@ export const projectEverything = (
       group[Object.keys(val)[0]] = [val[Object.keys(val)[0]]]
       return group;
     }, {});
-    const shadowHierarchies = Object.keys(groupedShadowGeoJSON).map(key => {
+    console.log(groupedShadowGeoJSON)
+    const allCombinedGeoJSON = Object.keys(groupedShadowGeoJSON).map(key => {
       let combinedGeoJSON = allShadowGeoJSON[key][0];
       groupedShadowGeoJSON[key].forEach(geoJSON => {
         combinedGeoJSON = turf.union(combinedGeoJSON, geoJSON);
       })
-      return Polygon.makeHierarchyFromGeoJSON(combinedGeoJSON, );
-    })
-    console.log(shadowHierarchies)
-
-
+      return combinedGeoJSON;
+    });
+    allCombinedGeoJSON.forEach(geoJSON =>
+      list_of_shadows.push({
+        geoJSON:geoJSON,
+        kptId: kpt.id,
+        foundationId: foundationPolygon[0].entityId
+      })
+    )
   })
 
   // // tree keepout
