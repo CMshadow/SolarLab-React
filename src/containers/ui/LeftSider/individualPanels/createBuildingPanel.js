@@ -16,7 +16,11 @@ import {
 
 import * as classes from './createBuildingPanel.module.css';
 import * as actions from '../../../../store/actions/index';
+
+import Point from '../../../../infrastructure/point/point';
+import { minPanelTiltAngleOnPitchedRoof } from '../../../../infrastructure/math/pointCalculation.js'
 import FoundLine from '../../../../infrastructure/line/foundLine';
+
 const { Option } = Select;
 
 class CreateBuildingPanel extends PureComponent {
@@ -168,6 +172,80 @@ class CreateBuildingPanel extends PureComponent {
         </Row>
       </Form.Item>
     );
+
+    var plane_points = [
+        {
+            "lon": -117.841101211316,
+            "lat": 33.64686405792,
+            "height": 4.995,
+            "heightOffset": 0,
+            "entityId": "f7df3ac0-1171-11ea-bb69-3d7ec9a0797c",
+            "name": "vertex",
+            "color": {
+                "red": 1,
+                "green": 1,
+                "blue": 1,
+                "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+        },
+        {
+            "lon": -117.841118085773,
+            "lat": 33.646994124261,
+            "height": 6.995,
+            "heightOffset": 0,
+            "entityId": "f7df3ac1-1171-11ea-bb69-3d7ec9a0797c",
+            "name": "vertex",
+            "color": {
+                "red": 1,
+                "green": 1,
+                "blue": 1,
+                "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+        },
+        {
+            "lon": -117.841239958975,
+            "lat": 33.647070370923,
+            "height": 6.995,
+            "heightOffset": 0,
+            "entityId": "f7df3ac2-1171-11ea-bb69-3d7ec9a0797c",
+            "name": "vertex",
+            "color": {
+                "red": 1,
+                "green": 1,
+                "blue": 1,
+                "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+        },
+        {
+            "lon": -117.841398202502,
+            "lat": 33.647049862886,
+            "height": 4.995,
+            "heightOffset": 0,
+            "entityId": "f7df3ac3-1171-11ea-bb69-3d7ec9a0797c",
+            "name": "vertex",
+            "color": {
+                "red": 1,
+                "green": 1,
+                "blue": 1,
+                "alpha": 1
+            },
+            "pixelSize": 15,
+            "show": true,
+            "render": true
+        }
+    ];
+
+    var tilt = minPanelTiltAngleOnPitchedRoof(plane_points, 216.92605);
+    console.log(tilt);
 
     return (
       <div>

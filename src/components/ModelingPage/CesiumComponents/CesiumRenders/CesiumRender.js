@@ -8,7 +8,9 @@ import DrawingInnerManagerRender from './DrawingInnerManagerRender';
 import DrawingBuildingRooftopRender from './DrawingRooftopManagerRender/DrawingRooftopManagerRender';
 import DrawingKeepoutManagerRender from './DrawingKeepoutManagerRender';
 import DrawingKeepoutPolygonManagerRender from './DrawingKeepoutPolygonManagerRender';
+import ShadowRender from './ShadowRender';
 import EditingPVPanelRender from './EditingPVPanelRender';
+
 import DebugRender from './DebugRender';
 
 const CesiumRender = (props) => {
@@ -28,6 +30,7 @@ const CesiumRender = (props) => {
       <DrawingBuildingRooftopRender />
       <DrawingKeepoutPolygonManagerRender />
       <DrawingKeepoutManagerRender />
+      <ShadowRender />
       <EditingPVPanelRender />
       <DebugRender />
     </div>

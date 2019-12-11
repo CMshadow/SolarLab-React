@@ -130,6 +130,10 @@ export {
 } from './keepoutManager';
 
 export {
+  projectAllShadow
+} from './editingShadowManager';
+
+export {
   setupPanelParams,
   generatePanels,
   cleanPanels,
@@ -144,5 +148,7 @@ export {
 
 export {
   setDebugPoints,
-  setDebugPolylines
+  setDebugPolylines,
+  setDebugPolygons,
+  setDebugShadowPolygons,
 } from './debugRender';

@@ -9,6 +9,7 @@ import Node from '../../infrastructure/edgesMap/node/node';
 import Edge from '../../infrastructure/edgesMap/edge/edge';
 import EdgesMap from '../../infrastructure/edgesMap/edgesMap';
 import * as MathHelper from '../../infrastructure/math/RoofTop_MathHelper';
+import * as SunInfomation from '../../infrastructure/math/sunPositionCalculation';
 import * as MathCoordHelp from '../../infrastructure/math/math';
 import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
@@ -291,9 +292,9 @@ export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, N
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].height);
       pathParameters.roofPlaneNodeIdsList.push(NodesCollection[nodeIndex].id);
     }
+
     pathParameters.roofHighestLowestNodes = calculateHighestandLowestNodes(pathParameters.roofPlaneCoordinateArray).highestAndLowestNodes;
     pathInformationCollection.push(pathParameters);
-    // console.log("id test: " + pathParameters.roofPlaneNodeIdsList)
   }
 
   return({

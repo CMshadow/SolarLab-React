@@ -9,6 +9,7 @@ class Building {
     this.foundationHeight = foundHt;
     this.eaveSetback = eaveStb;
   }
+
 }
 
 export default Building;
