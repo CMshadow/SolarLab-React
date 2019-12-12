@@ -6,14 +6,17 @@ import {
   Col,
   Button,
   Slider,
-  Form
+  Form,
+  DatePicker
 } from 'antd';
+import moment from 'moment';
 
 import * as actions from '../../../../../store/actions/index';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import { sunPosition } from '../../../../../infrastructure/math/sunPositionCalculation';
 
 const { Option } = Select;
+const { RangePicker } = DatePicker;
 
 class ShadowControl extends Component {
   slidermMarks = {
@@ -27,29 +30,43 @@ class ShadowControl extends Component {
     event.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-
-        const sunPositionCollection = [];
-        for (let month = 12; month <= 12; month++) {
-          for (let day = 23; day <= 23 ; day += 3) {
-            if (month === 2 && day > 28) break;
-            for (let hour = values.timeRange[0]; hour <= values.timeRange[1]; hour++) {
-              sunPositionCollection.push(
-                sunPosition(
-                  2019, month, day, hour, this.props.projectInfo.projectLon,
-                  this.props.projectInfo.projectLat, values.timeZone
-                )
-              );
-            }
-          }
+        let startDate = values.dateRange[0].clone().startOf('day');
+        let lastDate = values.dateRange[1].clone().startOf('day');
+        if (
+          startDate.isSame(`${startDate.format('YYYY')}-1-1`) &&
+          lastDate.isSame(`${lastDate.format('YYYY')}-12-31`)
+        ) {
+          startDate = moment(`${moment().format('YYYY')}-06-22`, 'YYYY-MM-DD');
+          lastDate = moment(`${moment().format('YYYY')}-12-21`, 'YYYY-MM-DD');
         }
-        this.props.projectAllShadow(
-          this.props.normalKeepout,
-          this.props.treeKeepout,
-          this.props.envKeepout,
-          this.props.buildingParapet,
-          this.props.foundationPolygon,
-          sunPositionCollection
-        );
+        const sunPositionCollection = [];
+
+        let currDate = startDate;
+        while(currDate.diff(lastDate) <= 0) {
+          for (
+            let hour = values.timeRange[0]; hour <= values.timeRange[1]; hour++
+          ) {
+            sunPositionCollection.push(sunPosition(
+              currDate.format('YYYY'),
+              currDate.format('M'),
+              currDate.format('D'),
+              hour,
+              this.props.projectInfo.projectLon,
+              this.props.projectInfo.projectLat,
+              values.timeZone
+            ));
+          }
+          currDate = currDate.add(2, 'days')
+        }
+        console.log(sunPositionCollection)
+        // this.props.projectAllShadow(
+        //   this.props.normalKeepout,
+        //   this.props.treeKeepout,
+        //   this.props.envKeepout,
+        //   this.props.buildingParapet,
+        //   this.props.foundationPolygon,
+        //   sunPositionCollection
+        // );
       }
     });
   };
@@ -68,6 +85,43 @@ class ShadowControl extends Component {
 
     return (
       <Form onSubmit={this.handleSubmit}>
+        <Row type="flex" justify="center">
+          <h3>Shadow Settings</h3>
+        </Row>
+        <Form.Item>
+          <Row>
+            <Col span={10} offset={2}>
+              <h4>Date Range</h4>
+            </Col>
+          </Row>
+          <Row>
+            <Col span={20} offset={2}>
+              {getFieldDecorator('dateRange', {
+                initialValue: [
+                  moment(`${moment().format('YYYY')}-06-22`, 'YYYY-MM-DD'),
+                  moment(`${moment().format('YYYY')}-12-21`, 'YYYY-MM-DD'),
+                ]
+              })(
+                <RangePicker
+                  ranges={{
+                    'Solstices': [
+                      moment(`${moment().format('YYYY')}-06-22`, 'YYYY-MM-DD'),
+                      moment(`${moment().format('YYYY')}-12-21`, 'YYYY-MM-DD'),
+                    ],
+                    'Annual': [
+                      moment().startOf('year'), moment().endOf('year')
+                    ],
+                    'Winter Solstice': [
+                      moment(`${moment().format('YYYY')}-12-21`, 'YYYY-MM-DD'),
+                      moment(`${moment().format('YYYY')}-12-21`, 'YYYY-MM-DD'),
+                    ],
+                  }}
+                  format="YYYY/MM/DD"
+                />
+              )}
+            </Col>
+          </Row>
+        </Form.Item>
         <Form.Item>
           <Row>
             <Col span={8} offset={2}>
@@ -87,7 +141,7 @@ class ShadowControl extends Component {
         <Form.Item>
           <Row>
             <Col span={10} offset={2}>
-              <h4>Shadow Range</h4>
+              <h4>Time Range</h4>
             </Col>
           </Row>
           <Row>
