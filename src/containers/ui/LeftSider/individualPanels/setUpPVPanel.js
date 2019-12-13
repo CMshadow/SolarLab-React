@@ -203,11 +203,6 @@ class SetUpPVPanel extends Component {
             )) :
             Math.round(brngCollection.findClosestBrng(0));
         }
-        console.log({
-          longitude: this.props.projectInfo.projectLon,
-          latitude: this.props.projectInfo.projectLat,
-          azimuth: azimuth
-        })
         this.setIsFetchingTrue();
         axios.get('/optimal-calculation/calculate-tilt', {
           params: {
@@ -216,7 +211,6 @@ class SetUpPVPanel extends Component {
             azimuth: azimuth
           }
         }).then(response => {
-          console.log(response)
           this.setIsFetchingFalse();
           this.props.form.setFieldsValue({
             azimuth: azimuth,
