@@ -181,22 +181,26 @@ export const projectPlaneOnAnother = (
   const parallelograms = getParallelogramsForPlane(
     point_list1, s_ratio, plane_equation
   );
+  //if (cover === true) {
+  //  let union = parallelograms[0];
+  //  parallelograms.forEach(parallel => {
+  //    union = unionPolygons(union, parallel, plane_equation);
+  //  })
+  //  const result_points = intersectPolygons(union, point_list2, plane_equation);
+  //  return [result_points];
+  //}
+  //else {
+  //  for (var i = 0; i < parallelograms.length; ++i) {
+  //    parallelograms[i] = intersectPolygons(
+  //      parallelograms[i], point_list2, plane_equation
+  //    );
+  //  }
+  //  return parallelograms;
+  //}
   if (cover === true) {
-    let union = parallelograms[0];
-    parallelograms.forEach(parallel => {
-      union = unionPolygons(union, parallel, plane_equation);
-    })
-    const result_points = intersectPolygons(union, point_list2, plane_equation);
-    return [result_points];
+      parallelograms.push(point_list2);
   }
-  else {
-    for (var i = 0; i < parallelograms.length; ++i) {
-      parallelograms[i] = intersectPolygons(
-        parallelograms[i], point_list2, plane_equation
-      );
-    }
-    return parallelograms;
-  }
+  return parallelograms;
 }
 
 export const projectTreeOnPlane = (center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio) => {
@@ -205,13 +209,15 @@ export const projectTreeOnPlane = (center, treePoints, trunkPoints, foundationPo
     const parallelograms = getParallelogramsForPlane(
         trunkPoints, s_ratio, plane_equation
     );
-    let union = parallelograms[0];
-    parallelograms.forEach(parallel => {
-      union = unionPolygons(union, parallel, plane_equation);
-    });
-    union = unionPolygons(union, shadowPoints, plane_equation);
-    const result_points = intersectPolygons(union, foundationPoints, plane_equation);
-    return [result_points];
+    //let union = parallelograms[0];
+    //parallelograms.forEach(parallel => {
+    //    union = unionPolygons(union, parallel, plane_equation);
+    //});
+    //union = unionPolygons(union, shadowPoints, plane_equation);
+    //const result_points = intersectPolygons(union, foundationPoints, plane_equation);
+    //return [result_points];
+    parallelograms.push(shadowPoints);
+    return parallelograms;
 }
 
 export const getSphereLineIntersection = (center_cartesian, radius, vx, vy, vz) => {
