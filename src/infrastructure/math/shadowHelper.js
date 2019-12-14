@@ -545,22 +545,22 @@ export const projectEverything = (
       complementIndex.forEach(v => {
         const vertexComboPoints = [reorderedShadowPoints[0][0]];
         fixedIndex.forEach(i => {
-          if (i < v) vertexComboPoints.push(reorderedShadowPoints[0][i])
+          if (i < v && i < reorderedShadowPoints[0].length)
+            vertexComboPoints.push(reorderedShadowPoints[0][i])
         });
         reorderedShadowPoints.forEach(points => {
-          if (
-            v < points.length
-          ) {
+          if (v < points.length)
             vertexComboPoints.push(points[v]);
-          }
         })
         fixedIndex.forEach(i => {
-          if (i > v) vertexComboPoints.push(reorderedShadowPoints[0][i])
+          if (i > v && i < reorderedShadowPoints[0].length)
+            vertexComboPoints.push(reorderedShadowPoints[0][i])
         });
         vertexComboPoints.push(reorderedShadowPoints[0][0]);
+        // console.log(vertexComboPoints)
         if (
-          !new Polyline(vertexComboPoints).isSelfIntersection() &&
-          vertexComboPoints.length > 4
+          vertexComboPoints.length > 4 &&
+          !new Polyline(vertexComboPoints).isSelfIntersection()
         ) {
           complementShadowPoints.push(vertexComboPoints);
         }
@@ -590,7 +590,6 @@ export const projectEverything = (
         finalDailyShadow = turf.union(combiShadow, combiShadow2);
       }
 
-      console.log(finalDailyShadow)
       return finalDailyShadow;
     });
 
