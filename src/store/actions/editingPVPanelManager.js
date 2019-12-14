@@ -23,9 +23,12 @@ const makeCombiGeometry = (props) => {
     kpt.keepout.outlinePolygon.toFoundLine().makeGeoJSON());
   const geoVentKeepout = props.allVentKeepout.map(kpt =>
     kpt.keepout.outlinePolygon.toFoundLine().makeGeoJSON());
+  const geoShadow = Object.keys(props.allShadow).map(k =>
+    props.allShadow[k].polygon.toFoundLine().makeGeoJSON());
   const geoNormalKeepoutInOne = makeUnionPolygonGeoJson(geoNormalKeepout);
   const geoPassageKeepoutInOne = makeUnionPolygonGeoJson(geoPassageKeepout);
   const geoVentKeepoutInOne = makeUnionPolygonGeoJson(geoVentKeepout);
+  const geoShadowInOne = makeUnionPolygonGeoJson(geoShadow);
   let keepoutCombi = null;
   let finalCombi = null;
   if (geoNormalKeepoutInOne.geometry.coordinates.length !== 0) {
@@ -35,6 +38,9 @@ const makeCombiGeometry = (props) => {
     }
     if(geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
       keepoutCombi = turf.union(keepoutCombi, geoVentKeepoutInOne);
+    }
+    if(geoShadowInOne.geometry.coordinates.length !== 0) {
+      keepoutCombi = turf.union(keepoutCombi, geoShadowInOne);
     }
     finalCombi = geoFoundation.map(geo => {
       const diff = turf.difference(geo, keepoutCombi);
@@ -51,6 +57,9 @@ const makeCombiGeometry = (props) => {
     if(geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
       keepoutCombi = turf.union(keepoutCombi, geoVentKeepoutInOne);
     }
+    if(geoShadowInOne.geometry.coordinates.length !== 0) {
+      keepoutCombi = turf.union(keepoutCombi, geoShadowInOne);
+    }
     finalCombi = geoFoundation.map(geo => {
       const diff = turf.difference(geo, keepoutCombi);
       if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
@@ -63,6 +72,9 @@ const makeCombiGeometry = (props) => {
   }
   else if (geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
     keepoutCombi = geoVentKeepoutInOne;
+    if(geoShadowInOne.geometry.coordinates.length !== 0) {
+      keepoutCombi = turf.union(keepoutCombi, geoShadowInOne);
+    }
     finalCombi = geoFoundation.map(geo => {
       const diff = turf.difference(geo, keepoutCombi);
       if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
@@ -150,8 +162,10 @@ export const generatePanels = (roofIndex) => (dispatch, getState) => {
       workingBuilding.pitchedRoofPolygonsExcludeStb[roofIndex],
     allNormalKeepout: getState().keepoutManagerReducer.normalKeepout,
     allPassageKeepout: getState().keepoutManagerReducer.passageKeepout,
-    allVentKeepout: getState().keepoutManagerReducer.ventKeepout
+    allVentKeepout: getState().keepoutManagerReducer.ventKeepout,
+    allShadow: workingBuilding.shadow
   }
+  console.log(props)
   const data = makeRequestData(props);
   const params = getState().undoableReducer.present.editingPVPanelManagerReducer
     .roofSpecParams[roofIndex];

@@ -61,14 +61,7 @@ class ShadowControl extends Component {
           sunPositionCollection.push(dailySunPositions)
           currDate = currDate.add(dayStep, 'days')
         }
-        this.props.projectAllShadow(
-          this.props.normalKeepout,
-          this.props.treeKeepout,
-          this.props.envKeepout,
-          this.props.buildingParapet,
-          this.props.foundationPolygon,
-          sunPositionCollection
-        );
+        this.props.projectAllShadow(sunPositionCollection);
       }
     });
   };
@@ -186,21 +179,6 @@ class ShadowControl extends Component {
 const mapStateToProps = state => {
   return {
     projectInfo: state.projectManagerReducer.projectInfo,
-    normalKeepout:
-      state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
-      .normalKeepout,
-    treeKeepout:
-      state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
-      .treeKeepout,
-    envKeepout:
-      state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
-      .envKeepout,
-    buildingParapet:
-      state.undoableReducer.present.drawingPolygonManagerReducer
-      .BuildingParapet,
-    foundationPolygon:
-      state.undoableReducer.present.drawingPolygonManagerReducer
-      .BuildingFoundation,
   };
 };
 

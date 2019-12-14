@@ -122,6 +122,7 @@ export {
   bindFoundPolyline,
   bindFoundPolygons,
   bindPitchedPolygons,
+  bindShadow,
   resetBuilding
 } from './buildingManager';
 
