@@ -24,6 +24,7 @@ import * as MyMath from '../../../../infrastructure/math/math';
 import BearingCollection from '../../../../infrastructure/math/bearingCollection';
 import errorNotification from '../../../../components/ui/Notification/ErrorNotification';
 import { minPanelTiltAngleOnPitchedRoof } from '../../../../infrastructure/math/pointCalculation';
+import { sunPosition } from '../../../../infrastructure/math/sunPositionCalculation';
 
 const { Option } = Select;
 const { TabPane } = Tabs;

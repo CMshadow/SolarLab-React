@@ -59,14 +59,14 @@ class ShadowControl extends Component {
           currDate = currDate.add(2, 'days')
         }
         console.log(sunPositionCollection)
-        // this.props.projectAllShadow(
-        //   this.props.normalKeepout,
-        //   this.props.treeKeepout,
-        //   this.props.envKeepout,
-        //   this.props.buildingParapet,
-        //   this.props.foundationPolygon,
-        //   sunPositionCollection
-        // );
+        this.props.projectAllShadow(
+          this.props.normalKeepout,
+          this.props.treeKeepout,
+          this.props.envKeepout,
+          this.props.buildingParapet,
+          this.props.foundationPolygon,
+          sunPositionCollection
+        );
       }
     });
   };
