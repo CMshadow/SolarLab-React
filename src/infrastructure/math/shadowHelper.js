@@ -457,34 +457,43 @@ export const projectEverything = (
   allKptList.forEach(kpt => {
     const keepoutPoints = kpt.outlinePolygon.convertHierarchyToPoints();
     const ratio = getRatio(keepoutPoints[0].lon, keepoutPoints[0].lat);
-    const allShadowGeoJSON = all_s_vec.map(s_vec => {
-      const shadowGeoJSON = {};
+    const allShadowGeoJSON = all_s_vec.flatMap(s_vec => {
+      // const shadowGeoJSON = {};
       const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
       const shadow = projectPlaneOnAnother(
         keepoutPoints, foundationPoints, plane_equation, s_ratio, true
       );
-      shadow.forEach((s, i) => {
-        if (s.length !== 0) shadowGeoJSON[i] = new Polyline(s).makeGeoJSON();
-      })
       console.log(shadow)
+      // const unEmptyPoints = shadow.reduce((acc, s) =>
+      //   s.length !== 0 ? s : acc
+      // , null);
+      // let shadowGeoJSON = new Polyline(unEmptyPoints).makeGeoJSON();
+      // shadow.forEach(s => {
+      //   if (s.length !== 0) shadowGeoJSON = turf.union(
+      //     shadowGeoJSON, new Polyline(s).makeGeoJSON()
+      //   );
+      // })
+      const shadowGeoJSON = shadow.filter(s => s.length > 0).map(s =>
+        new Polyline(s).makeGeoJSON()
+      )
       return shadowGeoJSON;
     });
-
-    const groupedShadowGeoJSON = allShadowGeoJSON.reduce((group, val) => {
-      Object.keys(val)[0] in group ?
-      group[Object.keys(val)[0]].push(val[Object.keys(val)[0]]) :
-      group[Object.keys(val)[0]] = [val[Object.keys(val)[0]]]
-      return group;
-    }, {});
-    console.log(groupedShadowGeoJSON)
-    const allCombinedGeoJSON = Object.keys(groupedShadowGeoJSON).map(key => {
-      let combinedGeoJSON = allShadowGeoJSON[key][0];
-      groupedShadowGeoJSON[key].forEach(geoJSON => {
-        combinedGeoJSON = turf.union(combinedGeoJSON, geoJSON);
-      })
-      return combinedGeoJSON;
-    });
-    allCombinedGeoJSON.forEach(geoJSON =>
+    console.log(allShadowGeoJSON)
+    // const groupedShadowGeoJSON = allShadowGeoJSON.reduce((group, val) => {
+    //   Object.keys(val)[0] in group ?
+    //   group[Object.keys(val)[0]].push(val[Object.keys(val)[0]]) :
+    //   group[Object.keys(val)[0]] = [val[Object.keys(val)[0]]]
+    //   return group;
+    // }, {});
+    // console.log(groupedShadowGeoJSON)
+    // const allCombinedGeoJSON = Object.keys(groupedShadowGeoJSON).map(key => {
+    //   let combinedGeoJSON = allShadowGeoJSON[key][0];
+    //   groupedShadowGeoJSON[key].forEach(geoJSON => {
+    //     combinedGeoJSON = turf.union(combinedGeoJSON, geoJSON);
+    //   })
+    //   return combinedGeoJSON;
+    // });
+    allShadowGeoJSON.forEach(geoJSON =>
       list_of_shadows.push({
         geoJSON:geoJSON,
         kptId: kpt.id,
