@@ -5,6 +5,7 @@ import Coordinate from '../point/coordinate';
 import Point from '../point/point';
 import Polygon from "../../infrastructure/Polygon/Polygon";
 import Polyline from '../../infrastructure/line/polyline';
+import FoundLine from '../../infrastructure/line/foundLine';
 import { calculateSunPositionWrapper } from './sunPositionCalculation';
 import * as martinez from 'martinez-polygon-clipping';
 import * as simplepolygon from 'simplepolygon';
@@ -486,8 +487,27 @@ export const projectEverything = (
         PointCount[key] > PointCount[maxKey] ?
         key :
         maxKey
-      , Object.keys(PointCount)[0])
+      , Object.keys(PointCount)[0]);
+      // 找当天所有阴影中只出现一次坐标
+      const singleCountCor = Object.keys(PointCount).reduce((acc, key) => {
+        if (PointCount[key] === 1) {
+          acc.push(key);
+        }
+        return acc;
+      }, []);
+      // console.log(singleCountCor)
+      const fixedCountCor = Object.keys(PointCount).reduce((acc, key) => {
+        if (
+          PointCount[key] === PointCount[maxCountCor] &&
+          key !== maxCountCor
+        ) {
+          acc.push(key);
+        }
+        return acc;
+      }, []);
+      // console.log(fixedCountCor)
 
+      // 根据共同坐标重新将节点Points array排序
       const reorderedShadowPoints = allShadowPoints.map(pts => {
         const points = pts.map(p => Point.fromPoint(p))
         const matchIndex = points.reduce((matchInd, val, i) =>
@@ -498,64 +518,98 @@ export const projectEverything = (
         newPoints.push(newPoints[0]);
         return newPoints;
       });
-      reorderedShadowPoints.sort((first, second) =>
-        first.length < second.length ? 1 : -1
-      );
 
-      const numVertex = reorderedShadowPoints[0].length - 2;
-      const complementShadowPoints = [];
-      for (let v = 1; v <= numVertex; v++) {
-        const vertexComboPoints = [reorderedShadowPoints[0][0]];
-        const history = [reorderedShadowPoints[0][0].getCoordinate(true).toString()];
-        reorderedShadowPoints.forEach(points => {
-          if (
-            v < points.length &&
-            !history.includes(points[v].getCoordinate(true).toString())
-          ) {
-            vertexComboPoints.push(points[v]);
-            history.push(points[v].getCoordinate(true).toString())
+      const complementIndexSet = new Set();
+      reorderedShadowPoints.forEach(points =>
+        points.forEach((p, i) => {
+          if (singleCountCor.includes(p.getCoordinate(true).toString())) {
+            complementIndexSet.add(i);
           }
         })
-        vertexComboPoints.push(reorderedShadowPoints[0].slice(-1)[0]);
+      )
+      const complementIndex = [...complementIndexSet].sort();
+      // console.log(complementIndex)
+      const fixedIndexSet = new Set();
+      reorderedShadowPoints.forEach(points =>
+        points.forEach((p, i) => {
+          if (fixedCountCor.includes(p.getCoordinate(true).toString())) {
+            fixedIndexSet.add(i);
+          }
+        })
+      )
+      const fixedIndex = [...fixedIndexSet].sort();
+      // console.log(fixedIndex)
+
+      // console.log(reorderedShadowPoints.map(points=>Polygon.makeHierarchyFromPolyline(new Polyline(points))))
+      const complementShadowPoints = [];
+      complementIndex.forEach(v => {
+        const vertexComboPoints = [reorderedShadowPoints[0][0]];
+        fixedIndex.forEach(i => {
+          if (i < v) vertexComboPoints.push(reorderedShadowPoints[0][i])
+        });
+        reorderedShadowPoints.forEach(points => {
+          if (
+            v < points.length
+          ) {
+            vertexComboPoints.push(points[v]);
+          }
+        })
+        fixedIndex.forEach(i => {
+          if (i > v) vertexComboPoints.push(reorderedShadowPoints[0][i])
+        });
+        vertexComboPoints.push(reorderedShadowPoints[0][0]);
         if (
           !new Polyline(vertexComboPoints).isSelfIntersection() &&
           vertexComboPoints.length > 4
         ) {
           complementShadowPoints.push(vertexComboPoints);
         }
-      }
+      })
+      // console.log(complementShadowPoints.map(points=>Polygon.makeHierarchyFromPolyline(new Polyline(points))))
 
       const allShadowGeoJSON = reorderedShadowPoints
         .map(points => new Polyline(points).makeGeoJSON());
-      console.log(allShadowGeoJSON)
+      let combiShadow = {...allShadowGeoJSON[0]};
+      allShadowGeoJSON.forEach((geoJSON, i) => {
+        if (i !== 0)
+        combiShadow = turf.union(combiShadow, geoJSON);
+      });
+
       const complementGeoJSON = complementShadowPoints
         .map(points => new Polyline(points).makeGeoJSON());
-
-      let combiShadow = allShadowGeoJSON[0];
-      allShadowGeoJSON.forEach((geoJSON, i) => {
-        combiShadow = turf.union(combiShadow, geoJSON);
-      })
+      let combiShadow2 = {...complementGeoJSON[0]};
       complementGeoJSON.forEach((geoJSON, i) => {
-        combiShadow = turf.union(combiShadow, geoJSON);
+        if (i !== 0)
+        combiShadow2 = turf.union(combiShadow2, geoJSON);
       })
-      console.log(combiShadow)
-      return combiShadow;
+
+      let finalDailyShadow = null;
+      if (Object.keys(combiShadow2).length === 0) {
+        finalDailyShadow = combiShadow;
+      } else {
+        finalDailyShadow = turf.union(combiShadow, combiShadow2);
+      }
+
+      console.log(finalDailyShadow)
+      return finalDailyShadow;
     });
 
-    let combiShadow = dailyShadow[0];
-    dailyShadow.forEach(shadow => {
-      combiShadow = turf.union(combiShadow, shadow)
+    let overallShadow = {...dailyShadow[0]};
+    dailyShadow.forEach((other, i) => {
+      if (i !== 0)
+      overallShadow = turf.union(overallShadow, other)
     })
 
     const intercoordinates = martinez.intersection(
-      combiShadow.geometry.coordinates,
-      new Polyline(foundationPoints).makeGeoJSON().geometry.coordinates
+      new FoundLine(foundationPoints.concat(foundationPoints[0])).makeGeoJSON()
+      .geometry.coordinates,
+      overallShadow.geometry.coordinates,
     );
 
     intercoordinates.forEach(coordinates => {
       const toPoints = coordinates[0].map(cor => new Point(cor[0], cor[1], 0));
       list_of_shadows.push({
-        geoJSON: new Polyline(toPoints).makeGeoJSON(),
+        geoJSON: new FoundLine(toPoints).makeGeoJSON(),
         kptId: kpt.id,
         foundationId: foundationPolygon[0].entityId
       })
