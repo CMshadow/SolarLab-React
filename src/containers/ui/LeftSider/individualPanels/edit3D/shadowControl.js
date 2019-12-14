@@ -27,6 +27,7 @@ class ShadowControl extends Component {
   };
 
   handleSubmit = (event) => {
+    const dayStep = 4;
     event.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
@@ -43,10 +44,11 @@ class ShadowControl extends Component {
 
         let currDate = startDate;
         while(currDate.diff(lastDate) <= 0) {
+          const dailySunPositions = []
           for (
             let hour = values.timeRange[0]; hour <= values.timeRange[1]; hour++
           ) {
-            sunPositionCollection.push(sunPosition(
+            dailySunPositions.push(sunPosition(
               currDate.format('YYYY'),
               currDate.format('M'),
               currDate.format('D'),
@@ -56,7 +58,8 @@ class ShadowControl extends Component {
               values.timeZone
             ));
           }
-          currDate = currDate.add(2, 'days')
+          sunPositionCollection.push(dailySunPositions)
+          currDate = currDate.add(dayStep, 'days')
         }
         this.props.projectAllShadow(
           this.props.normalKeepout,

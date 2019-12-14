@@ -17,7 +17,6 @@ export const projectAllShadow = (
   var list_of_shadow_polygons = {};
 
   list_of_shadows.forEach(obj => {
-    console.log(obj)
     const shadowHier = Polygon.makeHierarchyFromGeoJSON(obj.geoJSON, foundationHeight, 0.01);
     const shadowPolygon = new Shadow(
       null, null, shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)

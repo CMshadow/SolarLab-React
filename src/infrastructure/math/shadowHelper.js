@@ -7,6 +7,7 @@ import Polygon from "../../infrastructure/Polygon/Polygon";
 import Polyline from '../../infrastructure/line/polyline';
 import { calculateSunPositionWrapper } from './sunPositionCalculation';
 import * as martinez from 'martinez-polygon-clipping';
+import * as simplepolygon from 'simplepolygon';
 
 
 export const cartesianToPoint = (x, y, z) => {
@@ -91,7 +92,7 @@ export const shadow_vector = (solar_position) => {
     Math.tan(solar_position[0] * DegtoRad);
   if (solar_position[0] < 0) {
     ry = null;
-    alert("Sunset already.");
+    return null;
   }
   return [rx, ry];
 }
@@ -176,31 +177,32 @@ export const intersectPolygons = (point_list1, point_list2, plane_equation) => {
 export const projectPlaneOnAnother = (
   point_list1, point_list2, plane_equation, s_ratio, cover
 ) => {
-  if (point_list1.length < 3 || point_list2.length < 3) return null;
-  point_list2.push(point_list2[0]);
+  const copy_point_list2 = point_list2.map(p => Point.fromPoint(p));
+  if (point_list1.length < 3 || copy_point_list2.length < 3) return null;
+  copy_point_list2.push(copy_point_list2[0]);
   const parallelograms = getParallelogramsForPlane(
     point_list1, s_ratio, plane_equation
   );
-  //if (cover === true) {
-  //  let union = parallelograms[0];
-  //  parallelograms.forEach(parallel => {
-  //    union = unionPolygons(union, parallel, plane_equation);
-  //  })
-  //  const result_points = intersectPolygons(union, point_list2, plane_equation);
-  //  return [result_points];
-  //}
-  //else {
-  //  for (var i = 0; i < parallelograms.length; ++i) {
-  //    parallelograms[i] = intersectPolygons(
-  //      parallelograms[i], point_list2, plane_equation
-  //    );
-  //  }
-  //  return parallelograms;
-  //}
   if (cover === true) {
-      parallelograms.push(point_list2);
+   let union = parallelograms[0];
+   parallelograms.forEach(parallel => {
+     union = unionPolygons(union, parallel, plane_equation);
+   })
+   // const result_points = intersectPolygons(union, copy_point_list2, plane_equation);
+   return [union];
   }
-  return parallelograms;
+  else {
+   // for (var i = 0; i < parallelograms.length; ++i) {
+   //   parallelograms[i] = intersectPolygons(
+   //     parallelograms[i], copy_point_list2, plane_equation
+   //   );
+   // }
+   return parallelograms;
+  }
+  // if (cover === true) {
+  //     parallelograms.push(copy_point_list2);
+  // }
+  // return parallelograms;
 }
 
 export const projectTreeOnPlane = (center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio) => {
@@ -442,8 +444,10 @@ export const projectEverything = (
   sunPositionCollection
 ) => {
 
-  const all_s_vec = sunPositionCollection.map(solar_position =>
-    shadow_vector(solar_position)
+  const all_s_vec = sunPositionCollection.map(dailySunPosition =>
+    dailySunPosition.map(solar_position =>
+      shadow_vector(solar_position)
+    ).filter(vec => vec !== null)
   );
 
   const foundationPoints = foundationPolygon[0].convertHierarchyToPoints();
@@ -457,49 +461,107 @@ export const projectEverything = (
   allKptList.forEach(kpt => {
     const keepoutPoints = kpt.outlinePolygon.convertHierarchyToPoints();
     const ratio = getRatio(keepoutPoints[0].lon, keepoutPoints[0].lat);
-    const allShadowGeoJSON = all_s_vec.flatMap(s_vec => {
-      // const shadowGeoJSON = {};
-      const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-      const shadow = projectPlaneOnAnother(
-        keepoutPoints, foundationPoints, plane_equation, s_ratio, true
+    const dailyShadow = all_s_vec.flatMap(daily_s_vec => {
+      const PointCount = {};
+      // 一天中每个时段一个阴影节点Points array
+      const allShadowPoints = daily_s_vec.flatMap(s_vec => {
+        const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
+        const shadow = projectPlaneOnAnother(
+          keepoutPoints, foundationPoints, plane_equation, s_ratio, true
+        );
+        const filteredShadow = shadow.filter(s => s.length > 0);
+        filteredShadow.forEach(s =>
+          s.forEach(p => {
+            p.getCoordinate(true) in PointCount ?
+            PointCount[p.getCoordinate(true)] += 1 :
+            PointCount[p.getCoordinate(true)] = 1
+          })
+        );
+        return filteredShadow
+      });
+      // console.log(allShadowPoints)
+
+      // 找当天所有阴影中的共同坐标
+      const maxCountCor = Object.keys(PointCount).reduce((maxKey, key) =>
+        PointCount[key] > PointCount[maxKey] ?
+        key :
+        maxKey
+      , Object.keys(PointCount)[0])
+
+      const reorderedShadowPoints = allShadowPoints.map(pts => {
+        const points = pts.map(p => Point.fromPoint(p))
+        const matchIndex = points.reduce((matchInd, val, i) =>
+          val.getCoordinate(true).toString() === maxCountCor ? i : matchInd
+        , 0);
+        const placeToTail = points.splice(0, matchIndex);
+        const newPoints = points.slice(0, -1).concat(placeToTail);
+        newPoints.push(newPoints[0]);
+        return newPoints;
+      });
+      reorderedShadowPoints.sort((first, second) =>
+        first.length < second.length ? 1 : -1
       );
-      console.log(shadow)
-      // const unEmptyPoints = shadow.reduce((acc, s) =>
-      //   s.length !== 0 ? s : acc
-      // , null);
-      // let shadowGeoJSON = new Polyline(unEmptyPoints).makeGeoJSON();
-      // shadow.forEach(s => {
-      //   if (s.length !== 0) shadowGeoJSON = turf.union(
-      //     shadowGeoJSON, new Polyline(s).makeGeoJSON()
-      //   );
-      // })
-      const shadowGeoJSON = shadow.filter(s => s.length > 0).map(s =>
-        new Polyline(s).makeGeoJSON()
-      )
-      return shadowGeoJSON;
+
+      const numVertex = reorderedShadowPoints[0].length - 2;
+      const complementShadowPoints = [];
+      for (let v = 1; v <= numVertex; v++) {
+        const vertexComboPoints = [reorderedShadowPoints[0][0]];
+        const history = [reorderedShadowPoints[0][0].getCoordinate(true).toString()];
+        reorderedShadowPoints.forEach(points => {
+          if (
+            v < points.length &&
+            !history.includes(points[v].getCoordinate(true).toString())
+          ) {
+            vertexComboPoints.push(points[v]);
+            history.push(points[v].getCoordinate(true).toString())
+          }
+        })
+        vertexComboPoints.push(reorderedShadowPoints[0].slice(-1)[0]);
+        if (
+          !new Polyline(vertexComboPoints).isSelfIntersection() &&
+          vertexComboPoints.length > 4
+        ) {
+          complementShadowPoints.push(vertexComboPoints);
+        }
+      }
+
+      const allShadowGeoJSON = reorderedShadowPoints
+        .map(points => new Polyline(points).makeGeoJSON());
+      console.log(allShadowGeoJSON)
+      const complementGeoJSON = complementShadowPoints
+        .map(points => new Polyline(points).makeGeoJSON());
+
+      let combiShadow = allShadowGeoJSON[0];
+      allShadowGeoJSON.forEach((geoJSON, i) => {
+        combiShadow = turf.union(combiShadow, geoJSON);
+      })
+      complementGeoJSON.forEach((geoJSON, i) => {
+        combiShadow = turf.union(combiShadow, geoJSON);
+      })
+      console.log(combiShadow)
+      return combiShadow;
     });
-    console.log(allShadowGeoJSON)
-    // const groupedShadowGeoJSON = allShadowGeoJSON.reduce((group, val) => {
-    //   Object.keys(val)[0] in group ?
-    //   group[Object.keys(val)[0]].push(val[Object.keys(val)[0]]) :
-    //   group[Object.keys(val)[0]] = [val[Object.keys(val)[0]]]
-    //   return group;
-    // }, {});
-    // console.log(groupedShadowGeoJSON)
-    // const allCombinedGeoJSON = Object.keys(groupedShadowGeoJSON).map(key => {
-    //   let combinedGeoJSON = allShadowGeoJSON[key][0];
-    //   groupedShadowGeoJSON[key].forEach(geoJSON => {
-    //     combinedGeoJSON = turf.union(combinedGeoJSON, geoJSON);
-    //   })
-    //   return combinedGeoJSON;
-    // });
-    allShadowGeoJSON.forEach(geoJSON =>
+
+    let combiShadow = dailyShadow[0];
+    dailyShadow.forEach(shadow => {
+      combiShadow = turf.union(combiShadow, shadow)
+    })
+
+    const intercoordinates = martinez.intersection(
+      combiShadow.geometry.coordinates,
+      new Polyline(foundationPoints).makeGeoJSON().geometry.coordinates
+    );
+
+    intercoordinates.forEach(coordinates => {
+      const toPoints = coordinates[0].map(cor => new Point(cor[0], cor[1], 0));
       list_of_shadows.push({
-        geoJSON:geoJSON,
+        geoJSON: new Polyline(toPoints).makeGeoJSON(),
         kptId: kpt.id,
         foundationId: foundationPolygon[0].entityId
       })
-    )
+    })
+
+
   })
 
   // // tree keepout
