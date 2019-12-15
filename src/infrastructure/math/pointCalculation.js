@@ -2,15 +2,16 @@ import * as Cesium from 'cesium';
 
 import Coordinate from '../point/coordinate';
 import Point from '../point/point';
-import { calculateSunPositionWrapper } from './sunPositionCalculation';
-import { cartesianToPoint, getPlaneEquationForPoint, getPlaneEquationForCartesian, getPlaneLineIntersectPointPosition, rotatePointWrapper, getRatio, shadow_vector } from './shadowHelper';
+import {
+  cartesianToPoint,
+  getPlaneEquationForPoint,
+  getPlaneEquationForCartesian,
+  getPlaneLineIntersectPointPosition,
+  rotatePointWrapper,
+  getRatio,
+  shadow_vector
+} from './shadowHelper';
 
-/**
- * [minPanelTiltAngleOnPitchedRoof description]
- * @param  {Point[]} plane_points  Ð±ÎÝÃæ¶¥µã¼¯
- * @param  {Number} panelBrng Ð±ÎÝÃæÒªÆÌ°åµÄ³¯Ïò 0µ½360Ö®¼ä
- * @return {Number}           ÆÌ°åºÍµØÃæµÄµÄ×îÐ¡¼Ð½ÇÈÃ°å²»»áÏÝÈëÐ±ÎÝÃæÖÐ
- */
 export const minPanelTiltAngleOnPitchedRoof = (plane_points, panelBrng) => {
 
     const plane_for_point = getPlaneEquationForPoint(plane_points[0], plane_points[1], plane_points[2]);
@@ -85,13 +86,15 @@ const getHighAndFixedIndex = (panel_points, p_ratio) => {
 
 /**
  * [calculatePanelShadowLength description]
- * @param  {Point[]} plane_points  Ð±ÎÝÃæ¶¥µã¼¯
- * @param  {Point[]} panel_points  Ì«ÑôÄÜ°å¶¥µã¼¯ in degrees
- * @param  {Number} panel_al       Ì«ÑôÄÜ°å¸ß¶È½Ç in degrees
- * @param  {Number} panel_az       Ì«ÑôÄÜ°å·½Î»½Ç
- * @return {Number}                ÒõÓ°³¤¶È in meters
+ * @param  {Point[]} plane_points  Ð±ï¿½ï¿½ï¿½æ¶¥ï¿½ã¼¯
+ * @param  {Point[]} panel_points  Ì«ï¿½ï¿½ï¿½Ü°å¶¥ï¿½ã¼¯ in degrees
+ * @param  {Number} panel_al       Ì«ï¿½ï¿½ï¿½Ü°ï¿½ï¿½ß¶È½ï¿½ in degrees
+ * @param  {Number} panel_az       Ì«ï¿½ï¿½ï¿½Ü°å·½Î»ï¿½ï¿½
+ * @return {Number}                ï¿½ï¿½Ó°ï¿½ï¿½ï¿½ï¿½ in meters
  */
-export const calculatePanelShadowLength = (plane_points, panel_points, panel_al, panel_az) => {
+export const calculatePanelShadowLength = (
+  plane_points, panel_points, panel_al, panel_az, solar_position
+) => {
 
     const ratio = getRatio(plane_points[0].lon, plane_points[0].lat);
 
@@ -107,7 +110,6 @@ export const calculatePanelShadowLength = (plane_points, panel_points, panel_al,
     const high_point = panel_points[panel_pair[0]];
     const fix_point = panel_points[panel_pair[1]];
 
-    const solar_position = calculateSunPositionWrapper();
     const s_vec = shadow_vector(solar_position);
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
 

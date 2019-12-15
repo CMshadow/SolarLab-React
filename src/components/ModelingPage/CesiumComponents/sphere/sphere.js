@@ -15,6 +15,7 @@ const customSphere = (props) => {
       ellipsoid={{
         radii : new Cesium.Cartesian3(props.radius, props.radius, props.radius),
         material : props.material,
+				shadows: Cesium.ShadowMode.ENABLED
       }}
 			show={props.show}
 		/>

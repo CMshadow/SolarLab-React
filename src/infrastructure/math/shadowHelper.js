@@ -3,9 +3,7 @@ import * as Cesium from 'cesium';
 
 import Coordinate from '../point/coordinate';
 import Point from '../point/point';
-import Polygon from "../../infrastructure/Polygon/Polygon";
 import Polyline from '../../infrastructure/line/polyline';
-import { calculateSunPositionWrapper } from './sunPositionCalculation';
 import * as martinez from 'martinez-polygon-clipping';
 
 
@@ -91,7 +89,7 @@ export const shadow_vector = (solar_position) => {
     Math.tan(solar_position[0] * DegtoRad);
   if (solar_position[0] < 0) {
     ry = null;
-    alert("Sunset already.");
+    return null;
   }
   return [rx, ry];
 }
@@ -176,27 +174,32 @@ export const intersectPolygons = (point_list1, point_list2, plane_equation) => {
 export const projectPlaneOnAnother = (
   point_list1, point_list2, plane_equation, s_ratio, cover
 ) => {
-  if (point_list1.length < 3 || point_list2.length < 3) return null;
-  point_list2.push(point_list2[0]);
+  const copy_point_list2 = point_list2.map(p => Point.fromPoint(p));
+  if (point_list1.length < 3 || copy_point_list2.length < 3) return null;
+  copy_point_list2.push(copy_point_list2[0]);
   const parallelograms = getParallelogramsForPlane(
     point_list1, s_ratio, plane_equation
   );
   if (cover === true) {
-    let union = parallelograms[0];
-    parallelograms.forEach(parallel => {
-      union = unionPolygons(union, parallel, plane_equation);
-    })
-    const result_points = intersectPolygons(union, point_list2, plane_equation);
-    return [result_points];
+   let union = parallelograms[0];
+   parallelograms.forEach(parallel => {
+     union = unionPolygons(union, parallel, plane_equation);
+   })
+   // const result_points = intersectPolygons(union, copy_point_list2, plane_equation);
+   return [union];
   }
   else {
-    for (var i = 0; i < parallelograms.length; ++i) {
-      parallelograms[i] = intersectPolygons(
-        parallelograms[i], point_list2, plane_equation
-      );
-    }
-    return parallelograms;
+   // for (var i = 0; i < parallelograms.length; ++i) {
+   //   parallelograms[i] = intersectPolygons(
+   //     parallelograms[i], copy_point_list2, plane_equation
+   //   );
+   // }
+   return parallelograms;
   }
+  // if (cover === true) {
+  //     parallelograms.push(copy_point_list2);
+  // }
+  // return parallelograms;
 }
 
 export const projectTreeOnPlane = (center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio) => {
@@ -207,11 +210,14 @@ export const projectTreeOnPlane = (center, treePoints, trunkPoints, foundationPo
     );
     let union = parallelograms[0];
     parallelograms.forEach(parallel => {
-      union = unionPolygons(union, parallel, plane_equation);
+       union = unionPolygons(union, parallel, plane_equation);
     });
     union = unionPolygons(union, shadowPoints, plane_equation);
-    const result_points = intersectPolygons(union, foundationPoints, plane_equation);
-    return [result_points];
+    //const result_points = intersectPolygons(union, foundationPoints, plane_equation);
+    //return [result_points];
+    // parallelograms.push(shadowPoints);
+    // return parallelograms;
+    return [union];
 }
 
 export const getSphereLineIntersection = (center_cartesian, radius, vx, vy, vz) => {
@@ -310,38 +316,38 @@ export const rotatePoint = (T, Rx, Ry, Rz, current) => {
 }
 
 export const rotatePointWrapper = (vx, vy, vz, center_cartesian, current_matrix, theta) => {
-    const mod = Math.sqrt(vx * vx + vy * vy + vz * vz);
+  const mod = Math.sqrt(vx * vx + vy * vy + vz * vz);
 
-    const a = vx / mod;
-    const b = vy / mod;
-    const c = vz / mod;
-    const d = Math.sqrt(b * b + c * c);
+  const a = vx / mod;
+  const b = vy / mod;
+  const c = vz / mod;
+  const d = Math.sqrt(b * b + c * c);
 
-    const T = [
-        [1, 0, 0, -center_cartesian.x],
-        [0, 1, 0, -center_cartesian.y],
-        [0, 0, 1, -center_cartesian.z],
-        [0, 0, 0, 1]
-    ];
-    const Rx = [
-        [1, 0, 0, 0],
-        [0, c / d, -b / d, 0],
-        [0, b / d, c / d, 0],
-        [0, 0, 0, 1]
-    ];
-    const Ry = [
-        [d, 0, -a, 0],
-        [0, 1, 0, 0],
-        [a, 0, d, 0],
-        [0, 0, 0, 1]
-    ];
-    const Rz = [
-        [Math.cos(theta), -Math.sin(theta), 0, 0],
-        [Math.sin(theta), Math.cos(theta), 0, 0],
-        [0, 0, 1, 0],
-        [0, 0, 0, 1],
-    ];
-    return rotatePoint(T, Rx, Ry, Rz, current_matrix)
+  const T = [
+    [1, 0, 0, -center_cartesian.x],
+    [0, 1, 0, -center_cartesian.y],
+    [0, 0, 1, -center_cartesian.z],
+    [0, 0, 0, 1]
+  ];
+  const Rx = [
+    [1, 0, 0, 0],
+    [0, c / d, -b / d, 0],
+    [0, b / d, c / d, 0],
+    [0, 0, 0, 1]
+  ];
+  const Ry = [
+    [d, 0, -a, 0],
+    [0, 1, 0, 0],
+    [a, 0, d, 0],
+    [0, 0, 0, 1]
+  ];
+  const Rz = [
+    [Math.cos(theta), -Math.sin(theta), 0, 0],
+    [Math.sin(theta), Math.cos(theta), 0, 0],
+    [0, 0, 1, 0],
+    [0, 0, 0, 1],
+  ];
+  return rotatePoint(T, Rx, Ry, Rz, current_matrix);
 }
 
 export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
@@ -393,7 +399,7 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
     center_cartesian.y + ky * x,
     center_cartesian.z + kz * x
   ));
-  
+
   const theta = 0.349066; // 20 degrees = 0.349066 radians
 
   for (let i = 0; i < 17; ++i) {
@@ -429,66 +435,4 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
   }
 
   return result_point_list;
-}
-
-export const projectEverything = (
-  allKptList, allTreeList, wall, foundationPolyline
-) => {
-  const foundationPoints = foundationPolyline[0].convertHierarchyToPoints();
-  const list_of_shadows = [];
-
-  const plane_equation = getPlaneEquationForPoint(
-    foundationPoints[0], foundationPoints[1], foundationPoints[2]
-  );
-  const solar_position = calculateSunPositionWrapper();
-  const s_vec = shadow_vector(solar_position);
-
-  // normal keepout
-  allKptList.forEach(kpt => {
-    const keepoutPoints = kpt.outlinePolygon.convertHierarchyToPoints();
-    const ratio = getRatio(keepoutPoints[0].lon, keepoutPoints[0].lat);
-    const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-    const shadow = projectPlaneOnAnother(
-      keepoutPoints, foundationPoints, plane_equation, s_ratio, true
-    );
-
-    shadow.forEach(s => {
-      if (s.length !== 0) list_of_shadows.push([s, kpt.id, foundationPolyline[0].entityId]);
-    })
-  })
-
-  // tree keepout
-  allTreeList.forEach(tree => {
-    const center = tree.outlinePolygon.centerPoint;
-    const radius = tree.radius;
-    const ratio = getRatio(center.lon, center.lat);
-    const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-    const treePoints = generateTreePolygon(center, radius, s_ratio, s_vec);
-    const trunkPoints = generateTreePolygon(center, radius / 10, s_ratio, s_vec);
-    const shadow = projectTreeOnPlane(
-      center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio
-    );
-
-    shadow.forEach(s => {
-      if (s.length !== 0) list_of_shadows.push([s, tree.id, foundationPolyline[0].entityId]);
-    })
-  })
-
-  // wall keepout
-  const wallPoints = [];
-  for (var i = 0; i < wall.maximumHeight.length; ++i) {
-    wallPoints.push(new Point(
-      wall.positions[i * 2], wall.positions[i * 2 + 1], wall.maximumHeight[i]
-    ));
-  }
-  const ratio = getRatio(wallPoints[0].lon, wallPoints[0].lat);
-  const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-  const shadow = projectPlaneOnAnother(
-    wallPoints, foundationPoints, plane_equation, s_ratio, false
-  );
-  shadow.forEach(s => {
-    if (s.length !== 0) list_of_shadows.push([s, wall.entityId, foundationPolyline[0].entityId]);
-  })
-
-  return list_of_shadows;
 }

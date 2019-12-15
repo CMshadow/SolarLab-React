@@ -3,7 +3,6 @@ import * as Cesium from 'cesium';
 import * as actionTypes from '../actions/actionTypes';
 import Polygon from '../../infrastructure/Polygon/Polygon';
 import Wall from '../../infrastructure/Polygon/wall';
-import * as MathHelpfer from '../../infrastructure/math/sunPositionCalculation';
 
 const initialState = {
 	BuildingFoundation: [],
@@ -20,7 +19,6 @@ const createBuildingFoundationPolygon = (state, action) => {
 		new Polygon(null, null, action.height, action.coordinatesArray, null, null,
 			Cesium.Color.ORANGE
 		);
-	console.log("test sun position: "+MathHelpfer.calculateSunPositionWrapper());
 	return{
 		...state,
 		BuildingFoundation: [newFoundation]
