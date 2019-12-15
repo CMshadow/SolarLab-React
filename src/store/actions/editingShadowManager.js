@@ -127,7 +127,7 @@ export const projectAllShadow = (sunPositionCollection) =>
       tempArray.forEach((compare, j) => {
         othercombi = turf.union(othercombi, compare)
       });
-      toCut = turf.difference(toCut, othercombi)
+      if (othercombi) toCut = turf.difference(toCut, othercombi);
       if (toCut) {
         if (toCut.geometry.type === 'MultiPolygon') {
           toCut.geometry.coordinates.forEach(array => {
