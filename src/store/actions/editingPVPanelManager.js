@@ -85,6 +85,18 @@ const makeCombiGeometry = (props) => {
       }
     });
   }
+  else if (geoShadowInOne.geometry.coordinates.length !== 0) {
+    keepoutCombi = geoShadowInOne;
+    finalCombi = geoFoundation.map(geo => {
+      const diff = turf.difference(geo, keepoutCombi);
+      if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
+        diff.geometry.coordinates = [diff.geometry.coordinates];
+        return diff;
+      } else {
+        return diff;
+      }
+    });
+  }
   else {
     finalCombi = geoFoundation
     finalCombi.forEach(geo =>

@@ -458,20 +458,7 @@ export const projectEverything = (
   //   })
   // })
   //
-  // // wall keepout
-  // const wallPoints = [];
-  // for (var i = 0; i < wall.maximumHeight.length; ++i) {
-  //   wallPoints.push(new Point(
-  //     wall.positions[i * 2], wall.positions[i * 2 + 1], wall.maximumHeight[i]
-  //   ));
-  // }
-  // const ratio = getRatio(wallPoints[0].lon, wallPoints[0].lat);
-  // const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-  // const shadow = projectPlaneOnAnother(
-  //   wallPoints, foundationPoints, plane_equation, s_ratio, false
-  // );
-  // shadow.forEach(s => {
-  //   if (s.length !== 0) list_of_shadows.push([s, wall.entityId, foundationPolygon[0].entityId]);
-  // })
-  //
+  // wall keepout
+
+
 }
