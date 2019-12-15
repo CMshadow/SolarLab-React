@@ -208,15 +208,16 @@ export const projectTreeOnPlane = (center, treePoints, trunkPoints, foundationPo
     const parallelograms = getParallelogramsForPlane(
         trunkPoints, s_ratio, plane_equation
     );
-    //let union = parallelograms[0];
-    //parallelograms.forEach(parallel => {
-    //    union = unionPolygons(union, parallel, plane_equation);
-    //});
-    //union = unionPolygons(union, shadowPoints, plane_equation);
+    let union = parallelograms[0];
+    parallelograms.forEach(parallel => {
+       union = unionPolygons(union, parallel, plane_equation);
+    });
+    union = unionPolygons(union, shadowPoints, plane_equation);
     //const result_points = intersectPolygons(union, foundationPoints, plane_equation);
     //return [result_points];
-    parallelograms.push(shadowPoints);
-    return parallelograms;
+    // parallelograms.push(shadowPoints);
+    // return parallelograms;
+    return [union];
 }
 
 export const getSphereLineIntersection = (center_cartesian, radius, vx, vy, vz) => {
@@ -434,31 +435,4 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
   }
 
   return result_point_list;
-}
-
-export const projectEverything = (
-  allKptList, allTreeList, allEnvList, wall, foundationPolygon,
-  sunPositionCollection
-) => {
-
-  // // tree keepout
-  // allTreeList.forEach(tree => {
-  //   const center = tree.outlinePolygon.centerPoint;
-  //   const radius = tree.radius;
-  //   const ratio = getRatio(center.lon, center.lat);
-  //   const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-  //   const treePoints = generateTreePolygon(center, radius, s_ratio, s_vec);
-  //   const trunkPoints = generateTreePolygon(center, radius / 10, s_ratio, s_vec);
-  //   const shadow = projectTreeOnPlane(
-  //     center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio
-  //   );
-  //
-  //   shadow.forEach(s => {
-  //     if (s.length !== 0) list_of_shadows.push([s, tree.id, foundationPolygon[0].entityId]);
-  //   })
-  // })
-  //
-  // wall keepout
-
-
 }

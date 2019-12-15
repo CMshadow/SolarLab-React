@@ -7,7 +7,9 @@ import {
   shadow_vector,
   getRatio,
   projectPlaneOnAnother,
-  getPlaneEquationForPoint
+  getPlaneEquationForPoint,
+  generateTreePolygon,
+  projectTreeOnPlane
 } from '../../infrastructure/math/shadowHelper';
 import Polygon from "../../infrastructure/Polygon/Polygon";
 import Polyline from '../../infrastructure/line/polyline';
@@ -144,7 +146,8 @@ export const projectAllShadow = (sunPositionCollection) =>
     })
 
     // 所有阴影geoJSON转Shadow polygon
-    normalKeepoutShadows.concat(envKeepoutShadow).forEach(obj => {
+    normalKeepoutShadows.concat(envKeepoutShadow).concat(treeKeepoutShadow)
+    .forEach(obj => {
       roofAllShadows.push({
         from: obj.kptId,
         to: roofPolygon.entityId,
@@ -198,6 +201,8 @@ const projectKeepoutShadow = (
   keepout.forEach(kpt => {
     let keepoutPoints = [];
     let ratio = null;
+    let treeCenter = null;
+    let treeRadius = null;
     switch (keepoutType) {
       default:
       case 'normal':
@@ -208,9 +213,9 @@ const projectKeepoutShadow = (
         break
 
       case 'tree':
-        const center = kpt.outlinePolygon.centerPoint;
-        const radius = kpt.radius;
-        ratio = getRatio(center.lon, center.lat);
+        treeCenter = kpt.outlinePolygon.centerPoint;
+        treeRadius = kpt.radius;
+        ratio = getRatio(treeCenter.lon, treeCenter.lat);
     }
 
     const dailyShadow = all_s_vec.flatMap(daily_s_vec => {
@@ -224,6 +229,12 @@ const projectKeepoutShadow = (
             keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio
           );
           break;
+
+        case 'tree':
+          subDailyShadow = treeKeepoutDailyShadow(
+            keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio,
+            treeCenter, treeRadius
+          );
       }
       const PointCount = subDailyShadow.PointCount;
       const allShadowPoints = subDailyShadow.allShadowPoints;
@@ -364,6 +375,34 @@ const normalKeepoutDailyShadow = (
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
     const shadow = projectPlaneOnAnother(
       keepoutPoints, foundationPoints, plane_equation, s_ratio, true
+    );
+    const filteredShadow = shadow.filter(s => s.length > 0);
+    filteredShadow.forEach(s =>
+      s.forEach(p => {
+        p.getCoordinate(true) in PointCount ?
+        PointCount[p.getCoordinate(true)] += 1 :
+        PointCount[p.getCoordinate(true)] = 1
+      })
+    );
+    return filteredShadow
+  });
+  return {
+    PointCount: PointCount,
+    allShadowPoints: allShadowPoints
+  };
+}
+
+const treeKeepoutDailyShadow = (
+  keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio,
+  treeCenter, treeRadius
+) => {
+  const PointCount = {};
+  const allShadowPoints = daily_s_vec.flatMap(s_vec => {
+    const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
+    const treePoints = generateTreePolygon(treeCenter, treeRadius, s_ratio, s_vec);
+    const trunkPoints = generateTreePolygon(treeCenter, treeRadius / 10, s_ratio, s_vec);
+    const shadow = projectTreeOnPlane(
+      treeCenter, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio
     );
     const filteredShadow = shadow.filter(s => s.length > 0);
     filteredShadow.forEach(s =>
