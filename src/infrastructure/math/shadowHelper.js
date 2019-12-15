@@ -180,9 +180,11 @@ export const projectPlaneOnAnother = (
   const parallelograms = getParallelogramsForPlane(
     point_list1, s_ratio, plane_equation
   );
+  parallelograms.forEach(p => console.log(new Polyline(p).getPointsCoordinatesArray(true)))
   if (cover === true) {
    let union = parallelograms[0];
-   parallelograms.forEach(parallel => {
+   parallelograms.forEach((parallel, i) => {
+     if (i !== 0)
      union = unionPolygons(union, parallel, plane_equation);
    })
    // const result_points = intersectPolygons(union, copy_point_list2, plane_equation);

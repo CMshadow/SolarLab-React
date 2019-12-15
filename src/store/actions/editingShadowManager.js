@@ -76,13 +76,8 @@ export const projectAllShadow = (sunPositionCollection) =>
       .RooftopCollection.rooftopCollection;
   }
 
-  // 女儿墙转换为普通障碍物
-  const wallKeepout =
-    buildingParapet.maximumHeight[0] === buildingParapet.minimumHeight[0] ?
-    [] :
-    convertParapetToNormalKeepout(buildingParapet);
-
   const shadowPolygons = foundationPolygons.flatMap(roofPolygon => {
+    console.log('===============new roofpolygon====================')
     const foundationPoints = roofPolygon.convertHierarchyToPoints();
     const foundationHeight = getState().buildingManagerReducer.workingBuilding
       .foundationHeight;
@@ -91,62 +86,9 @@ export const projectAllShadow = (sunPositionCollection) =>
     const normalKeepoutShadows = projectKeepoutShadow(
       normalKeepout, foundationPoints, sunPositionCollection, 'normal'
     );
-    const envKeepoutShadow = projectKeepoutShadow(
-      envKeepout, foundationPoints, sunPositionCollection, 'env'
-    );
-    const treeKeepoutShadow = projectKeepoutShadow(
-      treeKeepout, foundationPoints, sunPositionCollection, 'tree'
-    );
-    const wallKeepoutShadow = projectKeepoutShadow(
-      wallKeepout, foundationPoints, sunPositionCollection, 'wall'
-    );
-
-    // 再不闭环的情况下尽可能将女儿墙阴影进行union
-    const trimedWallShadows = [];
-    let combiWallKeepoutShadow = wallKeepoutShadow[0].geoJSON
-    wallKeepoutShadow.forEach((obj, i) => {
-      if (i !== 0) {
-        const temp = turf.union(combiWallKeepoutShadow, obj.geoJSON);
-        if (temp.geometry.coordinates.length > 1) {
-          trimedWallShadows.push(combiWallKeepoutShadow);
-          combiWallKeepoutShadow = obj.geoJSON;
-        } else {
-          combiWallKeepoutShadow = temp;
-        }
-      }
-    })
-    trimedWallShadows.push(combiWallKeepoutShadow)
-
-    // union后每个女儿墙阴影取difference避免阴影重贴
-    const newTrimedWallShadows = [];
-    trimedWallShadows.forEach((shadow, i) => {
-      let toCut = {...shadow};
-      const tempArray = newTrimedWallShadows.slice(0, i)
-        .concat(trimedWallShadows.slice(i+1));
-      let othercombi = tempArray[0];
-      tempArray.forEach((compare, j) => {
-        othercombi = turf.union(othercombi, compare)
-      });
-      toCut = turf.difference(toCut, othercombi)
-      if (toCut) {
-        if (toCut.geometry.type === 'MultiPolygon') {
-          toCut.geometry.coordinates.forEach(array => {
-            newTrimedWallShadows.push({
-              type: 'Feature',
-              geometry: {
-                type: 'Polygon',
-                coordinates: array
-              }
-            });
-          })
-        } else {
-          newTrimedWallShadows.push(toCut)
-        }
-      }
-    })
-
+    console.log(normalKeepoutShadows)
     // 所有阴影geoJSON转Shadow polygon
-    normalKeepoutShadows.concat(envKeepoutShadow).concat(treeKeepoutShadow)
+    normalKeepoutShadows
     .forEach(obj => {
       roofAllShadows.push({
         from: obj.kptId,
@@ -154,17 +96,6 @@ export const projectAllShadow = (sunPositionCollection) =>
         polygon: new Shadow(null, null,
           Polygon.makeHierarchyFromGeoJSON(
             obj.geoJSON, foundationHeight, 0.01
-          ), null, Cesium.Color.DARKGREY.withAlpha(0.75)
-        )
-      });
-    });
-    newTrimedWallShadows.forEach(obj => {
-      roofAllShadows.push({
-        from: buildingParapet.entityId,
-        to: roofPolygon.entityId,
-        polygon: new Shadow(null, null,
-          Polygon.makeHierarchyFromGeoJSON(
-            obj, foundationHeight, 0.01
           ), null, Cesium.Color.DARKGREY.withAlpha(0.75)
         )
       });
@@ -228,6 +159,7 @@ const projectKeepoutShadow = (
           subDailyShadow = normalKeepoutDailyShadow(
             keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio
           );
+          console.log(subDailyShadow)
           break;
 
         case 'tree':
@@ -348,21 +280,23 @@ const projectKeepoutShadow = (
       if (i !== 0)
       overallShadow = turf.union(overallShadow, other)
     })
+    console.log(overallShadow)
 
-    const intercoordinates = martinez.intersection(
-      new FoundLine(foundationPoints.concat(foundationPoints[0])).makeGeoJSON()
-      .geometry.coordinates,
-      overallShadow.geometry.coordinates,
-    );
+    // const intercoordinates = martinez.intersection(
+    //   new FoundLine(foundationPoints.concat(foundationPoints[0])).makeGeoJSON()
+    //   .geometry.coordinates,
+    //   overallShadow.geometry.coordinates,
+    // );
 
-    intercoordinates.forEach(coordinates => {
-      const toPoints = coordinates[0].map(cor => new Point(cor[0], cor[1], 0));
+    // intercoordinates.forEach(coordinates => {
+      // const toPoints = coordinates[0].map(cor => new Point(cor[0], cor[1], 0));
+    if (Object.keys(overallShadow).length !== 0)
       list_of_shadows.push({
-        geoJSON: new FoundLine(toPoints).makeGeoJSON(),
+        geoJSON: overallShadow,
         kptId: kpt.id,
       })
     })
-  })
+  // })
   return list_of_shadows;
 }
 
@@ -373,9 +307,11 @@ const normalKeepoutDailyShadow = (
   // 一天中每个时段一个阴影节点Points array
   const allShadowPoints = daily_s_vec.flatMap(s_vec => {
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
+    console.log('hello')
     const shadow = projectPlaneOnAnother(
       keepoutPoints, foundationPoints, plane_equation, s_ratio, true
     );
+    console.log(shadow)
     const filteredShadow = shadow.filter(s => s.length > 0);
     filteredShadow.forEach(s =>
       s.forEach(p => {
