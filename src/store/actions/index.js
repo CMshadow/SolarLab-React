@@ -134,7 +134,8 @@ export {
   fetchUserInverters,
   calculateAutoInverter,
   calculateManualInverter,
-  autoWiring
+  autoWiring,
+  editWiring
 } from './editingWiringManager';
 
 export {

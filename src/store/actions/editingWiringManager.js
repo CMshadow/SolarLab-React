@@ -203,6 +203,11 @@ export const autoWiring = (roofInd, inverterInd, wiringInd) =>
   });
 }
 
+export const editWiring = (roofInd, inverterInd, wiringInd) =>
+(dispatch, getState) => {
+  
+}
+
 const findAWiringString = (availablePanels, inverterConfig, startIndex) => {
   const coefficient = 0.75;
 

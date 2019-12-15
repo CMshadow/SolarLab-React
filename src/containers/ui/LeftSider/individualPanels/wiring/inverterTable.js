@@ -47,7 +47,7 @@ class InverterTable extends Component {
             }
             size='small'
             status={
-              inverter.panelPerString === wiring.allPanels.length ? 
+              inverter.panelPerString === wiring.allPanels.length ?
               'success' :
               'active'
             }
@@ -60,6 +60,7 @@ class InverterTable extends Component {
         key: 'action',
         width: '40%',
         render: (wiring, record, wiringInd) => (
+          wiring.allPanels.length === 0 ?
           <Dropdown.Button
             overlay={this.menu}
             icon={<Icon type='down' />}
@@ -68,7 +69,8 @@ class InverterTable extends Component {
             }}
           >
             Auto
-          </Dropdown.Button>
+          </Dropdown.Button> :
+          <Button>Edit</Button>
         ),
       },
     ];
@@ -146,7 +148,10 @@ const mapDispatchToProps = dispatch => {
   return {
     autoWiring: (roofInd, inverterInd, wiringInd) => dispatch(
       actions.autoWiring(roofInd, inverterInd, wiringInd)
-    )
+    ),
+    editWiring: (roofInd, inverterInd, wiringInd) => dispatch(
+      actions.editWiring(roofInd, inverterInd, wiringInd)
+    ),
   }
 }
 
