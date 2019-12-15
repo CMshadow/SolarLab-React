@@ -5,6 +5,7 @@ import Wall from '../../infrastructure/Polygon/wall';
 import Sphere from '../../infrastructure/Polygon/sphere';
 import FlatBuilding from '../../infrastructure/building/flatBuilding';
 import PitchedBuilding from '../../infrastructure/building/pitchedBuilding';
+import Shadow from '../../infrastructure/Polygon/shadow';
 
 /**
  * Create a new Flat/Pitched Building Object depending on user inputs
@@ -129,6 +130,21 @@ export const bindPitchedPolygons = () => (dispatch, getState) => {
     pitchedPolygons: pitchedRoofPolygons,
     pitchedPolygonsExcludeStb: pitchedRoofPolygonsExcludeStb
   });
+}
+
+export const bindShadow = () => (dispatch, getState) => {
+  const shadows = getState().undoableReducer.present.editingShadowManager.shadows
+  const newShadows = {};
+  Object.keys(shadows).forEach(key => {
+    newShadows[key] = {
+      ...shadows[key],
+      polygon: Shadow.copyShadow(shadows[key].polygon)
+    }
+  })
+  return dispatch({
+    type: actionTypes.BIND_SHADOW,
+    shadow: newShadows
+  })
 }
 
 /**

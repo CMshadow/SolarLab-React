@@ -1,11 +1,19 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { Divider } from 'antd';
+import { Divider, Button } from 'antd';
+import * as Cesium from 'cesium';
 
 import RoofList3D from './edit3D/roofList3D';
 import KeepoutList3D from './edit3D/keepoutList3D';
 import FinishedModelingButton from './drawButtons/finishModelingButton';
-import ShadowRangeSlider from './edit3D/shadowRangeSlider';
+import ShadowControl from './edit3D/shadowControl';
+
+import * as actions from "../../../../store/actions/index";
+
+import Point from '../../../../infrastructure/point/point';
+import Shadow from "../../../../infrastructure/Polygon/shadow";
+import Polygon from "../../../../infrastructure/Polygon/Polygon";
+import Polyline from '../../../../infrastructure/line/polyline';
 
 const Editing3DPanel = (props) => {
 
@@ -15,7 +23,7 @@ const Editing3DPanel = (props) => {
       <Divider />
       <KeepoutList3D />
       <Divider />
-      <ShadowRangeSlider />
+      <ShadowControl />
       <Divider />
       <FinishedModelingButton />
     </div>
@@ -27,7 +35,7 @@ const mapStateToProps = state => {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     workingBuilding: state.buildingManagerReducer.workingBuilding,
     allNormalKeepout: state.keepoutManagerReducer.normalKeepout,
-    allPassageKeepout: state.keepoutManagerReducer.passageKeepout
+    allPassageKeepout: state.keepoutManagerReducer.passageKeepout,
   };
 };
 

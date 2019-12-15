@@ -122,12 +122,17 @@ export {
   bindFoundPolyline,
   bindFoundPolygons,
   bindPitchedPolygons,
+  bindShadow,
   resetBuilding
 } from './buildingManager';
 
 export {
   bindAllKeepout
 } from './keepoutManager';
+
+export {
+  projectAllShadow
+} from './editingShadowManager';
 
 export {
   setupPanelParams,
@@ -144,5 +149,7 @@ export {
 
 export {
   setDebugPoints,
-  setDebugPolylines
+  setDebugPolylines,
+  setDebugPolygons,
+  setDebugShadowPolygons,
 } from './debugRender';

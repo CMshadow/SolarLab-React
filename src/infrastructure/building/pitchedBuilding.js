@@ -4,9 +4,9 @@ import Building from './building';
 class PitchedBuilding extends Building {
   constructor (
     name, serial, foundHt, eaveStb, hipStb, ridgeStb, pitchedRoofPolygons=null,
-    pitchedRoofPolygonsExcludeStb=null
+    pitchedRoofPolygonsExcludeStb=null, shadow=null
   ) {
-    super(name, serial, foundHt, eaveStb);
+    super(name, serial, foundHt, eaveStb, shadow);
     this.type = 'PITCHED';
     this.hipSetback = hipStb;
     this.ridgeSetback = ridgeStb;
@@ -25,7 +25,7 @@ class PitchedBuilding extends Building {
   static fromBuilding (
     pitchedBuilding, name=null, serial=null, foundHt=null, eaveStb=null,
     hipStb=null, ridgeStb=null, pitchedRoofPolygons=null,
-    pitchedRoofPolygonsExcludeStb=null
+    pitchedRoofPolygonsExcludeStb=null, shadow=null
   ) {
     const newName = name ? name : pitchedBuilding.name;
     const newSerial = serial ? serial : pitchedBuilding.serial;
@@ -44,9 +44,10 @@ class PitchedBuilding extends Building {
       pitchedRoofPolygonsExcludeStb ?
       pitchedRoofPolygonsExcludeStb :
       pitchedBuilding.pitchedRoofPolygonsExcludeStb;
+    const newShadow = shadow || pitchedBuilding.shadow;
     return new PitchedBuilding(newName, newSerial, newFoundHt, newEaveStb,
       newHipStb, newRidgeStb, newpitchedRoofPolygons,
-      newpitchedRoofPolygonsExcludeStb
+      newpitchedRoofPolygonsExcludeStb, newShadow
     );
   }
 }
