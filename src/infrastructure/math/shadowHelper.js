@@ -110,24 +110,15 @@ export const getShadowLineForPoint = (point, s_ratio, plane_equation) => {
   const shadow_x = point.lon + s_ratio[0] * point.height;
   const shadow_y = point.lat + s_ratio[1] * point.height;
   const shadow_point = new Point(shadow_x, shadow_y, 0);
-  console.log('origin')
-  console.log(point)
-  console.log('shadow_point')
-  console.log(shadow_point)
   const plane_point1 = getPlaneLineIntersectPointPosition(
     point, vertical_point, plane_equation
   );
-  console.log('plane_point1')
-  console.log(plane_point1)
-  const plane_point2 = getPlaneLineIntersectPointPosition(
+  let plane_point2 = getPlaneLineIntersectPointPosition(
     point, shadow_point, plane_equation
   );
   if (plane_point2.height > point.height) {
     plane_point2 = point;
   }
-  console.log('plane_point2')
-  console.log(plane_point2)
-  console.log('=========================')
   return [plane_point1, plane_point2]
 }
 
@@ -136,7 +127,6 @@ export const getParallelogramsForPlane = (point_list, s_ratio, plane_equation) =
   const point_pair_list = point_list.map(p =>
     getShadowLineForPoint(p, s_ratio, plane_equation)
   );
-  console.log(point_pair_list)
   const parallelograms = [];
   for (let i = 0; i < point_pair_list.length; ++i) {
     const parallelogram = [];
@@ -153,8 +143,15 @@ export const getParallelogramsForPlane = (point_list, s_ratio, plane_equation) =
 export const unionPolygons = (point_list1, point_list2, plane_equation) => {
   const polyline1 = new Polyline(point_list1, false);
   const polyline2 = new Polyline(point_list2, false);
-  const union = turf.union(polyline1.makeGeoJSON(),polyline2.makeGeoJSON())
+  let union = turf.union(polyline1.makeGeoJSON(),polyline2.makeGeoJSON())
     .geometry.coordinates[0];
+  console.log(turf.union(polyline1.makeGeoJSON(),polyline2.makeGeoJSON()))
+  // if (union.length !== 0 && typeof(union[0][0]) !== 'number') {
+  //   console.log('hello')
+  //   console.log(union)
+  //
+  //   union = union[0];
+  // }
   const result_point_list = union.map(u =>
     getPlaneLineIntersectPointPosition(
       new Point(u[0], u[1], 0.0),
@@ -193,7 +190,6 @@ export const projectPlaneOnAnother = (
   const parallelograms = getParallelogramsForPlane(
     point_list1, s_ratio, plane_equation
   );
-  parallelograms.forEach(p => console.log(new Polyline(p).getPointsCoordinatesArray(true)))
   if (cover === true) {
    let union = parallelograms[0];
    parallelograms.forEach((parallel, i) => {

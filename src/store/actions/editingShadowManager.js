@@ -77,7 +77,6 @@ export const projectAllShadow = (sunPositionCollection) =>
   }
 
   const shadowPolygons = foundationPolygons.flatMap(roofPolygon => {
-    console.log('===============new roofpolygon====================')
     const foundationPoints = roofPolygon.convertHierarchyToPoints();
     const foundationHeight = getState().buildingManagerReducer.workingBuilding
       .foundationHeight;
@@ -86,17 +85,21 @@ export const projectAllShadow = (sunPositionCollection) =>
     const normalKeepoutShadows = projectKeepoutShadow(
       normalKeepout, foundationPoints, sunPositionCollection, 'normal'
     );
-    console.log(normalKeepoutShadows)
     // 所有阴影geoJSON转Shadow polygon
     normalKeepoutShadows
     .forEach(obj => {
+      const newHeights = new Shadow(null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON))
+      .convertHierarchyToPoints().map(p => Point.heightOfArbitraryNode(roofPolygon, p) + foundationHeight)
+      const points = new Shadow(null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON))
+      .convertHierarchyToPoints();
+      points.forEach((p, i) => p.setCoordinate(null, null, newHeights[i]))
+      const newhier = Polygon.makeHierarchyFromPolyline(new Polyline(points), null, 0.015)
+
       roofAllShadows.push({
         from: obj.kptId,
         to: roofPolygon.entityId,
         polygon: new Shadow(null, null,
-          Polygon.makeHierarchyFromGeoJSON(
-            obj.geoJSON, foundationHeight, 0.01
-          ), null, Cesium.Color.DARKGREY.withAlpha(0.75)
+          newhier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
         )
       });
     });
@@ -159,7 +162,6 @@ const projectKeepoutShadow = (
           subDailyShadow = normalKeepoutDailyShadow(
             keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio
           );
-          console.log(subDailyShadow)
           break;
 
         case 'tree':
@@ -274,29 +276,29 @@ const projectKeepoutShadow = (
 
       return finalDailyShadow;
     });
-
+    console.log(dailyShadow)
     let overallShadow = {...dailyShadow[0]};
     dailyShadow.forEach((other, i) => {
       if (i !== 0)
       overallShadow = turf.union(overallShadow, other)
     })
-    console.log(overallShadow)
 
-    // const intercoordinates = martinez.intersection(
-    //   new FoundLine(foundationPoints.concat(foundationPoints[0])).makeGeoJSON()
-    //   .geometry.coordinates,
-    //   overallShadow.geometry.coordinates,
-    // );
-
-    // intercoordinates.forEach(coordinates => {
-      // const toPoints = coordinates[0].map(cor => new Point(cor[0], cor[1], 0));
-    if (Object.keys(overallShadow).length !== 0)
-      list_of_shadows.push({
-        geoJSON: overallShadow,
-        kptId: kpt.id,
-      })
-    })
-  // })
+    if (Object.keys(overallShadow).length !== 0 && overallShadow.geometry.coordinates[0].length > 1) {
+      const intercoordinates = martinez.intersection(
+        new FoundLine(foundationPoints.concat(foundationPoints[0])).makeGeoJSON()
+        .geometry.coordinates,
+        overallShadow.geometry.coordinates,
+      );
+      if(intercoordinates)
+        intercoordinates.forEach(coordinates => {
+          const toPoints = coordinates[0].map(cor => new Point(cor[0], cor[1], 0));
+          list_of_shadows.push({
+            geoJSON: new FoundLine(toPoints).makeGeoJSON(),
+            kptId: kpt.id,
+          })
+        })
+    }
+  })
   return list_of_shadows;
 }
 
@@ -307,11 +309,9 @@ const normalKeepoutDailyShadow = (
   // 一天中每个时段一个阴影节点Points array
   const allShadowPoints = daily_s_vec.flatMap(s_vec => {
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-    console.log('hello')
     const shadow = projectPlaneOnAnother(
       keepoutPoints, foundationPoints, plane_equation, s_ratio, true
     );
-    console.log(shadow)
     const filteredShadow = shadow.filter(s => s.length > 0);
     filteredShadow.forEach(s =>
       s.forEach(p => {
