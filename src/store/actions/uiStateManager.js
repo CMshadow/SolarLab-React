@@ -71,3 +71,9 @@ export const setUIStateSetUpWiring = () => {
     type: actionTypes.SET_UI_STATE_SETUP_WIRING
   };
 };
+
+export const setUIStateEditingWiring = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_EDITING_WIRING
+  };
+};

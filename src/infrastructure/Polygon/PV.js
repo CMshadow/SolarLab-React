@@ -1,6 +1,7 @@
 import { Color } from 'cesium';
 import Polygon from './Polygon';
 import Point from '../point/point';
+import Polyline from '../line/polyline';
 
 class PV extends Polygon {
   constructor(
@@ -17,6 +18,22 @@ class PV extends Polygon {
       outlineColor || Color.BLACK
     );
     this.connected = connected;
+  }
+
+  getCenter = (HtOffset = 0.1) => {
+    const point1 = new Point(
+      this.hierarchy[0], this.hierarchy[1], this.hierarchy[2]
+    );
+    const point2 = new Point(
+      this.hierarchy[6], this.hierarchy[7], this.hierarchy[8]
+    );
+    const brng = Point.bearing(point1, point2);
+    const dist = Point.surfaceDistance(point1, point2);
+    const center = Point.destination(point1, brng, dist / 2);
+    center.setCoordinate(
+      null, null, point1.height +(point2.height - point1.height) / 2 + HtOffset
+    );
+    return Point.fromCoordinate(center);
   }
 
   static copyPolygon (pv) {

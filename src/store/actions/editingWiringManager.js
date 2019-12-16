@@ -192,8 +192,9 @@ export const autoWiring = (roofInd, inverterInd, wiringInd) =>
     panelCenterPoints, null, 'wiring', Cesium.Color.DARKORANGE
   );
   const newWiring = new Wiring(
-    panelsOnString[0], panelsOnString.slice(-1)[0], panelsOnString, wiringPolyline
-  )
+    null, panelsOnString[0], panelsOnString.slice(-1)[0], panelsOnString,
+    wiringPolyline
+  );
   dispatch({
     type: actionTypes.AUTO_WIRING,
     wiring: newWiring,
@@ -205,7 +206,12 @@ export const autoWiring = (roofInd, inverterInd, wiringInd) =>
 
 export const editWiring = (roofInd, inverterInd, wiringInd) =>
 (dispatch, getState) => {
-  
+  return dispatch({
+    type: actionTypes.EDIT_WIRING,
+    roofIndex: roofInd,
+    inverterIndex: inverterInd,
+    wiringIndex: wiringInd
+  })
 }
 
 const findAWiringString = (availablePanels, inverterConfig, startIndex) => {
@@ -243,4 +249,29 @@ const findAWiringString = (availablePanels, inverterConfig, startIndex) => {
     availablePanels[withDist[0].panelArrayInd][0].pv.setConnected();
   }
   return string;
+}
+
+export const setHoverWiringPoint = (position) => {
+  return {
+    type: actionTypes.SET_HOVER_WIRING_POINT,
+    position: position
+  };
+}
+
+export const releaseHoverWiringPoint = () => {
+  return {
+    type: actionTypes.RELEASE_HOVER_WIRING_POINT,
+  };
+}
+
+export const setPickedWiringPoint = () => {
+  return {
+    type: actionTypes.SET_PICKED_WIRING_POINT,
+  };
+}
+
+export const releasePickedWiringPoint = () => {
+  return {
+    type: actionTypes.RELEASE_PICKED_WIRING_POINT,
+  };
 }

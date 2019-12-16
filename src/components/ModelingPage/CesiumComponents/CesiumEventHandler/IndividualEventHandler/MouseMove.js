@@ -124,7 +124,7 @@ const MouseMoveHandler = (props) => {
             }
             // If hover on tree's center point
             else if (
-              props.drawingKeepoutPolyline.centerPoint && 
+              props.drawingKeepoutPolyline.centerPoint &&
               anyPickedObject.id.id ===
               props.drawingKeepoutPolyline.centerPoint.entityId
             ) {
@@ -139,6 +139,27 @@ const MouseMoveHandler = (props) => {
             // Release hover point if it exists
             if (props.hoverKeepoutPointIndex !== null) props.releaseKeepoutHoverPointIndex();
           }
+        }
+        break;
+
+      case 'EDITING_WIRING':
+        if(anyPickedObject) {
+          // Find out hover on which point
+          const onTopPointPosition =
+            anyPickedObject.id.id === props.editingStartPoint.entityId ?
+            'START' :
+            anyPickedObject.id.id === props.editingEndPoint.entityId ?
+            'END' : null
+
+          // Set hover point if available
+          if (onTopPointPosition) {
+            props.setHoverWiringPoint(onTopPointPosition);
+          } else {
+            if (props.hoverWiringPointPosition !== null) props.releaseHoverWiringPoint();
+          }
+        } else {
+          // Release hover point if it exists
+          if (props.hoverWiringPointPosition !== null) props.releaseHoverWiringPoint();
         }
         break;
 
@@ -196,6 +217,13 @@ const mapStateToProps = state => {
     pickedKeepoutPointIndex:
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .pickedPointIndex,
+
+    editingStartPoint:
+      state.undoableReducer.present.editingWiringManager.editingStartPoint,
+    editingEndPoint:
+      state.undoableReducer.present.editingWiringManager.editingEndPoint,
+    hoverWiringPointPosition:
+      state.undoableReducer.present.editingWiringManager.hoverWiringPointPosition,
   };
 };
 
@@ -239,6 +267,16 @@ const mapDispatchToProps = dispatch => {
     moveKeepoutPickedPoint: (cartesian, viewer) => dispatch(
       actions.moveKeepoutPickedPoint(cartesian, viewer)
     ),
+
+    setHoverWiringPoint: (position) => dispatch(
+      actions.setHoverWiringPoint(position)
+    ),
+    releaseHoverWiringPoint: (position) => dispatch(
+      actions.releaseHoverWiringPoint(position)
+    ),
+    // moveWiringPickedPoint: (cartesian, viewer) => dispatch(
+    //   actions.moveWiringPickedPoint(cartesian, viewer)
+    // ),
   };
 };
 

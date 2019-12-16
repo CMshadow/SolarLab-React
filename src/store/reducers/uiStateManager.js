@@ -100,6 +100,13 @@ const setUIStateSetUpWiring = (state, action) => {
   };
 };
 
+const setUIStateEditingWiring = (state, action) => {
+  return {
+    ...state,
+    uiState: 'EDITING_WIRING'
+  }
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_UI_STATE_READY_DRAWING:
@@ -126,6 +133,8 @@ const reducer = (state=initialState, action) => {
       return setUIStateSetUpPV(state, action);
     case actionTypes.SET_UI_STATE_SETUP_WIRING:
       return setUIStateSetUpWiring(state, action);
+    case actionTypes.SET_UI_STATE_EDITING_WIRING:
+      return setUIStateEditingWiring(state, action);
     default: return state;
   }
 };

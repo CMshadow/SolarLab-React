@@ -60,17 +60,20 @@ class InverterTable extends Component {
         key: 'action',
         width: '40%',
         render: (wiring, record, wiringInd) => (
-          wiring.allPanels.length === 0 ?
           <Dropdown.Button
             overlay={this.menu}
             icon={<Icon type='down' />}
             onClick = {() => {
-              this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd)
+              if (record.allPanels.length === 0) {
+                this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd);
+              } else {
+                this.props.setUIStateEditingWiring();
+                this.props.editWiring(this.props.roofIndex, inverterInd, wiringInd);
+              }
             }}
           >
-            Auto
-          </Dropdown.Button> :
-          <Button>Edit</Button>
+            {record.allPanels.length === 0 ? 'Auto' : 'Edit'}
+          </Dropdown.Button>
         ),
       },
     ];
@@ -141,6 +144,8 @@ const mapStateToProps = state => {
   return {
     roofSpecInverters:
       state.undoableReducer.present.editingWiringManager.roofSpecInverters,
+    uiState:
+      state.undoableReducer.present.uiStateManagerReducer.uiState
   };
 };
 
@@ -152,6 +157,9 @@ const mapDispatchToProps = dispatch => {
     editWiring: (roofInd, inverterInd, wiringInd) => dispatch(
       actions.editWiring(roofInd, inverterInd, wiringInd)
     ),
+    setUIStateEditingWiring: () => dispatch(
+      actions.setUIStateEditingWiring()
+    )
   }
 }
 

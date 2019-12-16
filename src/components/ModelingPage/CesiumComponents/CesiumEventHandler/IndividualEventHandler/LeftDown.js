@@ -35,7 +35,7 @@ const LeftDownHandler = (props) => {
           if (onTopPoint) {
             props.setKeepoutPickedPointIndex(onTopPoint);
           } else if (
-            props.drawingKeepoutPolyline.centerPoint && 
+            props.drawingKeepoutPolyline.centerPoint &&
             pickedObject.id.id ===
             props.drawingKeepoutPolyline.centerPoint.entityId
           ) {
@@ -45,6 +45,23 @@ const LeftDownHandler = (props) => {
           }
         }
         break;
+
+      case 'EDITING_WIRING':
+        if (pickedObject) {
+          // Find out picked which point
+          const onTopPointPosition =
+            pickedObject.id.id === props.editingStartPoint.entityId ?
+            'START' :
+            pickedObject.id.id === props.editingEndPoint.entityId ?
+            'END' : null
+          // Set picked point if available
+          if (onTopPointPosition) {
+            props.disableRotate();
+            props.setPickedWiringPoint();
+          }
+        }
+        break;
+
       default:
         break;
     }
@@ -68,6 +85,11 @@ const mapStateToProps = state => {
     drawingKeepoutPolyline:
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .drawingKeepoutPolyline,
+
+    editingStartPoint:
+      state.undoableReducer.present.editingWiringManager.editingStartPoint,
+    editingEndPoint:
+      state.undoableReducer.present.editingWiringManager.editingEndPoint,
   };
 };
 
@@ -77,6 +99,9 @@ const mapDispatchToProps = dispatch => {
     setPickedPointIndex: (point) => dispatch(actions.setPickedPointIndex(point)),
     setKeepoutPickedPointIndex: (point) => dispatch(
       actions.setKeepoutPickedPointIndex(point)
+    ),
+    setPickedWiringPoint: () => dispatch(
+      actions.setPickedWiringPoint()
     ),
   };
 };

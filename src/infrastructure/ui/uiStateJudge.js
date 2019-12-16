@@ -25,7 +25,8 @@ export const showSetUpPVPanel = (uiState) => {
 
 export const showSetUpWiringPanel = (uiState) => {
   return (
-    uiState === 'SETUP_WIRING'
+    uiState === 'SETUP_WIRING' ||
+    uiState === 'EDITING_WIRING'
   )
 };
 
