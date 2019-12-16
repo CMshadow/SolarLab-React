@@ -116,6 +116,9 @@ export const getShadowLineForPoint = (point, s_ratio, plane_equation) => {
   const plane_point2 = getPlaneLineIntersectPointPosition(
     point, shadow_point, plane_equation
   );
+  if (plane_point2.height > point.height) {
+      plane_point2 = point;
+  }
   return [plane_point1, plane_point2]
 }
 
