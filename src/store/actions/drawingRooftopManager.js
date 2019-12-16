@@ -286,6 +286,16 @@ export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, N
     pathParameters.roofPlaneParameters = [...calculateObliquityAndObliquity(NodesCollection, path[i]).roofPlaneParameters];
     pathParameters.roofEdgesTypeList = [...checkEdgeTypeOfPath(path[i], NodesCollection, OuterEdgesCollection, InnerEdgeCollection).edgeTypeList];
     // console.log("Roof Edge Type: "+ pathParameters.roofEdgesTypeList )
+    let check = 0;
+    for (let edge of pathParameters.roofEdgesTypeList) {
+      if (edge.type === "Ridge") {
+        check +=1;
+      }
+    }
+    if (check === pathParameters.roofEdgesTypeList.length) {
+      console.log(path[i]);
+      console.log(pathParameters.roofPlaneCoordinateArray)
+    }
     for (let nodeIndex of path[i]) {
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lon);
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lat);
