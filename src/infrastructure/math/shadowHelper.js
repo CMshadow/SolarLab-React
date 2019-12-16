@@ -110,12 +110,21 @@ export const getShadowLineForPoint = (point, s_ratio, plane_equation) => {
   const shadow_x = point.lon + s_ratio[0] * point.height;
   const shadow_y = point.lat + s_ratio[1] * point.height;
   const shadow_point = new Point(shadow_x, shadow_y, 0);
+  console.log('origin')
+  console.log(point)
+  console.log('shadow_point')
+  console.log(shadow_point)
   const plane_point1 = getPlaneLineIntersectPointPosition(
     point, vertical_point, plane_equation
   );
+  console.log('plane_point1')
+  console.log(plane_point1)
   const plane_point2 = getPlaneLineIntersectPointPosition(
     point, shadow_point, plane_equation
   );
+  console.log('plane_point2')
+  console.log(plane_point2)
+  console.log('=========================')
   return [plane_point1, plane_point2]
 }
 
@@ -124,6 +133,7 @@ export const getParallelogramsForPlane = (point_list, s_ratio, plane_equation) =
   const point_pair_list = point_list.map(p =>
     getShadowLineForPoint(p, s_ratio, plane_equation)
   );
+  console.log(point_pair_list)
   const parallelograms = [];
   for (let i = 0; i < point_pair_list.length; ++i) {
     const parallelogram = [];
