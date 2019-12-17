@@ -53,6 +53,7 @@ const convertParapetToNormalKeepout = (buildingParapet) => {
 
 export const projectAllShadow = (sunPositionCollection) =>
 (dispatch, getState) => {
+  const buildingType = getState().buildingManagerReducer.workingBuilding.type
   const normalKeepout =
     getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer
     .normalKeepout;
@@ -66,7 +67,7 @@ export const projectAllShadow = (sunPositionCollection) =>
     getState().undoableReducer.present.drawingPolygonManagerReducer
     .BuildingParapet;
   let foundationPolygons = null;
-  if (getState().buildingManagerReducer.workingBuilding.type === 'FLAT') {
+  if (buildingType === 'FLAT') {
     foundationPolygons =
       getState().undoableReducer.present.drawingPolygonManagerReducer
       .BuildingFoundation;
@@ -75,11 +76,11 @@ export const projectAllShadow = (sunPositionCollection) =>
       getState().undoableReducer.present.drawingRooftopManagerReducer
       .RooftopCollection.rooftopCollection;
   }
+  const foundationHeight = getState().buildingManagerReducer.workingBuilding
+    .foundationHeight;
 
   const shadowPolygons = foundationPolygons.flatMap(roofPolygon => {
     const foundationPoints = roofPolygon.convertHierarchyToPoints();
-    const foundationHeight = getState().buildingManagerReducer.workingBuilding
-      .foundationHeight;
 
     const roofAllShadows = [];
     const normalKeepoutShadows = projectKeepoutShadow(
@@ -88,24 +89,41 @@ export const projectAllShadow = (sunPositionCollection) =>
     // 所有阴影geoJSON转Shadow polygon
     normalKeepoutShadows
     .forEach(obj => {
-      const newHeights = new Shadow(null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON))
-      .convertHierarchyToPoints().map(p => Point.heightOfArbitraryNode(roofPolygon, p) + foundationHeight)
-      const points = new Shadow(null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON))
-      .convertHierarchyToPoints();
-      points.forEach((p, i) => p.setCoordinate(null, null, newHeights[i]))
-      const newhier = Polygon.makeHierarchyFromPolyline(new Polyline(points), null, 0.015)
-
+      let shadowHier = null;
+      if (buildingType === 'FLAT') {
+        const shadowPoints = new Shadow(
+          null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
+        ).convertHierarchyToPoints();
+        shadowHier = Polygon.makeHierarchyFromPolyline(
+          new Polyline(shadowPoints), foundationHeight, 0.015
+        );
+      } else {
+        const shadowPoints = new Shadow(
+          null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
+        ).convertHierarchyToPoints();
+        const newHeights = shadowPoints.map(p =>
+          Point.heightOfArbitraryNode(roofPolygon, p) + foundationHeight
+        );
+        shadowPoints.forEach((p, i) =>
+          p.setCoordinate(null, null, newHeights[i])
+        );
+        shadowHier = Polygon.makeHierarchyFromPolyline(
+          new Polyline(shadowPoints), null, 0.015
+        );
+      }
+      console.log(shadowHier)
       roofAllShadows.push({
         from: obj.kptId,
         to: roofPolygon.entityId,
         polygon: new Shadow(null, null,
-          newhier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
+          shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
         )
       });
     });
 
     return roofAllShadows;
   })
+
   const shadowPolygonsDict = {}
   shadowPolygons.forEach(obj =>{
     shadowPolygonsDict[obj.polygon.entityId] = obj
@@ -130,7 +148,7 @@ const projectKeepoutShadow = (
     foundationPoints[0], foundationPoints[1], foundationPoints[2]
   );
 
-  const list_of_shadows = [];
+  const keepoutAllShadows = [];
 
   keepout.forEach(kpt => {
     let keepoutPoints = [];
@@ -153,154 +171,85 @@ const projectKeepoutShadow = (
     }
 
     const dailyShadow = all_s_vec.flatMap(daily_s_vec => {
-      let subDailyShadow = null;
+      let allShadowPoints = null;
       switch (keepoutType) {
         default:
         case 'normal':
         case 'env':
         case 'wall':
-          subDailyShadow = normalKeepoutDailyShadow(
+          allShadowPoints = normalKeepoutDailyShadow(
             keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio
           );
           break;
 
         case 'tree':
-          subDailyShadow = treeKeepoutDailyShadow(
+          allShadowPoints = treeKeepoutDailyShadow(
             keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio,
             treeCenter, treeRadius
           );
       }
-      const PointCount = subDailyShadow.PointCount;
-      const allShadowPoints = subDailyShadow.allShadowPoints;
 
-      // 找当天所有阴影中的共同坐标
-      const maxCountCor = Object.keys(PointCount).reduce((maxKey, key) =>
-        PointCount[key] > PointCount[maxKey] ?
-        key :
-        maxKey
-      , Object.keys(PointCount)[0]);
-      // 找当天所有阴影中只出现一次坐标
-      const singleCountCor = Object.keys(PointCount).reduce((acc, key) => {
-        if (PointCount[key] === 1) {
-          acc.push(key);
-        }
-        return acc;
-      }, []);
-      const fixedCountCor = Object.keys(PointCount).reduce((acc, key) => {
-        if (
-          PointCount[key] === PointCount[maxCountCor] &&
-          key !== maxCountCor
-        ) {
-          acc.push(key);
-        }
-        return acc;
-      }, []);
-
-      // 根据共同坐标重新将节点Points array排序
-      const reorderedShadowPoints = allShadowPoints.map(pts => {
-        const points = pts.map(p => Point.fromPoint(p))
-        const matchIndex = points.reduce((matchInd, val, i) =>
-          val.getCoordinate(true).toString() === maxCountCor ? i : matchInd
-        , 0);
-        const placeToTail = points.splice(0, matchIndex);
-        const newPoints = points.slice(0, -1).concat(placeToTail);
-        newPoints.push(newPoints[0]);
-        return newPoints;
-      });
-
-      const complementIndexSet = new Set();
-      reorderedShadowPoints.forEach(points =>
-        points.forEach((p, i) => {
-          if (singleCountCor.includes(p.getCoordinate(true).toString())) {
-            complementIndexSet.add(i);
-          }
-        })
-      )
-      const complementIndex = [...complementIndexSet].sort();
-      const fixedIndexSet = new Set();
-      reorderedShadowPoints.forEach(points =>
-        points.forEach((p, i) => {
-          if (fixedCountCor.includes(p.getCoordinate(true).toString())) {
-            fixedIndexSet.add(i);
-          }
-        })
-      )
-      const fixedIndex = [...fixedIndexSet].sort();
-
-      const complementShadowPoints = [];
-      complementIndex.forEach(v => {
-        const vertexComboPoints = [reorderedShadowPoints[0][0]];
-        fixedIndex.forEach(i => {
-          if (i < v && i < reorderedShadowPoints[0].length)
-            vertexComboPoints.push(reorderedShadowPoints[0][i])
-        });
-        reorderedShadowPoints.forEach(points => {
-          if (v < points.length)
-            vertexComboPoints.push(points[v]);
-        })
-        fixedIndex.forEach(i => {
-          if (i > v && i < reorderedShadowPoints[0].length)
-            vertexComboPoints.push(reorderedShadowPoints[0][i])
-        });
-        vertexComboPoints.push(reorderedShadowPoints[0][0]);
-        if (
-          vertexComboPoints.length > 4 &&
-          !new Polyline(vertexComboPoints).isSelfIntersection()
-        ) {
-          complementShadowPoints.push(vertexComboPoints);
-        }
-      })
-
-      const allShadowGeoJSON = reorderedShadowPoints
+      const allShadowGeoJSON = allShadowPoints
         .map(points => new Polyline(points).makeGeoJSON());
-      let combiShadow = {...allShadowGeoJSON[0]};
-      allShadowGeoJSON.forEach((geoJSON, i) => {
-        if (i !== 0)
-        combiShadow = turf.union(combiShadow, geoJSON);
-      });
-
-      const complementGeoJSON = complementShadowPoints
-        .map(points => new Polyline(points).makeGeoJSON());
-      let combiShadow2 = {...complementGeoJSON[0]};
-      complementGeoJSON.forEach((geoJSON, i) => {
-        if (i !== 0)
-        combiShadow2 = turf.union(combiShadow2, geoJSON);
-      })
-
-      let finalDailyShadow = null;
-      if (Object.keys(combiShadow2).length === 0) {
-        finalDailyShadow = combiShadow;
+      if(allShadowGeoJSON.length !== 0) {
+        return turf.union(...allShadowGeoJSON);
       } else {
-        finalDailyShadow = turf.union(combiShadow, combiShadow2);
+        return {};
       }
+    }).filter(s => Object.keys(s).length !== 0);
+    let overallShadow = {};
+    if(dailyShadow.length !== 0) {
+      overallShadow = turf.union(...dailyShadow)
+    }
 
-      return finalDailyShadow;
-    });
-    console.log(dailyShadow)
-    let overallShadow = {...dailyShadow[0]};
-    dailyShadow.forEach((other, i) => {
-      if (i !== 0)
-      overallShadow = turf.union(overallShadow, other)
-    })
-
-    if (Object.keys(overallShadow).length !== 0 && overallShadow.geometry.coordinates[0].length > 1) {
+    if (
+      Object.keys(overallShadow).length !== 0 &&
+      overallShadow.geometry.coordinates[0].length > 1
+    ) {
       const intercoordinates = martinez.intersection(
         new FoundLine(foundationPoints.concat(foundationPoints[0])).makeGeoJSON()
         .geometry.coordinates,
         overallShadow.geometry.coordinates,
       );
-      if(intercoordinates)
+
+      if (intercoordinates) {
         intercoordinates.forEach(coordinates => {
           const toPoints = coordinates[0].map(cor => new Point(cor[0], cor[1], 0));
-          list_of_shadows.push({
+          console.log(toPoints)
+          keepoutAllShadows.push({
             geoJSON: new FoundLine(toPoints).makeGeoJSON(),
             kptId: kpt.id,
           })
         })
+      }
     }
   })
-  return list_of_shadows;
+  return keepoutAllShadows;
 }
+
+// const beautifyPoints = (points, angleBar=30, distBar=0.25) => {
+//   const newPoints = [points[0]]
+//   let currentStart = points[0];
+//   let currentBrng = Point.bearing(currentStart, points[1]);
+//   console.log(currentBrng)
+//
+//   points.slice(1).forEach((p,i) => {
+//     console.log('=============')
+//     console.log(currentStart)
+//     console.log(p)
+//     console.log(Point.surfaceDistance(currentStart, p))
+//     // console.log(Point.bearing(currentStart, p))
+//     if (
+//       Point.surfaceDistance(currentStart, p) > distBar
+//     ) {
+//       newPoints.push(p);
+//       currentBrng = Point.bearing(currentStart, p);
+//       currentStart = Point.fromPoint(p);
+//     }
+//   })
+//   newPoints.push(points[0]);
+//   return newPoints;
+// }
 
 const normalKeepoutDailyShadow = (
   keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio
@@ -311,28 +260,27 @@ const normalKeepoutDailyShadow = (
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
     const shadow = projectPlaneOnAnother(
       keepoutPoints, foundationPoints, plane_equation, s_ratio, true
-    );
-    const filteredShadow = shadow.filter(s => s.length > 0);
-    filteredShadow.forEach(s =>
+    ).filter(s => s.length > 0);
+    shadow.forEach(s =>
       s.forEach(p => {
         p.getCoordinate(true) in PointCount ?
         PointCount[p.getCoordinate(true)] += 1 :
         PointCount[p.getCoordinate(true)] = 1
       })
     );
-    return filteredShadow
+    return shadow.filter(s => s.length > 0);
   });
-  return {
-    PointCount: PointCount,
-    allShadowPoints: allShadowPoints
-  };
+
+  const complementShadowPoints =
+    findComplementShadowPoints(allShadowPoints, PointCount);
+
+  return allShadowPoints.concat(complementShadowPoints);
 }
 
 const treeKeepoutDailyShadow = (
   keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio,
   treeCenter, treeRadius
 ) => {
-  const PointCount = {};
   const allShadowPoints = daily_s_vec.flatMap(s_vec => {
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
     const treePoints = generateTreePolygon(treeCenter, treeRadius, s_ratio, s_vec);
@@ -341,17 +289,91 @@ const treeKeepoutDailyShadow = (
       treeCenter, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio
     );
     const filteredShadow = shadow.filter(s => s.length > 0);
-    filteredShadow.forEach(s =>
-      s.forEach(p => {
-        p.getCoordinate(true) in PointCount ?
-        PointCount[p.getCoordinate(true)] += 1 :
-        PointCount[p.getCoordinate(true)] = 1
-      })
-    );
     return filteredShadow
   });
   return {
-    PointCount: PointCount,
     allShadowPoints: allShadowPoints
   };
+}
+
+const findComplementShadowPoints = (allShadowPoints, PointCount) => {
+  // 找当天所有阴影中的共同坐标
+  const maxCountCor = Object.keys(PointCount).reduce((maxKey, key) =>
+    PointCount[key] > PointCount[maxKey] ?
+    key :
+    maxKey
+  , Object.keys(PointCount)[0]);
+  // 找当天所有阴影中只出现一次坐标
+  const singleCountCor = Object.keys(PointCount).reduce((acc, key) => {
+    if (PointCount[key] === 1) {
+      acc.push(key);
+    }
+    return acc;
+  }, []);
+  const fixedCountCor = Object.keys(PointCount).reduce((acc, key) => {
+    if (
+      PointCount[key] === PointCount[maxCountCor] &&
+      key !== maxCountCor
+    ) {
+      acc.push(key);
+    }
+    return acc;
+  }, []);
+
+  // 根据共同坐标重新将节点Points array排序
+  const reorderedShadowPoints = allShadowPoints.map(pts => {
+    const points = pts.map(p => Point.fromPoint(p))
+    const matchIndex = points.reduce((matchInd, val, i) =>
+      val.getCoordinate(true).toString() === maxCountCor ? i : matchInd
+    , 0);
+    const placeToTail = points.splice(0, matchIndex);
+    const newPoints = points.slice(0, -1).concat(placeToTail);
+    newPoints.push(newPoints[0]);
+    return newPoints;
+  });
+
+  const complementIndexSet = new Set();
+  reorderedShadowPoints.forEach(points =>
+    points.forEach((p, i) => {
+      if (singleCountCor.includes(p.getCoordinate(true).toString())) {
+        complementIndexSet.add(i);
+      }
+    })
+  )
+  const complementIndex = [...complementIndexSet].sort();
+  const fixedIndexSet = new Set();
+  reorderedShadowPoints.forEach(points =>
+    points.forEach((p, i) => {
+      if (fixedCountCor.includes(p.getCoordinate(true).toString())) {
+        fixedIndexSet.add(i);
+      }
+    })
+  )
+  const fixedIndex = [...fixedIndexSet].sort();
+
+  const complementShadowPoints = [];
+  complementIndex.forEach(v => {
+    const vertexComboPoints = [reorderedShadowPoints[0][0]];
+    fixedIndex.forEach(i => {
+      if (i < v && i < reorderedShadowPoints[0].length)
+        vertexComboPoints.push(reorderedShadowPoints[0][i])
+    });
+    reorderedShadowPoints.forEach(points => {
+      if (v < points.length)
+        vertexComboPoints.push(points[v]);
+    })
+    fixedIndex.forEach(i => {
+      if (i > v && i < reorderedShadowPoints[0].length)
+        vertexComboPoints.push(reorderedShadowPoints[0][i])
+    });
+    vertexComboPoints.push(reorderedShadowPoints[0][0]);
+    if (
+      vertexComboPoints.length > 4 &&
+      !new Polyline(vertexComboPoints).isSelfIntersection()
+    ) {
+      complementShadowPoints.push(vertexComboPoints);
+    }
+  })
+
+  return complementShadowPoints;
 }
