@@ -389,62 +389,25 @@ const findComplementShadowPoints = (allShadowPoints, PointCount) => {
 
 const trimWallShadows = (wallKeepoutShadow) => {
   console.log(wallKeepoutShadow)
-  // 再不闭环的情况下尽可能将女儿墙阴影进行union
-  const trimedWallShadows = [];
-  let combiWallKeepoutShadow = wallKeepoutShadow[0].geoJSON
-  wallKeepoutShadow.forEach((obj, i) => {
-    if (i !== 0) {
-      console.log(Polygon.makeHierarchyFromGeoJSON(combiWallKeepoutShadow))
-      console.log(Polygon.makeHierarchyFromGeoJSON(obj.geoJSON))
-      const temp = turf.union(combiWallKeepoutShadow, obj.geoJSON);
-      console.log(temp)
-      if (temp.geometry.coordinates.length > 1) {
-        trimedWallShadows.push(combiWallKeepoutShadow);
-        combiWallKeepoutShadow = obj.geoJSON;
-      } else {
-        combiWallKeepoutShadow = temp;
-      }
+  const trimedWallKeepoutShadow = wallKeepoutShadow.map(obj => {
+    return {
+      geoJSON: {...obj.geoJSON},
+      kptId: obj.kptId
     }
-  })
-  trimedWallShadows.push(combiWallKeepoutShadow)
-  console.log(trimedWallShadows)
-
-  // union后每个女儿墙阴影取difference避免阴影重贴
-  const newTrimedWallShadows = [];
-  trimedWallShadows.forEach((shadow, i) => {
-    let toCut = {...shadow};
-    const tempArray = newTrimedWallShadows.slice(0, i)
-      .concat(trimedWallShadows.slice(i+1));
-    let othercombi = tempArray[0];
-    tempArray.forEach((compare, j) => {
-      othercombi = turf.union(othercombi, compare)
-    });
-    if (othercombi) toCut = turf.difference(toCut, othercombi);
-    if (toCut) {
-      if (toCut.geometry.type === 'MultiPolygon') {
-        toCut.geometry.coordinates.forEach(array => {
-          newTrimedWallShadows.push({
-            type: 'Feature',
-            geometry: {
-              type: 'Polygon',
-              coordinates: array
-            }
-          });
-        })
-      } else {
-        newTrimedWallShadows.push(toCut)
-      }
-    }
-  })
-  console.log(newTrimedWallShadows)
-
-  // 所有阴影geoJSON转Shadow polygon
-  const finalWallShadows = newTrimedWallShadows.map(obj => {
-    return({
-      geoJSON: obj,
-      kptId: wallKeepoutShadow[0].kptDd,
-    });
   });
-  console.log(finalWallShadows)
-  return finalWallShadows;
+  const newShadow = [];
+
+  wallKeepoutShadow.forEach((obj, i) => {
+    let toTrim = {...obj.geoJSON};
+    trimedWallKeepoutShadow.forEach(compare => {
+      console.log(toTrim)
+      console.log(compare.geoJSON)
+      const temp = turf.difference(toTrim, compare.geoJSON)
+      console.log(temp)
+      if (temp) toTrim = temp
+    })
+    trimedWallKeepoutShadow[i].geoJSON = toTrim;
+  })
+
+  return trimedWallKeepoutShadow;
 }
