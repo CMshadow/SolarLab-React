@@ -22,7 +22,7 @@ class ShadowControl extends Component {
   slidermMarks = {
     1: '1AM',
     9: '9AM',
-    16: '4PM',
+    15: '3PM',
     23: '11PM',
   };
 
@@ -142,7 +142,7 @@ class ShadowControl extends Component {
           <Row>
             <Col span={20} offset={2}>
               {getFieldDecorator('timeRange', {
-                initialValue: [9, 16]
+                initialValue: [9, 15]
               })(
                 <Slider
                   range

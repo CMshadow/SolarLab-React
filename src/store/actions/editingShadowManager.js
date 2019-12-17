@@ -215,9 +215,9 @@ const projectKeepoutShadow = (
       if (intercoordinates) {
         intercoordinates.forEach(coordinates => {
           const toPoints = coordinates[0].map(cor => new Point(cor[0], cor[1], 0));
-          console.log(toPoints)
+          const beaitifiedPoints = beautifyPoints(toPoints)
           keepoutAllShadows.push({
-            geoJSON: new FoundLine(toPoints).makeGeoJSON(),
+            geoJSON: new FoundLine(beaitifiedPoints).makeGeoJSON(),
             kptId: kpt.id,
           })
         })
@@ -227,29 +227,18 @@ const projectKeepoutShadow = (
   return keepoutAllShadows;
 }
 
-// const beautifyPoints = (points, angleBar=30, distBar=0.25) => {
-//   const newPoints = [points[0]]
-//   let currentStart = points[0];
-//   let currentBrng = Point.bearing(currentStart, points[1]);
-//   console.log(currentBrng)
-//
-//   points.slice(1).forEach((p,i) => {
-//     console.log('=============')
-//     console.log(currentStart)
-//     console.log(p)
-//     console.log(Point.surfaceDistance(currentStart, p))
-//     // console.log(Point.bearing(currentStart, p))
-//     if (
-//       Point.surfaceDistance(currentStart, p) > distBar
-//     ) {
-//       newPoints.push(p);
-//       currentBrng = Point.bearing(currentStart, p);
-//       currentStart = Point.fromPoint(p);
-//     }
-//   })
-//   newPoints.push(points[0]);
-//   return newPoints;
-// }
+const beautifyPoints = (points, angleBar=30, distBar=0.1) => {
+  const newPoints = [points[0]]
+  let currentStart = points[0];
+
+  points.slice(1).forEach((p,i) => {
+    if (Point.surfaceDistance(currentStart, p) > distBar) {
+      newPoints.push(p);
+      currentStart = Point.fromPoint(p);
+    }
+  })
+  return newPoints;
+}
 
 const normalKeepoutDailyShadow = (
   keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio
