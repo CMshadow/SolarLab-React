@@ -79,6 +79,13 @@ export const projectAllShadow = (sunPositionCollection) =>
   const foundationHeight = getState().buildingManagerReducer.workingBuilding
     .foundationHeight;
 
+  // 女儿墙转换为普通障碍物
+  const wallKeepout =
+    buildingType === 'PITCHED' ||
+    buildingParapet.maximumHeight[0] === buildingParapet.minimumHeight[0] ?
+    [] :
+    convertParapetToNormalKeepout(buildingParapet);
+
   const shadowPolygons = foundationPolygons.flatMap(roofPolygon => {
     const foundationPoints = roofPolygon.convertHierarchyToPoints();
 
@@ -86,13 +93,22 @@ export const projectAllShadow = (sunPositionCollection) =>
     const normalKeepoutShadows = projectKeepoutShadow(
       normalKeepout, foundationPoints, sunPositionCollection, 'normal'
     );
+    const envKeepoutShadows = projectKeepoutShadow(
+      envKeepout, foundationPoints, sunPositionCollection, 'env'
+    );
+    const wallKeepoutShadow = projectKeepoutShadow(
+      wallKeepout, foundationPoints, sunPositionCollection, 'wall'
+    );
+    const trimedWallShadows = trimWallShadows(wallKeepoutShadow);
+    console.log(trimedWallShadows)
+
     // 所有阴影geoJSON转Shadow polygon
-    normalKeepoutShadows
+    normalKeepoutShadows.concat(envKeepoutShadows).concat(trimedWallShadows)
     .forEach(obj => {
       let shadowHier = null;
       if (buildingType === 'FLAT') {
         const shadowPoints = new Shadow(
-          null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
+          null, null, Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
         ).convertHierarchyToPoints();
         shadowHier = Polygon.makeHierarchyFromPolyline(
           new Polyline(shadowPoints), foundationHeight, 0.015
@@ -192,6 +208,8 @@ const projectKeepoutShadow = (
       const allShadowGeoJSON = allShadowPoints
         .map(points => new Polyline(points).makeGeoJSON());
       if(allShadowGeoJSON.length !== 0) {
+        console.log('turf1')
+        console.log(allShadowGeoJSON)
         return turf.union(...allShadowGeoJSON);
       } else {
         return {};
@@ -199,6 +217,8 @@ const projectKeepoutShadow = (
     }).filter(s => Object.keys(s).length !== 0);
     let overallShadow = {};
     if(dailyShadow.length !== 0) {
+      console.log('turf2')
+      console.log(dailyShadow)
       overallShadow = turf.union(...dailyShadow)
     }
 
@@ -365,4 +385,66 @@ const findComplementShadowPoints = (allShadowPoints, PointCount) => {
   })
 
   return complementShadowPoints;
+}
+
+const trimWallShadows = (wallKeepoutShadow) => {
+  console.log(wallKeepoutShadow)
+  // 再不闭环的情况下尽可能将女儿墙阴影进行union
+  const trimedWallShadows = [];
+  let combiWallKeepoutShadow = wallKeepoutShadow[0].geoJSON
+  wallKeepoutShadow.forEach((obj, i) => {
+    if (i !== 0) {
+      console.log(Polygon.makeHierarchyFromGeoJSON(combiWallKeepoutShadow))
+      console.log(Polygon.makeHierarchyFromGeoJSON(obj.geoJSON))
+      const temp = turf.union(combiWallKeepoutShadow, obj.geoJSON);
+      console.log(temp)
+      if (temp.geometry.coordinates.length > 1) {
+        trimedWallShadows.push(combiWallKeepoutShadow);
+        combiWallKeepoutShadow = obj.geoJSON;
+      } else {
+        combiWallKeepoutShadow = temp;
+      }
+    }
+  })
+  trimedWallShadows.push(combiWallKeepoutShadow)
+  console.log(trimedWallShadows)
+
+  // union后每个女儿墙阴影取difference避免阴影重贴
+  const newTrimedWallShadows = [];
+  trimedWallShadows.forEach((shadow, i) => {
+    let toCut = {...shadow};
+    const tempArray = newTrimedWallShadows.slice(0, i)
+      .concat(trimedWallShadows.slice(i+1));
+    let othercombi = tempArray[0];
+    tempArray.forEach((compare, j) => {
+      othercombi = turf.union(othercombi, compare)
+    });
+    if (othercombi) toCut = turf.difference(toCut, othercombi);
+    if (toCut) {
+      if (toCut.geometry.type === 'MultiPolygon') {
+        toCut.geometry.coordinates.forEach(array => {
+          newTrimedWallShadows.push({
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: array
+            }
+          });
+        })
+      } else {
+        newTrimedWallShadows.push(toCut)
+      }
+    }
+  })
+  console.log(newTrimedWallShadows)
+
+  // 所有阴影geoJSON转Shadow polygon
+  const finalWallShadows = newTrimedWallShadows.map(obj => {
+    return({
+      geoJSON: obj,
+      kptId: wallKeepoutShadow[0].kptDd,
+    });
+  });
+  console.log(finalWallShadows)
+  return finalWallShadows;
 }
