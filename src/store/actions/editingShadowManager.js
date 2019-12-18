@@ -87,23 +87,32 @@ export const projectAllShadow = (sunPositionCollection) =>
     convertParapetToNormalKeepout(buildingParapet);
 
   const shadowPolygons = foundationPolygons.flatMap(roofPolygon => {
+    console.log('============roofPolygon=============')
     const foundationPoints = roofPolygon.convertHierarchyToPoints();
 
     const roofAllShadows = [];
-    const normalKeepoutShadows = projectKeepoutShadow(
+    const normalKeepoutShadows = normalKeepout.length !== 0 ?
+    projectKeepoutShadow(
       normalKeepout, foundationPoints, sunPositionCollection, 'normal'
-    );
-    const envKeepoutShadows = projectKeepoutShadow(
+    ) :
+    [];
+    console.log(normalKeepoutShadows.forEach(s => console.log(Polygon.makeHierarchyFromGeoJSON(s.geoJSON))))
+    const envKeepoutShadows = envKeepout.length !== 0 ?
+    projectKeepoutShadow(
       envKeepout, foundationPoints, sunPositionCollection, 'env'
-    );
-    const wallKeepoutShadow = projectKeepoutShadow(
-      wallKeepout, foundationPoints, sunPositionCollection, 'wall'
-    );
-    const trimedWallShadows = trimWallShadows(wallKeepoutShadow);
-    console.log(trimedWallShadows)
+    ) :
+    [];
+    console.log(envKeepoutShadows.forEach(s => console.log(Polygon.makeHierarchyFromGeoJSON(s.geoJSON))))
+
+    // const wallKeepoutShadow = projectKeepoutShadow(
+    //   wallKeepout, foundationPoints, sunPositionCollection, 'wall'
+    // );
+    // const trimedWallShadows = trimWallShadows(wallKeepoutShadow);
+    // console.log(trimedWallShadows)
 
     // 所有阴影geoJSON转Shadow polygon
-    normalKeepoutShadows.concat(envKeepoutShadows).concat(trimedWallShadows)
+    console.log(normalKeepoutShadows.concat(envKeepoutShadows))
+    normalKeepoutShadows.concat(envKeepoutShadows).filter(s => s !== undefined)
     .forEach(obj => {
       let shadowHier = null;
       if (buildingType === 'FLAT') {
@@ -117,6 +126,8 @@ export const projectAllShadow = (sunPositionCollection) =>
         const shadowPoints = new Shadow(
           null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
         ).convertHierarchyToPoints();
+        console.log(obj.geoJSON)
+        console.log(shadowPoints)
         const newHeights = shadowPoints.map(p =>
           Point.heightOfArbitraryNode(roofPolygon, p) + foundationHeight
         );
@@ -220,6 +231,7 @@ const projectKeepoutShadow = (
       console.log('turf2')
       console.log(dailyShadow)
       overallShadow = turf.union(...dailyShadow)
+      console.log(Polygon.makeHierarchyFromGeoJSON(overallShadow))
     }
 
     if (
@@ -231,6 +243,7 @@ const projectKeepoutShadow = (
         .geometry.coordinates,
         overallShadow.geometry.coordinates,
       );
+      console.log(intercoordinates)
 
       if (intercoordinates) {
         intercoordinates.forEach(coordinates => {
@@ -267,6 +280,7 @@ const normalKeepoutDailyShadow = (
   // 一天中每个时段一个阴影节点Points array
   const allShadowPoints = daily_s_vec.flatMap(s_vec => {
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
+    console.log(keepoutPoints)
     const shadow = projectPlaneOnAnother(
       keepoutPoints, foundationPoints, plane_equation, s_ratio, true
     ).filter(s => s.length > 0);
@@ -388,6 +402,21 @@ const findComplementShadowPoints = (allShadowPoints, PointCount) => {
 }
 
 const trimWallShadows = (wallKeepoutShadow) => {
+  const newWallShadows = [];
+  let currentIndex = 0;
+  while (currentIndex < wallKeepoutShadow.length) {
+    let toUnion = wallKeepoutShadow[currentIndex].geoJSON;
+    wallKeepoutShadow.forEach((obj, i) => {
+      const temp = toUnion.union(toUnion, obj.geoJSON);
+      if (temp.geometry.coordinates.length > 1) {
+        toUnion = temp;
+      }
+    })
+    currentIndex += 1;
+  }
+
+
+
   console.log(wallKeepoutShadow)
   const trimedWallKeepoutShadow = wallKeepoutShadow.map(obj => {
     return {
@@ -399,15 +428,35 @@ const trimWallShadows = (wallKeepoutShadow) => {
 
   wallKeepoutShadow.forEach((obj, i) => {
     let toTrim = {...obj.geoJSON};
-    trimedWallKeepoutShadow.forEach(compare => {
-      console.log(toTrim)
-      console.log(compare.geoJSON)
-      const temp = turf.difference(toTrim, compare.geoJSON)
-      console.log(temp)
-      if (temp) toTrim = temp
-    })
+    // let otherUnion = turf.union(trimedWallKeepoutShadow);
+    // console.log(toTrim)
+    // console.log(otherUnion)
+    const temp = turf.difference(
+      toTrim,
+      i < wallKeepoutShadow.length ?
+      trimedWallKeepoutShadow[i + 1].geoJSON :
+      trimedWallKeepoutShadow[0].geoJSON
+    )
+    if (temp) toTrim = temp
     trimedWallKeepoutShadow[i].geoJSON = toTrim;
+    if (toTrim.geometry.type === 'MultiPolygon') {
+      toTrim.geometry.coordinates.forEach(cors => {
+        newShadow.push({
+          kptId: trimedWallKeepoutShadow[i].kptId,
+          geoJSON: {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: cors
+            }
+          }
+        })
+      })
+    }
+    else {
+      newShadow.push(trimedWallKeepoutShadow[i]);
+    }
   })
 
-  return trimedWallKeepoutShadow;
+  return newShadow;
 }

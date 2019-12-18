@@ -192,6 +192,7 @@ export const projectPlaneOnAnother = (
   ).map(points => new Polyline(points).makeGeoJSON());
   if (cover === true && parallelograms.length !== 0) {
    const union = turf.union(...parallelograms);
+   console.log(union)
    const result_point_list = union.geometry.coordinates[0].map(u =>
      getPlaneLineIntersectPointPosition(
        new Point(u[0], u[1], 0.0),
