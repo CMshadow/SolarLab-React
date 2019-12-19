@@ -104,15 +104,22 @@ export const projectAllShadow = (sunPositionCollection) =>
     [];
     console.log(envKeepoutShadows.forEach(s => console.log(Polygon.makeHierarchyFromGeoJSON(s.geoJSON))))
 
-    // const wallKeepoutShadow = projectKeepoutShadow(
-    //   wallKeepout, foundationPoints, sunPositionCollection, 'wall'
-    // );
-    // const trimedWallShadows = trimWallShadows(wallKeepoutShadow);
-    // console.log(trimedWallShadows)
+    const wallKeepoutShadows = wallKeepout.length !== 0 ?
+    projectKeepoutShadow(
+      wallKeepout, foundationPoints, sunPositionCollection, 'wall'
+    ) :
+    [];
+    console.log(normalKeepoutShadows)
+    console.log(envKeepoutShadows)
+    console.log(wallKeepoutShadows)
+    const trimedWallShadows = wallKeepoutShadows.length !== 0 ?
+    trimWallShadows(wallKeepoutShadows) :
+    [];
+    console.log(trimedWallShadows)
 
     // 所有阴影geoJSON转Shadow polygon
-    console.log(normalKeepoutShadows.concat(envKeepoutShadows))
-    normalKeepoutShadows.concat(envKeepoutShadows).filter(s => s !== undefined)
+    console.log(normalKeepoutShadows.concat(envKeepoutShadows).concat(trimedWallShadows))
+    normalKeepoutShadows.concat(envKeepoutShadows).concat(trimedWallShadows).filter(s => s !== undefined)
     .forEach(obj => {
       let shadowHier = null;
       if (buildingType === 'FLAT') {
@@ -236,7 +243,7 @@ const projectKeepoutShadow = (
 
     if (
       Object.keys(overallShadow).length !== 0 &&
-      overallShadow.geometry.coordinates[0].length > 1
+      overallShadow.geometry.coordinates[0].length >= 4
     ) {
       const intercoordinates = martinez.intersection(
         new FoundLine(foundationPoints.concat(foundationPoints[0])).makeGeoJSON()
@@ -248,11 +255,13 @@ const projectKeepoutShadow = (
       if (intercoordinates) {
         intercoordinates.forEach(coordinates => {
           const toPoints = coordinates[0].map(cor => new Point(cor[0], cor[1], 0));
-          const beaitifiedPoints = beautifyPoints(toPoints)
-          keepoutAllShadows.push({
-            geoJSON: new FoundLine(beaitifiedPoints).makeGeoJSON(),
-            kptId: kpt.id,
-          })
+          const beautifiedPoints = beautifyPoints(toPoints)
+          if (beautifiedPoints.length >= 4){
+            keepoutAllShadows.push({
+              geoJSON: new FoundLine(beautifiedPoints).makeGeoJSON(),
+              kptId: kpt.id,
+            })
+          }
         })
       }
     }
@@ -270,6 +279,7 @@ const beautifyPoints = (points, angleBar=30, distBar=0.1) => {
       currentStart = Point.fromPoint(p);
     }
   })
+  newPoints.push(points[0])
   return newPoints;
 }
 
@@ -402,61 +412,50 @@ const findComplementShadowPoints = (allShadowPoints, PointCount) => {
 }
 
 const trimWallShadows = (wallKeepoutShadow) => {
-  const newWallShadows = [];
+  const parapetId = wallKeepoutShadow[0].kptId;
+  const unionPass1Shadow = [];
   let currentIndex = 0;
+  // union Pass 1
   while (currentIndex < wallKeepoutShadow.length) {
     let toUnion = wallKeepoutShadow[currentIndex].geoJSON;
-    wallKeepoutShadow.forEach((obj, i) => {
-      const temp = toUnion.union(toUnion, obj.geoJSON);
-      if (temp.geometry.coordinates.length > 1) {
+    let breakIndex = currentIndex;
+    for (let i = currentIndex; i < wallKeepoutShadow.length; i++){
+      const temp = turf.union(toUnion, wallKeepoutShadow[i].geoJSON);
+      if (temp.geometry.coordinates.length === 1) {
         toUnion = temp;
+        breakIndex += 1;
+      } else {
+        break;
       }
-    })
-    currentIndex += 1;
+    }
+    unionPass1Shadow.push(toUnion)
+    currentIndex = breakIndex;
   }
 
+  // union Pass 2
+  unionPass1Shadow.reverse();
+  const unionPass2Shadow = [];
+  currentIndex = 0;
+  while (currentIndex < unionPass1Shadow.length) {
+    let toUnion = unionPass1Shadow[currentIndex];
+    let breakIndex = currentIndex;
+    for (let i = currentIndex; i < unionPass1Shadow.length; i++){
+      const temp = turf.union(toUnion, unionPass1Shadow[i]);
+      if (temp.geometry.coordinates.length === 1) {
+        toUnion = temp;
+        breakIndex += 1;
+      } else {
+        break;
+      }
+    }
+    unionPass2Shadow.push(toUnion)
+    currentIndex = breakIndex;
+  }
 
-
-  console.log(wallKeepoutShadow)
-  const trimedWallKeepoutShadow = wallKeepoutShadow.map(obj => {
+  return unionPass2Shadow.map(s => {
     return {
-      geoJSON: {...obj.geoJSON},
-      kptId: obj.kptId
+      kptId: parapetId,
+      geoJSON: s
     }
   });
-  const newShadow = [];
-
-  wallKeepoutShadow.forEach((obj, i) => {
-    let toTrim = {...obj.geoJSON};
-    // let otherUnion = turf.union(trimedWallKeepoutShadow);
-    // console.log(toTrim)
-    // console.log(otherUnion)
-    const temp = turf.difference(
-      toTrim,
-      i < wallKeepoutShadow.length ?
-      trimedWallKeepoutShadow[i + 1].geoJSON :
-      trimedWallKeepoutShadow[0].geoJSON
-    )
-    if (temp) toTrim = temp
-    trimedWallKeepoutShadow[i].geoJSON = toTrim;
-    if (toTrim.geometry.type === 'MultiPolygon') {
-      toTrim.geometry.coordinates.forEach(cors => {
-        newShadow.push({
-          kptId: trimedWallKeepoutShadow[i].kptId,
-          geoJSON: {
-            type: 'Feature',
-            geometry: {
-              type: 'Polygon',
-              coordinates: cors
-            }
-          }
-        })
-      })
-    }
-    else {
-      newShadow.push(trimedWallKeepoutShadow[i]);
-    }
-  })
-
-  return newShadow;
 }

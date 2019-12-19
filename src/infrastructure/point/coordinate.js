@@ -313,9 +313,6 @@ class Coordinate {
 
       const edgeBrng = Coordinate.bearing(startNode, endNode);
       const targetBrng = Coordinate.bearing(startNode, point);
-      console.log(startNode.getCoordinate(true).toString())
-      console.log(endNode.getCoordinate(true).toString())
-      console.log(point.getCoordinate(true).toString())
       if (
         parseFloat(targetBrng.toFixed(2)) === parseFloat(edgeBrng.toFixed(2)) ||
         startNode.getCoordinate(true).slice(0,2).toString() === point.getCoordinate(true).slice(0,2).toString() ||
@@ -324,11 +321,9 @@ class Coordinate {
       const interPoint1 = Coordinate.intersection(
         point, path.brng, startNode, edgeBrng
       );
-      console.log(interPoint1)
       const interPoint2 = Coordinate.intersection(
         point, path.brng + 180, startNode, edgeBrng
       );
-      console.log(interPoint2)
       const shortestDist1 = Coordinate.surfaceDistance(point, interPoint1);
       const shortestDist2 = Coordinate.surfaceDistance(point, interPoint2);
       const shortestDist =
