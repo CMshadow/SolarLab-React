@@ -87,7 +87,7 @@ export const projectAllShadow = (sunPositionCollection) =>
     convertParapetToNormalKeepout(buildingParapet);
 
   const shadowPolygons = foundationPolygons.flatMap(roofPolygon => {
-    console.log('============roofPolygon=============')
+    // console.log('============roofPolygon=============')
     const foundationPoints = roofPolygon.convertHierarchyToPoints();
 
     const roofAllShadows = [];
@@ -96,30 +96,36 @@ export const projectAllShadow = (sunPositionCollection) =>
       normalKeepout, foundationPoints, sunPositionCollection, 'normal'
     ) :
     [];
-    console.log(normalKeepoutShadows.forEach(s => console.log(Polygon.makeHierarchyFromGeoJSON(s.geoJSON))))
+    // console.log(normalKeepoutShadows.forEach(s => console.log(Polygon.makeHierarchyFromGeoJSON(s.geoJSON))))
     const envKeepoutShadows = envKeepout.length !== 0 ?
     projectKeepoutShadow(
       envKeepout, foundationPoints, sunPositionCollection, 'env'
     ) :
     [];
-    console.log(envKeepoutShadows.forEach(s => console.log(Polygon.makeHierarchyFromGeoJSON(s.geoJSON))))
+    // console.log(envKeepoutShadows.forEach(s => console.log(Polygon.makeHierarchyFromGeoJSON(s.geoJSON))))
 
     const wallKeepoutShadows = wallKeepout.length !== 0 ?
     projectKeepoutShadow(
       wallKeepout, foundationPoints, sunPositionCollection, 'wall'
     ) :
     [];
-    console.log(normalKeepoutShadows)
-    console.log(envKeepoutShadows)
-    console.log(wallKeepoutShadows)
+
+    const treeKeepoutShadows = treeKeepout.length !== 0 ?
+    projectKeepoutShadow(
+      treeKeepout, foundationPoints, sunPositionCollection, 'tree'
+    ) :
+    [];
+    // console.log(normalKeepoutShadows)
+    // console.log(envKeepoutShadows)
+    // console.log(treeKeepoutShadows)
     const trimedWallShadows = wallKeepoutShadows.length !== 0 ?
     trimWallShadows(wallKeepoutShadows) :
     [];
-    console.log(trimedWallShadows)
+    // console.log(trimedWallShadows)
 
     // 所有阴影geoJSON转Shadow polygon
-    console.log(normalKeepoutShadows.concat(envKeepoutShadows).concat(trimedWallShadows))
-    normalKeepoutShadows.concat(envKeepoutShadows).concat(trimedWallShadows).filter(s => s !== undefined)
+    // console.log(normalKeepoutShadows.concat(envKeepoutShadows).concat(trimedWallShadows).concat(treeKeepoutShadows))
+    normalKeepoutShadows.concat(envKeepoutShadows).concat(trimedWallShadows).concat(treeKeepoutShadows).filter(s => s !== undefined)
     .forEach(obj => {
       let shadowHier = null;
       if (buildingType === 'FLAT') {
@@ -133,8 +139,8 @@ export const projectAllShadow = (sunPositionCollection) =>
         const shadowPoints = new Shadow(
           null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
         ).convertHierarchyToPoints();
-        console.log(obj.geoJSON)
-        console.log(shadowPoints)
+        // console.log(obj.geoJSON)
+        // console.log(shadowPoints)
         const newHeights = shadowPoints.map(p =>
           Point.heightOfArbitraryNode(roofPolygon, p) + foundationHeight
         );
@@ -145,7 +151,7 @@ export const projectAllShadow = (sunPositionCollection) =>
           new Polyline(shadowPoints), null, 0.015
         );
       }
-      console.log(shadowHier)
+      // console.log(shadowHier)
       roofAllShadows.push({
         from: obj.kptId,
         to: roofPolygon.entityId,
@@ -226,8 +232,8 @@ const projectKeepoutShadow = (
       const allShadowGeoJSON = allShadowPoints
         .map(points => new Polyline(points).makeGeoJSON());
       if(allShadowGeoJSON.length !== 0) {
-        console.log('turf1')
-        console.log(allShadowGeoJSON)
+        // console.log('turf1')
+        // console.log(allShadowGeoJSON)
         return turf.union(...allShadowGeoJSON);
       } else {
         return {};
@@ -235,10 +241,10 @@ const projectKeepoutShadow = (
     }).filter(s => Object.keys(s).length !== 0);
     let overallShadow = {};
     if(dailyShadow.length !== 0) {
-      console.log('turf2')
-      console.log(dailyShadow)
+      // console.log('turf2')
+      // console.log(dailyShadow)
       overallShadow = turf.union(...dailyShadow)
-      console.log(Polygon.makeHierarchyFromGeoJSON(overallShadow))
+      // console.log(Polygon.makeHierarchyFromGeoJSON(overallShadow))
     }
 
     if (
@@ -250,7 +256,7 @@ const projectKeepoutShadow = (
         .geometry.coordinates,
         overallShadow.geometry.coordinates,
       );
-      console.log(intercoordinates)
+      // console.log(intercoordinates)
 
       if (intercoordinates) {
         intercoordinates.forEach(coordinates => {
@@ -290,7 +296,6 @@ const normalKeepoutDailyShadow = (
   // 一天中每个时段一个阴影节点Points array
   const allShadowPoints = daily_s_vec.flatMap(s_vec => {
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
-    console.log(keepoutPoints)
     const shadow = projectPlaneOnAnother(
       keepoutPoints, foundationPoints, plane_equation, s_ratio, true
     ).filter(s => s.length > 0);
@@ -314,19 +319,30 @@ const treeKeepoutDailyShadow = (
   keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio,
   treeCenter, treeRadius
 ) => {
+
+  const PointCount = {};
+  // 一天中每个时段一个阴影节点Points array
   const allShadowPoints = daily_s_vec.flatMap(s_vec => {
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
     const treePoints = generateTreePolygon(treeCenter, treeRadius, s_ratio, s_vec);
     const trunkPoints = generateTreePolygon(treeCenter, treeRadius / 10, s_ratio, s_vec);
     const shadow = projectTreeOnPlane(
       treeCenter, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio
+    ).filter(s => s.length > 0);
+    shadow.forEach(s =>
+      s.forEach(p => {
+        p.getCoordinate(true) in PointCount ?
+        PointCount[p.getCoordinate(true)] += 1 :
+        PointCount[p.getCoordinate(true)] = 1
+      })
     );
-    const filteredShadow = shadow.filter(s => s.length > 0);
-    return filteredShadow
+    return shadow.filter(s => s.length > 0);
   });
-  return {
-    allShadowPoints: allShadowPoints
-  };
+
+  const complementShadowPoints =
+    findComplementShadowPoints(allShadowPoints, PointCount);
+
+  return allShadowPoints.concat(complementShadowPoints);
 }
 
 const findComplementShadowPoints = (allShadowPoints, PointCount) => {

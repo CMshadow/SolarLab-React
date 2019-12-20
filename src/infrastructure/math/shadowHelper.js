@@ -136,13 +136,16 @@ export const getParallelogramsForPlane = (point_list, s_ratio, plane_equation) =
     parallelogram.push(point_pair_list[(i+1)%point_pair_list.length][1]);
     parallelogram.push(point_pair_list[(i+1)%point_pair_list.length][0]);
     parallelogram.push(point_pair_list[i][0]);
-    const uniqueness = parallelogram.reduce((unique, val) => {
-      if (!unique.includes(val.getCoordinate(true).slice(0,2).toString())) {
-        unique.push(val.getCoordinate(true).slice(0,2).toString())
+    const uniqueParallelogram = [];
+    const uniqueness = [];
+    parallelogram.forEach(val => {
+      if (!uniqueness.includes(val.getCoordinate(true).slice(0,2).toString())) {
+        uniqueness.push(val.getCoordinate(true).slice(0,2).toString());
+        uniqueParallelogram.push(val);
       }
-      return unique
-    },[]);
-    if (uniqueness.length > 2) parallelograms.push(parallelogram);
+    })
+    uniqueParallelogram.push(uniqueParallelogram[0]);
+    if (uniqueness.length > 2) parallelograms.push(uniqueParallelogram);
   }
   return parallelograms;
 }
@@ -192,7 +195,7 @@ export const projectPlaneOnAnother = (
   ).map(points => new Polyline(points).makeGeoJSON());
   if (cover === true && parallelograms.length !== 0) {
    const union = turf.union(...parallelograms);
-   console.log(union)
+   // console.log(union)
    const result_point_list = union.geometry.coordinates[0].map(u =>
      getPlaneLineIntersectPointPosition(
        new Point(u[0], u[1], 0.0),
@@ -208,17 +211,33 @@ export const projectPlaneOnAnother = (
 }
 
 export const projectTreeOnPlane = (center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio) => {
-    let shadowPoints = treePoints.map(p => getShadowLineForPoint(p, s_ratio, plane_equation)[1]);
-    shadowPoints.push(shadowPoints[0]);
-    const parallelograms = getParallelogramsForPlane(
-        trunkPoints, s_ratio, plane_equation
+  let shadowPoints = treePoints.map(p => getShadowLineForPoint(p, s_ratio, plane_equation)[1]);
+  shadowPoints.push(shadowPoints[0]);
+  // console.log(shadowPoints)
+  // console.log(trunkPoints.flatMap(p=>p.getCoordinate(true)))
+  const parallelograms = getParallelogramsForPlane(
+    trunkPoints, s_ratio, plane_equation
+  )
+  .filter(points => !new Polyline(points).isSelfIntersection())
+  .map(points => new Polyline(points).makeGeoJSON());
+  // console.log(parallelograms)
+  // console.log(parallelograms.map(e=> Polygon.makeHierarchyFromGeoJSON(e)))
+  if (parallelograms.length !== 0) {
+    let union = turf.union(...parallelograms);
+    // console.log(Polygon.makeHierarchyFromGeoJSON(union))
+    union = turf.union(union, new Polyline(shadowPoints).makeGeoJSON());
+    // console.log(Polygon.makeHierarchyFromGeoJSON(union))
+    const result_point_list = union.geometry.coordinates[0].map(u =>
+      getPlaneLineIntersectPointPosition(
+        new Point(u[0], u[1], 0.0),
+        new Point(u[0], u[1], 5.0),
+        plane_equation
+      )
     );
-    let union = parallelograms[0];
-    parallelograms.forEach(parallel => {
-       union = unionPolygons(union, parallel, plane_equation);
-    });
-    union = unionPolygons(union, shadowPoints, plane_equation);
-    return [union];
+    return [result_point_list];
+  } else{
+      return parallelograms;
+  }
 }
 
 export const getSphereLineIntersection = (center_cartesian, radius, vx, vy, vz) => {
