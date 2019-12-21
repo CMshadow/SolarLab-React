@@ -58,6 +58,7 @@ const LeftDownHandler = (props) => {
           if (onTopPointPosition) {
             props.disableRotate();
             props.setPickedWiringPoint();
+            props.setUIStateDraggingWiring();
           }
         }
         break;
@@ -103,6 +104,7 @@ const mapDispatchToProps = dispatch => {
     setPickedWiringPoint: () => dispatch(
       actions.setPickedWiringPoint()
     ),
+    setUIStateDraggingWiring: () => dispatch(actions.setUIStateDraggingWiring())
   };
 };
 

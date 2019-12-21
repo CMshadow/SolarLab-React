@@ -11,6 +11,11 @@ const MouseMoveHandler = (props) => {
   const mouseMoveActions = (event) => {
     props.setMouseCartesian3(event.endPosition, props.viewer);
     const anyPickedObject = props.viewer.scene.pick(event.endPosition);
+    const pickedObjectIdArray =
+      props.viewer.scene.drillPick(event.endPosition).map(
+        elem => elem.id.id
+      );
+
     switch(props.uiState) {
       case 'DRAWING_FOUND':
         props.onDragPolyline(event.endPosition, props.viewer);
@@ -50,11 +55,6 @@ const MouseMoveHandler = (props) => {
         break;
 
       case 'DRAWING_INNER':
-        const pickedObjectIdArray =
-          props.viewer.scene.drillPick(event.endPosition).map(
-            elem => elem.id.id
-          );
-
         if (
           pickedObjectIdArray.includes(props.drawingPolyline.entityId) &&
           props.hoverInnerPointId === null &&
@@ -161,6 +161,10 @@ const MouseMoveHandler = (props) => {
           // Release hover point if it exists
           if (props.hoverWiringPointPosition !== null) props.releaseHoverWiringPoint();
         }
+        break;
+
+      case 'DRAGGING_WIRING':
+        props.dynamicWiringLine();
         break;
 
       default:
@@ -274,6 +278,9 @@ const mapDispatchToProps = dispatch => {
     releaseHoverWiringPoint: (position) => dispatch(
       actions.releaseHoverWiringPoint(position)
     ),
+    dynamicWiringLine: () => dispatch(
+      actions.dynamicWiringLine()
+    )
     // moveWiringPickedPoint: (cartesian, viewer) => dispatch(
     //   actions.moveWiringPickedPoint(cartesian, viewer)
     // ),

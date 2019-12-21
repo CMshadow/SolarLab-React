@@ -275,3 +275,30 @@ export const releasePickedWiringPoint = () => {
     type: actionTypes.RELEASE_PICKED_WIRING_POINT,
   };
 }
+
+export const releasePVPanel = () => {
+  return {
+    type: actionTypes.RELEASE_PV_PANEL
+  }
+}
+
+export const attachPVPanel = () => {
+  return {
+    type: actionTypes.ATTACH_PV_PANEL
+  }
+}
+
+export const dynamicWiringLine = () => (dispatch, getState) => {
+  const mouseCartesian3 = getState().undoableReducer.present
+    .drawingManagerReducer.mouseCartesian3;
+  if (Cesium.defined(mouseCartesian3)) {
+    return {
+      type: actionTypes.DYNAMIC_WIRING_LINE,
+      cartesian3: mouseCartesian3
+    };
+  } else {
+    return {
+      type: actionTypes.DO_NOTHING
+    };
+  }
+}

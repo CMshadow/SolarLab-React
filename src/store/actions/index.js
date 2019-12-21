@@ -107,7 +107,8 @@ export {
   setUIStateEditing3D,
   setUIStateSetUpPV,
   setUIStateSetUpWiring,
-  setUIStateEditingWiring
+  setUIStateEditingWiring,
+  setUIStateDraggingWiring
 } from './uiStateManager';
 
 export {
@@ -140,7 +141,10 @@ export {
   setHoverWiringPoint,
   releaseHoverWiringPoint,
   setPickedWiringPoint,
-  releasePickedWiringPoint
+  releasePickedWiringPoint,
+  releasePVPanel,
+  attachPVPanel,
+  dynamicWiringLine
 } from './editingWiringManager';
 
 export {

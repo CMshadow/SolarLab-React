@@ -77,3 +77,9 @@ export const setUIStateEditingWiring = () => {
     type: actionTypes.SET_UI_STATE_EDITING_WIRING
   };
 };
+
+export const setUIStateDraggingWiring = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_DRAGGING_WIRING
+  };
+}

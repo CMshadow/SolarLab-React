@@ -15,7 +15,9 @@ const initialState = {
   editingStartPoint: null,
   editingEndPoint: null,
   hoverWiringPointPosition: null,
-  pickedWiringPointPosition: null
+  pickedWiringPointPosition: null,
+  currentMouseHover: null,
+  lastMouseHover: null
 };
 
 const fetchUserInverters = (state, action) => {
@@ -127,6 +129,18 @@ const releasePickedWiringPoint = (state, action) => {
   }
 }
 
+const releasePVPanel = (state, action) => {
+  return {
+    ...state
+  }
+}
+
+const attachPVPanel = (state, action) => {
+  return {
+    ...state
+  }
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.FETCH_USER_INVERTERS:
@@ -146,6 +160,10 @@ const reducer = (state=initialState, action) => {
       return setPickedWiringPoint(state, action);
     case actionTypes.RELEASE_PICKED_WIRING_POINT:
       return releasePickedWiringPoint(state, action);
+    case actionTypes.RELEASE_PV_PANEL:
+      return releasePVPanel(state, action);
+    case actionTypes.ATTACH_PV_PANEL:
+      return attachPVPanel(state, action);
     default: return state;
   }
 };

@@ -22,10 +22,11 @@ const LeftUpHandler = (props) => {
         }
         break;
 
-      case 'EDITING_WIRING':
+      case 'DRAGGING_WIRING':
         if (props.pickedWiringPointPosition) {
           props.releasePickedWiringPoint();
           props.enableRotate();
+          props.setUIStateEditingWiring();
         }
         break;
 
@@ -68,6 +69,7 @@ const mapDispatchToProps = dispatch => {
     releasePickedWiringPoint: () => dispatch(
       actions.releasePickedWiringPoint()
     ),
+    setUIStateEditingWiring: () => dispatch(actions.setUIStateEditingWiring())
   };
 };
 
