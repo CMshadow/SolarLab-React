@@ -164,6 +164,31 @@ const MouseMoveHandler = (props) => {
         break;
 
       case 'DRAGGING_WIRING':
+        const selectConnected = pickedObjectIdArray.reduce((acc, id) => {
+          if (props.connectedPanelId.includes(id)) {
+            acc.push(id);
+            return acc
+          } else {
+            return acc
+          }
+        }, [])
+        const selectDisconnected = pickedObjectIdArray.reduce((acc, id) => {
+          if (props.disconnectedPanelId.includes(id)) {
+            acc.push(id);
+            return acc
+          } else {
+            return acc
+          }
+        }, [])
+        if (selectDisconnected.length !== 0) {
+          props.setMouseDragStatus(selectDisconnected[0]);
+          props.attachPVPanel(selectDisconnected[0]);
+        } else if (selectConnected.length !== 0) {
+          props.setMouseDragStatus(selectConnected[0]);
+          props.releasePVPanel(selectConnected[0]);
+        } else {
+          props.setMouseDragStatus(null);
+        }  
         props.dynamicWiringLine();
         break;
 
@@ -222,6 +247,10 @@ const mapStateToProps = state => {
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .pickedPointIndex,
 
+    disconnectedPanelId:
+      state.undoableReducer.present.editingPVPanelManagerReducer.disconnectedPanelId,
+    connectedPanelId:
+      state.undoableReducer.present.editingPVPanelManagerReducer.connectedPanelId,
     editingStartPoint:
       state.undoableReducer.present.editingWiringManager.editingStartPoint,
     editingEndPoint:
@@ -280,10 +309,10 @@ const mapDispatchToProps = dispatch => {
     ),
     dynamicWiringLine: () => dispatch(
       actions.dynamicWiringLine()
-    )
-    // moveWiringPickedPoint: (cartesian, viewer) => dispatch(
-    //   actions.moveWiringPickedPoint(cartesian, viewer)
-    // ),
+    ),
+    attachPVPanel: (panelId) => dispatch(actions.attachPVPanel(panelId)),
+    releasePVPanel: (panelId) => dispatch(actions.releasePVPanel(panelId)),
+    setMouseDragStatus: (obj) => dispatch(actions.setMouseDragStatus(obj))
   };
 };
 

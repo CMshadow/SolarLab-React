@@ -43,7 +43,7 @@ class InverterTable extends Component {
             percent={
               wiring.allPanels.length === 0 ?
               0 :
-              Math.ceil(inverter.panelPerString / wiring.allPanels.length * 100)
+              Math.ceil(wiring.allPanels.length / inverter.panelPerString * 100)
             }
             size='small'
             status={
@@ -67,12 +67,23 @@ class InverterTable extends Component {
               if (record.allPanels.length === 0) {
                 this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd);
               } else {
-                this.props.setUIStateEditingWiring();
-                this.props.editWiring(this.props.roofIndex, inverterInd, wiringInd);
+                if (this.props.uiState === 'SETUP_WIRING') {
+                  this.props.setUIStateEditingWiring();
+                  this.props.editWiring(this.props.roofIndex, inverterInd, wiringInd);
+                } else {
+                  this.props.setUIStateSetUpWiring();
+                  this.props.stopEditWiring();
+                }
               }
             }}
           >
-            {record.allPanels.length === 0 ? 'Auto' : 'Edit'}
+            {
+              record.allPanels.length === 0 ?
+              'Auto' :
+              this.props.uiState === 'SETUP_WIRING' ?
+              'Edit' :
+              'Stop'
+            }
           </Dropdown.Button>
         ),
       },
@@ -157,8 +168,12 @@ const mapDispatchToProps = dispatch => {
     editWiring: (roofInd, inverterInd, wiringInd) => dispatch(
       actions.editWiring(roofInd, inverterInd, wiringInd)
     ),
+    stopEditWiring: () => dispatch(actions.stopEditWiring()),
     setUIStateEditingWiring: () => dispatch(
       actions.setUIStateEditingWiring()
+    ),
+    setUIStateSetUpWiring: () => dispatch(
+      actions.setUIStateSetUpWiring()
     )
   }
 }

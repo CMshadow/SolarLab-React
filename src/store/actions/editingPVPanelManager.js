@@ -303,3 +303,19 @@ export const cleanPanels = (roofIndex) => {
     roofIndex: roofIndex
   };
 }
+
+export const setPVConnected = (roofIndex, panelId) => {
+  return {
+    type: actionTypes.SET_PV_CONNECTED,
+    panelId: panelId,
+    roofIndex: roofIndex
+  };
+}
+
+export const setPVDisConnected = (roofIndex, panelId) => {
+  return {
+    type: actionTypes.SET_PV_DISCONNECTED,
+    panelId: panelId,
+    roofIndex: roofIndex
+  };
+}

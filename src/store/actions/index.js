@@ -129,7 +129,9 @@ export {
   setupPanelParams,
   generatePanels,
   cleanPanels,
-  fetchUserPanels
+  fetchUserPanels,
+  setPVConnected,
+  setPVDisConnected
 } from './editingPVPanelManager';
 
 export {
@@ -138,13 +140,15 @@ export {
   calculateManualInverter,
   autoWiring,
   editWiring,
+  stopEditWiring,
   setHoverWiringPoint,
   releaseHoverWiringPoint,
   setPickedWiringPoint,
   releasePickedWiringPoint,
   releasePVPanel,
   attachPVPanel,
-  dynamicWiringLine
+  dynamicWiringLine,
+  setMouseDragStatus
 } from './editingWiringManager';
 
 export {

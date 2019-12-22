@@ -20,24 +20,31 @@ const EditingWiringRender = (props) => {
     )
   }
 
-  let editingWiringPoints = null;
-  if (props.editingStartPoint && props.editingEndPoint) {
-    editingWiringPoints = [
+  let editingWiringStartPoint = null;
+  if (props.editingStartPoint) {
+    editingWiringStartPoint = (
       <CustomPoint
         key={props.editingStartPoint.entityId}
         {...props.editingStartPoint}
-      />,
+      />
+    )
+  }
+
+  let editingWiringEndPoint = null;
+  if (props.editingEndPoint) {
+    editingWiringEndPoint = (
       <CustomPoint
         key={props.editingEndPoint.entityId}
         {...props.editingEndPoint}
       />
-    ];
+    );
   }
 
 	return (
 		<div>
       {allWirings}
-      {editingWiringPoints}
+      {editingWiringStartPoint}
+      {editingWiringEndPoint}
     </div>
 	);
 };

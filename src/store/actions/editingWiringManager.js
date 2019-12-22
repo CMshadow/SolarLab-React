@@ -1,6 +1,7 @@
 import * as Cesium from 'cesium';
 
 import * as actionTypes from '../actions/actionTypes';
+import * as actions from './index';
 import axios from '../../axios-setup';
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Polyline from '../../infrastructure/line/polyline';
@@ -214,6 +215,12 @@ export const editWiring = (roofInd, inverterInd, wiringInd) =>
   })
 }
 
+export const stopEditWiring = () => {
+  return {
+    type: actionTypes.STOP_EDIT_WIRING,
+  };
+}
+
 const findAWiringString = (availablePanels, inverterConfig, startIndex) => {
   const coefficient = 0.75;
 
@@ -276,15 +283,77 @@ export const releasePickedWiringPoint = () => {
   };
 }
 
-export const releasePVPanel = () => {
-  return {
-    type: actionTypes.RELEASE_PV_PANEL
+export const releasePVPanel = (hoverPanelId) => (dispatch, getState) => {
+  const currentMouseDrag =
+    getState().undoableReducer.present.editingWiringManager.currentMouseDrag;
+  const lastMouseDrag =
+    getState().undoableReducer.present.editingWiringManager.lastMouseDrag;
+  const editingRoofIndex =
+    getState().undoableReducer.present.editingWiringManager.editingRoofIndex;
+  const editingInverterIndex =
+    getState().undoableReducer.present.editingWiringManager.editingInverterIndex;
+  const editingWiringIndex =
+    getState().undoableReducer.present.editingWiringManager.editingWiringIndex;
+  const pickedWiringPointPosition =
+    getState().undoableReducer.present.editingWiringManager.pickedWiringPointPosition;
+  const currentWiring = getState().undoableReducer.present.editingWiringManager
+    .roofSpecInverters[editingRoofIndex][editingInverterIndex]
+    .wiring[editingWiringIndex];
+
+  let toReleasePanelId = null;
+  if (pickedWiringPointPosition === 'START') {
+    toReleasePanelId = currentWiring.allPanels[0].entityId
+  } else {
+    toReleasePanelId = currentWiring.allPanels.slice(-1)[0].entityId
+  }
+  if (
+    toReleasePanelId === hoverPanelId && currentWiring.allPanels.length > 1 &&
+    currentMouseDrag !== lastMouseDrag
+  ) {
+    console.log('release')
+    dispatch(actions.setPVDisConnected(editingRoofIndex, hoverPanelId))
+    return dispatch({
+      type: actionTypes.RELEASE_PV_PANEL,
+    })
   }
 }
 
-export const attachPVPanel = () => {
-  return {
-    type: actionTypes.ATTACH_PV_PANEL
+export const attachPVPanel = (hoverPanelId) => (dispatch, getState) => {
+  const currentMouseDrag =
+    getState().undoableReducer.present.editingWiringManager.currentMouseDrag;
+  const lastMouseDrag =
+    getState().undoableReducer.present.editingWiringManager.lastMouseDrag;
+  const editingRoofIndex =
+    getState().undoableReducer.present.editingWiringManager.editingRoofIndex;
+  const editingInverterIndex =
+    getState().undoableReducer.present.editingWiringManager.editingInverterIndex;
+  const editingWiringIndex =
+    getState().undoableReducer.present.editingWiringManager.editingWiringIndex;
+  const currentWiring = getState().undoableReducer.present.editingWiringManager
+    .roofSpecInverters[editingRoofIndex][editingInverterIndex]
+    .wiring[editingWiringIndex];
+  const currentInverter = getState().undoableReducer.present.editingWiringManager
+    .roofSpecInverters[editingRoofIndex][editingInverterIndex];
+
+  const flatMapPanels =
+    getState().undoableReducer.present.editingPVPanelManagerReducer
+    .panels[editingRoofIndex].flatMap(partial =>
+      partial.flatMap(originPanelArray =>
+        originPanelArray
+      )
+    );
+  const matchInfo = flatMapPanels.find(elem => elem.pv.entityId === hoverPanelId);
+
+  if (
+    currentWiring.allPanels.length < currentInverter.panelPerString &&
+    currentMouseDrag !== lastMouseDrag
+  ) {
+    console.log('attach')
+    dispatch(actions.setPVConnected(editingRoofIndex, hoverPanelId))
+    return dispatch({
+      type: actionTypes.ATTACH_PV_PANEL,
+      panelInfo: matchInfo
+    })
   }
 }
 
@@ -292,13 +361,20 @@ export const dynamicWiringLine = () => (dispatch, getState) => {
   const mouseCartesian3 = getState().undoableReducer.present
     .drawingManagerReducer.mouseCartesian3;
   if (Cesium.defined(mouseCartesian3)) {
-    return {
+    return dispatch({
       type: actionTypes.DYNAMIC_WIRING_LINE,
       cartesian3: mouseCartesian3
-    };
+    });
   } else {
-    return {
+    return dispatch({
       type: actionTypes.DO_NOTHING
-    };
+    });
+  }
+}
+
+export const setMouseDragStatus = (hoverObj) => {
+  return {
+    type: actionTypes.SET_MOUSE_DRAG_STATUS,
+    dragStatus: hoverObj
   }
 }
