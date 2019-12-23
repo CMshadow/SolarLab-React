@@ -10,6 +10,7 @@ import DrawingKeepoutManagerRender from './DrawingKeepoutManagerRender';
 import DrawingKeepoutPolygonManagerRender from './DrawingKeepoutPolygonManagerRender';
 import ShadowRender from './ShadowRender';
 import EditingPVPanelRender from './EditingPVPanelRender';
+import EditingWiringRender from './EditingWiringRender';
 
 import DebugRender from './DebugRender';
 
@@ -32,6 +33,7 @@ const CesiumRender = (props) => {
       <DrawingKeepoutManagerRender />
       <ShadowRender />
       <EditingPVPanelRender />
+      <EditingWiringRender />
       <DebugRender />
     </div>
   );

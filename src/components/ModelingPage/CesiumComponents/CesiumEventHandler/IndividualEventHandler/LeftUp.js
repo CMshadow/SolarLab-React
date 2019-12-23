@@ -22,6 +22,14 @@ const LeftUpHandler = (props) => {
         }
         break;
 
+      case 'DRAGGING_WIRING':
+        if (props.pickedWiringPointPosition) {
+          props.releasePickedWiringPoint();
+          props.enableRotate();
+          props.setUIStateEditingWiring();
+        }
+        break;
+
       default:
         break;
     }
@@ -43,17 +51,25 @@ const mapStateToProps = state => {
     pickedKeepoutPointIndex:
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .pickedPointIndex,
+    pickedWiringPointPosition:
+      state.undoableReducer.present.editingWiringManager.pickedWiringPointPosition,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
+    enableRotate: () => dispatch(actions.enableRotate()),
     releasePickedPointIndex: (point) => dispatch(
       actions.releasePickedPointIndex(point)
     ),
     releaseKeepoutPickedPointIndex: (point) => dispatch(
       actions.releaseKeepoutPickedPointIndex(point)
     ),
+
+    releasePickedWiringPoint: () => dispatch(
+      actions.releasePickedWiringPoint()
+    ),
+    setUIStateEditingWiring: () => dispatch(actions.setUIStateEditingWiring())
   };
 };
 

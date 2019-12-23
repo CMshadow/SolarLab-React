@@ -112,7 +112,10 @@ export {
   setPreviousUIState,
   setUIStateEditing3D,
   setUIStateEditingRoofTop,
-  setUIStateSetUpPV
+  setUIStateSetUpPV,
+  setUIStateSetUpWiring,
+  setUIStateEditingWiring,
+  setUIStateDraggingWiring
 } from './uiStateManager';
 
 export {
@@ -138,8 +141,28 @@ export {
   setupPanelParams,
   generatePanels,
   cleanPanels,
-  fetchUserPanels
+  fetchUserPanels,
+  setPVConnected,
+  setPVDisConnected,
+  setRoofAllPVDisConnected
 } from './editingPVPanelManager';
+
+export {
+  fetchUserInverters,
+  calculateAutoInverter,
+  calculateManualInverter,
+  autoWiring,
+  editWiring,
+  stopEditWiring,
+  setHoverWiringPoint,
+  releaseHoverWiringPoint,
+  setPickedWiringPoint,
+  releasePickedWiringPoint,
+  releasePVPanel,
+  attachPVPanel,
+  dynamicWiringLine,
+  setMouseDragStatus
+} from './editingWiringManager';
 
 export {
   calculateOrFetchGlobalOptimal,

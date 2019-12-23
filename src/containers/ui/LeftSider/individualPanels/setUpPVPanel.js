@@ -55,8 +55,8 @@ class SetUpPVPanel extends Component {
     event.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.props.setupPanelParams(values, this.state.selectRoofIndex)
-        this.props.generatePanels(this.state.selectRoofIndex)
+        this.props.setupPanelParams(values, this.state.selectRoofIndex || 0)
+        this.props.generatePanels(this.state.selectRoofIndex || 0)
       }
     });
   }
@@ -721,7 +721,17 @@ class SetUpPVPanel extends Component {
                 >
                   Preview
                 </Button>
-                <Button type='primary' shape='round' size='large' disabled>
+                <Button
+                  type='primary'
+                  shape='round'
+                  size='large'
+                  disabled = {
+                    Object.keys(this.props.panels).length === 0 ||
+                    this.props.backendLoading ||
+                    this.state.isFetching
+                  }
+                  onClick = {this.props.fetchUserInverters}
+                >
                   Continue <Icon type='right' />
                 </Button>
               </ButtonGroup>
@@ -743,12 +753,14 @@ const mapStateToProps = state => {
     userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
     roofSpecParams: state.undoableReducer.present.editingPVPanelManagerReducer
       .roofSpecParams,
-    projectInfo: state.projectManagerReducer.projectInfo
+    projectInfo: state.projectManagerReducer.projectInfo,
+    panels: state.undoableReducer.present.editingPVPanelManagerReducer.panels
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
+    fetchUserInverters: () => dispatch(actions.fetchUserInverters()),
     setupPanelParams: (values, roofIndex) =>
       dispatch(actions.setupPanelParams(values, roofIndex)),
     generatePanels: (roofIndex) => dispatch(actions.generatePanels(roofIndex)),
