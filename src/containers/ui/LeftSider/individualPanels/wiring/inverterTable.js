@@ -20,13 +20,13 @@ import * as actions from '../../../../../store/actions/index';
 
 class InverterTable extends Component {
 
-  menu = (
-    <Menu>
-      <Menu.Item key='1'>
-        Manual
-      </Menu.Item>
-    </Menu>
-  );
+  // menu = (
+  //   <Menu>
+  //     <Menu.Item key='1'>
+  //       Manual
+  //     </Menu.Item>
+  //   </Menu>
+  // );
 
   expandedRowRender = (inverter, inverterInd) => {
     const columns = [
@@ -59,33 +59,55 @@ class InverterTable extends Component {
         dataIndex: 'action',
         key: 'action',
         width: '40%',
-        render: (wiring, record, wiringInd) => (
-          <Dropdown.Button
-            overlay={this.menu}
-            icon={<Icon type='down' />}
-            onClick = {() => {
-              if (record.allPanels.length === 0) {
-                this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd);
-              } else {
-                if (this.props.uiState === 'SETUP_WIRING') {
-                  this.props.setUIStateEditingWiring();
-                  this.props.editWiring(this.props.roofIndex, inverterInd, wiringInd);
-                } else {
-                  this.props.setUIStateSetUpWiring();
-                  this.props.stopEditWiring();
+        render: (wiring, record, wiringInd) => {
+          if (record.allPanels.length === 0) {
+            return (
+              <Button
+                // overlay={this.menu}
+                // icon={<Icon type='down' />}
+                disabled={
+                  (this.props.uiState === 'EDITING_WIRING' ||
+                  this.props.uiState === 'DRAGGING_WIRING') &&
+                  (wiringInd !== this.props.editingWiringIndex ||
+                  inverterInd !== this.props.editingInverterIndex)
                 }
-              }
-            }}
-          >
-            {
-              record.allPanels.length === 0 ?
-              'Auto' :
-              this.props.uiState === 'SETUP_WIRING' ?
-              'Edit' :
-              'Stop'
-            }
-          </Dropdown.Button>
-        ),
+                onClick = {() => {
+                  this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd);
+                }}
+              >
+                Wiring
+              </Button>
+            )
+          } else {
+            return (
+              <Button
+                disabled={
+                  (this.props.uiState === 'EDITING_WIRING' ||
+                  this.props.uiState === 'DRAGGING_WIRING') &&
+                  (wiringInd !== this.props.editingWiringIndex ||
+                  inverterInd !== this.props.editingInverterIndex)
+                }
+                onClick = {() => {
+                  if (this.props.uiState === 'SETUP_WIRING') {
+                    this.props.setUIStateEditingWiring();
+                    this.props.editWiring(this.props.roofIndex, inverterInd, wiringInd);
+                  } else {
+                    this.props.setUIStateSetUpWiring();
+                    this.props.stopEditWiring();
+                  }
+                }}
+              >
+                {
+                  this.props.uiState === 'SETUP_WIRING' ||
+                  wiringInd !== this.props.editingWiringIndex ||
+                  inverterInd !== this.props.editingInverterIndex ?
+                  'Edit' :
+                  'Stop'
+                }
+              </Button>
+            );
+          }
+        },
       },
     ];
 
@@ -156,7 +178,11 @@ const mapStateToProps = state => {
     roofSpecInverters:
       state.undoableReducer.present.editingWiringManager.roofSpecInverters,
     uiState:
-      state.undoableReducer.present.uiStateManagerReducer.uiState
+      state.undoableReducer.present.uiStateManagerReducer.uiState,
+    editingWiringIndex:
+      state.undoableReducer.present.editingWiringManager.editingWiringIndex,
+    editingInverterIndex:
+      state.undoableReducer.present.editingWiringManager.editingInverterIndex,
   };
 };
 

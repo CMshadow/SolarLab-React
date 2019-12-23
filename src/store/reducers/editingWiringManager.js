@@ -36,7 +36,18 @@ const setUpInverter = (state, action) => {
     roofSpecInverters: {
       ...state.roofSpecInverters,
       [action.roofIndex]: [...action.inverterSolutions]
-    }
+    },
+
+    editingRoofIndex: null,
+    editingInverterIndex: null,
+    editingWiringIndex: null,
+    editingStartPoint: null,
+    editingEndPoint: null,
+    hoverWiringPointPosition: null,
+    pickedWiringPointPosition: null,
+
+    currentMouseDrag: null,
+    lastMouseDrag: null
   }
 }
 
@@ -82,20 +93,20 @@ const editWiring = (state, action) => {
 
 const stopEditWiring = (state, action) => {
   const newInverter = Inverter.fromInverter(
-    state.roofSpecInverters[action.roofIndex][action.inverterIndex]
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
   );
-  const newWiring = Wiring.fromWiring(newInverter.wiring[action.wiringIndex]);
+  const newWiring = Wiring.fromWiring(newInverter.wiring[state.editingWiringIndex]);
   newWiring.polyline.setColor(Cesium.Color.DARKORANGE);
-  newInverter.setWiring(action.wiringIndex, newWiring);
-  const roofInverters = [...state.roofSpecInverters[action.roofIndex]];
-  roofInverters.splice(action.inverterIndex, 1, newInverter);
+  newInverter.setWiring(state.editingWiringIndex, newWiring);
+  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
+  roofInverters.splice(state.editingInverterIndex, 1, newInverter);
   return {
     ...state,
     roofSpecInverters: {
       ...state.roofSpecInverters,
-      [action.roofIndex]: roofInverters
+      [state.editingRoofIndex]: roofInverters
     },
-    
+
     editingRoofIndex: null,
     editingInverterIndex: null,
     editingWiringIndex: null,
@@ -223,7 +234,6 @@ const releasePVPanel = (state, action) => {
   );
   newWiring.polyline = newPolyline;
   newWiring.allPanels = newPanels;
-  console.log(newWiring.allPanels)
   if (state.pickedWiringPointPosition === 'START') {
     newWiring.startPanel = newPanels[0];
   } else {
@@ -271,7 +281,6 @@ const attachPVPanel = (state, action) => {
   );
   newWiring.polyline = newPolyline;
   newWiring.allPanels = newPanels;
-  console.log(newWiring.allPanels)
   if (state.pickedWiringPointPosition === 'START') {
     newWiring.startPanel = newPanels[0];
   } else {

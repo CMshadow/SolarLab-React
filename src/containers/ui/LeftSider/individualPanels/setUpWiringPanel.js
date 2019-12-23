@@ -31,6 +31,43 @@ class SetUpWiringPanel extends Component {
 
   render() {
     const { getFieldDecorator } = this.props.form;
+    const pitchedRoofSelect = this.props.workingBuilding.type === 'PITCHED' ?
+    (
+      <Form.Item>
+        <Row>
+          <Col span={20} offset={2}>
+          {getFieldDecorator('roofIndex', {
+            rules: [{
+              required: this.props.workingBuilding.type === 'PITCHED',
+              message: 'Please select one'
+            }]
+          })(
+            <Select
+              placeholder='Select a pitched roof'
+              onChange={(roofInd) => {
+                this.setState({selectRoofIndex: roofInd});
+                if(
+                  !Object.keys(this.props.roofSpecInverters)
+                  .includes(roofInd.toString()) && this.state.tab === 'auto'
+                )
+                  this.props.calculateAutoInverter(roofInd);
+              }}
+            >
+              {Object.keys(this.props.roofSpecParams).map((k,ind) =>
+                <Option
+                  key={k}
+                  value={k}
+                >
+                  {`Pitched Roof ${parseInt(k)+1}`}
+                </Option>
+              )}
+            </Select>
+          )}
+          </Col>
+        </Row>
+      </Form.Item>
+    ) :
+    null;
     const InverterSelect = (
       <Form.Item>
         <Row>
@@ -73,6 +110,7 @@ class SetUpWiringPanel extends Component {
           <h3>Setup Wiring</h3>
         </Row>
         <Form>
+          {pitchedRoofSelect}
           <Tabs
             defaultActiveKey = {this.state.tab}
             size = 'small'
@@ -122,6 +160,8 @@ const mapStateToProps = state => {
     panels: state.undoableReducer.present.editingPVPanelManagerReducer.panels,
     roofSpecParams: state.undoableReducer.present.editingPVPanelManagerReducer
       .roofSpecParams,
+    roofSpecInverters: state.undoableReducer.present.editingWiringManager
+      .roofSpecInverters,
     projectInfo: state.projectManagerReducer.projectInfo
   };
 };

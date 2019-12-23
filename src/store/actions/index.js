@@ -131,7 +131,8 @@ export {
   cleanPanels,
   fetchUserPanels,
   setPVConnected,
-  setPVDisConnected
+  setPVDisConnected,
+  setRoofAllPVDisConnected
 } from './editingPVPanelManager';
 
 export {

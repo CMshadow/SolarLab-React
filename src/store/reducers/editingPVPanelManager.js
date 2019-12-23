@@ -213,6 +213,49 @@ const setPVDisConnected = (state, action) => {
   };
 }
 
+const setRoofAllPVDisConnected = (state, action) => {
+  const newPanels = {...state.panels};
+  const changes = newPanels[action.roofIndex].map(partial =>
+    partial.map(panelArray =>
+      panelArray.map(panel => {
+        const newPV = PV.copyPolygon(panel.pv);
+        newPV.releaseConnected();
+        return {
+          ...panel,
+          pv: newPV
+        };
+      })
+    )
+  );
+  newPanels[action.roofIndex] = changes;
+  const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
+    newPanels[roofIndex].flatMap(partial => {
+      const partialRoofPanels = partial.flatMap(originPanelArray => {
+        const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
+        if (panelArray.length === 0) return [];
+        return panelArray.map(panel => panel.pv.entityId);
+      })
+      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+    })
+  )
+  const connectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
+    newPanels[roofIndex].flatMap(partial => {
+      const partialRoofPanels = partial.flatMap(originPanelArray => {
+        const panelArray = originPanelArray.filter(panel => panel.pv.connected);
+        if (panelArray.length === 0) return [];
+        return panelArray.map(panel => panel.pv.entityId);
+      })
+      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+    })
+  )
+  return {
+    ...state,
+    panels: newPanels,
+    connectedPanelId: connectedPanelIds,
+    disconnectedPanelId: disconnectedPanelIds
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SETUP_PANEL_PARAMS:
@@ -229,6 +272,8 @@ const reducer = (state=initialState, action) => {
       return setPVConnected(state, action);
     case actionTypes.SET_PV_DISCONNECTED:
       return setPVDisConnected(state, action);
+    case actionTypes.SET_ROOF_ALL_PV_DISCONNECTED:
+      return setRoofAllPVDisConnected(state, action);
     default: return state;
   }
 };
