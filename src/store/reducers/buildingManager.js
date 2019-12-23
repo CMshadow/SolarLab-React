@@ -2,6 +2,7 @@ import * as actionTypes from '../actions/actionTypes';
 import FlatBuilding from '../../infrastructure/building/flatBuilding';
 import PitchedBuilding from '../../infrastructure/building/pitchedBuilding';
 
+
 const initialState = {
   workingBuilding: null,
   buildingInfoFields: {
@@ -30,6 +31,7 @@ const updateBuilding = (state, action) => {
       state.workingBuilding, null, null, action.foundationHeight,
       action.eaveSetback, action.parapetHeight
     );
+
   }
   return {
     ...state,
@@ -81,6 +83,22 @@ const bindFoundPolygons = (state, action) => {
   };
 }
 
+const bindShadow = (state, action) => {
+  let newWorkingBuilding = null;
+  if (state.workingBuilding instanceof FlatBuilding) {
+    newWorkingBuilding = FlatBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindShadow(action.shadow);
+  } else if (state.workingBuilding instanceof PitchedBuilding) {
+    newWorkingBuilding = PitchedBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindShadow(action.shadow);
+  }
+
+  return {
+    ...state,
+    workingBuilding: newWorkingBuilding
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SAVE_BUILDING_INFO_FIELDS:
@@ -91,6 +109,8 @@ const reducer = (state=initialState, action) => {
       return bindFoundPolygons(state, action);
     case actionTypes.INIT_BUILDING:
       return initBuilding(state, action);
+    case actionTypes.BIND_SHADOW:
+      return bindShadow(state, action);
     case actionTypes.UPDATE_BUILDING:
       return updateBuilding(state, action);
     default: return state;

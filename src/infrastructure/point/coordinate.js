@@ -286,7 +286,7 @@ class Coordinate {
   //     let edgeBrng = Coordinate.bearing(startNode, endNode);
   //     let interPoint = Coordinate.intersection(point, path.brng, startNode, edgeBrng);
   //     let shortestDist = Coordinate.surfaceDistance(point, interPoint);
-  //     heightOfPoint = Math.tan(path.obliquity * Math.PI/180) * shortestDist; 
+  //     heightOfPoint = Math.tan(path.obliquity * Math.PI/180) * shortestDist;
   //   }
   //   return heightOfPoint;
   // }
@@ -312,6 +312,12 @@ class Coordinate {
       );
 
       const edgeBrng = Coordinate.bearing(startNode, endNode);
+      const targetBrng = Coordinate.bearing(startNode, point);
+      if (
+        parseFloat(targetBrng.toFixed(2)) === parseFloat(edgeBrng.toFixed(2)) ||
+        startNode.getCoordinate(true).slice(0,2).toString() === point.getCoordinate(true).slice(0,2).toString() ||
+        endNode.getCoordinate(true).slice(0,2).toString() === point.getCoordinate(true).slice(0,2).toString()
+      ) return 0;
       const interPoint1 = Coordinate.intersection(
         point, path.brng, startNode, edgeBrng
       );

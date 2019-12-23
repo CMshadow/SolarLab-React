@@ -86,6 +86,13 @@ const setUIstateEditing3D = (state,action) => {
   };
 };
 
+const setUIStateEditingRoofTop = (state,action) => {
+  return {
+    ...state,
+    uiState: 'EDITING_ROOFTOP'
+  };
+};
+
 const setUIStateSetUpPV = (state, action) => {
   return {
     ...state,
@@ -136,6 +143,8 @@ const reducer = (state=initialState, action) => {
       return setPreviousUIState(state, action);
     case actionTypes.SET_UI_STATE_EDITING_3D:
       return setUIstateEditing3D(state, action);
+    case actionTypes.SET_UI_STATE_EDITING_ROOFTOP:
+      return setUIStateEditingRoofTop(state, action);
     case actionTypes.SET_UI_STATE_SETUP_PV:
       return setUIStateSetUpPV(state, action);
     case actionTypes.SET_UI_STATE_SETUP_WIRING:

@@ -60,6 +60,12 @@ export const setUIStateEditing3D = () => {
   };
 };
 
+export const setUIStateEditingRoofTop = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_EDITING_ROOFTOP
+  };
+};
+
 export const setUIStateSetUpPV = () => {
   return {
     type: actionTypes.SET_UI_STATE_SETUP_PV

@@ -23,6 +23,9 @@ import axios from '../../../../axios-setup';
 import * as MyMath from '../../../../infrastructure/math/math';
 import BearingCollection from '../../../../infrastructure/math/bearingCollection';
 import errorNotification from '../../../../components/ui/Notification/ErrorNotification';
+import { minPanelTiltAngleOnPitchedRoof } from '../../../../infrastructure/math/pointCalculation';
+import { sunPosition } from '../../../../infrastructure/math/sunPositionCalculation';
+
 const { Option } = Select;
 const { TabPane } = Tabs;
 const ButtonGroup = Button.Group;
@@ -153,7 +156,11 @@ class SetUpPVPanel extends Component {
     this.props.form.setFieldsValue({
       azimuth: this.props.projectInfo.globalOptimalAzimuth,
       tilt: this.props.projectInfo.globalOptimalTilt
-    })
+    });
+    this.setState({
+      azimuth: this.props.projectInfo.globalOptimalAzimuth,
+      tilt: this.props.projectInfo.globalOptimalTilt
+    });
     this.determineRowSpace(1.3, this.state.orientation, this.state.selectPanelID);
   }
 
@@ -205,12 +212,15 @@ class SetUpPVPanel extends Component {
             azimuth: azimuth
           }
         }).then(response => {
-          console.log(response)
           this.setIsFetchingFalse();
           this.props.form.setFieldsValue({
             azimuth: azimuth,
             tilt: response.data.optimalTilt,
-          })
+          });
+          this.setState({
+            azimuth: azimuth,
+            tilt: response.data.optimalTilt
+          });
           this.determineRowSpace(
             1.3, this.state.orientation, this.state.selectPanelID
           );
@@ -235,6 +245,12 @@ class SetUpPVPanel extends Component {
             this.props.workingBuilding.pitchedRoofPolygons[roofIndex].obliquity
           ),
         })
+        this.setState({
+          azimuth: azimuth,
+          tilt: Math.ceil(
+            this.props.workingBuilding.pitchedRoofPolygons[roofIndex].obliquity
+          ),
+        });
         this.determineRowSpace(
           1.3, this.state.orientation, this.state.selectPanelID
         );
@@ -371,10 +387,12 @@ class SetUpPVPanel extends Component {
               <InputNumber
                 min={
                   this.state.selectRoofIndex !== null ?
-                  Math.ceil(
-                    this.props.workingBuilding
-                    .pitchedRoofPolygons[this.state.selectRoofIndex].obliquity
-                  ) :
+                  Math.ceil(minPanelTiltAngleOnPitchedRoof(
+                    this.props.workingBuilding.pitchedRoofPolygons[
+                      this.state.selectRoofIndex
+                    ].convertHierarchyToPoints(),
+                    this.state.azimuth
+                  )) :
                   0
                 }
                 max={45}

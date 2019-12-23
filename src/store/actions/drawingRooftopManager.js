@@ -9,6 +9,7 @@ import Node from '../../infrastructure/edgesMap/node/node';
 import Edge from '../../infrastructure/edgesMap/edge/edge';
 import EdgesMap from '../../infrastructure/edgesMap/edgesMap';
 import * as MathHelper from '../../infrastructure/math/RoofTop_MathHelper';
+import * as SunInfomation from '../../infrastructure/math/sunPositionCalculation';
 import * as MathCoordHelp from '../../infrastructure/math/math';
 import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
@@ -156,7 +157,6 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
 export const initNodesCollection = (
   buildingOutline, newNodeCollection, newOuterEdgeCollection
 ) => {
-
   // Build outer edges-points relations
   for (let i = 0; i < buildingOutline.length; i+=3) {
     newNodeCollection.push(
@@ -292,9 +292,9 @@ export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, N
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].height);
       pathParameters.roofPlaneNodeIdsList.push(NodesCollection[nodeIndex].id);
     }
+
     pathParameters.roofHighestLowestNodes = calculateHighestandLowestNodes(pathParameters.roofPlaneCoordinateArray).highestAndLowestNodes;
     pathInformationCollection.push(pathParameters);
-    // console.log("id test: " + pathParameters.roofPlaneNodeIdsList)
   }
 
   return({
@@ -660,4 +660,54 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
     type: actionTypes.UPDATE_SINGLE_ROOF_TOP,
     newRooftopCollection: newRooftopCollection
   });
+}
+
+export const showOnlyOneRoofPlane = (roofId, threePointIndex) => {
+  return {
+    type: actionTypes.SHOW_ONLY_ONE_ROOF,
+    roofId: roofId,
+    threePointIndex: threePointIndex
+  };
+}
+
+export const showAllRoofPlane = () => {
+  return {
+    type: actionTypes.SHOW_ALL_ROOF
+  };
+}
+
+export const setHoverRoofTopPointIndex = (point) => {
+  return {
+    type: actionTypes.SET_HOVER_ROOFTOP_POINT,
+    point: point
+  };
+}
+
+export const releaseHoverRoofTopPointIndex = () => {
+  return {
+    type: actionTypes.RELEASE_HOVER_ROOFTOP_POINT,
+  };
+}
+
+export const setPickedRoofTopPointIndex = (threePointInd) => (dispatch, getState) => {
+	const editingInnerPlanePoints =
+    getState().undoableReducer.present.drawingRooftopManagerReducer
+    .editingInnerPlanePoints;
+  const hoverPoint =
+    getState().undoableReducer.present.drawingRooftopManagerReducer.hoverPoint;
+  const pointIndex = editingInnerPlanePoints.reduce((matchInd, p, i) =>
+    p.entityId === hoverPoint.entityId ? i : matchInd
+  , 0);
+  dispatch(actions.setUIStateEditing3D());
+  return dispatch({
+    type: actionTypes.SET_PICKED_ROOFTOP_POINT,
+    pointIndex: pointIndex,
+    threePointsIndex: threePointInd
+  })
+}
+
+export const releasePickedRoofTopPointIndex = () => {
+	return {
+    type: actionTypes.RELEASE_PICKED_ROOFTOP_POINT
+  };
 }

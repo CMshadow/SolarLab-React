@@ -84,7 +84,13 @@ export {
   calculateHighestandLowestNodes,
   calculateObliquityAndObliquity,
   checkEdgeTypeOfPath,
-  updateSingleRoofTop
+  updateSingleRoofTop,
+  showOnlyOneRoofPlane,
+  showAllRoofPlane,
+  setHoverRoofTopPointIndex,
+  releaseHoverRoofTopPointIndex,
+  setPickedRoofTopPointIndex,
+  releasePickedRoofTopPointIndex
 } from './drawingRooftopManager';
 
 
@@ -105,6 +111,7 @@ export {
   setUIStateEditingKeepout,
   setPreviousUIState,
   setUIStateEditing3D,
+  setUIStateEditingRoofTop,
   setUIStateSetUpPV,
   setUIStateSetUpWiring,
   setUIStateEditingWiring,
@@ -118,12 +125,17 @@ export {
   bindFoundPolyline,
   bindFoundPolygons,
   bindPitchedPolygons,
+  bindShadow,
   resetBuilding
 } from './buildingManager';
 
 export {
   bindAllKeepout
 } from './keepoutManager';
+
+export {
+  projectAllShadow
+} from './editingShadowManager';
 
 export {
   setupPanelParams,
@@ -160,5 +172,7 @@ export {
 
 export {
   setDebugPoints,
-  setDebugPolylines
+  setDebugPolylines,
+  setDebugPolygons,
+  setDebugShadowPolygons,
 } from './debugRender';
