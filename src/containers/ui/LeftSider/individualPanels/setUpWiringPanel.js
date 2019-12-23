@@ -146,6 +146,21 @@ class SetUpWiringPanel extends Component {
           </Tabs>
         </Form>
         <InverterTable roofIndex={this.state.selectRoofIndex} />
+        <Row type="flex" justify="center">
+          <Button
+            type='primary'
+            shape='round'
+            size='large'
+            onClick = {() => {
+              console.log('finish building')
+              this.props.bindPVPanels();
+              this.props.bindInverters();
+              console.log(this.props.workingBuilding)
+            }}
+          >
+            Finish <Icon type='check' />
+          </Button>
+        </Row>
       </div>
     );
   }
@@ -173,7 +188,9 @@ const mapDispatchToProps = dispatch => {
     ),
     calculateManualInverter: (roofIndex, inverterID) => dispatch(
       actions.calculateManualInverter(roofIndex, inverterID)
-    )
+    ),
+    bindPVPanels: () => dispatch(actions.bindPVPanels()),
+    bindInverters: () => dispatch(actions.bindInverters())
   };
 };
 

@@ -5,9 +5,10 @@ import Building from './building';
 class FlatBuilding extends Building {
   constructor (
     name, serial, foundHt, eaveStb, parapetHt, polyline=null, foundPolygon=null,
-    foundPolygonExcludeStb=null, parapetPolygon=null, shadow=null
+    foundPolygonExcludeStb=null, parapetPolygon=null, shadow=null, pv=null,
+    inverters=null
   ) {
-    super(name, serial, foundHt, eaveStb, shadow);
+    super(name, serial, foundHt, eaveStb, shadow, pv, inverters);
     this.type = 'FLAT';
     this.parapetHeight = parapetHt;
     this.polyline = polyline;
@@ -35,14 +36,11 @@ class FlatBuilding extends Building {
     this.parapetPolygon = parapetPolygon;
   }
 
-  bindShadow = (shadow) => {
-    this.shadow = shadow;
-  }
-
   static fromBuilding (
     flatBuilding, name=null, serial=null, foundHt=null, eaveStb=null,
     parapetHt=null, polyline=null, foundPolygon=null,
-    foundPolygonExcludeStb=null, parapetPolygon=null, shadow=null
+    foundPolygonExcludeStb=null, parapetPolygon=null, shadow=null, pv=null,
+    inverters=null
   ) {
     const newName = name ? name : flatBuilding.name;
     const newSerial = serial ? serial : flatBuilding.serial;
@@ -65,9 +63,11 @@ class FlatBuilding extends Building {
       parapetPolygon :
       flatBuilding.parapetPolygon;
     const newShadow = shadow || flatBuilding.shadow;
+    const newPV = pv || flatBuilding.pv;
+    const newInverters = inverters || flatBuilding.inverters;
     return new FlatBuilding(newName, newSerial, newFoundHt, newEaveStb,
       newParapetHt, newPolyline, newFoundPolygon, newFoundPolygonExcludeStb,
-      newParapetPolygon, newShadow
+      newParapetPolygon, newShadow, newPV, newInverters
     );
   }
 }

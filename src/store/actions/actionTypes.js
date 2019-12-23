@@ -109,6 +109,8 @@ export const BIND_VENT = 'BIND_VENT';
 export const BIND_TREE = 'BIND_TREE';
 export const BIND_ENV = 'BIND_ENV';
 export const BIND_SHADOW = 'BIND_SHADOW';
+export const BIND_PV = 'BIND_PV';
+export const BIND_INVERTERS = 'BIND_INVERTERS';
 export const RESET_BUILDING = 'RESET_BUILDING';
 
 /*

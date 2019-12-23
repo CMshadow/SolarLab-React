@@ -133,18 +133,49 @@ export const bindPitchedPolygons = () => (dispatch, getState) => {
 }
 
 export const bindShadow = () => (dispatch, getState) => {
-  const shadows = getState().undoableReducer.present.editingShadowManager.shadows
+  const shadows = getState().undoableReducer.present.editingShadowManager
+    .shadows;
   const newShadows = {};
   Object.keys(shadows).forEach(key => {
     newShadows[key] = {
       ...shadows[key],
       polygon: Shadow.copyShadow(shadows[key].polygon)
     }
-  })
+  });
   return dispatch({
     type: actionTypes.BIND_SHADOW,
     shadow: newShadows
-  })
+  });
+}
+
+export const bindPVPanels = () => (dispatch, getState) => {
+  const pv = getState().undoableReducer.present.editingPVPanelManagerReducer
+    .panels;
+  const newPV = {};
+  Object.keys(pv).forEach(key => {
+    newPV[key] = [
+      ...pv[key]
+    ]
+  });
+  return dispatch({
+    type: actionTypes.BIND_PV,
+    pv: newPV
+  });
+}
+
+export const bindInverters = () => (dispatch, getState) => {
+  const inverters = getState().undoableReducer.present.editingWiringManager
+    .roofSpecInverters;
+  const newInverters = {};
+  Object.keys(inverters).forEach(key => {
+    newInverters[key] = [
+      ...inverters[key]
+    ]
+  });
+  return dispatch({
+    type: actionTypes.BIND_INVERTERS,
+    inverters: newInverters
+  });
 }
 
 /**

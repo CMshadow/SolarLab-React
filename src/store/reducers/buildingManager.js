@@ -99,6 +99,38 @@ const bindShadow = (state, action) => {
   };
 }
 
+const bindPVPanel = (state, action) => {
+  let newWorkingBuilding = null;
+  if (state.workingBuilding instanceof FlatBuilding) {
+    newWorkingBuilding = FlatBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindPV(action.pv);
+  } else if (state.workingBuilding instanceof PitchedBuilding) {
+    newWorkingBuilding = PitchedBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindPV(action.pv);
+  }
+
+  return {
+    ...state,
+    workingBuilding: newWorkingBuilding
+  };
+}
+
+const bindInverters = (state, action) => {
+  let newWorkingBuilding = null;
+  if (state.workingBuilding instanceof FlatBuilding) {
+    newWorkingBuilding = FlatBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindInverters(action.inverters);
+  } else if (state.workingBuilding instanceof PitchedBuilding) {
+    newWorkingBuilding = PitchedBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindInverters(action.inverters);
+  }
+
+  return {
+    ...state,
+    workingBuilding: newWorkingBuilding
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SAVE_BUILDING_INFO_FIELDS:
@@ -111,6 +143,10 @@ const reducer = (state=initialState, action) => {
       return initBuilding(state, action);
     case actionTypes.BIND_SHADOW:
       return bindShadow(state, action);
+    case actionTypes.BIND_PV:
+      return bindPVPanel(state, action);
+    case actionTypes.BIND_INVERTERS:
+      return bindInverters(state, action);
     case actionTypes.UPDATE_BUILDING:
       return updateBuilding(state, action);
     default: return state;

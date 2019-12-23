@@ -126,6 +126,8 @@ export {
   bindFoundPolygons,
   bindPitchedPolygons,
   bindShadow,
+  bindPVPanels,
+  bindInverters,
   resetBuilding
 } from './buildingManager';
 
