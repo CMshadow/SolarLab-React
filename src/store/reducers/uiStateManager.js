@@ -111,14 +111,21 @@ const setUIStateEditingWiring = (state, action) => {
   return {
     ...state,
     uiState: 'EDITING_WIRING'
-  }
+  };
 }
 
 const setUIStateDraggingWiring = (state, action) => {
   return {
     ...state,
     uiState: 'DRAGGING_WIRING'
-  }
+  };
+}
+
+const setUIStateManualWiring = (state, action) => {
+  return {
+    ...state,
+    uiState: 'MANUAL_WIRING'
+  };
 }
 
 const reducer = (state=initialState, action) => {
@@ -153,6 +160,8 @@ const reducer = (state=initialState, action) => {
       return setUIStateEditingWiring(state, action);
     case actionTypes.SET_UI_STATE_DRAGGING_WIRING:
       return setUIStateDraggingWiring(state, action);
+    case actionTypes.SET_UI_STATE_MANUAL_WIRING:
+      return setUIStateManualWiring(state, action);
     default: return state;
   }
 };

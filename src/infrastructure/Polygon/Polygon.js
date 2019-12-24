@@ -129,7 +129,7 @@ class Polygon {
     lowestNode = null,
     edgesCollection = null
   ){
-    const newID = id ? id : polygon.id;
+    const newID = id ? id : polygon.entityId;
     const newName = name ? name : polygon.name;
     const newHeight = height ? height: polygon.height;
     const newHierarchy = hierarchy ? [...hierarchy]: polygon.hierarchy;

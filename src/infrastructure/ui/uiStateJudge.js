@@ -28,7 +28,8 @@ export const showSetUpWiringPanel = (uiState) => {
   return (
     uiState === 'SETUP_WIRING' ||
     uiState === 'EDITING_WIRING' ||
-    uiState === 'DRAGGING_WIRING'
+    uiState === 'DRAGGING_WIRING' ||
+    uiState === 'MANUAL_WIRING'
   )
 };
 

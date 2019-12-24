@@ -93,6 +93,7 @@ class SetUpWiringPanel extends Component {
                 <Option
                   key={i.inverterID}
                   value={i.inverterID}
+                  title={i.inverterName}
                 >
                   {i.inverterName}
                 </Option>

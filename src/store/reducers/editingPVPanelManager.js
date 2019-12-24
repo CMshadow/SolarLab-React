@@ -80,6 +80,7 @@ const updatePVConnected = (state, action) => {
         if (wiringPanelIds.includes(panel.pv.entityId)) {
           const newPV = PV.copyPolygon(panel.pv);
           newPV.setConnected();
+          newPV.setColor(Cesium.Color.ROYALBLUE.withAlpha(0.75));
           return {
             ...panel,
             pv: newPV
@@ -127,6 +128,7 @@ const setPVConnected = (state, action) => {
         if (panel.pv.entityId === action.panelId) {
           const newPV = PV.copyPolygon(panel.pv);
           newPV.setConnected();
+          newPV.setColor(Cesium.Color.ROYALBLUE.withAlpha(0.75));
           return {
             ...panel,
             pv: newPV
@@ -174,6 +176,7 @@ const setPVDisConnected = (state, action) => {
         if (panel.pv.entityId === action.panelId) {
           const newPV = PV.copyPolygon(panel.pv);
           newPV.releaseConnected();
+          newPV.setColor(Cesium.Color.RED.withAlpha(0.5));
           return {
             ...panel,
             pv: newPV
@@ -220,6 +223,7 @@ const setRoofAllPVDisConnected = (state, action) => {
       panelArray.map(panel => {
         const newPV = PV.copyPolygon(panel.pv);
         newPV.releaseConnected();
+        newPV.setColor(Cesium.Color.RED.withAlpha(0.5));
         return {
           ...panel,
           pv: newPV

@@ -89,3 +89,9 @@ export const setUIStateDraggingWiring = () => {
     type: actionTypes.SET_UI_STATE_DRAGGING_WIRING
   };
 }
+
+export const setUIStateManualWiring = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_MANUAL_WIRING
+  };
+}

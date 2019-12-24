@@ -188,7 +188,7 @@ const MouseMoveHandler = (props) => {
           props.releasePVPanel(selectConnected[0]);
         } else {
           props.setMouseDragStatus(null);
-        }  
+        }
         props.dynamicWiringLine();
         break;
 
@@ -285,7 +285,7 @@ const mapStateToProps = state => {
     threePointsInfo:
       state.undoableReducer.present.drawingRooftopManagerReducer
       .threePointsInfo,
-    
+
     disconnectedPanelId:
       state.undoableReducer.present.editingPVPanelManagerReducer.disconnectedPanelId,
     connectedPanelId:

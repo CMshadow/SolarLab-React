@@ -20,13 +20,6 @@ import * as actions from '../../../../../store/actions/index';
 
 class InverterTable extends Component {
 
-  // menu = (
-  //   <Menu>
-  //     <Menu.Item key='1'>
-  //       Manual
-  //     </Menu.Item>
-  //   </Menu>
-  // );
 
   expandedRowRender = (inverter, inverterInd) => {
     const columns = [
@@ -60,24 +53,58 @@ class InverterTable extends Component {
         key: 'action',
         width: '40%',
         render: (wiring, record, wiringInd) => {
-          if (record.allPanels.length === 0) {
-            return (
-              <Button
-                // overlay={this.menu}
-                // icon={<Icon type='down' />}
-                disabled={
-                  (this.props.uiState === 'EDITING_WIRING' ||
-                  this.props.uiState === 'DRAGGING_WIRING') &&
-                  (wiringInd !== this.props.editingWiringIndex ||
-                  inverterInd !== this.props.editingInverterIndex)
-                }
+          const menu = (
+            <Menu>
+              <Menu.Item
+                key='1'
                 onClick = {() => {
-                  this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd);
+                  this.props.setUIStateManualWiring();
+                  this.props.manualWiring(this.props.roofIndex, inverterInd, wiringInd);
                 }}
               >
-                Wiring
-              </Button>
-            )
+                Manual
+              </Menu.Item>
+            </Menu>
+          );
+          if (record.allPanels.length === 0) {
+            if (
+              this.props.roofSpecParams[this.props.roofIndex].mode ===
+              'individual'
+            ) {
+              return (
+                <Dropdown.Button
+                  overlay={menu}
+                  icon={<Icon type='down' />}
+                  disabled={
+                    (this.props.uiState === 'EDITING_WIRING' ||
+                    this.props.uiState === 'DRAGGING_WIRING') &&
+                    (wiringInd !== this.props.editingWiringIndex ||
+                    inverterInd !== this.props.editingInverterIndex)
+                  }
+                  onClick = {() => {
+                    this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd);
+                  }}
+                >
+                  Auto
+                </Dropdown.Button>
+              )
+            } else {
+              return (
+                <Button
+                  disabled={
+                    (this.props.uiState === 'EDITING_WIRING' ||
+                    this.props.uiState === 'DRAGGING_WIRING') &&
+                    (wiringInd !== this.props.editingWiringIndex ||
+                    inverterInd !== this.props.editingInverterIndex)
+                  }
+                  onClick = {() => {
+                    this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd);
+                  }}
+                >
+                  Wiring
+                </Button>
+              )
+            }
           } else {
             return (
               <Button
@@ -177,6 +204,8 @@ const mapStateToProps = state => {
   return {
     roofSpecInverters:
       state.undoableReducer.present.editingWiringManager.roofSpecInverters,
+    roofSpecParams:
+      state.undoableReducer.present.editingPVPanelManagerReducer.roofSpecParams,
     uiState:
       state.undoableReducer.present.uiStateManagerReducer.uiState,
     editingWiringIndex:
@@ -191,6 +220,9 @@ const mapDispatchToProps = dispatch => {
     autoWiring: (roofInd, inverterInd, wiringInd) => dispatch(
       actions.autoWiring(roofInd, inverterInd, wiringInd)
     ),
+    manualWiring: (roofInd, inverterInd, wiringInd) => dispatch(
+      actions.manualWiring(roofInd, inverterInd, wiringInd)
+    ),
     editWiring: (roofInd, inverterInd, wiringInd) => dispatch(
       actions.editWiring(roofInd, inverterInd, wiringInd)
     ),
@@ -200,6 +232,9 @@ const mapDispatchToProps = dispatch => {
     ),
     setUIStateSetUpWiring: () => dispatch(
       actions.setUIStateSetUpWiring()
+    ),
+    setUIStateManualWiring: () => dispatch(
+      actions.setUIStateManualWiring()
     )
   }
 }

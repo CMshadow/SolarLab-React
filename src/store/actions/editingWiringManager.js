@@ -50,12 +50,6 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
     return acc2 + totalPanelOnPartial;
   }, 0);
   dispatch(setBackendLoadingTrue());
-  console.log({
-    totalPanels: totalPanels,
-    userID: getState().authReducer.userID,
-    panelID: roofSpecParams[roofIndex].panelID,
-    PVParams: JSON.stringify(roofSpecParams[roofIndex])
-  })
   axios.get('/calculate-inverter-solution/auto', {
     params: {
       totalPanels: totalPanels,
@@ -66,9 +60,6 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
   })
   .then(response => {
     const result = response.data.data;
-    console.log(result)
-    console.log(getState().undoableReducer.present
-      .editingWiringManager.userInverters)
     const inverterName = getState().undoableReducer.present
       .editingWiringManager.userInverters.reduce((name, val) =>
         val.inverterID === result.inverterID ? val.inverterName : name
@@ -83,7 +74,6 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
         inverter.stringPerInverter
       )
     )
-    console.log(inverterSolutions)
     dispatch(actions.setRoofAllPVDisConnected(roofIndex));
     dispatch({
       type: actionTypes.SET_UP_INVERTER,
@@ -140,7 +130,6 @@ export const calculateManualInverter = (roofIndex, inverterID) =>
         inverter.stringPerInverter
       )
     )
-    console.log(inverterSolutions)
     dispatch(actions.setRoofAllPVDisConnected(roofIndex));
     dispatch({
       type: actionTypes.SET_UP_INVERTER,
@@ -177,10 +166,6 @@ const individualAutoWiring = (roofInd, inverterInd, wiringInd) =>
     const partialRoofPanels = partial.map(originPanelArray => {
       const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
       if (panelArray.length === 0) return [];
-      if (
-        panelArray[0].rowPos === 'start' &&
-        panelArray.slice(-1)[0].rowPos !== 'end'
-      ) panelArray.reverse();
       return panelArray.map(panel => {
         return {
           ...panel,
@@ -238,7 +223,6 @@ const arrayAutoWiring = (roofInd, inverterInd, wiringInd) =>
       )
     );
   }
-  console.log(panelCandidates)
   let string = [];
   if (availablePanelArrays[0][0].col % 2 === 0) {
     panelCandidates.forEach((row, i) => {
@@ -280,6 +264,50 @@ const arrayAutoWiring = (roofInd, inverterInd, wiringInd) =>
   });
 }
 
+export const manualWiring = (roofInd, inverterInd, wiringInd) =>{
+  return {
+    type: actionTypes.MANUAL_WIRING,
+    roofIndex: roofInd,
+    inverterIndex: inverterInd,
+    wiringIndex: wiringInd
+  };
+}
+
+export const setManualWiringStart = (panelId) => (dispatch, getState) => {
+  const editingRoofIndex = getState().undoableReducer.present
+    .editingWiringManager.editingRoofIndex;
+  const allPanels = getState().undoableReducer.present
+    .editingPVPanelManagerReducer.panels[editingRoofIndex];
+  const availablePanels = allPanels.flatMap(partial => {
+    const partialRoofPanels = partial.map(originPanelArray => {
+      const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
+      if (panelArray.length === 0) return [];
+      return panelArray.map(panel => {
+        return {
+          ...panel,
+          pv: PV.copyPolygon(panel.pv)
+        }
+      });
+    })
+    return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+  });
+  const matchPanel = availablePanels.find(elem => elem[0].pv.entityId === panelId)[0];
+  console.log(matchPanel)
+  const panelCenterPoints = [Point.fromCoordinate(matchPanel.center)]
+  const wiringPolyline = new Polyline(
+    panelCenterPoints, null, 'wiring', Cesium.Color.RED
+  );
+  const newWiring = new Wiring(
+    null, matchPanel.pv, matchPanel.pv, [matchPanel.pv], wiringPolyline
+  );
+  console.log(wiringPolyline)
+  return dispatch({
+    type: actionTypes.MANUAL_WIRING_START,
+    wiring: newWiring,
+    position: 'END'
+  });
+}
+
 export const editWiring = (roofInd, inverterInd, wiringInd) =>
 (dispatch, getState) => {
   return dispatch({
@@ -287,7 +315,7 @@ export const editWiring = (roofInd, inverterInd, wiringInd) =>
     roofIndex: roofInd,
     inverterIndex: inverterInd,
     wiringIndex: wiringInd
-  })
+  });
 }
 
 export const stopEditWiring = () => {

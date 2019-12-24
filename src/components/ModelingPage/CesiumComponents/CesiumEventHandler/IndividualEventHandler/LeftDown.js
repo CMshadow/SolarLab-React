@@ -46,6 +46,16 @@ const LeftDownHandler = (props) => {
         }
         break;
 
+      case 'MANUAL_WIRING':
+        if (pickedObject) {
+          if (props.disconnectedPanelId.includes(pickedObject.id.id)) {
+            props.disableRotate();
+            props.setManualWiringStart(pickedObject.id.id);
+            props.setUIStateDraggingWiring();
+          }
+        }
+        break;
+
       case 'EDITING_WIRING':
         if (pickedObject) {
           // Find out picked which point
@@ -91,6 +101,9 @@ const mapStateToProps = state => {
       state.undoableReducer.present.editingWiringManager.editingStartPoint,
     editingEndPoint:
       state.undoableReducer.present.editingWiringManager.editingEndPoint,
+    disconnectedPanelId:
+      state.undoableReducer.present.editingPVPanelManagerReducer
+      .disconnectedPanelId
   };
 };
 
@@ -104,7 +117,11 @@ const mapDispatchToProps = dispatch => {
     setPickedWiringPoint: () => dispatch(
       actions.setPickedWiringPoint()
     ),
-    setUIStateDraggingWiring: () => dispatch(actions.setUIStateDraggingWiring())
+    setUIStateEditingWiring: () => dispatch(actions.setUIStateEditingWiring()),
+    setUIStateDraggingWiring: () => dispatch(actions.setUIStateDraggingWiring()),
+    setManualWiringStart: (panelId) => dispatch(
+      actions.setManualWiringStart(panelId)
+    )
   };
 };
 

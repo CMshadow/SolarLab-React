@@ -115,7 +115,8 @@ export {
   setUIStateSetUpPV,
   setUIStateSetUpWiring,
   setUIStateEditingWiring,
-  setUIStateDraggingWiring
+  setUIStateDraggingWiring,
+  setUIStateManualWiring
 } from './uiStateManager';
 
 export {
@@ -154,6 +155,8 @@ export {
   calculateAutoInverter,
   calculateManualInverter,
   autoWiring,
+  manualWiring,
+  setManualWiringStart,
   editWiring,
   stopEditWiring,
   setHoverWiringPoint,

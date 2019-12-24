@@ -4,7 +4,7 @@ import FloatPolyline from '../polyline/floatingPolyline';
 import CustomPoint from '../point/point';
 
 const EditingWiringRender = (props) => {
-
+  
   let allWirings = null
   if(Object.keys(props.roofSpecInverters).length !== 0) {
     allWirings = Object.keys(props.roofSpecInverters).map(roofIndex =>

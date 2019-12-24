@@ -326,6 +326,7 @@ class SetUpPVPanel extends Component {
                 <Option
                   key={d.panelID}
                   value={d.panelID}
+                  title={d.panelName}
                 >
                   {d.panelName}
                 </Option>

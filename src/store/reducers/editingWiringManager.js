@@ -67,6 +67,35 @@ const autoWiring = (state, action) => {
   };
 }
 
+const manualWiring = (state, action) => {
+  return {
+    ...state,
+    editingRoofIndex: action.roofIndex,
+    editingInverterIndex: action.inverterIndex,
+    editingWiringIndex: action.wiringIndex,
+  };
+}
+
+const setManualWiringStart = (state, action) => {
+  const newInverter = Inverter.fromInverter(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+  );
+  newInverter.setWiring(state.editingWiringIndex, Wiring.fromWiring(action.wiring));
+  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
+  roofInverters.splice(state.editingInverterIndex, 1, newInverter);
+  return {
+    ...state,
+    roofSpecInverters: {
+      ...state.roofSpecInverters,
+      [state.editingRoofIndex]: roofInverters
+    },
+
+    editingStartPoint: action.wiring.startPanel.getCenter(),
+    editingEndPoint: action.wiring.endPanel.getCenter(),
+    hoverWiringPointPosition: action.position,
+  };
+}
+
 const editWiring = (state, action) => {
   const newInverter = Inverter.fromInverter(
     state.roofSpecInverters[action.roofIndex][action.inverterIndex]
@@ -368,6 +397,10 @@ const reducer = (state=initialState, action) => {
       return setUpInverter(state, action);
     case actionTypes.AUTO_WIRING:
       return autoWiring(state, action);
+    case actionTypes.MANUAL_WIRING:
+      return manualWiring(state, action);
+    case actionTypes.MANUAL_WIRING_START:
+      return setManualWiringStart(state, action);
     case actionTypes.EDIT_WIRING:
       return editWiring(state, action);
     case actionTypes.STOP_EDIT_WIRING:
