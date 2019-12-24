@@ -80,7 +80,8 @@ const setManualWiringStart = (state, action) => {
   const newInverter = Inverter.fromInverter(
     state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
   );
-  newInverter.setWiring(state.editingWiringIndex, Wiring.fromWiring(action.wiring));
+  console.log(action.wiring)
+  newInverter.setWiring(state.editingWiringIndex, action.wiring);
   const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
   roofInverters.splice(state.editingInverterIndex, 1, newInverter);
   return {
@@ -93,6 +94,7 @@ const setManualWiringStart = (state, action) => {
     editingStartPoint: action.wiring.startPanel.getCenter(),
     editingEndPoint: action.wiring.endPanel.getCenter(),
     hoverWiringPointPosition: action.position,
+    pickedWiringPointPosition: action.position
   };
 }
 

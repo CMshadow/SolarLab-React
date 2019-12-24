@@ -51,6 +51,7 @@ const LeftDownHandler = (props) => {
           if (props.disconnectedPanelId.includes(pickedObject.id.id)) {
             props.disableRotate();
             props.setManualWiringStart(pickedObject.id.id);
+            props.setPVConnected(props.editingRoofIndex, pickedObject.id.id)
             props.setUIStateDraggingWiring();
           }
         }
@@ -103,7 +104,9 @@ const mapStateToProps = state => {
       state.undoableReducer.present.editingWiringManager.editingEndPoint,
     disconnectedPanelId:
       state.undoableReducer.present.editingPVPanelManagerReducer
-      .disconnectedPanelId
+      .disconnectedPanelId,
+    editingRoofIndex:
+      state.undoableReducer.present.editingWiringManager.editingRoofIndex
   };
 };
 
@@ -121,6 +124,9 @@ const mapDispatchToProps = dispatch => {
     setUIStateDraggingWiring: () => dispatch(actions.setUIStateDraggingWiring()),
     setManualWiringStart: (panelId) => dispatch(
       actions.setManualWiringStart(panelId)
+    ),
+    setPVConnected: (roofIndex, panelId) => dispatch(
+      actions.setPVConnected(roofIndex, panelId)
     )
   };
 };
