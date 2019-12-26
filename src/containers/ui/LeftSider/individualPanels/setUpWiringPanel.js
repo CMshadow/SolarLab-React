@@ -161,6 +161,15 @@ class SetUpWiringPanel extends Component {
           >
             Finish <Icon type='check' />
           </Button>
+          <Button
+            type='default'
+            shape='round'
+            size='large'
+            onClick = {() => {
+            }}
+          >
+            TEST
+          </Button>
         </Row>
       </div>
     );
@@ -178,7 +187,9 @@ const mapStateToProps = state => {
       .roofSpecParams,
     roofSpecInverters: state.undoableReducer.present.editingWiringManager
       .roofSpecInverters,
-    projectInfo: state.projectManagerReducer.projectInfo
+    projectInfo: state.projectManagerReducer.projectInfo,
+    normalKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.normalKeepout,
+    treeKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.treeKeepout
   };
 };
 

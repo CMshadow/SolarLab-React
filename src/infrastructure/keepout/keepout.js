@@ -42,6 +42,15 @@ class Keepout {
     this.roofIndexBelong = roofIndex;
   }
 
+  getOutlineCoordinates = () => {
+    return this.outlinePolyline.getPointsCoordinatesArray(false);
+  }
+
+  getOutlinePart2Coordinates = () => {
+    return this.outlinePolygonPart2.convertHierarchyToFoundLine()
+    .getPointsCoordinatesArray(false);
+  }
+
   static fromKeepout (keepout) {
     const newId = keepout.id;
     const newType = keepout.type;

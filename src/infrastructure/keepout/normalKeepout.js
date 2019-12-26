@@ -16,8 +16,6 @@ class NormalKeepout extends Keepout {
     this.setback = keepoutStb ? keepoutStb : 0;
   }
 
-
-
   static fromKeepout (
     normalKeepout, keepoutHt=null, keepoutStb=null, outline=null, polygon=null,
     polygonPart2 = null, buildingBelong=null, roofIndexBelong=null

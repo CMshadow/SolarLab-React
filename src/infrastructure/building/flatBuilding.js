@@ -57,7 +57,7 @@ class FlatBuilding extends Building {
     const newFoundPolygonExcludeStb =
       foundPolygonExcludeStb ?
       foundPolygonExcludeStb :
-      flatBuilding.foundPolygonExcludeStb;
+      flatBuilding.foundationPolygonExcludeStb;
     const newParapetPolygon =
       parapetPolygon ?
       parapetPolygon :
@@ -70,6 +70,19 @@ class FlatBuilding extends Building {
       newParapetPolygon, newShadow, newPV, newInverters
     );
   }
+
+  getRoofCoordinates = () => {
+    return this.foundationPolygon.map(polygon =>
+      polygon.convertHierarchyToFoundLine().getPointsCoordinatesArray(false)
+    )
+  };
+
+  getRoofExcludeStbCoordinates = () => {
+    console.log(this.foundationPolygonExcludeStb)
+    return this.foundationPolygonExcludeStb.map(polygon =>
+      polygon.convertHierarchyToFoundLine().getPointsCoordinatesArray(false)
+    )
+  };
 }
 
 export default FlatBuilding;
