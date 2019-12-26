@@ -29,6 +29,77 @@ class SetUpWiringPanel extends Component {
     selectInverterID: null,
   }
 
+  generateReportJSON = (building, roofIndex) => {
+    const matchPanelInfo = this.props.userPanels.find(info =>
+      info.panelID === building.pvParams[roofIndex].panelID
+    );
+
+    const inverter_solution_collection =
+      Object.keys(this.props.roofSpecInverters).flatMap(roofIndex =>
+      this.props.roofSpecInverters[roofIndex].map(inverter => {
+        const matchInverterInfo = this.props.userInverters.find(info =>
+          info.inverterID === inverter.inverterId
+        )
+
+        return {
+          model: inverter.inverterName,
+          inverter_serial_number: inverter.serial,
+          panels_per_string: inverter.panelPerString,
+          string_per_inverter: inverter.stringPerInverter,
+          model_full_info: {
+            ...matchInverterInfo,
+            id: matchInverterInfo.inverterID,
+            model: matchInverterInfo.inverterName,
+            createdByUser: matchInverterInfo.userID,
+            wiring: inverter.wiring.map(wiring => {
+              return {wiring_length:[wiring.polyline.polylineLength(), 0, 0]}
+            }),
+            bridging: []
+          }
+        }
+      })
+    )
+
+    return {
+      projectName: '演示项目',
+      projectId: '0000-0000-0000-0001',
+      username: '演示用户',
+      projectAddress: '',
+      projectCreatedAt: '2020-01-01T10:00:00Z',
+      projectUpdatedAt: '2020-01-01T10:00:00Z',
+      name: building.name,
+      data: {
+        building: {
+          pv_panel_parameters: {
+            tilt_angle: building.pvParams[roofIndex].tilt,
+            azimuth: building.pvParams[roofIndex].azimuth,
+            model_full_info: {
+              ...matchPanelInfo,
+              id: matchPanelInfo.panelID,
+              model: matchPanelInfo.panelName,
+              length: matchPanelInfo.panelLength,
+              width: matchPanelInfo.panelWidth,
+              createdByUser: matchPanelInfo.userID,
+            }
+          },
+          inverter_wiring: {
+            inverter_solution_collection: inverter_solution_collection
+          },
+          Time: {
+            year: 2018,
+            summer_month: 6,
+            winter_month: 12,
+            month: 6,
+            day: 22,
+            hour1: 10,
+            hour2: 15,
+            UTCOffset: 0
+          },
+        }
+      }
+    }
+  }
+
   render() {
     const { getFieldDecorator } = this.props.form;
     const pitchedRoofSelect = this.props.workingBuilding.type === 'PITCHED' ?
@@ -156,7 +227,6 @@ class SetUpWiringPanel extends Component {
               console.log('finish building')
               this.props.bindPVPanels();
               this.props.bindInverters();
-              console.log(this.props.workingBuilding)
             }}
           >
             Finish <Icon type='check' />
@@ -166,6 +236,7 @@ class SetUpWiringPanel extends Component {
             shape='round'
             size='large'
             onClick = {() => {
+              console.log(this.generateReportJSON(this.props.workingBuilding, 0))
             }}
           >
             TEST
@@ -188,8 +259,12 @@ const mapStateToProps = state => {
     roofSpecInverters: state.undoableReducer.present.editingWiringManager
       .roofSpecInverters,
     projectInfo: state.projectManagerReducer.projectInfo,
+
     normalKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.normalKeepout,
-    treeKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.treeKeepout
+    treeKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.treeKeepout,
+    roofSpecInverters: state.undoableReducer.present.editingWiringManager.roofSpecInverters,
+    userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
+    userInverters: state.undoableReducer.present.editingWiringManager.userInverters
   };
 };
 

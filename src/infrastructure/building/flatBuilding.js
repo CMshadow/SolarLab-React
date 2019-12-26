@@ -6,9 +6,9 @@ class FlatBuilding extends Building {
   constructor (
     name, serial, foundHt, eaveStb, parapetHt, polyline=null, foundPolygon=null,
     foundPolygonExcludeStb=null, parapetPolygon=null, shadow=null, pv=null,
-    inverters=null
+    inverters=null, pvParams=null
   ) {
-    super(name, serial, foundHt, eaveStb, shadow, pv, inverters);
+    super(name, serial, foundHt, eaveStb, shadow, pv, inverters, pvParams);
     this.type = 'FLAT';
     this.parapetHeight = parapetHt;
     this.polyline = polyline;
@@ -40,7 +40,7 @@ class FlatBuilding extends Building {
     flatBuilding, name=null, serial=null, foundHt=null, eaveStb=null,
     parapetHt=null, polyline=null, foundPolygon=null,
     foundPolygonExcludeStb=null, parapetPolygon=null, shadow=null, pv=null,
-    inverters=null
+    inverters=null, pvParams=null
   ) {
     const newName = name ? name : flatBuilding.name;
     const newSerial = serial ? serial : flatBuilding.serial;
@@ -65,9 +65,10 @@ class FlatBuilding extends Building {
     const newShadow = shadow || flatBuilding.shadow;
     const newPV = pv || flatBuilding.pv;
     const newInverters = inverters || flatBuilding.inverters;
+    const newPVParams = pvParams || flatBuilding.pvParams;
     return new FlatBuilding(newName, newSerial, newFoundHt, newEaveStb,
       newParapetHt, newPolyline, newFoundPolygon, newFoundPolygonExcludeStb,
-      newParapetPolygon, newShadow, newPV, newInverters
+      newParapetPolygon, newShadow, newPV, newInverters, newPVParams
     );
   }
 

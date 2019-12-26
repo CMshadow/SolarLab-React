@@ -15,11 +15,7 @@ import { setUIStateSetUpWiring } from './uiStateManager';
 export const fetchUserInverters = () => (dispatch, getState) => {
   const userID = getState().authReducer.userID;
   dispatch(setBackendLoadingTrue());
-  axios.get(`/${userID}/inverter`, {
-    params: {
-      attributes: JSON.stringify(['inverterName', 'inverterID'])
-    }
-  })
+  axios.get(`/${userID}/inverter`)
   .then(response => {
     dispatch({
       type: actionTypes.FETCH_USER_INVERTERS,

@@ -104,9 +104,11 @@ const bindPVPanel = (state, action) => {
   if (state.workingBuilding instanceof FlatBuilding) {
     newWorkingBuilding = FlatBuilding.fromBuilding(state.workingBuilding);
     newWorkingBuilding.bindPV(action.pv);
+    newWorkingBuilding.bindPVParams(action.roofSpecParams)
   } else if (state.workingBuilding instanceof PitchedBuilding) {
     newWorkingBuilding = PitchedBuilding.fromBuilding(state.workingBuilding);
     newWorkingBuilding.bindPV(action.pv);
+    newWorkingBuilding.bindPVParams(action.roofSpecParams)
   }
 
   return {

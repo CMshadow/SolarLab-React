@@ -2,7 +2,7 @@ import uuid from 'uuid/v1';
 
 class Building {
 
-  constructor (name, serial, foundHt, eaveStb, shadow, pv, inverters) {
+  constructor (name, serial, foundHt, eaveStb, shadow, pv, inverters, pvParams) {
     this.entityId = uuid()
     this.name = name;
     this.serial = serial;
@@ -11,6 +11,7 @@ class Building {
     this.shadow = shadow;
     this.pv = pv;
     this.inverters = inverters;
+    this.pvParams = pvParams;
   }
 
   bindShadow = (shadow) => {
@@ -21,12 +22,19 @@ class Building {
     this.pv = pv;
   }
 
+  bindPVParams = (pvParams) => {
+    this.pvParams = pvParams;
+  }
+
+  bindPVRoofSpecParams = (roofSpecParams) => {
+    this.pvParams = roofSpecParams;
+  }
+
   bindInverters = (inverters) => {
     this.inverters = inverters;
   }
 
   getPVCoordinates = () => {
-    console.log(this.pv)
     return Object.keys(this.pv).flatMap(roofIndex =>
       this.pv[roofIndex].flatMap(partial =>
         partial.flatMap(panelArray =>
