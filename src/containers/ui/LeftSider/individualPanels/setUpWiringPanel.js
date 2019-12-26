@@ -236,6 +236,8 @@ class SetUpWiringPanel extends Component {
             shape='round'
             size='large'
             onClick = {() => {
+              console.log(this.props.workingBuilding.getRoofCoordinates())
+              console.log(this.props.workingBuilding.getRoofExcludeStbCoordinates())
               console.log(this.generateReportJSON(this.props.workingBuilding, 0))
             }}
           >

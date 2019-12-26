@@ -64,8 +64,10 @@ class PitchedBuilding extends Building {
   };
 
   getRoofExcludeStbCoordinates = () => {
-    this.pitchedRoofPolygonsExcludeStb.map(polygon =>
-      polygon.convertHierarchyToFoundLine().getPointsCoordinatesArray(false)
+    return this.pitchedRoofPolygonsExcludeStb.map(parial =>
+      parial.map(polygon =>
+        polygon.convertHierarchyToFoundLine().getPointsCoordinatesArray(false)
+      )
     )
   };
 }
