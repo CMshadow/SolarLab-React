@@ -147,7 +147,7 @@ export const projectAllShadow = (sunPositionCollection) =>
         polygon: new Shadow(null, null,
           shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
         ),
-        parapetPolyline: obj.kptOutline
+        keepoutCoordinates: obj.kptOutlineCoordinates
       });
     })
     const trimedWallShadows = wallKeepoutShadows.length !== 0 ?
@@ -187,6 +187,7 @@ export const projectAllShadow = (sunPositionCollection) =>
       roofAllShadows.push({
         from: obj.kptId,
         to: roofPolygon.entityId,
+        keepoutCoordinates: obj.kptOutlineCoordinates,
         polygon: new Shadow(null, null,
           shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
         )
@@ -303,7 +304,7 @@ const projectKeepoutShadow = (
           if (beautifiedPoints.length >= 4){
             keepoutAllShadows.push({
               geoJSON: new FoundLine(beautifiedPoints).makeGeoJSON(),
-              kptOutline: kpt.outlinePolyline,
+              kptOutlineCoordinates: kpt.getOutlineCoordinates(),
               kptId: kpt.id,
             })
           }
@@ -510,6 +511,7 @@ const trimWallShadows = (wallKeepoutShadow) => {
   return unionPass2Shadow.map(s => {
     return {
       kptId: parapetId,
+      kptOutlineCoordinates: wallKeepoutShadow[0].kptOutlineCoordinates,
       geoJSON: s
     }
   });
