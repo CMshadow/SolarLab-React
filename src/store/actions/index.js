@@ -116,7 +116,8 @@ export {
   setUIStateSetUpWiring,
   setUIStateEditingWiring,
   setUIStateDraggingWiring,
-  setUIStateManualWiring
+  setUIStateManualWiring,
+  setUIStateSetUpBridging
 } from './uiStateManager';
 
 export {

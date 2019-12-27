@@ -95,3 +95,9 @@ export const setUIStateManualWiring = () => {
     type: actionTypes.SET_UI_STATE_MANUAL_WIRING
   };
 }
+
+export const setUIStateSetUpBridging = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_SETUP_BRIDGING
+  };
+}

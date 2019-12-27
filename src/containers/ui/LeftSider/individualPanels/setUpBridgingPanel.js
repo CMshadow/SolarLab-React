@@ -22,7 +22,7 @@ import InverterTable from './wiringAndBridging/inverterTable';
 const { Option } = Select;
 const { TabPane } = Tabs;
 
-class SetUpWiringPanel extends Component {
+class SetUpBridgingPanel extends Component {
   state = {
     tab: 'manual',
     selectRoofIndex: 0,
@@ -179,7 +179,7 @@ class SetUpWiringPanel extends Component {
     return (
       <div>
         <Row type="flex" justify="center">
-          <h3>Setup Wiring</h3>
+          <h3>Setup Bridging</h3>
         </Row>
         <Form>
           {pitchedRoofSelect}
@@ -219,17 +219,30 @@ class SetUpWiringPanel extends Component {
         </Form>
         <InverterTable roofIndex={this.state.selectRoofIndex} />
         <Row type="flex" justify="center">
+
           <Button
             type='primary'
             shape='round'
             size='large'
-            disabled = {
-              Object.keys(this.props.roofSpecInverters).length === 0 ||
-              this.props.backendLoading
-            }
-            onClick = {this.props.setUIStateSetUpBridging}
+            onClick = {() => {
+              console.log('finish building')
+              this.props.bindPVPanels();
+              this.props.bindInverters();
+            }}
           >
-            Continue <Icon type='right' />
+            Finish <Icon type='check' />
+          </Button>
+          <Button
+            type='primary'
+            shape='round'
+            size='large'
+            onClick = {() => {
+              this.props.passageKeepout.forEach(passage => {
+                console.log(passage.getOutlineCoordinates())
+              })
+            }}
+          >
+            TEST <Icon type='check' />
           </Button>
         </Row>
       </div>
@@ -251,6 +264,7 @@ const mapStateToProps = state => {
     projectInfo: state.projectManagerReducer.projectInfo,
 
     normalKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.normalKeepout,
+    passageKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.passageKeepout,
     treeKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.treeKeepout,
     roofSpecInverters: state.undoableReducer.present.editingWiringManager.roofSpecInverters,
     userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
@@ -267,9 +281,8 @@ const mapDispatchToProps = dispatch => {
       actions.calculateManualInverter(roofIndex, inverterID)
     ),
     bindPVPanels: () => dispatch(actions.bindPVPanels()),
-    bindInverters: () => dispatch(actions.bindInverters()),
-    setUIStateSetUpBridging: () => dispatch(actions.setUIStateSetUpBridging())
+    bindInverters: () => dispatch(actions.bindInverters())
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'setupWiringPanel' })(SetUpWiringPanel));
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'setupBridgingPanel' })(SetUpBridgingPanel));
