@@ -4,6 +4,7 @@ import { connect } from 'react-redux';
 
 import CustomLayout from './hoc/Layout/Layout';
 import ModelingPage from './components/ModelingPage/ModelingPage';
+import SketchDiagram from './components/SketchDiagram/SketchDiagram';
 
 
 class App extends Component {
@@ -12,7 +13,9 @@ class App extends Component {
       <div>
         <CustomLayout>
           <Switch>
-            <Route path="/" exact component={ModelingPage} />
+            <Route path="/Modeling" exact component={ModelingPage} />
+            <Route path='/SketchDiagram'  component={SketchDiagram} />
+            
           </Switch>
         </CustomLayout>
       </div>

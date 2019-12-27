@@ -1,0 +1,10 @@
+#Sketch-Stage {
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #2c2d34;
+}
+
+.ant-layout-sider-trigger {
+  display: none;
+}

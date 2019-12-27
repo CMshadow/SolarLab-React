@@ -83,6 +83,17 @@ class FlatBuilding extends Building {
       polygon.convertHierarchyToFoundLine().getPointsCoordinatesArray(false)
     )
   };
+
+  getParapetShadowCoordinates = () => {
+    return Object.keys(this.parapetShadow).map(shadowId => {
+      return {
+        shadowCoordinates: this.parapetShadow[shadowId].polygon.convertHierarchyToFoundLine()
+          .getPointsCoordinatesArray(false),
+        keepoutCoordinates: this.parapetShadow[shadowId].keepoutCoordinates
+      }
+    })
+  };
+
 }
 
 export default FlatBuilding;

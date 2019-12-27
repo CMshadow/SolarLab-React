@@ -50,10 +50,13 @@ class Building {
   }
 
   getShadowCoordinates = () => {
-    return Object.keys(this.shadow).map(shadowId =>
-      this.shadow[shadowId].polygon.convertHierarchyToFoundLine()
-      .getPointsCoordinatesArray(false)
-    )
+    return Object.keys(this.shadow).map(shadowId => {
+      return {
+        shadowCoordinates: this.shadow[shadowId].polygon.convertHierarchyToFoundLine()
+          .getPointsCoordinatesArray(false),
+        keepoutCoordinates: this.shadow[shadowId].keepoutCoordinates
+      }
+    }).filter(obj => obj.keepoutCoordinates.length > 2)
   }
 
 }

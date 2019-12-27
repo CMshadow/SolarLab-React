@@ -1,0 +1,177 @@
+import * as Cesium from 'cesium';
+
+
+export const radians_to_degrees = (radians) => {
+  const pi = Math.PI;
+  return radians * 180 / pi;
+}
+
+export const degrees_to_radians = (degrees) => {
+  const pi = Math.PI;
+  return degrees * (pi/180);
+}
+
+export const calculate_bearing_by_two_lon_lat = (longitude1, latitude1, longitude2, latitude2) => {
+  let longitude_in_radians1 = degrees_to_radians(longitude1);
+  let latitude_in_radians1 = degrees_to_radians(latitude1);
+  let longitude_in_radians2 = degrees_to_radians(longitude2);
+  let latitude_in_radians2 = degrees_to_radians(latitude2);
+
+  let y = Math.sin(longitude_in_radians2-longitude_in_radians1) * Math.cos(latitude_in_radians2);
+  let x = Math.cos(latitude_in_radians1)*Math.sin(latitude_in_radians2) - Math.sin(latitude_in_radians1)*Math.cos(latitude_in_radians2)*Math.cos(longitude_in_radians2-longitude_in_radians1);
+  let brng = radians_to_degrees(Math.atan2(y, x));
+
+  return (brng+360)%360;
+}
+
+
+export const convertFlatFoundationto2D = (tempBase) => {
+  let angleList = [];
+  let distanceList = [];
+  // console.log(tempBase)
+  let startPos = tempBase[0];
+  for(let i = 1; i < tempBase.length - 1; i++){
+      let nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],tempBase[i][0],tempBase[i][1]);
+      angleList.push(nextAngle);
+      distanceList.push(Cesium.Cartesian3.distance(
+        Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]), 
+        Cesium.Cartesian3.fromDegrees(tempBase[i][0],tempBase[i][1])));
+
+  }
+  // console.log("flat ang "+angleList)
+  // console.log("flat dis "+distanceList)
+  return [angleList,distanceList];
+}
+
+export const convertFlatFoundationSetBackTo2D = (tempBase,extruded_outer_nodes_list) => {
+  let setback_angleList = [];
+  let setback_distList = [];
+  let startPos = tempBase;
+  for(let i = 0; i < extruded_outer_nodes_list.length;i++){
+      let location = extruded_outer_nodes_list[i];
+      let nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],location[0],location[1]);
+      setback_angleList.push(nextAngle);
+      setback_distList.push(Cesium.Cartesian3.distance
+        (Cesium.Cartesian3.fromDegrees
+        (startPos[0],startPos[1]), Cesium.Cartesian3.fromDegrees
+        (location[0],location[1])));
+  }
+  return [setback_angleList,setback_distList];
+}
+
+export const convertSolarPanelto2D = (startPos, pv_panels_collection) => {
+  let angleList = [];
+  let distanceList = [];
+
+  for (let i = 0; i < pv_panels_collection.length; i++) {
+      for (let j = 0; j < pv_panels_collection[i].length - 1; j++){
+        // console.log("hahahahaha"+pv_panels_collection[i])
+        let nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],
+          pv_panels_collection[i][j][0],
+          pv_panels_collection[i][j][1]);
+        angleList.push(nextAngle);
+        distanceList.push(Cesium.Cartesian3.distance(
+          Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]), 
+          Cesium.Cartesian3.fromDegrees(pv_panels_collection[i][j][0],
+            pv_panels_collection[i][j][1])));
+          
+      }
+  }
+
+  return [angleList,distanceList];
+
+}
+
+
+
+export const convertWiringto2D = (startPos, wiring_solution_collection) => {
+  // 成功生成走线，转化并存储走线&桥架 2D图数据
+    let wirings_angle = [];
+    let wirings_distance = [];
+
+    for(let i = 0; i < wiring_solution_collection.length; ++i){
+        //对于每一个WIRING object
+        // console.log("tt: "+wiring_solution_collection[i]);
+        let wiring_angleList = [];
+        let wiring_distList = [];
+        for(let j = 0; j < wiring_solution_collection[i].length; j++ ){
+            let nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],
+                wiring_solution_collection[i][j][0],
+                wiring_solution_collection[i][j][1]);
+            wiring_angleList.push(nextAngle);
+            wiring_distList.push(Cesium.Cartesian3.distance(
+              Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]),
+              Cesium.Cartesian3.fromDegrees(wiring_solution_collection[i][j][0],
+              wiring_solution_collection[i][j][1])));
+        }
+
+        wirings_angle.push(wiring_angleList);
+        wirings_distance.push(wiring_distList);
+    }
+
+    return [wirings_angle,wirings_distance]
+}
+
+export const convertKeepoutTo2D = (startPos, individual_keepout) => {
+  var angleList = [];
+  var distanceList = [];
+ 
+  for(var i = 0; i < individual_keepout.length;i++){
+      var nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],individual_keepout[i][0],individual_keepout[i][1]);
+      angleList.push(nextAngle);
+      distanceList.push(Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]), Cesium.Cartesian3.fromDegrees(individual_keepout[i][0],individual_keepout[i][1])));
+  }
+
+   return [angleList, distanceList];
+
+}
+
+
+
+
+
+
+export const calculateNextPosition = (angle, length, x, y) => {
+  let sin = 0;
+  let cos = 0;
+  let x_Dis = 0;
+  let y_Dis = 0;
+  if( 0 <= angle && angle < 90){//quadrant I
+      sin = Math.sin((90-angle)*Math.PI/180);
+      cos = Math.cos((90-angle)*Math.PI/180);
+      x_Dis = length*cos;
+      y_Dis = -length*sin;
+
+  }
+  else if( 90 <= angle && angle < 180){//quadrant II
+      sin = Math.sin((angle-90)*Math.PI/180);
+      cos = Math.cos((angle-90)*Math.PI/180);
+      x_Dis = length*cos;
+      y_Dis = length*sin;
+  }
+  else if( 180 <= angle && angle < 270){//quadrant III
+      sin = Math.sin((270-angle)*Math.PI/180);
+      cos = Math.cos((270-angle)*Math.PI/180);
+      x_Dis = -length*cos;
+      y_Dis = length*sin;
+
+  }
+  else if( 270 <= angle && angle < 360){//quadrant IV
+      sin = Math.sin((angle-270)*Math.PI/180);
+      cos = Math.cos((angle-270)*Math.PI/180);
+      x_Dis = -length*cos;
+      y_Dis = -length*sin;
+  }
+  return [x+x_Dis,y+y_Dis];
+}
+
+
+export const calculateAutoScale = (PolygonDistList, maxHeight) => {
+  let maxLength = PolygonDistList[0];
+  for (let i = 1; i < PolygonDistList.length; ++i) {
+    if (PolygonDistList[i] > maxLength){
+      maxLength = PolygonDistList[i];
+    }
+  }
+  return (maxHeight*0.9)/maxLength;
+}

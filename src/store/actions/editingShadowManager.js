@@ -44,7 +44,8 @@ const convertParapetToNormalKeepout = (buildingParapet) => {
       ])
     );
     parapetToNormalKeepout.push(new normalKeepout(
-      buildingParapet.entityId, null, null, null, null, null, null,
+      buildingParapet.entityId, null, null, null, null, null,
+      new Polyline([startPoint, endPoint]),
       new Polygon(null, null, null, hierarchy)
     ));
   }
@@ -86,6 +87,7 @@ export const projectAllShadow = (sunPositionCollection) =>
     [] :
     convertParapetToNormalKeepout(buildingParapet);
 
+  const specialParapetShadows = [];
   const shadowPolygons = foundationPolygons.flatMap(roofPolygon => {
     // console.log('============roofPolygon=============')
     const foundationPoints = roofPolygon.convertHierarchyToPoints();
@@ -115,9 +117,39 @@ export const projectAllShadow = (sunPositionCollection) =>
       treeKeepout, foundationPoints, sunPositionCollection, 'tree'
     ) :
     [];
-    // console.log(normalKeepoutShadows)
-    // console.log(envKeepoutShadows)
-    // console.log(treeKeepoutShadows)
+
+    wallKeepoutShadows.forEach(obj => {
+      let shadowHier = null;
+      if (buildingType === 'FLAT') {
+        const shadowPoints = new Shadow(
+          null, null, Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
+        ).convertHierarchyToPoints();
+        shadowHier = Polygon.makeHierarchyFromPolyline(
+          new Polyline(shadowPoints), foundationHeight, 0.015
+        );
+      } else {
+        const shadowPoints = new Shadow(
+          null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
+        ).convertHierarchyToPoints();
+        const newHeights = shadowPoints.map(p =>
+          Point.heightOfArbitraryNode(roofPolygon, p) + foundationHeight
+        );
+        shadowPoints.forEach((p, i) =>
+          p.setCoordinate(null, null, newHeights[i])
+        );
+        shadowHier = Polygon.makeHierarchyFromPolyline(
+          new Polyline(shadowPoints), null, 0.015
+        );
+      }
+      specialParapetShadows.push({
+        from: obj.kptId,
+        to: roofPolygon.entityId,
+        polygon: new Shadow(null, null,
+          shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
+        ),
+        keepoutCoordinates: obj.kptOutlineCoordinates
+      });
+    })
     const trimedWallShadows = wallKeepoutShadows.length !== 0 ?
     trimWallShadows(wallKeepoutShadows) :
     [];
@@ -155,6 +187,7 @@ export const projectAllShadow = (sunPositionCollection) =>
       roofAllShadows.push({
         from: obj.kptId,
         to: roofPolygon.entityId,
+        keepoutCoordinates: obj.kptOutlineCoordinates,
         polygon: new Shadow(null, null,
           shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
         )
@@ -169,9 +202,15 @@ export const projectAllShadow = (sunPositionCollection) =>
     shadowPolygonsDict[obj.polygon.entityId] = obj
   });
 
+  const specialParapetShadowPolygonsDict = {}
+  specialParapetShadows.forEach(obj =>{
+    specialParapetShadowPolygonsDict[obj.polygon.entityId] = obj
+  });
+
   return dispatch({
     type: actionTypes.PROJECT_ALL_SHADOW,
-    shadows: shadowPolygonsDict
+    shadows: shadowPolygonsDict,
+    specialParapetShadows: specialParapetShadowPolygonsDict
   });
 }
 
@@ -265,6 +304,7 @@ const projectKeepoutShadow = (
           if (beautifiedPoints.length >= 4){
             keepoutAllShadows.push({
               geoJSON: new FoundLine(beautifiedPoints).makeGeoJSON(),
+              kptOutlineCoordinates: kpt.getOutlineCoordinates(),
               kptId: kpt.id,
             })
           }
@@ -471,6 +511,7 @@ const trimWallShadows = (wallKeepoutShadow) => {
   return unionPass2Shadow.map(s => {
     return {
       kptId: parapetId,
+      kptOutlineCoordinates: wallKeepoutShadow[0].kptOutlineCoordinates,
       geoJSON: s
     }
   });
