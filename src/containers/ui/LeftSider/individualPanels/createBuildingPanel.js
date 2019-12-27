@@ -13,6 +13,7 @@ import {
   Button,
   Radio
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as classes from './createBuildingPanel.module.css';
 import * as actions from '../../../../store/actions/index';
@@ -51,6 +52,7 @@ class CreateBuildingPanel extends PureComponent {
 
   render () {
     const { getFieldDecorator } = this.props.form;
+    const {intl} = this.props;
 
     const optionalFoundHtInput = (
       <Form.Item>
@@ -176,7 +178,7 @@ class CreateBuildingPanel extends PureComponent {
         <Form.Item>
           <Row>
             <Col span={20} offset={2}>
-              <h3> Building Name </h3>
+              <h3> <FormattedMessage id='buildingName'/> </h3>
             </Col>
           </Row>
           <Row>
@@ -188,9 +190,10 @@ class CreateBuildingPanel extends PureComponent {
                   message: 'Please provide a building name'
                 }],})(
                   <Input
-                    placeholder='Your building name'
+                    placeholder= {intl.formatMessage({id:'yourBuildingName'})}
                     allowClear
-                    autoComplete="off"/>
+                    autoComplete="off"
+                  />
                 )
               }
             </Col>
@@ -323,4 +326,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'createBuilding' })(CreateBuildingPanel));
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(Form.create({ name: 'createBuilding' })(CreateBuildingPanel)));

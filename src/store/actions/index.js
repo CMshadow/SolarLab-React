@@ -116,7 +116,8 @@ export {
   setUIStateSetUpWiring,
   setUIStateEditingWiring,
   setUIStateDraggingWiring,
-  setUIStateManualWiring
+  setUIStateManualWiring,
+  setUIStateSetUpBridging
 } from './uiStateManager';
 
 export {
@@ -127,6 +128,7 @@ export {
   bindFoundPolygons,
   bindPitchedPolygons,
   bindShadow,
+  bindParapetShadow,
   bindPVPanels,
   bindInverters,
   resetBuilding

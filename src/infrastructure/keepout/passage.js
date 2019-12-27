@@ -35,6 +35,11 @@ class Passage extends Keepout {
       newRoofIndexBelong
     );
   }
+
+  getOutlineCoordinates = () => {
+    return this.outlinePolygon.convertHierarchyToFoundLine()
+    .getPointsCoordinatesArray(false);
+  }
 }
 
 export default Passage;

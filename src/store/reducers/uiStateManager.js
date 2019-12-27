@@ -128,6 +128,13 @@ const setUIStateManualWiring = (state, action) => {
   };
 }
 
+const setUIStateSetUpBridging = (state, action) => {
+  return {
+    ...state,
+    uiState: 'SETUP_BRIDGING'
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_UI_STATE_READY_DRAWING:
@@ -162,6 +169,8 @@ const reducer = (state=initialState, action) => {
       return setUIStateDraggingWiring(state, action);
     case actionTypes.SET_UI_STATE_MANUAL_WIRING:
       return setUIStateManualWiring(state, action);
+    case actionTypes.SET_UI_STATE_SETUP_BRIDGING:
+      return setUIStateSetUpBridging(state, action);
     default: return state;
   }
 };

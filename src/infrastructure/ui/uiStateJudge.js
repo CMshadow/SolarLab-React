@@ -33,6 +33,12 @@ export const showSetUpWiringPanel = (uiState) => {
   )
 };
 
+export const showSetUpBridgingPanel = (uiState) => {
+  return (
+    uiState === 'SETUP_BRIDGING'
+  )
+};
+
 export const useFoundManagerRender = (uiState) => {
   return (
     uiState === 'DRAWING_FOUND' ||

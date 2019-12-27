@@ -21,6 +21,7 @@ const FinishModelingButton = (props) => {
         if (props.workingBuilding.type === 'FLAT') {
           props.bindFoundPolyline();
           props.bindFoundPolygons();
+          props.bindParapetShadow();
         } else {
           props.bindPitchedPolygons();
         }
@@ -54,6 +55,7 @@ const mapDispatchToProps = dispatch => {
     bindPitchedPolygons: () => dispatch(actions.bindPitchedPolygons()),
     bindAllKeepout: () => dispatch(actions.bindAllKeepout()),
     bindShadow: () => dispatch(actions.bindShadow()),
+    bindParapetShadow: () => dispatch(actions.bindParapetShadow()),
     fetchUserPanels: () => dispatch(actions.fetchUserPanels())
   };
 };

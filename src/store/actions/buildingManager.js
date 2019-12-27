@@ -148,9 +148,28 @@ export const bindShadow = () => (dispatch, getState) => {
   });
 }
 
+export const bindParapetShadow = () => (dispatch, getState) => {
+  const parapetShadows = getState().undoableReducer.present.editingShadowManager
+    .specialParapetShadows;
+  console.log(parapetShadows)
+  const newShadows = {};
+  Object.keys(parapetShadows).forEach(key => {
+    newShadows[key] = {
+      ...parapetShadows[key],
+      polygon: Shadow.copyShadow(parapetShadows[key].polygon)
+    }
+  });
+  return dispatch({
+    type: actionTypes.BIND_PARAPET_SHADOW,
+    parapetShadow: newShadows
+  });
+}
+
 export const bindPVPanels = () => (dispatch, getState) => {
   const pv = getState().undoableReducer.present.editingPVPanelManagerReducer
     .panels;
+  const pvRoofSpecParams = getState().undoableReducer.present.editingPVPanelManagerReducer
+    .roofSpecParams
   const newPV = {};
   Object.keys(pv).forEach(key => {
     newPV[key] = [
@@ -159,7 +178,8 @@ export const bindPVPanels = () => (dispatch, getState) => {
   });
   return dispatch({
     type: actionTypes.BIND_PV,
-    pv: newPV
+    pv: newPV,
+    roofSpecParams: pvRoofSpecParams
   });
 }
 
