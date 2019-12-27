@@ -65,7 +65,7 @@ class PitchedBuilding extends Building {
 
   getRoofExcludeStbCoordinates = () => {
     return this.pitchedRoofPolygonsExcludeStb.map(parial =>
-      parial.map(polygon =>
+      parial.flatMap(polygon =>
         polygon.convertHierarchyToFoundLine().getPointsCoordinatesArray(false)
       )
     )

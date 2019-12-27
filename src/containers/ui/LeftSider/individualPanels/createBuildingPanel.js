@@ -13,6 +13,7 @@ import {
   Button,
   Radio
 } from 'antd';
+import { FormattedMessage } from 'react-intl';
 
 import * as classes from './createBuildingPanel.module.css';
 import * as actions from '../../../../store/actions/index';
@@ -176,7 +177,7 @@ class CreateBuildingPanel extends PureComponent {
         <Form.Item>
           <Row>
             <Col span={20} offset={2}>
-              <h3> Building Name </h3>
+              <h3> <FormattedMessage id='buildingName'/> </h3>
             </Col>
           </Row>
           <Row>
@@ -187,10 +188,14 @@ class CreateBuildingPanel extends PureComponent {
                   required: true,
                   message: 'Please provide a building name'
                 }],})(
-                  <Input
-                    placeholder='Your building name'
-                    allowClear
-                    autoComplete="off"/>
+                  <FormattedMessage id='createBuilding_name'>
+                    {msg => (
+                      <Input
+                        placeholder= {msg}
+                        allowClear
+                        autoComplete="off"/>
+                    )}
+                  </FormattedMessage>
                 )
               }
             </Col>
