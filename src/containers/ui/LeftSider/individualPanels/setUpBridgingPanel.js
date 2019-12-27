@@ -237,8 +237,7 @@ class SetUpBridgingPanel extends Component {
             shape='round'
             size='large'
             onClick = {() => {
-              console.log(this.props.workingBuilding.getParapetShadowCoordinates())
-              console.log(this.props.workingBuilding.getShadowCoordinates())
+              console.log(this.props.roofSpecInverters)
             }}
           >
             TEST <Icon type='check' />

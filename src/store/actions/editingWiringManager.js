@@ -67,7 +67,8 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
         `${0 + i + 1 >= 10 ? '' : 0}${0 + i + 1} - ${inverterName} `,
         0 + i + 1,
         inverter.panelPerString,
-        inverter.stringPerInverter
+        inverter.stringPerInverter,
+        inverter.mpptSetup
       )
     )
     dispatch(actions.setRoofAllPVDisConnected(roofIndex));
@@ -123,7 +124,8 @@ export const calculateManualInverter = (roofIndex, inverterID) =>
         `${0 + i + 1 >= 10 ? '' : 0}${0 + i + 1} - ${inverterName} `,
         0 + i + 1,
         inverter.panelPerString,
-        inverter.stringPerInverter
+        inverter.stringPerInverter,
+        inverter.mpptSetup
       )
     )
     dispatch(actions.setRoofAllPVDisConnected(roofIndex));
