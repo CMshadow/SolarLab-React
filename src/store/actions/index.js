@@ -128,6 +128,7 @@ export {
   bindFoundPolygons,
   bindPitchedPolygons,
   bindShadow,
+  bindParapetShadow,
   bindPVPanels,
   bindInverters,
   resetBuilding

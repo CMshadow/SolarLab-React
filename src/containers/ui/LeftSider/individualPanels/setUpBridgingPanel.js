@@ -237,9 +237,7 @@ class SetUpBridgingPanel extends Component {
             shape='round'
             size='large'
             onClick = {() => {
-              this.props.passageKeepout.forEach(passage => {
-                console.log(passage.getOutlineCoordinates())
-              })
+              console.log(this.props.workingBuilding.getParapetShadowCoordinates())
             }}
           >
             TEST <Icon type='check' />

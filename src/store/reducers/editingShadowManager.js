@@ -10,13 +10,15 @@ import * as actionTypes from '../actions/actionTypes';
   }
  */
 const initialState = {
-  shadows: {}
+  shadows: {},
+  specialParapetShadows: {},
 }
 
 const projectAllShadow = (state, action) => {
   return {
     ...state,
-    shadows: action.shadows
+    shadows: action.shadows,
+    specialParapetShadows: action.specialParapetShadows
   };
 }
 

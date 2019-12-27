@@ -99,6 +99,22 @@ const bindShadow = (state, action) => {
   };
 }
 
+const bindParapetShadow = (state, action) => {
+  let newWorkingBuilding = null;
+  if (state.workingBuilding instanceof FlatBuilding) {
+    newWorkingBuilding = FlatBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindParapetShadow(action.parapetShadow);
+  } else if (state.workingBuilding instanceof PitchedBuilding) {
+    newWorkingBuilding = PitchedBuilding.fromBuilding(state.workingBuilding);
+    newWorkingBuilding.bindParapetShadow(action.parapetShadow);
+  }
+
+  return {
+    ...state,
+    workingBuilding: newWorkingBuilding
+  };
+}
+
 const bindPVPanel = (state, action) => {
   let newWorkingBuilding = null;
   if (state.workingBuilding instanceof FlatBuilding) {
@@ -145,6 +161,8 @@ const reducer = (state=initialState, action) => {
       return initBuilding(state, action);
     case actionTypes.BIND_SHADOW:
       return bindShadow(state, action);
+    case actionTypes.BIND_PARAPET_SHADOW:
+      return bindParapetShadow(state, action);
     case actionTypes.BIND_PV:
       return bindPVPanel(state, action);
     case actionTypes.BIND_INVERTERS:

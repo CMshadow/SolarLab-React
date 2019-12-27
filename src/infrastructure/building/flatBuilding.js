@@ -6,11 +6,12 @@ class FlatBuilding extends Building {
   constructor (
     name, serial, foundHt, eaveStb, parapetHt, polyline=null, foundPolygon=null,
     foundPolygonExcludeStb=null, parapetPolygon=null, shadow=null, pv=null,
-    inverters=null, pvParams=null
+    inverters=null, pvParams=null, parapetShadow=null
   ) {
     super(name, serial, foundHt, eaveStb, shadow, pv, inverters, pvParams);
     this.type = 'FLAT';
     this.parapetHeight = parapetHt;
+    this.parapetShadow = parapetShadow;
     this.polyline = polyline;
     this.foundationPolygon = foundPolygon;
     this.foundationPolygonExcludeStb = foundPolygonExcludeStb;
@@ -36,11 +37,15 @@ class FlatBuilding extends Building {
     this.parapetPolygon = parapetPolygon;
   }
 
+  bindParapetShadow = (parapetShadow) => {
+    this.parapetShadow = parapetShadow
+  }
+
   static fromBuilding (
     flatBuilding, name=null, serial=null, foundHt=null, eaveStb=null,
     parapetHt=null, polyline=null, foundPolygon=null,
     foundPolygonExcludeStb=null, parapetPolygon=null, shadow=null, pv=null,
-    inverters=null, pvParams=null
+    inverters=null, pvParams=null, parapetShadow=null
   ) {
     const newName = name ? name : flatBuilding.name;
     const newSerial = serial ? serial : flatBuilding.serial;
@@ -66,9 +71,11 @@ class FlatBuilding extends Building {
     const newPV = pv || flatBuilding.pv;
     const newInverters = inverters || flatBuilding.inverters;
     const newPVParams = pvParams || flatBuilding.pvParams;
+    const newParapetShadow = parapetShadow || flatBuilding.parapetShadow
     return new FlatBuilding(newName, newSerial, newFoundHt, newEaveStb,
       newParapetHt, newPolyline, newFoundPolygon, newFoundPolygonExcludeStb,
-      newParapetPolygon, newShadow, newPV, newInverters, newPVParams
+      newParapetPolygon, newShadow, newPV, newInverters, newPVParams,
+      newParapetShadow
     );
   }
 
@@ -83,6 +90,17 @@ class FlatBuilding extends Building {
     return this.foundationPolygonExcludeStb.map(polygon =>
       polygon.convertHierarchyToFoundLine().getPointsCoordinatesArray(false)
     )
+  };
+
+  getParapetShadowCoordinates = () => {
+    return Object.keys(this.parapetShadow).map(shadowId => {
+      return {
+        shadowCoordinates: this.parapetShadow[shadowId].polygon.convertHierarchyToFoundLine()
+          .getPointsCoordinatesArray(false),
+        parapetCoordinates: this.parapetShadow[shadowId].parapetPolyline
+          .getPointsCoordinatesArray(false)
+      }
+    })
   };
 }
 
