@@ -26,7 +26,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
     // console.log(currentBuilding)
     // console.log(currentBuildingPara)
     let size_times = 5;
-    
+    let gradient = 50;
 
     let backgroundColor = new Konva.Rect({
       x: 0,
@@ -107,7 +107,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         let buildingWiringCollection = drawWiring(group, WiringCollection[0], WiringCollection[1], AutoScale, buildingOutline.startNodePosition);
 
         
-
+        
       }
       if (currentBuilding.type === "PITCHED") {
         console.log("Pitched Building")
@@ -135,22 +135,46 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         let buildingWiringCollection = drawWiring(group, WiringCollection[0], WiringCollection[1], AutoScale, startPosition_stage);
       }
 
+      // console.log(currentBuilding.getShadowCoordinates())
+      // // console.log(currentBuilding.getShadowCoordinates()[0])
+      // console.log("女儿墙")
+      // console.log(currentBuilding.getParapetShadowCoordinates())
+      if (keekoutCollections.normalKeepout.length > 0) {
+        // console.log(keekoutCollections.normalKeepout)
+        keekoutCollections.normalKeepout.forEach(element => {
+          let keepout = mathHelp.convertKeepoutTo2D(startPosition, element.getOutlinePart2Coordinates ());
+          let keepout_Setback = drawKeepoutSetBack(group, keepout[0], keepout[1], AutoScale, startPosition_stage)
+        });
+      }
+      console.log("阴影")
       console.log(currentBuilding.getShadowCoordinates())
-      console.log(currentBuilding.getShadowCoordinates()[0])
+      currentBuilding.getShadowCoordinates().forEach(element => {
+        let keepoutShadow = mathHelp.convertNormalShadowto2D(startPosition, element.shadowCoordinates);
+        let keepout = mathHelp.convertKeepoutTo2D(startPosition,element.keepoutCoordinates )
+        let centerNode = mathHelp.calculateCenterofPolygon(keepout[0], keepout[1], AutoScale, startPosition_stage)
+        let keepOutShadowSketch = drawNormalShadow(group, keepoutShadow[0], keepoutShadow[1], AutoScale, startPosition_stage, centerNode ,gradient)
+      })
 
+
+      if (currentBuilding.type === 'FLAT') {
+        currentBuilding.getParapetShadowCoordinates().forEach(element => {
+          let ParaetShadow = mathHelp.convertParapetShadowto2D(startPosition, element.shadowCoordinates, element.keepoutCoordinates);
+          console.log(element.shadowCoordinates)
+          let ParapetShadowSketch = drawParapetShadow(group, ParaetShadow[0], ParaetShadow[1], AutoScale, startPosition_stage, ParaetShadow[2], ParaetShadow[3], gradient);
+        })
+      }
       if (keekoutCollections.normalKeepout.length > 0) {
         // console.log(keekoutCollections.normalKeepout)
         keekoutCollections.normalKeepout.forEach(element => {
           let keepout = mathHelp.convertKeepoutTo2D(startPosition, element.getOutlineCoordinates());
-          // console.log(keepout)
           let keepout_Poly = drawKeepOut(group, keepout[0], keepout[1], AutoScale, startPosition_stage)
         });
       }
       if (keekoutCollections.passageKeepout.length > 0) {
-        console.log(keekoutCollections.passageKeepout)
+        // console.log(keekoutCollections.passageKeepout)
         keekoutCollections.passageKeepout.forEach(element => {
           let keepout = mathHelp.convertKeepoutTo2D(startPosition, element.getOutlineCoordinates());
-          console.log(element.getOutlineCoordinates())
+          // console.log(element.getOutlineCoordinates())
           let keepout_Poly = drawKeepOut(group, keepout[0], keepout[1], AutoScale, startPosition_stage)
         });
       }
@@ -182,8 +206,9 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
 
 
     }
-   
+    
     layer.add(group);
+    drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient);
 
   return({
     type: actionTypes.INIT_STAGE_SKETCH_DIAGRAM,
@@ -254,7 +279,33 @@ export const drawPitchedBuildingOutline = (layer, AngleList, DistanceList, scale
       // fillLinearGradientStartPoint: { x: 600, y: 400 },
       // fillLinearGradientEndPoint: { x: 550, y: 350 },
       // fillLinearGradientColorStops: [0, 'red', 1, 'yellow'],
-      fill: '#e6e225',
+      fill: '#fff800',
+      stroke: '#84848a',
+      strokeWidth: 0,
+      closed : true,
+  });
+  layer.add(poly);
+
+  return({
+    type: actionTypes.DRAW_FLAT_BUILDING_SET_BACK,
+    flatBuildingSetBack: poly,
+    layer: layer
+  }); 
+}
+
+export const drawKeepoutSetBack = (layer, SetBackAngleList, SetbackDistList, scale, start) => {
+  let verticesList = [];
+  for(let i = 0; i < SetBackAngleList.length; i++){
+      let nextPosition = mathHelp.calculateNextPosition(SetBackAngleList[i],SetbackDistList[i]*scale,
+          start[0], start[1] );
+      verticesList.push(nextPosition[0], nextPosition[1]);
+  }
+  let poly = new Konva.Line({
+      points: verticesList,
+      // fillLinearGradientStartPoint: { x: 600, y: 400 },
+      // fillLinearGradientEndPoint: { x: 550, y: 350 },
+      // fillLinearGradientColorStops: [0, 'red', 1, 'yellow'],
+      fill: '#acafac',
       stroke: '#84848a',
       strokeWidth: 0,
       closed : true,
@@ -376,52 +427,225 @@ export const drawTree = (layer, AngleList, DistanceList, scale, start) => {
   }); 
 }
 
-//画全年阴影渐变色
-export const drawWholeShadow = (layer,Shadow_Whole_AngleList, Shadow_Whole_DistanceList, scale, start, centerNode) => {
-  console.log(centerNode);
-  for(let i = 0; i < Shadow_Whole_AngleList.length; i++){
-    let verticesList = [];
-    for(let j = 0; j < Shadow_Whole_AngleList[i].length; j++){
-      let nextPosition = this.calculateNextPosition(Shadow_Whole_AngleList[i][j],Shadow_Whole_DistanceList[i][j]*scale,
-          start[0], start[1]);
-        verticesList.push(nextPosition[0], nextPosition[1]);
-    }
-    let gradient = this.gradient;
-    let colorFull = this.calculateGradientColor();
 
-    let poly = new Konva.Line({
-        points: verticesList,
-        fill: colorFull[0],
-        stroke: '#84848a',
-        strokeWidth: 0,
-        //closed : true,
-        opacity: 0.1
-    });
-    layer.add(poly);
-    let newCoordXY = [];
-    for (let k = 0; k < verticesList.length; k+=2) {
-      let newCoordX = this.calculateGradientCorrdinate(verticesList[k],centerNode[i][0],gradient);
-      let newCoordY = this.calculateGradientCorrdinate(verticesList[k+1],centerNode[i][1],gradient);
-      newCoordXY.push(newCoordX);
-      newCoordXY.push(newCoordY);
-    }
-    for (let level = 0; level < gradient; level++) {
-      let newShadow = [];
+export const drawParapetShadow = (layer,AngleList, DistanceList, scale, start, centerNodesAngles, centerNodesDist ,gradient) => {
+  // console.log(centerNode);
+  let verticesList = [];
+  for(let i = 0; i < AngleList.length; i++){
+      let nextPosition = mathHelp.calculateNextPosition(AngleList[i],DistanceList[i]*scale,
+          start[0], start[1] );
+      verticesList.push(nextPosition[0], nextPosition[1]);
+  }
+  let colorFull = mathHelp.calculateGradientColor(gradient);
+  console.log("color: "+colorFull)
+  let poly = new Konva.Line({
+      points: verticesList,
+      fill: '#636363',
+      stroke: '#84848a',
+      strokeWidth: 0,
+      closed : true,
+      opacity: 0.5
+  });
+  layer.add(poly);
+  
+  // let centerNodesList = [];
+  // for(let i = 0; i < centerNodesAngles.length; i++){
+  //   let nextPosition = mathHelp.calculateNextPosition(centerNodesAngles[i],centerNodesDist[i]*scale,
+  //       start[0], start[1] );
+  //   centerNodesList.push(nextPosition[0], nextPosition[1]);
+  //   // var circle = new Konva.Circle({
+  //   //   x: nextPosition[0],
+  //   //   y: nextPosition[1],
+  //   //   radius: 5,
+  //   //   fill: 'red',
+  //   //   stroke: 'black',
+  //   //   strokeWidth: 4
+  //   // });
+
+  //   // // add the shape to the layer
+  //   // layer.add(circle);
+  //   let newCoordXY = [];
+  //   for (let k = 0; k < verticesList.length; k+=2) {
+  //     let newCoordX = null;
+  //     let newCoordY = null;
+  //     // if(k <= (verticesList.length / 2)) {
+  //     //   newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],centerNodesList[0], gradient);
+  //     //   newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],centerNodesList[1], gradient);
+  //     // } else {
+  //       newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],nextPosition[0], gradient);
+  //       newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],nextPosition[1], gradient);
+  //     // }
+      
+  //     newCoordXY.push(newCoordX);
+  //     newCoordXY.push(newCoordY);
+  //   }
+  //   for (let level = 0; level < gradient; level++) {
+  //     let newShadow = [];
+  //     for (let x = 0; x < newCoordXY.length; ++x) {
+  //       newShadow.push(newCoordXY[x][level]);
+  //     }
+  //     // newShadow.push(centerNodesAngles[0]);
+  //     // newShadow.push(centerNodesDist[0]);
+  //     //console.log(colorList[gradient-level-1]);
+  //     let poly1 = new Konva.Line({
+  //         points: newShadow,
+  //         fill: colorFull[level],
+  //         stroke: '#84848a',
+  //         strokeWidth: 0,
+  //         closed : true,
+  //         opacity: 0 + level * (0.1 / gradient)
+            
+  //     });
+  //     layer.add(poly1);
+  //   }
+
+  // }
+  
+
+}
+
+
+
+export const drawNormalShadow = (layer,AngleList, DistanceList, scale, start, centerNode ,gradient) => {
+  // console.log(centerNode);
+  let verticesList = [];
+  for(let i = 0; i < AngleList.length; i++){
+      let nextPosition = mathHelp.calculateNextPosition(AngleList[i],DistanceList[i]*scale,
+          start[0], start[1] );
+      verticesList.push(nextPosition[0], nextPosition[1]);
+  }
+  let colorFull = mathHelp.calculateGradientColor(gradient);
+  console.log("color: "+colorFull)
+  let poly = new Konva.Line({
+      points: verticesList,
+      fill: colorFull[0],
+      stroke: '#84848a',
+      strokeWidth: 0,
+      closed : true,
+      opacity: 0.8
+  });
+  layer.add(poly);
+  
+
+  let newCoordXY = [];
+  for (let k = 0; k < verticesList.length; k+=2) {
+    let newCoordX = null;
+    let newCoordY = null;
+    newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],centerNode[0], gradient);
+    newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],centerNode[1], gradient);
+    newCoordXY.push(newCoordX);
+    newCoordXY.push(newCoordY);
+  }
+  for (let level = 0; level < gradient; level++) {
+    let newShadow = [];
     for (let x = 0; x < newCoordXY.length; ++x) {
       newShadow.push(newCoordXY[x][level]);
     }
-    newShadow.push(centerNode[i]);
+    // newShadow.push(centerNodesAngles[0]);
+    newShadow.push(centerNode);
     //console.log(colorList[gradient-level-1]);
+    let customizeOpacity = 0.5;
+    if (level <= 10) {
+      customizeOpacity = 0.0;
+    }
+    if (level > 10 && level < 30) {
+      customizeOpacity = 0.1 + level * ( 0.4 / 20);
+    }
     let poly1 = new Konva.Line({
         points: newShadow,
         fill: colorFull[level],
         stroke: '#84848a',
         strokeWidth: 0,
         closed : true,
-        opacity: 0.5
+        opacity: customizeOpacity
           
     });
     layer.add(poly1);
-    }
   }
+  
 }
+
+
+export const drawColorBar = (layer, Xwidth, Yheight, gradient) => {
+  let width_bar= 30;
+  let height_bar = 300;
+  let colorBar = mathHelp.calculateGradientColor(gradient);
+  let rect = [Xwidth,Yheight, Xwidth+width_bar, Yheight, Xwidth+width_bar, Yheight+height_bar, Xwidth,Yheight+height_bar];
+  
+  let poly = new Konva.Line({
+        points: rect,
+  fill: colorBar[0],
+        stroke: '#84848a',
+        strokeWidth: 0,
+        closed : true,
+        opacity: 1
+    });
+    
+  layer.add(poly);
+  let newCoordXY = [];
+  for (let i = 0; i < rect.length; i+=2) {
+    let newCoordX = [];
+    let newCoordY = [];
+    if(i === 2 || i === 4){
+      newCoordX = mathHelp.calculateGradientCorrdinate(rect[i],rect[i],gradient);
+      newCoordY = mathHelp.calculateGradientCorrdinate(rect[i+1],rect[7],gradient);
+    }
+    else{
+      newCoordX = mathHelp.calculateGradientCorrdinate(rect[i],rect[6],gradient);
+      newCoordY = mathHelp.calculateGradientCorrdinate(rect[i+1],rect[7],gradient);
+    }
+    newCoordXY.push(newCoordX);
+    newCoordXY.push(newCoordY);
+  }
+
+  for (let level = 0; level < gradient; level++) {
+    let newShadow = []
+    for (let i = 0; i < newCoordXY.length; ++i) {
+      newShadow.push(newCoordXY[i][level]);
+    }
+    newShadow.push([rect[6],rect[7]]);
+    let poly1 = new Konva.Line({
+          points: newShadow,
+    fill: colorBar[level],
+          stroke: '#84848a',
+          strokeWidth: 0,
+          closed : true,
+          opacity: 0.1
+    });
+    layer.add(poly1);
+    //console.log(level);
+  }
+
+  let frameValue = height_bar;
+  let height_diff = height_bar/5;
+  let frame = [Xwidth+width_bar*1.1,Yheight, Xwidth+width_bar*1.5,Yheight,
+        Xwidth+width_bar*1.1, Yheight+height_diff*1, Xwidth+width_bar*1.5, Yheight+height_diff*1,
+      Xwidth+width_bar*1.1, Yheight+height_diff*2, Xwidth+width_bar*1.5, Yheight+height_diff*2,
+      Xwidth+width_bar*1.1, Yheight+height_diff*3, Xwidth+width_bar*1.5, Yheight+height_diff*3, 
+      Xwidth+width_bar*1.1, Yheight+height_diff*4, Xwidth+width_bar*1.5, Yheight+height_diff*4, 
+      Xwidth+width_bar*1.1, Yheight+height_diff*5, Xwidth+width_bar*1.5, Yheight+height_diff*5];
+
+  let frotSize = 15;
+  for(let i = 0; i < frame.length; i+=4){
+    let line = new Konva.Line({
+          points: [frame[i],frame[i+1],frame[i+2],frame[i+3]],
+          stroke: '#FFFFFF',
+          strokeWidth: 1,
+          closed : true
+      });
+      let frameText = new Konva.Text({
+        x: frame[i+2]+frotSize/2,
+        y: frame[i+3]-frotSize/2,
+        text: frameValue.toString(),
+        fontSize: 15,
+        fontFamily: 'Calibri',
+        fill: 'white'
+      });
+
+      frameValue-=height_diff;
+      layer.add(line);
+      layer.add(frameText);
+    }
+}
+
+

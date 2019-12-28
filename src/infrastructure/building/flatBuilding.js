@@ -101,10 +101,6 @@ class FlatBuilding extends Building {
       }
     })
   };
-<<<<<<< HEAD
-
-=======
->>>>>>> develop
 }
 
 export default FlatBuilding;

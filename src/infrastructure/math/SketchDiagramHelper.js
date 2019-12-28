@@ -82,6 +82,52 @@ export const convertSolarPanelto2D = (startPos, pv_panels_collection) => {
 
 }
 
+export const convertParapetShadowto2D = (startPos, shadow_outline_collection, center_Collection) => {
+
+  // var tempBase_Whole = Building_object.shadow_outline_collection[i];
+
+  var angleList_whole = [];
+  var distanceList_whole = [];
+  var center_angleList = [];
+  var center_distanceList = [];
+
+  //计算转化后阴影坐标
+  for(var i = 0; i < shadow_outline_collection.length; i++){
+      //console.log("location: "+ Cesium.Cartesian3.fromDegrees(tempBase[i],tempBase[i+1]));
+      var nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],shadow_outline_collection[i][0],shadow_outline_collection[i][1]);
+      angleList_whole.push(nextAngle);
+      distanceList_whole.push(Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]), Cesium.Cartesian3.fromDegrees(shadow_outline_collection[i][0],shadow_outline_collection[i][1])));
+  }
+  //计算转化后阴影重心
+  for(var k = 0; k < center_Collection.length; k++){
+      //console.log("location: "+ Cesium.Cartesian3.fromDegrees(tempBase[i],tempBase[i+1]));
+      var nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],center_Collection[k][0],center_Collection[k][1]);
+      center_angleList.push(nextAngle);
+      center_distanceList.push(Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]), Cesium.Cartesian3.fromDegrees(center_Collection[k][0],center_Collection[k][1])));
+  }
+
+  return [angleList_whole, distanceList_whole, center_angleList, center_distanceList];
+
+}
+
+export const convertNormalShadowto2D = (startPos, shadow_outline_collection) => {
+
+  // var tempBase_Whole = Building_object.shadow_outline_collection[i];
+
+  var angleList_whole = [];
+  var distanceList_whole = [];
+
+
+  //计算转化后阴影坐标
+  for(var i = 0; i < shadow_outline_collection.length; i++){
+      //console.log("location: "+ Cesium.Cartesian3.fromDegrees(tempBase[i],tempBase[i+1]));
+      var nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],shadow_outline_collection[i][0],shadow_outline_collection[i][1]);
+      angleList_whole.push(nextAngle);
+      distanceList_whole.push(Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]), Cesium.Cartesian3.fromDegrees(shadow_outline_collection[i][0],shadow_outline_collection[i][1])));
+  }
+  return [angleList_whole, distanceList_whole];
+
+}
 
 
 export const convertWiringto2D = (startPos, wiring_solution_collection) => {
@@ -119,15 +165,13 @@ export const convertKeepoutTo2D = (startPos, individual_keepout) => {
   for(var i = 0; i < individual_keepout.length;i++){
       var nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],individual_keepout[i][0],individual_keepout[i][1]);
       angleList.push(nextAngle);
-      distanceList.push(Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]), Cesium.Cartesian3.fromDegrees(individual_keepout[i][0],individual_keepout[i][1])));
+      distanceList.push(
+        Cesium.Cartesian3.distance(
+        Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]), 
+        Cesium.Cartesian3.fromDegrees(individual_keepout[i][0],individual_keepout[i][1])));
   }
-
    return [angleList, distanceList];
-
 }
-
-
-
 
 
 
@@ -174,4 +218,75 @@ export const calculateAutoScale = (PolygonDistList, maxHeight) => {
     }
   }
   return (maxHeight*0.9)/maxLength;
+}
+
+
+export const calculateGradientCorrdinate = (start, end, gradient) => {
+  let diff = (end - start)/gradient;
+  let origin = start;
+  let resultCoordiante = [];
+  for(let i = 1; i < gradient; ++i){
+    origin += diff;
+    resultCoordiante.push(origin);
+  }
+  return resultCoordiante;
+}
+
+export const rgbToHex = (rgb) => { 
+  let hex = Number(rgb).toString(16);
+  if (hex.length < 2) {
+     hex = "0" + hex;
+  }
+  return hex;
+}
+
+export const calculateCenterofPolygon = (PolygonAngleList, PolygonDistList, scale, start) => {
+
+  let verticesList = [];
+  for(let j = 0; j < PolygonAngleList.length; j++){
+    let nextPosition = calculateNextPosition(PolygonAngleList[j],PolygonDistList[j]*scale,
+        start[0], start[1] );
+      verticesList.push(nextPosition[0], nextPosition[1]);
+  }
+  let totalLong = 0
+  let totalLat = 0
+  for (let i = 0; i < verticesList.length; i+=2){
+    totalLong += verticesList[i];
+    totalLat += verticesList[i+1];
+  }
+  let count = verticesList.length/2
+  let center = [totalLong/count,totalLat/count];
+  return center
+}
+
+export const convertColorHex = (r,g,b) => {   
+  let R_VALUE = rgbToHex(r);
+  let G_VALUE = rgbToHex(g);
+  let B_VALUE = rgbToHex(b);
+  return "#"+R_VALUE+G_VALUE+B_VALUE;
+};
+
+export const calculateGradientColor = (gradient) => {
+  // let gradient = this.gradient;
+  let startR = 255, startG = 255, startB = 0;
+  let endR = 255, endG = 0, endB = 0;
+  let colorFull = [];
+  let average_R = Math.ceil((endR - startR)/(gradient*0.7));
+  let average_G = Math.ceil((endG - startG)/(gradient*0.7));
+  let average_B = Math.ceil((endB - startB)/(gradient*0.7));				
+  for (let i = 0; i < gradient; ++i){
+    if(i< gradient*0.7){
+      startR += average_R;
+      startG += average_G;
+      startB += average_B;
+    }
+    else{
+      startR = endR;
+      startG = endG;
+      startB = endB;
+    }
+    let newColor = convertColorHex(startR,startG,startB);
+    colorFull.push(newColor)
+  }
+  return colorFull;
 }
