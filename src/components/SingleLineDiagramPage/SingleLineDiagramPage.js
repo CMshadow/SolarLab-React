@@ -13,8 +13,8 @@ const SingleLineDiagramPage = () => {
   return(
     <Layout>
         <Content>
-          <SingleLineDiagramStage
-          />
+          <SingleLineDiagramStage/>
+          <LeftSider/>
       </Content>
       
     </Layout>

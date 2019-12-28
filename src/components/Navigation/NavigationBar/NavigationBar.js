@@ -15,6 +15,10 @@ class NavigationBar extends Component{
     this.props.history.push('/Modeling');
   }
 
+  SingleLineDiagramSwitchHandler = () => {
+    // console.log(this.props)
+    this.props.history.push('/SingleLineDigram');
+  }
   render() {
     return (
         <Menu
@@ -26,7 +30,7 @@ class NavigationBar extends Component{
           <Menu.Item key='1'>Home</Menu.Item>
           <Menu.Item key='2' onClick={this.ModelingSwitchHandler}>Modeling</Menu.Item>
           <Menu.Item key='3' onClick={this.SketchDiagramHandler}>2D Diagram</Menu.Item>
-          <Menu.Item key='4'>Single Line Diagram</Menu.Item>
+          <Menu.Item key='4' onClick={this.SingleLineDiagramSwitchHandler}>Single Line Diagram</Menu.Item>
           <Menu.Item key='5'>Report</Menu.Item>
         </Menu>
       )

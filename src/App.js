@@ -24,7 +24,7 @@ class App extends Component {
             <Switch>
               <Route path="/Modeling" exact component={ModelingPage} />
               <Route path='/SketchDiagram'  component={SketchDiagram} />
-              <Route path='/SingleLineDigram' exact component={SingleLineDiagram} />
+              <Route path='/SingleLineDigram' component={SingleLineDiagram} />
             </Switch>
           </CustomLayout>
         </ConfigProvider>

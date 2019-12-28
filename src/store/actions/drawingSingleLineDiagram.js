@@ -89,7 +89,7 @@ export const panelArrayCollection = (layer, numOfArray) =>{
     // startPoint
     
     if (window.innerWidth * 0.12 > w_min) {
-      w_min = window.innerWidth * 0.1
+      w_min = window.innerWidth * 0.12
     }
     if (window.innerHeight * 0.1 > h_min) {
       h_min = window.innerHeight * 0.1

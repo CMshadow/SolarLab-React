@@ -194,6 +194,8 @@ export {
   drawPitchedBuildingOutline,
   drawKeepOut
 } from './drawingSketchDiagramManager';
+
+export {
   initStage,
   panelArrayCollection,
   CombinerBoxCollections,
