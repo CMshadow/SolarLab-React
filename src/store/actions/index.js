@@ -183,3 +183,14 @@ export {
   setDebugPolygons,
   setDebugShadowPolygons,
 } from './debugRender';
+
+
+export {
+  initStageSketchDiagram,
+  drawFlatBuildingOutline,
+  drawFlatBuildingSetBack,
+  drawSolarPanel,
+  drawWiring,
+  drawPitchedBuildingOutline,
+  drawKeepOut
+} from './drawingSketchDiagramManager';

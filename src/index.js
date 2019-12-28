@@ -31,7 +31,7 @@ import editingWiringManager from './store/reducers/editingWiringManager';
 import debugRenderReducer from './store/reducers/debugRender';
 import drawingRooftopManagerReducer from './store/reducers/drawingRooftopManager';
 import editingShadowManager from './store/reducers/editingShadowManager';
-
+import drawingSketchDiagramManagerReducer from './store/reducers/drawingSketchDiagramManager';
 // IMPORT MORE REDBUX REDUCERS OVER HERE
 
 /*
@@ -49,6 +49,7 @@ const rootReducer = combineReducers({
   buildingManagerReducer: buildingManagerReducer,
   keepoutManagerReducer: keepoutManagerReducer,
   debugRenderReducer:debugRenderReducer,
+  drawingSketchDiagramManagerReducer,
   undoableReducer: undoable(combineReducers({
     drawingManagerReducer: drawingManagerReducer,
     drawingInnerManagerReducer: drawingInnerManagerReducer,
