@@ -21,12 +21,12 @@ class NavigationBar extends Component{
           theme='dark'
           mode='horizontal'
           defaultSelectedKeys={['2']}
-          style={{ lineHeight: '50px' }}
+          style={{ lineHeight: '64px', background:"#202020" }}
         >
-          <Menu.Item key='1'>Home</Menu.Item>
-          <Menu.Item key='2' onClick={this.ModelingSwitchHandler}>Modeling</Menu.Item>
-          <Menu.Item key='3' onClick={this.SketchDiagramHandler}>2D Diagram</Menu.Item>
-          <Menu.Item key='4'>Report</Menu.Item>
+          <Menu.Item style = {{background:"#202020"}} key='1'>Home</Menu.Item>
+          <Menu.Item style = {{background:"#202020"}} key='2' onClick={this.ModelingSwitchHandler}>Modeling</Menu.Item>
+          <Menu.Item style = {{background:"#202020"}} key='3' onClick={this.SketchDiagramHandler}>2D Diagram</Menu.Item>
+          <Menu.Item style = {{background:"#202020"}} key='4'>Report</Menu.Item>
         </Menu>
       )
     }

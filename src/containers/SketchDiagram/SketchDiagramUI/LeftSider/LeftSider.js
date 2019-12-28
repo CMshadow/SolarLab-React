@@ -37,7 +37,7 @@ class LeftSider extends Component {
 
 
     return (
-      <Layout style={{ minHeight: '100vh', position:'fixed', top: '50px' }}>
+      <Layout style={{ minHeight: '100vh', position:'fixed', top: '64px' }}>
         <Sider
             collapsible
 /*          collapsed={this.state.collapsed}

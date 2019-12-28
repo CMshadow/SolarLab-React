@@ -10,9 +10,9 @@ import * as actions from '../../../store/actions/index';
 
 const UndoRedo = (props) => {
   return (
-      <div style = {{margin: "0 auto", position: "relative",top: "12px"}}>
+    <Row>
+      <Col span={10} offset={2}>
         <Button
-          style = {{position: "relative", right:'20px'}}
           type='default'
           icon='undo'
           onClick={() => {
@@ -20,14 +20,16 @@ const UndoRedo = (props) => {
           }}
           disabled={!props.canUndo}
         >Undo</Button>
+      </Col>
+      <Col span={10}>
         <Button
-          style = {{position: "relative", left:'20px'}}
           type='default'
           icon='redo'
           onClick={props.onRedo}
           disabled={!props.canRedo}
         >Redo</Button>
-      </div>
+      </Col>
+    </Row>
   );
 };
 
