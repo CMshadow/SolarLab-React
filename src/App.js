@@ -13,6 +13,7 @@ import zhCN from 'antd/es/locale/zh_CN';
 
 import zh_CN from './locale/zh_CN';
 import en_US from './locale/en_US';
+import SingleLineDiagram from './components/SingleLineDiagramPage/SingleLineDiagramPage';
 
 class App extends Component {
   render () {
@@ -23,6 +24,7 @@ class App extends Component {
             <Switch>
               <Route path="/Modeling" exact component={ModelingPage} />
               <Route path='/SketchDiagram'  component={SketchDiagram} />
+              <Route path='/SingleLineDigram' exact component={SingleLineDiagram} />
             </Switch>
           </CustomLayout>
         </ConfigProvider>

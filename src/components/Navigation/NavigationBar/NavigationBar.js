@@ -26,7 +26,8 @@ class NavigationBar extends Component{
           <Menu.Item key='1'>Home</Menu.Item>
           <Menu.Item key='2' onClick={this.ModelingSwitchHandler}>Modeling</Menu.Item>
           <Menu.Item key='3' onClick={this.SketchDiagramHandler}>2D Diagram</Menu.Item>
-          <Menu.Item key='4'>Report</Menu.Item>
+          <Menu.Item key='4'>Single Line Diagram</Menu.Item>
+          <Menu.Item key='5'>Report</Menu.Item>
         </Menu>
       )
     }
