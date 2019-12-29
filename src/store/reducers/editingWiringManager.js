@@ -267,8 +267,10 @@ const releasePVPanel = (state, action) => {
   newWiring.allPanels = newPanels;
   if (state.pickedWiringPointPosition === 'START') {
     newWiring.startPanel = newPanels[0];
+    newWiring.panelRows.splice(0, 1);
   } else {
     newWiring.endPanel = newPanels.slice(-1)[0];
+    newWiring.panelRows.splice(-1, 1);
   }
   const newInverter = Inverter.fromInverter(
     state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
@@ -314,8 +316,10 @@ const attachPVPanel = (state, action) => {
   newWiring.allPanels = newPanels;
   if (state.pickedWiringPointPosition === 'START') {
     newWiring.startPanel = newPanels[0];
+    newWiring.panelRows.splice(0, 0, action.panelInfo.row)
   } else {
     newWiring.endPanel = newPanels.slice(-1)[0];
+    newWiring.panelRows.push(action.panelInfo.row)
   }
   const newInverter = Inverter.fromInverter(
     state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
@@ -391,6 +395,53 @@ const setMouseDragStatus = (state, action) => {
   };
 }
 
+const setBridgingRoofAndInverter = (state, action) => {
+  return {
+    ...state,
+    editingRoofIndex: action.roofIndex,
+    editingInverterIndex: action.inverterIndex
+  };
+}
+
+const placeInverter = (state, action) => {
+  const newInverter = Inverter.fromInverter(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+  );
+  newInverter.polygon = action.polygon;
+  newInverter.polygonCenter = action.polygonCenter;
+  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
+  roofInverters.splice(state.editingInverterIndex, 1, newInverter);
+  return {
+    ...state,
+    roofSpecInverters: {
+      ...state.roofSpecInverters,
+      [state.editingRoofIndex]: roofInverters
+    }
+  };
+}
+
+const bridging = (state, action) => {
+  const newInverter = Inverter.fromInverter(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+  );
+  newInverter.bridging = action.bridging;
+  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
+  roofInverters.splice(state.editingInverterIndex, 1, newInverter);
+  return {
+    ...state,
+    roofSpecInverters: {
+      ...state.roofSpecInverters,
+      [state.editingRoofIndex]: roofInverters
+    }
+  };
+}
+
+const dragInverter = (state, action) => {
+  return {
+    ...state
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.FETCH_USER_INVERTERS:
@@ -424,6 +475,14 @@ const reducer = (state=initialState, action) => {
       return dynamicWiringLine(state, action);
     case actionTypes.SET_MOUSE_DRAG_STATUS:
       return setMouseDragStatus(state, action);
+    case actionTypes.SET_BRIDGING_ROOF_AND_INVERTER:
+      return setBridgingRoofAndInverter(state, action);
+    case actionTypes.PLACE_INVERTER:
+      return placeInverter(state, action);
+    case actionTypes.AUTO_BRIDGING:
+      return bridging(state, action);
+    case actionTypes.DRAG_INVERTER:
+      return dragInverter(state, action);
     default: return state;
   }
 };

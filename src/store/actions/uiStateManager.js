@@ -101,3 +101,21 @@ export const setUIStateSetUpBridging = () => {
     type: actionTypes.SET_UI_STATE_SETUP_BRIDGING
   };
 }
+
+export const setUIStatePlaceInverter = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_PLACE_INVERTER
+  };
+}
+
+export const setUIStateReadyDragInverter = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_READY_DRAG_INVERTER
+  };
+}
+
+export const setUIStateDragInverter = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_DRAG_INVERTER
+  };
+}
