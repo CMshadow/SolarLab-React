@@ -81,6 +81,13 @@ const LeftDownHandler = (props) => {
         }
         break;
 
+      case 'EDIT_BRIDGING':
+        if (props.editingBridgingIndex !== null) {
+          props.disableRotate();
+          props.setUIStateDragBridging();
+        }
+        break;
+
       default:
         break;
     }
@@ -132,6 +139,7 @@ const mapDispatchToProps = dispatch => {
     setUIStateEditingWiring: () => dispatch(actions.setUIStateEditingWiring()),
     setUIStateDraggingWiring: () => dispatch(actions.setUIStateDraggingWiring()),
     setUIStateDragInverter: () => dispatch(actions.setUIStateDragInverter()),
+    setUIStateDragBridging: () => dispatch(actions.setUIStateDragBridging()),
     setManualWiringStart: (panelId) => dispatch(
       actions.setManualWiringStart(panelId)
     ),

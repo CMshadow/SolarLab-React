@@ -509,31 +509,27 @@ export const placeInverter = (heightOffset=0.2) => (dispatch, getState) => {
   })
 }
 
-export const bridging = (heightOffset=0.2) => (dispatch, getState) => {
+export const bridging = (roofIndex, inverterIndex, heightOffset=0.2) =>
+(dispatch, getState) => {
   const workingBuilding = getState().buildingManagerReducer.workingBuilding;
-  const editingRoofIndex = getState().undoableReducer.present
-    .editingWiringManager.editingRoofIndex;
-  const editingInverterIndex = getState().undoableReducer.present
-    .editingWiringManager.editingInverterIndex;
   const inverterCenterPoint =
     getState().undoableReducer.present.editingWiringManager
-    .roofSpecInverters[editingRoofIndex][editingInverterIndex].polygonCenter;
+    .roofSpecInverters[roofIndex][inverterIndex].polygonCenter;
   const wirings = getState().undoableReducer.present.editingWiringManager
-    .roofSpecInverters[editingRoofIndex][editingInverterIndex].wiring;
+    .roofSpecInverters[roofIndex][inverterIndex].wiring;
   const roofSpecParams = getState().undoableReducer.present
-    .editingPVPanelManagerReducer.roofSpecParams[editingRoofIndex];
+    .editingPVPanelManagerReducer.roofSpecParams[roofIndex];
   const pvPanelParams = getState().undoableReducer.present
     .editingPVPanelManagerReducer.userPanels[roofSpecParams.selectPanelIndex];
   const rooftopLineCollection = workingBuilding.type === 'FLAT' ?
     MathLineCollection.fromPolyline(
-      workingBuilding.foundationPolygon[editingRoofIndex]
+      workingBuilding.foundationPolygon[roofIndex]
       .convertHierarchyToFoundLine()
     ) :
     MathLineCollection.fromPolyline(
-      workingBuilding.pitchedRoofPolygons[editingRoofIndex]
+      workingBuilding.pitchedRoofPolygons[roofIndex]
       .convertHierarchyToFoundLine()
     );
-  console.log(wirings)
   const panelCos = Math.cos(roofSpecParams.tilt * Math.PI / 180.0);
   let panelWidth = null;
   if (roofSpecParams.orientation === 'portrait') {
@@ -551,10 +547,10 @@ export const bridging = (heightOffset=0.2) => (dispatch, getState) => {
     const firstAnchor = wiring.panelRows[0] % 2 === 0 ?
       Point.fromCoordinate(Coordinate.destination(
         firstPanelCenter, roofSpecParams.azimuth, anchorDist
-      )) :
+      ), null, null, null, Cesium.Color.DARKCYAN) :
       Point.fromCoordinate(Coordinate.destination(
         firstPanelCenter, roofSpecParams.azimuth + 180, anchorDist
-      ))
+      ), null, null, null, Cesium.Color.DARKCYAN)
     if (workingBuilding.type === 'FLAT') {
       firstAnchor.setCoordinate(
         null, null, workingBuilding.foundationHeight + heightOffset
@@ -563,7 +559,7 @@ export const bridging = (heightOffset=0.2) => (dispatch, getState) => {
       firstAnchor.setCoordinate(
         null, null,
         Coordinate.heightOfArbitraryNode(
-          workingBuilding.pitchedRoofPolygons[editingRoofIndex],
+          workingBuilding.pitchedRoofPolygons[roofIndex],
           firstAnchor
         ) + workingBuilding.foundationHeight + heightOffset
       );
@@ -591,10 +587,10 @@ export const bridging = (heightOffset=0.2) => (dispatch, getState) => {
     const endAnchor = wiring.panelRows.slice(-1)[0] % 2 === 0 ?
       Point.fromCoordinate(Coordinate.destination(
         endPanelCenter, roofSpecParams.azimuth, anchorDist
-      )) :
+      ), null, null, null, Cesium.Color.DARKCYAN) :
       Point.fromCoordinate(Coordinate.destination(
         endPanelCenter, roofSpecParams.azimuth + 180, anchorDist
-      ))
+      ), null, null, null, Cesium.Color.DARKCYAN)
     if (workingBuilding.type === 'FLAT') {
       endAnchor.setCoordinate(
         null, null, workingBuilding.foundationHeight + heightOffset
@@ -603,7 +599,7 @@ export const bridging = (heightOffset=0.2) => (dispatch, getState) => {
       endAnchor.setCoordinate(
         null, null,
         Coordinate.heightOfArbitraryNode(
-          workingBuilding.pitchedRoofPolygons[editingRoofIndex],
+          workingBuilding.pitchedRoofPolygons[roofIndex],
           endAnchor
         ) + workingBuilding.foundationHeight + heightOffset
       );
@@ -625,7 +621,6 @@ export const bridging = (heightOffset=0.2) => (dispatch, getState) => {
     }
   })
 
-  console.log(bridgingDict)
   const bridgings = Object.keys(bridgingDict).map(key => {
     bridgingDict[key].sort((first, second) =>
       Coordinate.surfaceDistance(inverterCenterPoint, first.anchor) <
@@ -666,8 +661,8 @@ export const bridging = (heightOffset=0.2) => (dispatch, getState) => {
     const leftOrRightAnchor =
       Coordinate.surfaceDistance(leftIntersect, inverterCenterPoint) <
       Coordinate.surfaceDistance(rightIntersect, inverterCenterPoint) ?
-      Point.fromCoordinate(leftIntersect) :
-      Point.fromCoordinate(rightIntersect)
+      Point.fromCoordinate(leftIntersect, null, null, null, Cesium.Color.DARKCYAN) :
+      Point.fromCoordinate(rightIntersect, null, null, null, Cesium.Color.DARKCYAN)
     const upIntersect = Coordinate.intersection(
       bridgingDict[key][0].anchor, roofSpecParams.azimuth + 90,
       inverterCenterPoint, roofSpecParams.azimuth + 180
@@ -684,13 +679,13 @@ export const bridging = (heightOffset=0.2) => (dispatch, getState) => {
     );
     const upOrDownAnchor =
       upIntersect === undefined ?
-      Point.fromCoordinate(downIntersect) :
+      Point.fromCoordinate(downIntersect, null, null, null, Cesium.Color.DARKCYAN) :
       downIntersect === undefined ?
-      Point.fromCoordinate(upIntersect) :
+      Point.fromCoordinate(upIntersect, null, null, null, Cesium.Color.DARKCYAN) :
       Coordinate.surfaceDistance(upIntersect, inverterCenterPoint) <
       Coordinate.surfaceDistance(downIntersect, inverterCenterPoint) ?
-      Point.fromCoordinate(upIntersect) :
-      Point.fromCoordinate(downIntersect)
+      Point.fromCoordinate(upIntersect, null, null, null, Cesium.Color.DARKCYAN) :
+      Point.fromCoordinate(downIntersect, null, null, null, Cesium.Color.DARKCYAN)
 
     const bridgeAnchor =
       Coordinate.surfaceDistance(upOrDownAnchor, bridgingDict[key][0].anchor) <
@@ -713,18 +708,19 @@ export const bridging = (heightOffset=0.2) => (dispatch, getState) => {
       }
     });
     const connectedWiringIndex =
-      bridgingDict[key].filter(obj => obj.wiringIndex !== undefined).map((obj, i) => obj.wiringIndex);
-    console.log(connectedWiringIndex)
+      bridgingDict[key].filter(obj => obj.wiringIndex !== undefined)
+      .map((obj, i) => obj.wiringIndex);
     return new Bridging(
       null, mainPolyline, subPolylines, anchorPanelMap, connectedWiringIndex
     );
   })
-  console.log(bridgings)
 
   return dispatch({
     type: actionTypes.AUTO_BRIDGING,
-    bridging: bridgings
-  })
+    bridging: bridgings,
+    roofIndex: roofIndex,
+    inverterIndex: inverterIndex
+  });
 }
 
 export const setHoverInverterCenter = () => {
@@ -760,12 +756,77 @@ export const dragInverter = (heightOffset=0.2) => (dispatch, getState) => {
   })
 }
 
+export const setHoverBridgingPoint = (pointId) => (dispatch, getState) => {
+  const roofSpecInverters = getState().undoableReducer.present
+    .editingWiringManager.roofSpecInverters;
+  const editingRoofIndex = getState().undoableReducer.present
+    .editingWiringManager.editingRoofIndex;
+  const editingInverterIndex = getState().undoableReducer.present
+    .editingWiringManager.editingInverterIndex;
+  let bridgingIndex = null;
+  let bridgingPointIndex = null;
+  roofSpecInverters[editingRoofIndex][editingInverterIndex]
+  .bridging.forEach((bridging, i) => {
+    const matchIndex = bridging.mainPolyline.points.findIndex(p =>
+      p.entityId === pointId
+    );
+    if (matchIndex > 0) {
+      bridgingPointIndex = matchIndex;
+      bridgingIndex = i;
+    }
+  });
+  if (bridgingIndex !== null && bridgingPointIndex !== null) {
+    return dispatch({
+      type: actionTypes.SET_HOVER_BRIDGING_POINT,
+      bridgingIndex: bridgingIndex,
+      bridgingPointIndex: bridgingPointIndex
+    })
+  }
+}
+
+export const releaseHoverBridgingPoint = () => {
+  return {
+    type: actionTypes.RELEASE_HOVER_BRIDGING_POINT
+  }
+}
+
+export const dragBridgingPoint = (heightOffset=0.2) => (dispatch, getState) => {
+  const workingBuilding = getState().buildingManagerReducer.workingBuilding;
+  const mouseCartesian3 = getState().undoableReducer.present
+    .drawingManagerReducer.mouseCartesian3;
+  const editingRoofIndex = getState().undoableReducer.present
+    .editingWiringManager.editingRoofIndex;
+
+  let newPoint = null;
+  if (workingBuilding.type === 'FLAT') {
+    newPoint = Point.fromCoordinate(Coordinate.fromCartesian(
+      mouseCartesian3, workingBuilding.foundationHeight + heightOffset
+    ), null, null, null, Cesium.Color.DARKCYAN)
+  } else {
+    newPoint = Point.fromCoordinate(
+      Coordinate.fromCartesian(mouseCartesian3), null, null, null,
+      Cesium.Color.DARKCYAN
+    );
+    newPoint.setCoordinate(
+      null, null,
+      Coordinate.heightOfArbitraryNode(
+        workingBuilding.pitchedRoofPolygons[editingRoofIndex], newPoint
+      ) + workingBuilding.foundationHeight + heightOffset
+    );
+  }
+
+  return dispatch({
+    type: actionTypes.DRAG_BRIDGING_POINT,
+    point: newPoint
+  })
+}
+
 const makeInverterPolygonAndCenter = (
   mouseCartesian3, workingBuilding, editingRoofIndex, heightOffset, inverterLength
 ) => {
   const inverterCenterPoint = Point.fromCoordinate(
     Coordinate.fromCartesian(mouseCartesian3), null, null, null,
-    Cesium.Color.ORANGE
+    Cesium.Color.DARKCYAN
   );
   if (workingBuilding.type === 'FLAT') {
     inverterCenterPoint.setCoordinate(

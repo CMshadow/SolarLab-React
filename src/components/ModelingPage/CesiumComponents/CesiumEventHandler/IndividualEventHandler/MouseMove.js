@@ -240,6 +240,31 @@ const MouseMoveHandler = (props) => {
         props.dragInverter();
         break;
 
+      case 'EDIT_BRIDGING':
+        if (anyPickedObject) {
+          const allBridgingPointIds =
+            props.roofSpecInverters[props.editingRoofIndex][
+            props.editingInverterIndex].bridging.flatMap(bridging =>
+              bridging.mainPolyline.points.slice(1,)
+            ).map(p => p.entityId);
+          if (allBridgingPointIds.includes(anyPickedObject.id.id)) {
+            props.setHoverBridgingPoint(anyPickedObject.id.id);
+          } else {
+            if (props.editingBridgingIndex !== null)
+            props.releaseHoverBridgingPoint();
+          }
+        } else {
+          if (props.editingBridgingIndex !== null)
+          props.releaseHoverBridgingPoint();
+        }
+        break;
+
+      case 'DRAG_BRIDGING':
+        if (props.editingBridgingIndex !== null) {
+          props.dragBridgingPoint()
+        }
+        break;
+
       default:
         break;
     }
@@ -324,7 +349,9 @@ const mapStateToProps = state => {
     roofSpecInverters:
       state.undoableReducer.present.editingWiringManager.roofSpecInverters,
     hoverInverterCenter:
-      state.undoableReducer.present.editingWiringManager.hoverInverterCenter
+      state.undoableReducer.present.editingWiringManager.hoverInverterCenter,
+    editingBridgingIndex:
+      state.undoableReducer.present.editingWiringManager.editingBridgingIndex
   };
 };
 
@@ -394,7 +421,16 @@ const mapDispatchToProps = dispatch => {
     setHoverInverterCenter: () => dispatch(
       actions.setHoverInverterCenter()
     ),
-    dragInverter: () => dispatch(actions.dragInverter())
+    dragInverter: () => dispatch(actions.dragInverter()),
+    setHoverBridgingPoint: (pointId) => dispatch(
+      actions.setHoverBridgingPoint(pointId)
+    ),
+    releaseHoverBridgingPoint: () => dispatch(
+      actions.releaseHoverBridgingPoint()
+    ),
+    dragBridgingPoint: () => dispatch(
+      actions.dragBridgingPoint()
+    )
   };
 };
 

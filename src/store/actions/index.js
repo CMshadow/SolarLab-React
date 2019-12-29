@@ -121,6 +121,8 @@ export {
   setUIStatePlaceInverter,
   setUIStateReadyDragInverter,
   setUIStateDragInverter,
+  setUIStateEditBridging,
+  setUIStateDragBridging
 } from './uiStateManager';
 
 export {
@@ -177,7 +179,10 @@ export {
   bridging,
   setHoverInverterCenter,
   releaseHoverInverterCenter,
-  dragInverter
+  dragInverter,
+  setHoverBridgingPoint,
+  releaseHoverBridgingPoint,
+  dragBridgingPoint
 } from './editingWiringManager';
 
 export {

@@ -178,9 +178,11 @@ class BridgingTable extends Component {
           size='small'
           ghost={this.props.uiState === 'READY_DRAG_INVERTER'? false : true}
           disabled={
-            this.props.uiState === 'READY_DRAG_INVERTER' &&
+            (this.props.uiState === 'EDIT_BRIDGING' ||
+            this.props.uiState === 'DRAG_BRIDGING') ||
+            (this.props.uiState === 'READY_DRAG_INVERTER' &&
             this.props.roofIndex !== this.props.editingRoofIndex &&
-            inverterInd !== this.props.editingInverterIndex ?
+            inverterInd !== this.props.editingInverterIndex) ?
             true:
             false
           }
@@ -215,15 +217,39 @@ class BridgingTable extends Component {
           type="primary"
           shape='circle'
           size='small'
-          ghost={true}
+          ghost={
+            (this.props.uiState === 'EDIT_BRIDGING' ||
+            this.props.uiState === 'DRAG_BRIDGING') ? false : true
+          }
           disabled={
+            (this.props.uiState === 'READY_DRAG_INVERTER' ||
+            this.props.uiState === 'DRAG_INVERTER') ||
             !this.props.roofSpecInverters[this.props.roofIndex][inverterInd]
             .polygon ||
             !this.props.roofSpecInverters[this.props.roofIndex][inverterInd]
-            .wiring[0].allPanels
+            .wiring[0].allPanels ||
+            ((this.props.uiState === 'EDIT_BRIDGING' ||
+            this.props.uiState === 'DRAG_BRIDGING') &&
+            this.props.roofIndex !== this.props.editingRoofIndex &&
+            inverterInd !== this.props.editingInverterIndex)
           }
           onClick={() => {
-            this.props.bridging()
+            if (
+              this.props.roofSpecInverters[this.props.roofIndex][inverterInd]
+              .bridging.length === 0
+            ) {
+              console.log(inverterInd)
+              this.props.bridging(this.props.roofIndex, inverterInd)
+            } else {
+              if(this.props.uiState === 'SETUP_BRIDGING') {
+                this.props.setBridgingRoofAndInverter(
+                  this.props.roofIndex, inverterInd
+                );
+                this.props.setUIStateEditBridging();
+              } else {
+                this.props.setUIStateSetUpBridging();
+              }
+            }
           }}
         >
           {
@@ -276,10 +302,13 @@ const mapDispatchToProps = dispatch => {
     setUIStatePlaceInverter: () => dispatch(
       actions.setUIStatePlaceInverter()
     ),
+    setUIStateEditBridging: () => dispatch(actions.setUIStateEditBridging()),
     setBridgingRoofAndInverter: (roofIndex, inverterInd) => dispatch(
       actions.setBridgingRoofAndInverter(roofIndex, inverterInd)
     ),
-    bridging: () => dispatch(actions.bridging()),
+    bridging: (roofIndex, inverterIndex) => dispatch(
+      actions.bridging(roofIndex, inverterIndex)
+    ),
     setUIStateSetUpBridging: () => dispatch(
       actions.setUIStateSetUpBridging()
     ),

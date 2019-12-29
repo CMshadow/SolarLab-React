@@ -24,6 +24,9 @@ const initialState = {
   lastMouseDrag: null,
 
   hoverInverterCenter: null,
+
+  editingBridgingIndex: null,
+  editingBridgingPointIndex: null,
 };
 
 const fetchUserInverters = (state, action) => {
@@ -424,16 +427,16 @@ const placeInverter = (state, action) => {
 
 const bridging = (state, action) => {
   const newInverter = Inverter.fromInverter(
-    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.roofSpecInverters[action.roofIndex][action.inverterIndex]
   );
   newInverter.bridging = action.bridging;
-  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
-  roofInverters.splice(state.editingInverterIndex, 1, newInverter);
+  const roofInverters = [...state.roofSpecInverters[action.roofIndex]];
+  roofInverters.splice(action.inverterIndex, 1, newInverter);
   return {
     ...state,
     roofSpecInverters: {
       ...state.roofSpecInverters,
-      [state.editingRoofIndex]: roofInverters
+      [action.roofIndex]: roofInverters
     }
   };
 }
@@ -495,7 +498,80 @@ const dragInverter = (state, action) => {
   newInverter.polygon = action.polygon;
   newInverter.polygonCenter = action.polygonCenter;
   newInverter.bridging = newBridging;
-  const roofInverters = [state.roofSpecInverters[state.editingRoofIndex]];
+  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
+  roofInverters.splice(state.editingInverterIndex, 1, newInverter);
+  return {
+    ...state,
+    roofSpecInverters: {
+      ...state.roofSpecInverters,
+      [state.editingRoofIndex]: roofInverters
+    }
+  };
+}
+
+const setHoverBridgingPoint = (state, action) => {
+  const newPoint = Point.fromPoint(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    .bridging[action.bridgingIndex].mainPolyline.points[action.bridgingPointIndex]
+  );
+  newPoint.setColor(Cesium.Color.ORANGE);
+  const newInverter = Inverter.fromInverter(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+  );
+  newInverter.bridging[action.bridgingIndex].mainPolyline.points.splice(
+    action.bridgingPointIndex, 1, newPoint
+  );
+  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
+  roofInverters.splice(state.editingInverterIndex, 1, newInverter);
+  return {
+    ...state,
+    roofSpecInverters: {
+      ...state.roofSpecInverters,
+      [state.editingRoofIndex]: roofInverters,
+    },
+    editingBridgingIndex: action.bridgingIndex,
+    editingBridgingPointIndex: action.bridgingPointIndex
+  };
+}
+
+const releaseHoverBridgingPoint = (state, action) => {
+  const newPoint = Point.fromPoint(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    .bridging[state.editingBridgingIndex].mainPolyline
+    .points[state.editingBridgingPointIndex]
+  );
+  newPoint.setColor(Cesium.Color.DARKCYAN);
+  const newInverter = Inverter.fromInverter(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+  );
+  newInverter.bridging[state.editingBridgingIndex].mainPolyline.points.splice(
+    state.editingBridgingPointIndex, 1, newPoint
+  );
+  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
+  roofInverters.splice(state.editingInverterIndex, 1, newInverter);
+  return {
+    ...state,
+    roofSpecInverters: {
+      ...state.roofSpecInverters,
+      [state.editingRoofIndex]: roofInverters,
+    },
+    editingBridgingIndex: null,
+    editingBridgingPointIndex: null
+  };
+}
+
+const dragBridgingPoint = (state, action) => {
+  const newInverter = Inverter.fromInverter(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+  );
+  const newBridging = newInverter.bridging.map(bridging =>
+    Bridging.fromBridging(bridging)
+  );
+  newBridging[state.editingBridgingIndex].mainPolyline.points.splice(
+    state.editingBridgingPointIndex, 1, action.point
+  );
+  newInverter.bridging = newBridging;
+  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
   roofInverters.splice(state.editingInverterIndex, 1, newInverter);
   return {
     ...state,
@@ -551,6 +627,12 @@ const reducer = (state=initialState, action) => {
       return releaseHoverInverterCenter(state, action);
     case actionTypes.DRAG_INVERTER:
       return dragInverter(state, action);
+    case actionTypes.SET_HOVER_BRIDGING_POINT:
+      return setHoverBridgingPoint(state, action);
+    case actionTypes.RELEASE_HOVER_BRIDGING_POINT:
+      return releaseHoverBridgingPoint(state, action);
+    case actionTypes.DRAG_BRIDGING_POINT:
+      return dragBridgingPoint(state, action);
     default: return state;
   }
 };

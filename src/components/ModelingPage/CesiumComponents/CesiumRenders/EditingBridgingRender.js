@@ -81,12 +81,30 @@ const EditingBridgingRender = (props) => {
     />
   }
 
+  let bridgingPoints = null;
+  if (
+    props.uiState === 'EDIT_BRIDGING' ||
+    props.uiState === 'DRAG_BRIDGING'
+  ) {
+    bridgingPoints =
+      props.roofSpecInverters[props.editingRoofIndex][props.editingInverterIndex]
+      .bridging.flatMap(bridging =>
+        bridging.mainPolyline.points.slice(1,).map(point => 
+          <CustomPoint
+            key={point.entityId}
+            {...point}
+          />
+        )
+      );
+  }
+
 	return (
 		<div>
       {allInverterPolygons}
       {mainBridgings}
       {subBridgings}
       {inverterCenterPoint}
+      {bridgingPoints}
     </div>
 	);
 };

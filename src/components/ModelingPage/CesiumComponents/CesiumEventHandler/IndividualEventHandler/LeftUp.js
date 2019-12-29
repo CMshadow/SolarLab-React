@@ -33,7 +33,15 @@ const LeftUpHandler = (props) => {
       case 'DRAG_INVERTER':
         props.enableRotate();
         props.setUIStateReadyDragInverter();
-        props.bridging();
+        if (
+          props.roofSpecInverters[props.editingRoofIndex][props.editingInverterIndex]
+          .bridging.length !== 0
+        ) props.bridging(props.editingRoofIndex, props.editingInverterIndex);
+        break;
+
+      case 'DRAG_BRIDGING':
+        props.enableRotate();
+        props.setUIStateEditBridging();
         break;
 
       default:
@@ -59,6 +67,12 @@ const mapStateToProps = state => {
       .pickedPointIndex,
     pickedWiringPointPosition:
       state.undoableReducer.present.editingWiringManager.pickedWiringPointPosition,
+    editingRoofIndex:
+      state.undoableReducer.present.editingWiringManager.editingRoofIndex,
+    editingInverterIndex:
+      state.undoableReducer.present.editingWiringManager.editingInverterIndex,
+    roofSpecInverters:
+      state.undoableReducer.present.editingWiringManager.roofSpecInverters,
   };
 };
 
@@ -79,7 +93,12 @@ const mapDispatchToProps = dispatch => {
     setUIStateReadyDragInverter: () => dispatch(
       actions.setUIStateReadyDragInverter()
     ),
-    bridging: () => dispatch(actions.bridging())
+    setUIStateEditBridging: () => dispatch(
+      actions.setUIStateEditBridging()
+    ),
+    bridging: (roofIndex, inverterIndex) => dispatch(
+      actions.bridging(roofIndex, inverterIndex)
+    )
   };
 };
 
