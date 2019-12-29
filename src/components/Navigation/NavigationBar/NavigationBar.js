@@ -1,22 +1,44 @@
 import { Menu } from 'antd';
-import React from 'react';
+import React, { Component } from 'react';
 import 'antd/dist/antd.css';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { Route, Switch, withRouter } from 'react-router-dom';
 
-const NavigationBar = (props) => {
-  return (
-    <Menu
-      theme='dark'
-      mode='horizontal'
-      defaultSelectedKeys={['2']}
-      style={{ lineHeight: '50px' }}
-    >
-      <Menu.Item key='1'><FormattedMessage id='home' /></Menu.Item>
-      <Menu.Item key='2'><FormattedMessage id='modeling' /></Menu.Item>
-      <Menu.Item key='3'><FormattedMessage id='twoD_diagram' /></Menu.Item>
-      <Menu.Item key='4'><FormattedMessage id='report' /></Menu.Item>
-    </Menu>
-  )
-}
+class NavigationBar extends Component{
 
-export default NavigationBar;
+  SketchDiagramHandler = () => {
+    // console.log(this.props)
+    // console.log(props.history.history)
+    this.props.history.push('/SketchDiagram');
+  }
+  ModelingSwitchHandler = () => {
+    // console.log(this.props)
+    this.props.history.push('/Modeling');
+  }
+
+  render() {
+    return (
+        <Menu
+          theme='dark'
+          mode='horizontal'
+          defaultSelectedKeys={['2']}
+          style={{ lineHeight: '64px', background:"#202020" }}
+        >
+          <Menu.Item style = {{background:"#202020"}} key='1'>
+            <FormattedMessage id='home' />
+          </Menu.Item>
+          <Menu.Item style = {{background:"#202020"}} key='2' onClick={this.ModelingSwitchHandler}>
+            <FormattedMessage id='modeling' />
+          </Menu.Item>
+          <Menu.Item style = {{background:"#202020"}} key='3' onClick={this.SketchDiagramHandler}>
+            <FormattedMessage id='twoD_diagram' />
+          </Menu.Item>
+          <Menu.Item style = {{background:"#202020"}} key='4'>
+            <FormattedMessage id='report' />
+          </Menu.Item>
+        </Menu>
+      )
+    }
+  }
+
+
+export default withRouter(NavigationBar);

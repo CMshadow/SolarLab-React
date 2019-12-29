@@ -17,8 +17,8 @@ const CustomViewer = (props) => {
 
   return (
     <Viewer
-      ref={ref => props.onSetViewer(ref.cesiumElement)}
-      style={{position: "absolute", top: 50, left: 0, right: 0, bottom: 0}}
+      ref={ref => { if (!props.viewer && ref) props.onSetViewer(ref.cesiumElement)}}
+      style={{position: "absolute", top: 64, left: 0, right: 0, bottom: 0}}
       terrainProvider={props.enableTerrain ? worldTerrain : null}
       imageryProvider={bingMap}
       geocoder={false}
@@ -38,6 +38,12 @@ const CustomViewer = (props) => {
     </Viewer>
   );
 };
+
+const mapStateToProps = state => {
+  return{
+    viewer: state.cesiumReducer.viewer
+  }
+}
 
 const mapDispatchToProps = dispatch => {
   return {

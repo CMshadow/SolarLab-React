@@ -54,17 +54,21 @@ class LeftSider extends Component {
     }
 
     return (
-      <Layout style={{ minHeight: '100vh' }}>
+      <Layout style={{ minHeight: '100vh', position:"fixed", top:'64px'}}>
         <Sider
           className={classes.leftSider}
           width={325}
           collapsedWidth={50}
           collapsible
           onCollapse={this.onCollapse}
+          trigger={null}
         >
-          {this.state.siderCollapse ? null : <UndoRedo />}
           {content}
+
         </Sider>
+        <Layout style = {{height:'60px',width:'325px', background :'#c0c0c0',position:"absolute", bottom:'60px'}}>
+          {this.state.siderCollapse ? null : <UndoRedo />}
+        </Layout>
       </Layout>
     );
   }
