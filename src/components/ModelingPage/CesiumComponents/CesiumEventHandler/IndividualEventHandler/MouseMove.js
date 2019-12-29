@@ -219,6 +219,52 @@ const MouseMoveHandler = (props) => {
         }
         break;
 
+      case 'READY_DRAG_INVERTER':
+        if(
+          anyPickedObject &&
+          anyPickedObject.id.id ===
+          props.roofSpecInverters[props.editingRoofIndex][props.editingInverterIndex]
+          .polygonCenter.entityId
+        ) {
+          if (props.hoverInverterCenter) {
+            props.releaseHoverInverterCenter();
+          } else {
+            props.setHoverInverterCenter();
+          }
+        } else {
+          if (props.hoverInverterCenter) props.releaseHoverInverterCenter();
+        }
+        break;
+
+      case 'DRAG_INVERTER':
+        props.dragInverter();
+        break;
+
+      case 'EDIT_BRIDGING':
+        if (anyPickedObject) {
+          const allBridgingPointIds =
+            props.roofSpecInverters[props.editingRoofIndex][
+            props.editingInverterIndex].bridging.flatMap(bridging =>
+              bridging.mainPolyline.points.slice(1,)
+            ).map(p => p.entityId);
+          if (allBridgingPointIds.includes(anyPickedObject.id.id)) {
+            props.setHoverBridgingPoint(anyPickedObject.id.id);
+          } else {
+            if (props.editingBridgingIndex !== null)
+            props.releaseHoverBridgingPoint();
+          }
+        } else {
+          if (props.editingBridgingIndex !== null)
+          props.releaseHoverBridgingPoint();
+        }
+        break;
+
+      case 'DRAG_BRIDGING':
+        if (props.editingBridgingIndex !== null) {
+          props.dragBridgingPoint()
+        }
+        break;
+
       default:
         break;
     }
@@ -294,8 +340,18 @@ const mapStateToProps = state => {
       state.undoableReducer.present.editingWiringManager.editingStartPoint,
     editingEndPoint:
       state.undoableReducer.present.editingWiringManager.editingEndPoint,
+    editingRoofIndex:
+      state.undoableReducer.present.editingWiringManager.editingRoofIndex,
+    editingInverterIndex:
+      state.undoableReducer.present.editingWiringManager.editingInverterIndex,
     hoverWiringPointPosition:
       state.undoableReducer.present.editingWiringManager.hoverWiringPointPosition,
+    roofSpecInverters:
+      state.undoableReducer.present.editingWiringManager.roofSpecInverters,
+    hoverInverterCenter:
+      state.undoableReducer.present.editingWiringManager.hoverInverterCenter,
+    editingBridgingIndex:
+      state.undoableReducer.present.editingWiringManager.editingBridgingIndex
   };
 };
 
@@ -359,6 +415,22 @@ const mapDispatchToProps = dispatch => {
     releaseHoverRoofTopPointIndex: (point) => dispatch(
       actions.releaseHoverRoofTopPointIndex(point)
     ),
+    releaseHoverInverterCenter: () => dispatch(
+      actions.releaseHoverInverterCenter()
+    ),
+    setHoverInverterCenter: () => dispatch(
+      actions.setHoverInverterCenter()
+    ),
+    dragInverter: () => dispatch(actions.dragInverter()),
+    setHoverBridgingPoint: (pointId) => dispatch(
+      actions.setHoverBridgingPoint(pointId)
+    ),
+    releaseHoverBridgingPoint: () => dispatch(
+      actions.releaseHoverBridgingPoint()
+    ),
+    dragBridgingPoint: () => dispatch(
+      actions.dragBridgingPoint()
+    )
   };
 };
 

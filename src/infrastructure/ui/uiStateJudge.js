@@ -35,7 +35,12 @@ export const showSetUpWiringPanel = (uiState) => {
 
 export const showSetUpBridgingPanel = (uiState) => {
   return (
-    uiState === 'SETUP_BRIDGING'
+    uiState === 'SETUP_BRIDGING' ||
+    uiState === 'PLACE_INVERTER' ||
+    uiState === 'READY_DRAG_INVERTER' ||
+    uiState === 'DRAG_INVERTER' ||
+    uiState === 'EDIT_BRIDGING' ||
+    uiState === 'DRAG_BRIDGING'
   )
 };
 

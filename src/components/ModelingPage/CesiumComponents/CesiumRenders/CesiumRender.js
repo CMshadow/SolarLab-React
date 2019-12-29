@@ -11,6 +11,7 @@ import DrawingKeepoutPolygonManagerRender from './DrawingKeepoutPolygonManagerRe
 import ShadowRender from './ShadowRender';
 import EditingPVPanelRender from './EditingPVPanelRender';
 import EditingWiringRender from './EditingWiringRender';
+import EditingBridgingRender from './EditingBridgingRender';
 
 import DebugRender from './DebugRender';
 
@@ -34,6 +35,7 @@ const CesiumRender = (props) => {
       <ShadowRender />
       <EditingPVPanelRender />
       <EditingWiringRender />
+      <EditingBridgingRender />
       <DebugRender />
     </div>
   );
