@@ -1,0 +1,42 @@
+{
+  "projectId": "8b9e6897-2a79-424f-8463-9e0e56efb01a",
+  "bid": "db875942-0c9e-44e8-9b6e-09d2ada4efa0",
+  "username": "liuhongtaotm@outlook.com",
+  "data": {
+    "Address": "北京798艺术区",
+    "Annual_PV_Production": "157093302.2",
+    "Battery": 27732,
+    "Building_Name": "1",
+    "CO2_Reduced": "71.5",
+    "Inverter": {
+      "Cost": "20655.0",
+      "Model": "Schneider Electric Solar Inverters USA: Conext CL 25000NA 480V [CEC 2015]",
+      "Quantity": 3
+    },
+    "LCOE": "432.8",
+    "PV_Installed_Capacity": "83198.5",
+    "Panel": {
+      "Cost": "46530.0",
+      "Model": "Jinko-JKM295P",
+      "Quantity": 282
+    },
+    "Payback_period": 2.591508844329308,
+    "Project_Cost": "67987.1",
+    "Project_Created_Time": null,
+    "Project_Name": "Project_1",
+    "Project_Updated_Time": "2019-08-19T18:32:32.800Z",
+    "Revenue": "1570933.0",
+    "Selected_Day": 22,
+    "Selected_Month": 6,
+    "System_Efficiency": 82.91424197580982,
+    "Temperature_Module": "Sandia Module Temperature Module",
+    "Weather_Condition": "Daily Condition",
+    "Weather_Data": "北京798艺术区",
+    "Wire": {
+      "Cost": "802.1",
+      "Model": "GoldBull (10 AWG)",
+      "Quantity": "1336.9"
+    },
+    "kWh/kWp": 1888.1756008264877
+  }
+}

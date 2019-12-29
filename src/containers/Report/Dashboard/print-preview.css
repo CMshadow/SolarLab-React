@@ -1,0 +1,16 @@
+.preserve, .preserve * {
+    page-break-inside: avoid;
+    display: block!important;
+}
+
+.chart {
+    width: 500px;
+    height: 300px;
+    margin: auto;
+}
+
+.image {
+    max-width: 500px;
+    height: auto;
+    margin: auto;
+}
