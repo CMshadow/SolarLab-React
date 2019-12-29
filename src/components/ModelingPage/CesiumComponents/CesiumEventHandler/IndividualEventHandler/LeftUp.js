@@ -30,6 +30,12 @@ const LeftUpHandler = (props) => {
         }
         break;
 
+      case 'DRAG_INVERTER':
+        props.enableRotate();
+        props.setUIStateReadyDragInverter();
+        props.bridging();
+        break;
+
       default:
         break;
     }
@@ -69,7 +75,11 @@ const mapDispatchToProps = dispatch => {
     releasePickedWiringPoint: () => dispatch(
       actions.releasePickedWiringPoint()
     ),
-    setUIStateEditingWiring: () => dispatch(actions.setUIStateEditingWiring())
+    setUIStateEditingWiring: () => dispatch(actions.setUIStateEditingWiring()),
+    setUIStateReadyDragInverter: () => dispatch(
+      actions.setUIStateReadyDragInverter()
+    ),
+    bridging: () => dispatch(actions.bridging())
   };
 };
 

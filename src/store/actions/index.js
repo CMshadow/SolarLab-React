@@ -174,7 +174,10 @@ export {
   setMouseDragStatus,
   setBridgingRoofAndInverter,
   placeInverter,
-  bridging
+  bridging,
+  setHoverInverterCenter,
+  releaseHoverInverterCenter,
+  dragInverter
 } from './editingWiringManager';
 
 export {

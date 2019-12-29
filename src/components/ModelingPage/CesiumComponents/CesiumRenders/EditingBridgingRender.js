@@ -68,7 +68,10 @@ const EditingBridgingRender = (props) => {
   }
 
   let inverterCenterPoint = null;
-  if (props.uiState === 'READY_DRAG_INVERTER') {
+  if (
+    props.uiState === 'READY_DRAG_INVERTER' ||
+    props.uiState === 'DRAG_INVERTER'
+  ) {
     const center =
       props.roofSpecInverters[props.editingRoofIndex][props.editingInverterIndex]
       .polygonCenter;

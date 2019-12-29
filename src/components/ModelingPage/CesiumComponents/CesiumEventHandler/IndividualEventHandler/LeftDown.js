@@ -74,6 +74,13 @@ const LeftDownHandler = (props) => {
         }
         break;
 
+      case 'READY_DRAG_INVERTER':
+        if (pickedObject && props.hoverInverterCenter) {
+          props.disableRotate();
+          props.setUIStateDragInverter();
+        }
+        break;
+
       default:
         break;
     }
@@ -106,7 +113,9 @@ const mapStateToProps = state => {
       state.undoableReducer.present.editingPVPanelManagerReducer
       .disconnectedPanelId,
     editingRoofIndex:
-      state.undoableReducer.present.editingWiringManager.editingRoofIndex
+      state.undoableReducer.present.editingWiringManager.editingRoofIndex,
+    hoverInverterCenter:
+      state.undoableReducer.present.editingWiringManager.hoverInverterCenter
   };
 };
 
@@ -122,6 +131,7 @@ const mapDispatchToProps = dispatch => {
     ),
     setUIStateEditingWiring: () => dispatch(actions.setUIStateEditingWiring()),
     setUIStateDraggingWiring: () => dispatch(actions.setUIStateDraggingWiring()),
+    setUIStateDragInverter: () => dispatch(actions.setUIStateDragInverter()),
     setManualWiringStart: (panelId) => dispatch(
       actions.setManualWiringStart(panelId)
     ),

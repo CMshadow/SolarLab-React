@@ -219,6 +219,27 @@ const MouseMoveHandler = (props) => {
         }
         break;
 
+      case 'READY_DRAG_INVERTER':
+        if(
+          anyPickedObject &&
+          anyPickedObject.id.id ===
+          props.roofSpecInverters[props.editingRoofIndex][props.editingInverterIndex]
+          .polygonCenter.entityId
+        ) {
+          if (props.hoverInverterCenter) {
+            props.releaseHoverInverterCenter();
+          } else {
+            props.setHoverInverterCenter();
+          }
+        } else {
+          if (props.hoverInverterCenter) props.releaseHoverInverterCenter();
+        }
+        break;
+
+      case 'DRAG_INVERTER':
+        props.dragInverter();
+        break;
+
       default:
         break;
     }
@@ -294,8 +315,16 @@ const mapStateToProps = state => {
       state.undoableReducer.present.editingWiringManager.editingStartPoint,
     editingEndPoint:
       state.undoableReducer.present.editingWiringManager.editingEndPoint,
+    editingRoofIndex:
+      state.undoableReducer.present.editingWiringManager.editingRoofIndex,
+    editingInverterIndex:
+      state.undoableReducer.present.editingWiringManager.editingInverterIndex,
     hoverWiringPointPosition:
       state.undoableReducer.present.editingWiringManager.hoverWiringPointPosition,
+    roofSpecInverters:
+      state.undoableReducer.present.editingWiringManager.roofSpecInverters,
+    hoverInverterCenter:
+      state.undoableReducer.present.editingWiringManager.hoverInverterCenter
   };
 };
 
@@ -359,6 +388,13 @@ const mapDispatchToProps = dispatch => {
     releaseHoverRoofTopPointIndex: (point) => dispatch(
       actions.releaseHoverRoofTopPointIndex(point)
     ),
+    releaseHoverInverterCenter: () => dispatch(
+      actions.releaseHoverInverterCenter()
+    ),
+    setHoverInverterCenter: () => dispatch(
+      actions.setHoverInverterCenter()
+    ),
+    dragInverter: () => dispatch(actions.dragInverter())
   };
 };
 

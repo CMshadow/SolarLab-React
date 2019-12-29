@@ -494,54 +494,18 @@ export const placeInverter = (heightOffset=0.2) => (dispatch, getState) => {
   const inverterLength = 0.25;
   const mouseCartesian3 = getState().undoableReducer.present
     .drawingManagerReducer.mouseCartesian3;
-  const inverterCenterPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(mouseCartesian3), null, null, null,
-    Cesium.Color.DARKCYAN
+  const editingRoofIndex = getState().undoableReducer.present
+    .editingWiringManager.editingRoofIndex;
+  const result = makeInverterPolygonAndCenter(
+    mouseCartesian3, workingBuilding, editingRoofIndex, heightOffset, inverterLength
   );
-  if (workingBuilding.type === 'FLAT') {
-    inverterCenterPoint.setCoordinate(
-      null, null, workingBuilding.foundationHeight + heightOffset
-    );
-  } else {
-    inverterCenterPoint.setCoordinate(
-      null, null,
-      Coordinate.heightOfArbitraryNode(
-        workingBuilding.pitchedRoofPolygons[
-          getState().undoableReducer.present.editingWiringManager
-          .editingRoofIndex
-        ],
-        inverterCenterPoint
-      ) + workingBuilding.foundationHeight + heightOffset + inverterLength
-    );
-  }
-  const inverterWNPoint = Point.fromCoordinate(
-    Coordinate.destination(
-      Coordinate.destination(inverterCenterPoint, 0, inverterLength),
-      270, inverterLength
-    )
-  );
-  const inverterWSPoint = Point.fromCoordinate(
-    Coordinate.destination(inverterWNPoint, 180, 2 * inverterLength)
-  );
-  const inverterESPoint = Point.fromCoordinate(
-    Coordinate.destination(inverterWSPoint, 90, 2 * inverterLength)
-  );
-  const inverterENPoint = Point.fromCoordinate(
-    Coordinate.destination(inverterESPoint, 0, 2 * inverterLength)
-  );
-  const hier = Polygon.makeHierarchyFromPolyline(
-    new Polyline(
-      [inverterWNPoint, inverterWSPoint, inverterESPoint, inverterENPoint]
-    ), inverterCenterPoint.height + inverterLength
-  );
-  const inverterPolygon = new Polygon(
-    null, 'inverter', null, hier, null, null, Cesium.Color.DARKCYAN
-  );
+  const inverterPolygon = result.inverterPolygon;
+  const inverterCenter = result.inverterCenter;
 
   return dispatch({
     type: actionTypes.PLACE_INVERTER,
     polygon: inverterPolygon,
-    polygonCenter: inverterCenterPoint
+    polygonCenter: inverterCenter
   })
 }
 
@@ -763,6 +727,83 @@ export const bridging = (heightOffset=0.2) => (dispatch, getState) => {
   })
 }
 
-export const dragInverter = () => {
+export const setHoverInverterCenter = () => {
+  return {
+    type: actionTypes.SET_HOVER_INVERTER_CENTER
+  };
+}
 
+export const releaseHoverInverterCenter = () => {
+  return {
+    type: actionTypes.RELEASE_HOVER_INVERTER_CENTER
+  };
+}
+
+export const dragInverter = (heightOffset=0.2) => (dispatch, getState) => {
+  const inverterLength = 0.25;
+  const workingBuilding = getState().buildingManagerReducer.workingBuilding;
+  const mouseCartesian3 = getState().undoableReducer.present
+    .drawingManagerReducer.mouseCartesian3;
+  const editingRoofIndex = getState().undoableReducer.present
+    .editingWiringManager.editingRoofIndex;
+
+  const result = makeInverterPolygonAndCenter(
+    mouseCartesian3, workingBuilding, editingRoofIndex, heightOffset, inverterLength
+  );
+  const inverterPolygon = result.inverterPolygon;
+  const inverterCenter = result.inverterCenter;
+
+  return dispatch({
+    type: actionTypes.DRAG_INVERTER,
+    polygon: inverterPolygon,
+    polygonCenter: inverterCenter
+  })
+}
+
+const makeInverterPolygonAndCenter = (
+  mouseCartesian3, workingBuilding, editingRoofIndex, heightOffset, inverterLength
+) => {
+  const inverterCenterPoint = Point.fromCoordinate(
+    Coordinate.fromCartesian(mouseCartesian3), null, null, null,
+    Cesium.Color.ORANGE
+  );
+  if (workingBuilding.type === 'FLAT') {
+    inverterCenterPoint.setCoordinate(
+      null, null, workingBuilding.foundationHeight + heightOffset
+    );
+  } else {
+    inverterCenterPoint.setCoordinate(
+      null, null,
+      Coordinate.heightOfArbitraryNode(
+        workingBuilding.pitchedRoofPolygons[editingRoofIndex],
+        inverterCenterPoint
+      ) + workingBuilding.foundationHeight + heightOffset
+    );
+  }
+  const inverterWNPoint = Point.fromCoordinate(
+    Coordinate.destination(
+      Coordinate.destination(inverterCenterPoint, 0, inverterLength),
+      270, inverterLength
+    )
+  );
+  const inverterWSPoint = Point.fromCoordinate(
+    Coordinate.destination(inverterWNPoint, 180, 2 * inverterLength)
+  );
+  const inverterESPoint = Point.fromCoordinate(
+    Coordinate.destination(inverterWSPoint, 90, 2 * inverterLength)
+  );
+  const inverterENPoint = Point.fromCoordinate(
+    Coordinate.destination(inverterESPoint, 0, 2 * inverterLength)
+  );
+  const hier = Polygon.makeHierarchyFromPolyline(
+    new Polyline(
+      [inverterWNPoint, inverterWSPoint, inverterESPoint, inverterENPoint]
+    ), inverterCenterPoint.height
+  );
+  return {
+    inverterPolygon: new Polygon(
+      null, 'inverter', null, hier, null, null, Cesium.Color.DARKCYAN
+    ),
+    inverterCenter: inverterCenterPoint
+  };
 }
