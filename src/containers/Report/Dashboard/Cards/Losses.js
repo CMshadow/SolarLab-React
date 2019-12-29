@@ -29,8 +29,8 @@ class Losses extends Component {
 function mapStateToProps(state) {
     return {
         loss: {
-            loaded: state.loss.loaded,
-            option: state.loss.option,
+            loaded: state.undoableReducer.present.reportManager.loss.loaded,
+            option: state.undoableReducer.present.reportManager.loss.option,
         },
     }
 }

@@ -2,7 +2,7 @@ import UtilFunctions from "../../infrastructure/util/UtilFunctions";
 import Numeral from "../../infrastructure/util/NumeralCustom";
 
 export const request_weather = () => (dispatch, getState) => {
-  let displayMode = getState().displayMode;
+  let displayMode = getState().undoableReducer.present.reportManager.displayMode;
   // process url here
   // fake process
   let URL = '../../../public';
@@ -380,7 +380,7 @@ export const request_loss = () => (dispatch, getState) => {
 };
 
 export const request_energy = () => (dispatch, getState) => {
-  let displayMode = getState().displayMode;
+  let displayMode = getState().undoableReducer.present.reportManager.displayMode;
   // process url here
   // fake process
   let URL = '../../../public';
@@ -711,7 +711,7 @@ export const request_cash_flow = () => (dispatch, getState) => {
 };
 
 export const request_board_working_condition_right = () => (dispatch, getState) => {
-  let displayMode = getState().displayMode;
+  let displayMode = getState().undoableReducer.present.reportManager.displayMode;
   // process url here
   // fake process
   let URL = '../../../public';
@@ -798,7 +798,7 @@ export const reload_board_working_condition_right = (displayMode) => (dispatch, 
 };
 
 export const request_board_working_condition_left = () => (dispatch, getState) => {
-  let displayMode = getState().displayMode;
+  let displayMode = getState().undoableReducer.present.reportManager.displayMode;
   // process url here
   // fake process
   let URL = '../../../public/';
@@ -885,7 +885,7 @@ export const reload_board_working_condition_left = (displayMode) => (dispatch, g
 };
 
 export const request_board_working_condition_center = () => (dispatch, getState) => {
-  let displayMode = getState().displayMode;
+  let displayMode = getState().undoableReducer.present.reportManager.displayMode;
   // process url here
   // fake process
   let URL = '../../../public/';

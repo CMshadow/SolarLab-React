@@ -31,8 +31,8 @@ class Energy extends Component {
 function mapStateToProps(state) {
     return {
         energy: {
-            loaded: state.energy.loaded,
-            option: state.energy.option,
+            loaded: state.undoableReducer.present.reportManager.energy.loaded,
+            option: state.undoableReducer.present.reportManager.energy.option,
         },
     }
 }

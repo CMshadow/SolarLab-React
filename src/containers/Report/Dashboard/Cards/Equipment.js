@@ -29,35 +29,35 @@ class Equipment extends Component {
 
 // pass data to props
 function mapStateToProps(state) {
-    if (state.metadata.loaded) {
+    if (state.undoableReducer.present.reportManager.metadata.loaded) {
         return {
-            metadata: state.metadata,
+            metadata: state.undoableReducer.present.reportManager.metadata,
             table: [
                 {
                     key: '1',
                     device: 'Panel',
-                    model: state.metadata.option.data.Panel.Model,
-                    quantity: state.metadata.option.data.Panel.Quantity,
-                    capital: state.metadata.option.data.Panel.Cost,
+                    model: state.undoableReducer.present.reportManager.metadata.option.data.Panel.Model,
+                    quantity: state.undoableReducer.present.reportManager.metadata.option.data.Panel.Quantity,
+                    capital: state.undoableReducer.present.reportManager.metadata.option.data.Panel.Cost,
                 },
                 {
                     key: '2',
                     device: 'Inverter',
-                    model: state.metadata.option.data.Inverter.Model,
-                    quantity: state.metadata.option.data.Inverter.Quantity,
-                    capital: state.metadata.option.data.Inverter.Cost,
+                    model: state.undoableReducer.present.reportManager.metadata.option.data.Inverter.Model,
+                    quantity: state.undoableReducer.present.reportManager.metadata.option.data.Inverter.Quantity,
+                    capital: state.undoableReducer.present.reportManager.metadata.option.data.Inverter.Cost,
                 },
                 {
                     key: '3',
                     device: 'Wire',
-                    model: state.metadata.option.data.Wire.Model,
-                    quantity: Numeral(state.metadata.option.data.Wire.Quantity).format('0,0.0') + ' M',
-                    capital: state.metadata.option.data.Wire.Cost,
+                    model: state.undoableReducer.present.reportManager.metadata.option.data.Wire.Model,
+                    quantity: Numeral(state.undoableReducer.present.reportManager.metadata.option.data.Wire.Quantity).format('0,0.0') + ' M',
+                    capital: state.undoableReducer.present.reportManager.metadata.option.data.Wire.Cost,
                 },
             ],
         }
     }
-    return { metadata: state.metadata }
+    return { metadata: state.undoableReducer.present.reportManager.metadata }
 }
 
 export default connect(mapStateToProps)(Equipment);

@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { Card, Col, Row, Descriptions, Typography, Divider, Skeleton } from "antd";
 import { connect } from "react-redux";
-import UtilFunctions from "../../request_functions/UtilFunctions";
+import UtilFunctions from "../../../../infrastructure/util/UtilFunctions";
 import Numeral from "numeral";
 const { Title } = Typography;
 
@@ -63,7 +63,7 @@ class Overview extends Component {
 
 // pass data to props
 function mapStateToProps(state) {
-    return { metadata: state.metadata }
+    return { metadata: state.undoableReducer.present.reportManager.metadata }
 }
 
 export default connect(mapStateToProps)(Overview);

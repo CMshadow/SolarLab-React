@@ -31,8 +31,8 @@ class Weather extends Component {
 function mapStateToProps(state) {
     return {
         weather: {
-            loaded: state.weather.loaded,
-            option: state.weather.option,
+            loaded: state.undoableReducer.present.reportManager.weather.loaded,
+            option: state.undoableReducer.present.reportManager.weather.option,
         },
     }
 }

@@ -5,22 +5,23 @@ import Weather from "./Weather";
 import BoardWorkingCondition from "./BoardWorkingCondition";
 import Energy from "./Energy";
 
-import UtilFunctions from "../../request_functions/UtilFunctions";
-import store from "../../store";
+import UtilFunctions from "../../../../infrastructure/util/UtilFunctions";
+// import store from "../../store";
 
-import { reload_weather } from "../../request_functions/request_weather";
-import { reload_energy } from "../../request_functions/request_energy";
-import { reload_board_working_condition_left } from "../../request_functions/request_board_working_condition_left";
-import { reload_board_working_condition_center } from "../../request_functions/request_board_working_condition_center";
-import { reload_board_working_condition_right } from "../../request_functions/request_board_working_condition_right";
+import * as actions from '../../../../store/actions/index';
+// import { reload_weather } from "../../request_functions/request_weather";
+// import { reload_energy } from "../../request_functions/request_energy";
+// import { reload_board_working_condition_left } from "../../request_functions/request_board_working_condition_left";
+// import { reload_board_working_condition_center } from "../../request_functions/request_board_working_condition_center";
+// import { reload_board_working_condition_right } from "../../request_functions/request_board_working_condition_right";
 
-const reload = (displayMode) => {
-    reload_weather(store, displayMode);
-    reload_energy(store, displayMode);
-    reload_board_working_condition_left(store, displayMode);
-    reload_board_working_condition_center(store, displayMode);
-    reload_board_working_condition_right(store, displayMode);
-};
+// const reload = (displayMode) => {
+//     reload_weather(store, displayMode);
+//     reload_energy(store, displayMode);
+//     reload_board_working_condition_left(store, displayMode);
+//     reload_board_working_condition_center(store, displayMode);
+//     reload_board_working_condition_right(store, displayMode);
+// };
 
 // generate month select group
 const monthGroup = [];
@@ -77,24 +78,24 @@ class DateStatisticSelectGroup extends Component {
     }
 
     onChangeRadio = mode => {
-        reload({ ...this.props.displayMode, mode: mode.target.value });
+        this.props.reload({ ...this.props.displayMode, mode: mode.target.value });
     };
 
     onChangeSelectMonth = month => {
         let prevDay = this.props.displayMode.day;
         let nextDayLimit = UtilFunctions.getDayOfMonth(month);
         if (prevDay > nextDayLimit)
-            reload({ ...this.props.displayMode, month: month, day: nextDayLimit });
+            this.props.reload({ ...this.props.displayMode, month: month, day: nextDayLimit });
         else
-            reload({ ...this.props.displayMode, month: month });
+            this.props.reload({ ...this.props.displayMode, month: month });
     };
 
     onChangeSelectDay = day => {
-        reload({ ...this.props.displayMode, day: day });
+        this.props.reload({ ...this.props.displayMode, day: day });
     };
 
     onChangeSelectInverter = inverter => {
-        reload({ ...this.props.displayMode, inverter: inverter });
+        this.props.reload({ ...this.props.displayMode, inverter: inverter });
     };
 
     render () {
@@ -177,24 +178,44 @@ class DateStatisticSelectGroup extends Component {
 function mapStateToProps(state) {
     let props = {
         displayMode: {
-            mode: state.displayMode.mode,
-            month: state.displayMode.month,
-            day: state.displayMode.day,
-            inverter: state.displayMode.inverter,
+            mode: state.undoableReducer.present.reportManager.displayMode.mode,
+            month: state.undoableReducer.present.reportManager.displayMode.month,
+            day: state.undoableReducer.present.reportManager.displayMode.day,
+            inverter: state.undoableReducer.present.reportManager.displayMode.inverter,
         },
     };
 
-    if (state.metadata.loaded)
+    if (state.undoableReducer.present.reportManager.metadata.loaded)
         props.metadata = {
-            loaded: state.metadata.loaded,
-            inverter_count: state.metadata.option.data.Inverter.Quantity,
+            loaded: state.undoableReducer.present.reportManager.metadata.loaded,
+            inverter_count: state.undoableReducer.present.reportManager.metadata.option.data.Inverter.Quantity,
         };
     else
         props.metadata = {
-            loaded: state.metadata.loaded,
+            loaded: state.undoableReducer.present.reportManager.metadata.loaded,
         };
 
     return props;
 }
+// const reload = (displayMode) => {
+//     reload_weather(store, displayMode);
+//     reload_energy(store, displayMode);
+//     reload_board_working_condition_left(store, displayMode);
+//     reload_board_working_condition_center(store, displayMode);
+//     reload_board_working_condition_right(store, displayMode);
+// };
+const mapDispatchToProps = dispatch => {
+    return {
+        reload: (displayMode) => {
+            dispatch(actions.reload_weather(displayMode));
+            dispatch(actions.reload_energy(displayMode));
+            dispatch(actions.reload_board_working_condition_left(displayMode));
+            dispatch(actions.reload_board_working_condition_center(displayMode));
+            dispatch(actions.reload_board_working_condition_right(displayMode));
+        }
+        
+   };
+};
+  
 
-export default connect(mapStateToProps)(DateStatisticSelectGroup);
+export default connect(mapStateToProps, mapDispatchToProps)(DateStatisticSelectGroup);

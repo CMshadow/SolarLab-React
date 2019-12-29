@@ -7,7 +7,7 @@ import panel from "../resource/panel.png";
 import dollar from "../resource/dollar.png";
 import factory from "../resource/factory.png";
 import house from "../resource/house.png";
-import UtilFunctions from "../request_functions/UtilFunctions";
+import UtilFunctions from "../../../infrastructure/util/UtilFunctions";
 
 import './print-preview.css';
 import Numeral from "numeral";
@@ -220,61 +220,61 @@ class PrintPreview extends Component {
 
 // pass data to props
 function mapStateToProps(state) {
-    let props = state;
+    let props = state.undoableReducer.present.reportManager;
 
     // process loading metadata
-    if (state.metadata.loaded) {
+    if (state.undoableReducer.present.reportManager.metadata.loaded) {
         props = {
             ...props,
             table: [
                 {
                     key: '1',
                     device: 'Panel',
-                    model: state.metadata.option.data.Panel.Model,
-                    quantity: state.metadata.option.data.Panel.Quantity,
-                    capital: state.metadata.option.data.Panel.Cost,
+                    model: state.undoableReducer.present.reportManager.metadata.option.data.Panel.Model,
+                    quantity: state.undoableReducer.present.reportManager.metadata.option.data.Panel.Quantity,
+                    capital: state.undoableReducer.present.reportManager.metadata.option.data.Panel.Cost,
                 },
                 {
                     key: '2',
                     device: 'Inverter',
-                    model: state.metadata.option.data.Inverter.Model,
-                    quantity: state.metadata.option.data.Inverter.Quantity,
-                    capital: state.metadata.option.data.Inverter.Cost,
+                    model: state.undoableReducer.present.reportManager.metadata.option.data.Inverter.Model,
+                    quantity: state.undoableReducer.present.reportManager.metadata.option.data.Inverter.Quantity,
+                    capital: state.undoableReducer.present.reportManager.metadata.option.data.Inverter.Cost,
                 },
                 {
                     key: '3',
                     device: 'Wire',
-                    model: state.metadata.option.data.Wire.Model,
-                    quantity: Numeral(state.metadata.option.data.Wire.Quantity).format('0,0.0') + ' M',
-                    capital: state.metadata.option.data.Wire.Cost,
+                    model: state.undoableReducer.present.reportManager.metadata.option.data.Wire.Model,
+                    quantity: Numeral(state.undoableReducer.present.reportManager.metadata.option.data.Wire.Quantity).format('0,0.0') + ' M',
+                    capital: state.undoableReducer.present.reportManager.metadata.option.data.Wire.Cost,
                 },
             ],
             icon: {
                 panel: {
                     image: panel,
                     title: 'PV Installed Capacity',
-                    value: state.metadata.option.data.PV_Installed_Capacity,
+                    value: state.undoableReducer.present.reportManager.metadata.option.data.PV_Installed_Capacity,
                     suffix: 'kW',
                     precision: 1,
                 },
                 dollar: {
                     image: dollar,
                     title: 'Project Cost',
-                    value: state.metadata.option.data.Project_Cost,
+                    value: state.undoableReducer.present.reportManager.metadata.option.data.Project_Cost,
                     suffix: 'k USD',
                     precision: 1,
                 },
                 factory: {
                     image: factory,
                     title: <div>CO<sub>2</sub> Emission Reduced</div>,
-                    value: state.metadata.option.data.CO2_Reduced,
+                    value: state.undoableReducer.present.reportManager.metadata.option.data.CO2_Reduced,
                     suffix: 'tons/year',
                     precision: 1,
                 },
                 house: {
                     image: house,
                     title: 'Annual PV Production',
-                    value: state.metadata.option.data.Annual_PV_Production,
+                    value: state.undoableReducer.present.reportManager.metadata.option.data.Annual_PV_Production,
                     suffix: 'MWh',
                     precision: 1,
                 },

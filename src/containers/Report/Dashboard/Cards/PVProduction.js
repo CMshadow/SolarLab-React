@@ -29,8 +29,8 @@ class PVProduction extends Component {
 function mapStateToProps(state) {
     return {
         pvProduction: {
-            loaded: state.pvProduction.loaded,
-            option: state.pvProduction.option,
+            loaded: state.undoableReducer.present.reportManager.pvProduction.loaded,
+            option: state.undoableReducer.present.reportManager.pvProduction.option,
         },
     }
 }
