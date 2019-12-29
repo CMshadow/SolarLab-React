@@ -7,6 +7,8 @@ import {
   Col,
   Button,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
+
 
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import * as actions from '../../../../../store/actions/index';
@@ -26,7 +28,7 @@ const DrawInnerButton = (props) => {
         props.setUIStateDrawingInner();
       }}
     >
-      Draw Inner Lines
+      <FormattedMessage id='drawinnerlines' />
     </Button>
   )
 
@@ -44,12 +46,13 @@ const DrawInnerButton = (props) => {
           props.enableRotate();
         } else {
           ErrorNotification(
-            'Drawing Error', 'Please right click inner lines to provide types'
+            props.intl.formatMessage({id:'ErrorInnerDrawing'}),
+            props.intl.formatMessage({id:'ErrorInnerLineType'})
           )
         }
       }}
     >
-      ...Click to Finish...
+      <FormattedMessage id='clicktofinishInnerline' />
     </Button>
   )
 
@@ -63,7 +66,7 @@ const DrawInnerButton = (props) => {
         props.setUIStateDrawingInner();
       }}
     >
-      Edit Inner Lines
+      <FormattedMessage id='editInnerLines' />
     </Button>
   )
 
@@ -99,4 +102,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DrawInnerButton);
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(DrawInnerButton));

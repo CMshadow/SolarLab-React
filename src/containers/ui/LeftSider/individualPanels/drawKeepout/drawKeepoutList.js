@@ -8,6 +8,8 @@ import {
   Col,
   Button,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
+
 
 import * as actions from '../../../../../store/actions/index';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
@@ -46,7 +48,7 @@ class DrawKeepoutList extends Component {
       <div>
       <Row>
         <Col span={22}>
-          <h3>Keepouts</h3>
+          <h3><FormattedMessage id='keep_outs' /></h3>
         </Col>
         <Col span={2}>
           <Button

@@ -8,6 +8,7 @@ import {
   Button,
   Popover
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 
@@ -30,7 +31,7 @@ class EditRoofForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4>Roof Height</h4>
+            <h4><FormattedMessage id='buildingHeight' /></h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('foundationHeight', {
@@ -54,7 +55,7 @@ class EditRoofForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4> Eave Setback </h4>
+            <h4> <FormattedMessage id='eaveSetback' /> </h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('eaveStb', {
@@ -78,7 +79,7 @@ class EditRoofForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4> Parapet Height </h4>
+            <h4> <FormattedMessage id='parapetHeight' /> </h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('parapetHeight', {

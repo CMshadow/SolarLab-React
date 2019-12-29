@@ -15,6 +15,7 @@ import {
   Tabs,
   Spin
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../store/actions/index';
 import axios from '../../../../axios-setup';
@@ -152,7 +153,7 @@ class SetUpWiringPanel extends Component {
             <Select
               showSearch
               optionFilterProp='children'
-              placeholder='Select a inverter'
+              placeholder={this.props.intl.formatMessage({id:'select_a_inverter'})}
               onChange={(e) => {
                 this.setState({selectInverterID: e});
                 this.props.calculateManualInverter(
@@ -179,7 +180,7 @@ class SetUpWiringPanel extends Component {
     return (
       <div>
         <Row type="flex" justify="center">
-          <h3>Setup Wiring</h3>
+          <h3><FormattedMessage id='setup_wiring' /></h3>
         </Row>
         <Form>
           {pitchedRoofSelect}
@@ -194,7 +195,7 @@ class SetUpWiringPanel extends Component {
                 this.props.calculateAutoInverter(this.state.selectRoofIndex)
             }}
           >
-            <TabPane tab="Manual" key="manual">
+            <TabPane tab={this.props.intl.formatMessage({id:'wiring_manual_selection'})} key="manual">
               <Spin
                 spinning={this.props.backendLoading}
                 indicator={<Icon type="loading" spin />}
@@ -203,7 +204,7 @@ class SetUpWiringPanel extends Component {
               </Spin>
             </TabPane>
             <TabPane
-              tab='Auto'
+              tab={this.props.intl.formatMessage({id:'wiring_auto_selection'})}
               key="auto"
             >
               <Row>
@@ -229,7 +230,7 @@ class SetUpWiringPanel extends Component {
             }
             onClick = {this.props.setUIStateSetUpBridging}
           >
-            Continue <Icon type='right' />
+            <FormattedMessage id='continue_button_wiring' /> <Icon type='right' />
           </Button>
         </Row>
       </div>
@@ -272,4 +273,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'setupWiringPanel' })(SetUpWiringPanel));
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(Form.create({ name: 'setupWiringPanel' })(SetUpWiringPanel)));

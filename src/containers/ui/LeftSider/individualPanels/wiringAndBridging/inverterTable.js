@@ -12,6 +12,7 @@ import {
   Menu,
   Icon
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import {
   emptyListTemplate
@@ -62,7 +63,7 @@ class InverterTable extends Component {
                   this.props.manualWiring(this.props.roofIndex, inverterInd, wiringInd);
                 }}
               >
-                Manual
+                <FormattedMessage id='wiring_manual' />
               </Menu.Item>
             </Menu>
           );
@@ -85,7 +86,7 @@ class InverterTable extends Component {
                     this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd);
                   }}
                 >
-                  Auto
+                  <FormattedMessage id='wiring_auto' />
                 </Dropdown.Button>
               )
             } else {
@@ -128,8 +129,8 @@ class InverterTable extends Component {
                   this.props.uiState === 'SETUP_WIRING' ||
                   wiringInd !== this.props.editingWiringIndex ||
                   inverterInd !== this.props.editingInverterIndex ?
-                  'Edit' :
-                  'Stop'
+                  <FormattedMessage id='edit_wiring' /> :
+                  <FormattedMessage id='stop_editing_wiring' />
                 }
               </Button>
             );
@@ -153,14 +154,14 @@ class InverterTable extends Component {
 
   columns = [
     {
-      title: 'Inverter',
+      title: <FormattedMessage id='inverter_name' />,
       dataIndex: 'inverterName',
       key: 'name',
       width: '60%',
       ellipsis: true
     },
     {
-      title: 'P/S',
+      title: <FormattedMessage id='panel_per_string' />,
       dataIndex: 'panelPerString',
       key: 'panelPerString',
       width: '20%',
@@ -168,7 +169,7 @@ class InverterTable extends Component {
       align: 'center'
     },
     {
-      title: 'S/I',
+      title: <FormattedMessage id='string_per_inverter' />,
       dataIndex: 'stringPerInverter',
       key: 'stringPerInverter',
       width: '20%',

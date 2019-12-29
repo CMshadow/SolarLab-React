@@ -10,6 +10,7 @@ import {
   DatePicker
 } from 'antd';
 import moment from 'moment';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
@@ -81,12 +82,12 @@ class ShadowControl extends Component {
     return (
       <Form onSubmit={this.handleSubmit}>
         <Row type="flex" justify="center">
-          <h3>Shadow Settings</h3>
+          <h3><FormattedMessage id='shadow_setting' /></h3>
         </Row>
         <Form.Item>
           <Row>
             <Col span={10} offset={2}>
-              <h4>Date Range</h4>
+              <h4><FormattedMessage id='date_range' /></h4>
             </Col>
           </Row>
           <Row>
@@ -120,7 +121,7 @@ class ShadowControl extends Component {
         <Form.Item>
           <Row>
             <Col span={8} offset={2}>
-              <h4> Time Zone </h4>
+              <h4><FormattedMessage id='time_zone' /></h4>
             </Col>
             <Col span={12}>
               {getFieldDecorator('timeZone', {
@@ -136,7 +137,7 @@ class ShadowControl extends Component {
         <Form.Item>
           <Row>
             <Col span={10} offset={2}>
-              <h4>Time Range</h4>
+              <h4><FormattedMessage id='time_range' /></h4>
             </Col>
           </Row>
           <Row>
@@ -166,7 +167,7 @@ class ShadowControl extends Component {
             <Button type='primary' shape='round' size='small'
               htmlType="submit" block ghost
             >
-              Project Shadow
+              <FormattedMessage id='project_shadow' />
             </Button>
           </Col>
         </Row>

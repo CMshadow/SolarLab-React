@@ -8,6 +8,7 @@ import {
   Col,
   Button,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
@@ -37,7 +38,7 @@ class RoofList3D extends Component {
   render () {
     const header = (
       <Row type="flex" justify="center">
-        <h3>Adjust Roof</h3>
+        <h3><FormattedMessage id='adjustRoof' /></h3>
       </Row>
     );
 

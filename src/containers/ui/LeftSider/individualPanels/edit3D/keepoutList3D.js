@@ -8,6 +8,7 @@ import {
   Col,
   Button,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
@@ -25,7 +26,7 @@ class KeepoutList3D extends Component {
   render () {
     const header = (
       <Row type="flex" justify="center">
-        <h3>Adjust Keepouts</h3>
+        <h3><FormattedMessage id='adjustKeepouts' /></h3>
       </Row>
     );
 
