@@ -7,11 +7,11 @@ export const request_weather = () => (dispatch, getState) => {
   // fake process
   let URL = '../../../public';
   if (displayMode.mode === 'year') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Year.json';
+    URL = './mock/POA Irradiance Components TM3 Year.json';
   } else if (displayMode.mode === 'month') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Month.json';
+    URL = './mock/POA Irradiance Components TM3 Month.json';
   } else if (displayMode.mode === 'day') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Day.json';
+    URL = './mock/POA Irradiance Components TM3 Day.json';
   }
 
   fetch(URL)
@@ -207,7 +207,7 @@ export const reload_weather = (displayMode) => (dispatch, getState) => {
 };
 
 export const request_pv_production = () => (dispatch, getState) => {
-  fetch('../../../public/mock/Monthly PV Production.json')
+  fetch('./mock/Monthly PV Production.json')
     .then(response => response.json())
     .then(response_json => {
       let load_option = {};
@@ -264,9 +264,11 @@ export const request_pv_production = () => (dispatch, getState) => {
 };
 
 export const request_metadata = () => (dispatch, getState) => {
-  fetch('../../../public/mock/Get Report Meta Data.json')
+  console.log('hello')
+  fetch('./mock/Get Report Meta Data.json')
     .then(response => response.json())
     .then(response_json => {
+      console.log(response_json)
       let load_option = response_json;
       // set document title
       document.title = load_option['data']['Project_Name'] + ' - Albedo';
@@ -282,7 +284,7 @@ export const request_metadata = () => (dispatch, getState) => {
 };
 
 export const request_loss = () => (dispatch, getState) => {
-  fetch('../../../public/mock/Loss.json')
+  fetch('./mock/Loss.json')
     .then(response => response.json())
     .then(response_json => {
 
@@ -385,11 +387,11 @@ export const request_energy = () => (dispatch, getState) => {
   // fake process
   let URL = '../../../public';
   if (displayMode.mode === 'year') {
-    URL = '../../../public/mock/Sample DC and AC Power Output of Single PV Array Year.json';
+    URL = './mock/Sample DC and AC Power Output of Single PV Array Year.json';
   } else if (displayMode.mode === 'month') {
-    URL = '../../../public/mock/Sample DC and AC Power Output of Single PV Array Month.json';
+    URL = './mock/Sample DC and AC Power Output of Single PV Array Month.json';
   } else if (displayMode.mode === 'day') {
-    URL = '../../../public/mock/Sample DC and AC Power Output of Single PV Array Day.json';
+    URL = './mock/Sample DC and AC Power Output of Single PV Array Day.json';
   }
 
   fetch(URL)
@@ -577,7 +579,7 @@ export const reload_energy = (displayMode) => (dispatch, getState) => {
 
 export const request_electricity_bill = () => (dispatch, getState) => {
   // load monthly electricity bill chart
-  fetch('../../../public/mock/Monthly Electricity Bill.json')
+  fetch('./mock/Monthly Electricity Bill.json')
     .then(response => response.json())
     .then(response_json => {
       //console.log(response_json);
@@ -653,7 +655,7 @@ export const request_electricity_bill = () => (dispatch, getState) => {
 };
 
 export const request_cash_flow = () => (dispatch, getState) => {
-  fetch('../../../public/mock/Cash Flow.json')
+  fetch('./mock/Cash Flow.json')
     .then(response => response.json())
     .then(response_json => {
       let load_option = {};
@@ -716,14 +718,14 @@ export const request_board_working_condition_right = () => (dispatch, getState) 
   // fake process
   let URL = '../../../public';
   if (displayMode.mode === 'year') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Year.json';
+    URL = './mock/POA Irradiance Components TM3 Year.json';
   } else if (displayMode.mode === 'month') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Month.json';
+    URL = './mock/POA Irradiance Components TM3 Month.json';
   } else if (displayMode.mode === 'day') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Day.json';
+    URL = './mock/POA Irradiance Components TM3 Day.json';
   }
 
-  fetch('../../../public/mock/Sample Array Pmp, Sample Array Imp, Sample Array Vmp (Board Working Condition).json')
+  fetch('./mock/Sample Array Pmp, Sample Array Imp, Sample Array Vmp (Board Working Condition).json')
     .then(response => response.json())
     .then(response_json => {
       //console.log(response_json);
@@ -803,14 +805,14 @@ export const request_board_working_condition_left = () => (dispatch, getState) =
   // fake process
   let URL = '../../../public/';
   if (displayMode.mode === 'year') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Year.json';
+    URL = './mock/POA Irradiance Components TM3 Year.json';
   } else if (displayMode.mode === 'month') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Month.json';
+    URL = './mock/POA Irradiance Components TM3 Month.json';
   } else if (displayMode.mode === 'day') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Day.json';
+    URL = './mock/POA Irradiance Components TM3 Day.json';
   }
 
-  fetch('../../../public/mock/Sample Array Pmp, Sample Array Imp, Sample Array Vmp (Board Working Condition).json')
+  fetch('./mock/Sample Array Pmp, Sample Array Imp, Sample Array Vmp (Board Working Condition).json')
     .then(response => response.json())
     .then(response_json => {
       //console.log(response_json);
@@ -890,14 +892,14 @@ export const request_board_working_condition_center = () => (dispatch, getState)
   // fake process
   let URL = '../../../public/';
   if (displayMode.mode === 'year') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Year.json';
+    URL = './mock/POA Irradiance Components TM3 Year.json';
   } else if (displayMode.mode === 'month') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Month.json';
+    URL = './mock/POA Irradiance Components TM3 Month.json';
   } else if (displayMode.mode === 'day') {
-    URL = '../../../public/mock/POA Irradiance Components TM3 Day.json';
+    URL = './mock/POA Irradiance Components TM3 Day.json';
   }
 
-  fetch('../../../public/mock/Sample Array Pmp, Sample Array Imp, Sample Array Vmp (Board Working Condition).json')
+  fetch('./mock/Sample Array Pmp, Sample Array Imp, Sample Array Vmp (Board Working Condition).json')
     .then(response => response.json())
     .then(response_json => {
       //console.log(response_json);
