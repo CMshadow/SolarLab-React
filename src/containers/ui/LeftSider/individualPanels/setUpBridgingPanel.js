@@ -206,16 +206,6 @@ class SetUpBridgingPanel extends Component {
           >
             Finish <Icon type='check' />
           </Button>
-          <Button
-            type='primary'
-            shape='round'
-            size='large'
-            onClick = {() => {
-              console.log(this.generateReportJSON(this.props.workingBuilding, 0))
-            }}
-          >
-            TEST <Icon type='check' />
-          </Button>
         </Row>
       </div>
     );
