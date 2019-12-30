@@ -3,6 +3,7 @@ import * as Cesium from 'cesium';
 import * as martinez from 'martinez-polygon-clipping';
 
 import * as actionTypes from '../actions/actionTypes';
+import * as actions from '../actions/index';
 import {
   shadow_vector,
   getRatio,
@@ -80,6 +81,7 @@ export const projectAllShadow = (sunPositionCollection) =>
   const foundationHeight = getState().buildingManagerReducer.workingBuilding
     .foundationHeight;
 
+  dispatch(actions.setBackendLoadingTrue());
   // 女儿墙转换为普通障碍物
   const wallKeepout =
     buildingType === 'PITCHED' ||
@@ -207,6 +209,7 @@ export const projectAllShadow = (sunPositionCollection) =>
     specialParapetShadowPolygonsDict[obj.polygon.entityId] = obj
   });
 
+  dispatch(actions.setBackendLoadingFalse());
   return dispatch({
     type: actionTypes.PROJECT_ALL_SHADOW,
     shadows: shadowPolygonsDict,

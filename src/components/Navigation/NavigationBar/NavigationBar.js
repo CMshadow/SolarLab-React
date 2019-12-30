@@ -21,7 +21,7 @@ class NavigationBar extends Component{
         <Menu
           theme='dark'
           mode='horizontal'
-          defaultSelectedKeys={['2']}
+          defaultSelectedKeys={['1']}
           style={{ lineHeight: '64px', background:"#202020" }}
         >
           <Menu.Item style = {{background:"#202020"}} key='1'>
