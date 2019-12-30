@@ -2,6 +2,7 @@ import { Menu } from 'antd';
 import React, { Component } from 'react';
 import 'antd/dist/antd.css';
 import { Route, Switch, withRouter } from 'react-router-dom';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 class NavigationBar extends Component{
 

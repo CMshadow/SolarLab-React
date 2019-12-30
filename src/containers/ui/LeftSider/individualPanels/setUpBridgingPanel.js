@@ -15,6 +15,7 @@ import {
   Tabs,
   Spin
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../store/actions/index';
 import axios from '../../../../axios-setup';
@@ -186,7 +187,7 @@ class SetUpBridgingPanel extends Component {
     return (
       <div>
         <Row type="flex" justify="center">
-          <h3>Setup Bridging</h3>
+          <h3><FormattedMessage id='setupBridging' /></h3>
         </Row>
         <Form>
           {pitchedRoofSelect}
@@ -204,7 +205,7 @@ class SetUpBridgingPanel extends Component {
               this.props.bindInverters();
             }}
           >
-            Finish <Icon type='check' />
+            <FormattedMessage id='finish_bridging' /> <Icon type='check' />
           </Button>
           <Button
             type='primary'
