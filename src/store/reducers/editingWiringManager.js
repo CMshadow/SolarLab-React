@@ -27,6 +27,7 @@ const initialState = {
 
   editingBridgingIndex: null,
   editingBridgingPointIndex: null,
+  editingBridgingMainPolylineIndex: null
 };
 
 const fetchUserInverters = (state, action) => {
@@ -85,7 +86,6 @@ const setManualWiringStart = (state, action) => {
   const newInverter = Inverter.fromInverter(
     state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
   );
-  console.log(action.wiring)
   newInverter.setWiring(state.editingWiringIndex, action.wiring);
   const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
   roofInverters.splice(state.editingInverterIndex, 1, newInverter);
@@ -582,6 +582,80 @@ const dragBridgingPoint = (state, action) => {
   };
 }
 
+const setHoverBridgingMainPolyline = (state, action) => {
+  const newPolyline = Polyline.fromPolyline(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    .bridging[action.bridgingMainPolylineIndex].mainPolyline
+  );
+  newPolyline.setColor(Cesium.Color.ORANGE);
+  const newInverter = Inverter.fromInverter(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+  );
+  newInverter.bridging[action.bridgingMainPolylineIndex].mainPolyline =
+  newPolyline;
+  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
+  roofInverters.splice(state.editingInverterIndex, 1, newInverter);
+  return {
+    ...state,
+    roofSpecInverters: {
+      ...state.roofSpecInverters,
+      [state.editingRoofIndex]: roofInverters,
+    },
+    editingBridgingMainPolylineIndex: action.bridgingMainPolylineIndex,
+  };
+}
+
+const releaseHoverBridgingMainPolyline = (state, action) => {
+  const newPolyline = Polyline.fromPolyline(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    .bridging[state.editingBridgingMainPolylineIndex].mainPolyline
+  );
+  newPolyline.setColor(Cesium.Color.DARKCYAN);
+  const newInverter = Inverter.fromInverter(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+  );
+  newInverter.bridging[state.editingBridgingMainPolylineIndex].mainPolyline =
+  newPolyline;
+  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
+  roofInverters.splice(state.editingInverterIndex, 1, newInverter);
+  return {
+    ...state,
+    roofSpecInverters: {
+      ...state.roofSpecInverters,
+      [state.editingRoofIndex]: roofInverters,
+    },
+    editingBridgingMainPolylineIndex: null,
+  };
+}
+
+const complementPointOnBridging = (state, action) => {
+  const newInverter = Inverter.fromInverter(
+    state.roofSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+  );
+  const newBridging = newInverter.bridging.map(bridging =>
+    Bridging.fromBridging(bridging)
+  );
+  newBridging[state.editingBridgingMainPolylineIndex].mainPolyline.points.splice(
+    action.indexToAdd, 0, action.point
+  );
+  newBridging[state.editingBridgingMainPolylineIndex].anchorPanelMap =
+  newBridging[state.editingBridgingMainPolylineIndex].anchorPanelMap.map(obj =>
+    obj.anchorIndex >= action.indexToAdd ?
+    {...obj, anchorIndex: obj.anchorIndex + 1} :
+    obj
+  );
+  newInverter.bridging = newBridging;
+  const roofInverters = [...state.roofSpecInverters[state.editingRoofIndex]];
+  roofInverters.splice(state.editingInverterIndex, 1, newInverter);
+  return {
+    ...state,
+    roofSpecInverters: {
+      ...state.roofSpecInverters,
+      [state.editingRoofIndex]: roofInverters
+    }
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.FETCH_USER_INVERTERS:
@@ -633,7 +707,14 @@ const reducer = (state=initialState, action) => {
       return releaseHoverBridgingPoint(state, action);
     case actionTypes.DRAG_BRIDGING_POINT:
       return dragBridgingPoint(state, action);
-    default: return state;
+    case actionTypes.SET_HOVER_BRIDGING_MAIN_POLYLINE:
+      return setHoverBridgingMainPolyline(state, action);
+    case actionTypes.RELEASE_HOVER_BRIDGING_MAINPOLYLINE:
+      return releaseHoverBridgingMainPolyline(state, action);
+    case actionTypes.COMPLEMENT_POINT_ON_BRIDGING:
+      return complementPointOnBridging(state, action);
+    default:
+      return state;
   }
 };
 
