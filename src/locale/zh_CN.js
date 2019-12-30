@@ -6,6 +6,14 @@ const zh_CN = {
 
   undo: '撤销',
   redo: '回退',
+  no: '尚无',
+
+  Keepout: '障碍物',
+  KEEPOUT: '屋面障碍物',
+  PASSAGE: '预留通道',
+  VENT: '屋顶通风口',
+  TREE: '树木',
+  ENV: '环境障碍物',
 
   buildingName: '房屋名称',
   yourBuildingName: '房屋名称',
@@ -75,6 +83,10 @@ const zh_CN = {
   project_shadow:'投射阴影',
   shadow_setting:'阴影设置',
   finish_modeling:'完成建模',
+  solstices: '至日',
+  annual: '全年',
+  winter_solstice: '冬至日',
+
 
   setUpPVPanelonRoof:'屋面光伏板铺设',
   manual_panel:'手动铺设',

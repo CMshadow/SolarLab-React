@@ -100,14 +100,14 @@ class ShadowControl extends Component {
               })(
                 <RangePicker
                   ranges={{
-                    'Solstices': [
+                    [this.props.intl.formatMessage({id:'solstices'})]: [
                       moment(`${moment().format('YYYY')}-06-22`, 'YYYY-MM-DD'),
                       moment(`${moment().format('YYYY')}-12-21`, 'YYYY-MM-DD'),
                     ],
-                    'Annual': [
+                    [this.props.intl.formatMessage({id:'annual'})]: [
                       moment().startOf('year'), moment().endOf('year')
                     ],
-                    'Winter Solstice': [
+                    [this.props.intl.formatMessage({id:'winter_solstice'})]: [
                       moment(`${moment().format('YYYY')}-12-21`, 'YYYY-MM-DD'),
                       moment(`${moment().format('YYYY')}-12-21`, 'YYYY-MM-DD'),
                     ],
@@ -193,4 +193,4 @@ const mapDispatchToProps = dispatch => {
   }
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'shadowSetting' })(ShadowControl));
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(Form.create({ name: 'shadowSetting' })(ShadowControl)));
