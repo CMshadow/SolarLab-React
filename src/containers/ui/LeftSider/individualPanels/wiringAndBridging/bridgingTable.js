@@ -12,6 +12,8 @@ import {
   Menu,
   Icon
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
+
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faNetworkWired,
@@ -27,14 +29,14 @@ class BridgingTable extends Component {
 
   columns = [
     {
-      title: 'Inverter',
+      title: <FormattedMessage id='inverterName' />,
       dataIndex: 'inverterName',
       key: 'name',
       width: '70%',
       ellipsis: true
     },
     {
-      title: 'Action',
+      title: <FormattedMessage id='Action' />,
       dataIndex: '',
       key: '',
       width: '30%',

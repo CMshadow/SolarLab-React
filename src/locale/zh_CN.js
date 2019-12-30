@@ -113,5 +113,9 @@ const zh_CN = {
   edit_wiring:'修改',
   stop_editing_wiring:'停止',
 
+  setupBridging:'设置桥架',
+  Action:'操作',
+  inverterName:'逆变器',
+  finish_bridging:'完成',
 }
 export default zh_CN;
