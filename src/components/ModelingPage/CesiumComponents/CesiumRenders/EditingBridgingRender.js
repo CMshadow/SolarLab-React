@@ -88,14 +88,17 @@ const EditingBridgingRender = (props) => {
   ) {
     bridgingPoints =
       props.roofSpecInverters[props.editingRoofIndex][props.editingInverterIndex]
-      .bridging.flatMap(bridging =>
-        bridging.mainPolyline.points.slice(1,).map(point => 
+      .bridging.flatMap(bridging => {
+        const anchorIndex = bridging.anchorPanelMap.map(obj => obj.anchorIndex);
+        return bridging.mainPolyline.points.filter((point, i) =>
+          !anchorIndex.includes(i)
+        ).slice(1,).map(point =>
           <CustomPoint
             key={point.entityId}
             {...point}
           />
         )
-      );
+      });
   }
 
 	return (

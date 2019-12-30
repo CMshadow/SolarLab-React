@@ -182,7 +182,10 @@ export {
   dragInverter,
   setHoverBridgingPoint,
   releaseHoverBridgingPoint,
-  dragBridgingPoint
+  dragBridgingPoint,
+  setHoverBridgingMainPolyline,
+  releaseHoverBridgingMainPolyline,
+  complementPointOnBridging
 } from './editingWiringManager';
 
 export {

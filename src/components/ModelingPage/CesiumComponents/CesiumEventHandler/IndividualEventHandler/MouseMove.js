@@ -247,20 +247,35 @@ const MouseMoveHandler = (props) => {
             props.editingInverterIndex].bridging.flatMap(bridging =>
               bridging.mainPolyline.points.slice(1,)
             ).map(p => p.entityId);
+          const allBridgingMainPolylineIds =
+            props.roofSpecInverters[props.editingRoofIndex][
+            props.editingInverterIndex].bridging.map(bridging =>
+              bridging.mainPolyline.entityId
+            );
           if (allBridgingPointIds.includes(anyPickedObject.id.id)) {
             props.setHoverBridgingPoint(anyPickedObject.id.id);
+            if (props.editingBridgingMainPolylineIndex !== null)
+              props.releaseHoverBridgingMainPolyline();
+          } else if (allBridgingMainPolylineIds.includes(anyPickedObject.id.id)){
+            props.setHoverBridgingMainPolyline(anyPickedObject.id.id);
+            if (props.editingBridgingPointIndex !== null)
+              props.releaseHoverBridgingPoint();
           } else {
-            if (props.editingBridgingIndex !== null)
-            props.releaseHoverBridgingPoint();
+            if (props.editingBridgingPointIndex !== null)
+              props.releaseHoverBridgingPoint();
+            if (props.editingBridgingMainPolylineIndex !== null)
+              props.releaseHoverBridgingMainPolyline();
           }
         } else {
-          if (props.editingBridgingIndex !== null)
-          props.releaseHoverBridgingPoint();
+          if (props.editingBridgingPointIndex !== null)
+            props.releaseHoverBridgingPoint();
+          if (props.editingBridgingMainPolylineIndex !== null)
+            props.releaseHoverBridgingMainPolyline();
         }
         break;
 
       case 'DRAG_BRIDGING':
-        if (props.editingBridgingIndex !== null) {
+        if (props.editingBridgingPointIndex !== null) {
           props.dragBridgingPoint()
         }
         break;
@@ -350,8 +365,11 @@ const mapStateToProps = state => {
       state.undoableReducer.present.editingWiringManager.roofSpecInverters,
     hoverInverterCenter:
       state.undoableReducer.present.editingWiringManager.hoverInverterCenter,
-    editingBridgingIndex:
-      state.undoableReducer.present.editingWiringManager.editingBridgingIndex
+    editingBridgingPointIndex:
+      state.undoableReducer.present.editingWiringManager.editingBridgingPointIndex,
+    editingBridgingMainPolylineIndex:
+      state.undoableReducer.present.editingWiringManager
+      .editingBridgingMainPolylineIndex
   };
 };
 
@@ -430,7 +448,13 @@ const mapDispatchToProps = dispatch => {
     ),
     dragBridgingPoint: () => dispatch(
       actions.dragBridgingPoint()
-    )
+    ),
+    setHoverBridgingMainPolyline: (polylineId) => dispatch(
+      actions.setHoverBridgingMainPolyline(polylineId)
+    ),
+    releaseHoverBridgingMainPolyline: () => dispatch(
+      actions.releaseHoverBridgingMainPolyline()
+    ),
   };
 };
 

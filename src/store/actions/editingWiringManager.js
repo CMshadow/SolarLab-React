@@ -543,81 +543,85 @@ export const bridging = (roofIndex, inverterIndex, heightOffset=0.2) =>
 
   const bridgingDict = {};
   wirings.forEach((wiring, i) => {
-    const firstPanelCenter = wiring.startPanel.getCenter(0.2);
-    const firstAnchor = wiring.panelRows[0] % 2 === 0 ?
-      Point.fromCoordinate(Coordinate.destination(
-        firstPanelCenter, roofSpecParams.azimuth, anchorDist
-      ), null, null, null, Cesium.Color.DARKCYAN) :
-      Point.fromCoordinate(Coordinate.destination(
-        firstPanelCenter, roofSpecParams.azimuth + 180, anchorDist
-      ), null, null, null, Cesium.Color.DARKCYAN)
-    if (workingBuilding.type === 'FLAT') {
-      firstAnchor.setCoordinate(
-        null, null, workingBuilding.foundationHeight + heightOffset
-      );
-    } else {
-      firstAnchor.setCoordinate(
-        null, null,
-        Coordinate.heightOfArbitraryNode(
-          workingBuilding.pitchedRoofPolygons[roofIndex],
-          firstAnchor
-        ) + workingBuilding.foundationHeight + heightOffset
-      );
-    }
+    if (wiring.allPanels.length > 0) {
+      const firstPanelCenter = wiring.startPanel.getCenter(0.2);
+      const firstAnchor = wiring.panelRows[0] % 2 === 0 ?
+        Point.fromCoordinate(Coordinate.destination(
+          firstPanelCenter, roofSpecParams.azimuth, anchorDist
+        ), null, null, null, Cesium.Color.DARKCYAN) :
+        Point.fromCoordinate(Coordinate.destination(
+          firstPanelCenter, roofSpecParams.azimuth + 180, anchorDist
+        ), null, null, null, Cesium.Color.DARKCYAN)
+      if (workingBuilding.type === 'FLAT') {
+        firstAnchor.setCoordinate(
+          null, null, workingBuilding.foundationHeight + heightOffset
+        );
+      } else {
+        firstAnchor.setCoordinate(
+          null, null,
+          Coordinate.heightOfArbitraryNode(
+            workingBuilding.pitchedRoofPolygons[roofIndex],
+            firstAnchor
+          ) + workingBuilding.foundationHeight + heightOffset
+        );
+      }
 
-    const bridgingIndex = wiring.panelRows[0] % 2 === 0 ?
-      wiring.panelRows[0] :
-      wiring.panelRows[0] - 1;
-    if (bridgingIndex in bridgingDict) {
-      bridgingDict[bridgingIndex].push({
-        anchor: firstAnchor,
-        panelCenter:firstPanelCenter,
-        wiringIndex: i
-      });
-    } else {
-      bridgingDict[bridgingIndex] = [{
-        anchor: firstAnchor,
-        panelCenter:firstPanelCenter,
-        wiringIndex: i
-      }];
+      const bridgingIndex = wiring.panelRows[0] % 2 === 0 ?
+        wiring.panelRows[0] :
+        wiring.panelRows[0] - 1;
+      if (bridgingIndex in bridgingDict) {
+        bridgingDict[bridgingIndex].push({
+          anchor: firstAnchor,
+          panelCenter:firstPanelCenter,
+          wiringIndex: i
+        });
+      } else {
+        bridgingDict[bridgingIndex] = [{
+          anchor: firstAnchor,
+          panelCenter:firstPanelCenter,
+          wiringIndex: i
+        }];
+      }
     }
   })
   wirings.forEach(wiring => {
-    const endPanelCenter = wiring.endPanel.getCenter(0.2);
-    const endAnchor = wiring.panelRows.slice(-1)[0] % 2 === 0 ?
-      Point.fromCoordinate(Coordinate.destination(
-        endPanelCenter, roofSpecParams.azimuth, anchorDist
-      ), null, null, null, Cesium.Color.DARKCYAN) :
-      Point.fromCoordinate(Coordinate.destination(
-        endPanelCenter, roofSpecParams.azimuth + 180, anchorDist
-      ), null, null, null, Cesium.Color.DARKCYAN)
-    if (workingBuilding.type === 'FLAT') {
-      endAnchor.setCoordinate(
-        null, null, workingBuilding.foundationHeight + heightOffset
-      );
-    } else {
-      endAnchor.setCoordinate(
-        null, null,
-        Coordinate.heightOfArbitraryNode(
-          workingBuilding.pitchedRoofPolygons[roofIndex],
-          endAnchor
-        ) + workingBuilding.foundationHeight + heightOffset
-      );
-    }
+    if (wiring.allPanels.length > 0) {
+      const endPanelCenter = wiring.endPanel.getCenter(0.2);
+      const endAnchor = wiring.panelRows.slice(-1)[0] % 2 === 0 ?
+        Point.fromCoordinate(Coordinate.destination(
+          endPanelCenter, roofSpecParams.azimuth, anchorDist
+        ), null, null, null, Cesium.Color.DARKCYAN) :
+        Point.fromCoordinate(Coordinate.destination(
+          endPanelCenter, roofSpecParams.azimuth + 180, anchorDist
+        ), null, null, null, Cesium.Color.DARKCYAN)
+      if (workingBuilding.type === 'FLAT') {
+        endAnchor.setCoordinate(
+          null, null, workingBuilding.foundationHeight + heightOffset
+        );
+      } else {
+        endAnchor.setCoordinate(
+          null, null,
+          Coordinate.heightOfArbitraryNode(
+            workingBuilding.pitchedRoofPolygons[roofIndex],
+            endAnchor
+          ) + workingBuilding.foundationHeight + heightOffset
+        );
+      }
 
-    const bridgingIndex = wiring.panelRows.slice(-1)[0] % 2 === 0 ?
-      wiring.panelRows.slice(-1)[0] :
-      wiring.panelRows.slice(-1) - 1;
-    if (bridgingIndex in bridgingDict) {
-      bridgingDict[bridgingIndex].push({
-        anchor: endAnchor,
-        panelCenter:endPanelCenter
-      });
-    } else {
-      bridgingDict[bridgingIndex] = [{
-        anchor: endAnchor,
-        panelCenter:endPanelCenter
-      }];
+      const bridgingIndex = wiring.panelRows.slice(-1)[0] % 2 === 0 ?
+        wiring.panelRows.slice(-1)[0] :
+        wiring.panelRows.slice(-1) - 1;
+      if (bridgingIndex in bridgingDict) {
+        bridgingDict[bridgingIndex].push({
+          anchor: endAnchor,
+          panelCenter:endPanelCenter
+        });
+      } else {
+        bridgingDict[bridgingIndex] = [{
+          anchor: endAnchor,
+          panelCenter:endPanelCenter
+        }];
+      }
     }
   })
 
@@ -819,6 +823,73 @@ export const dragBridgingPoint = (heightOffset=0.2) => (dispatch, getState) => {
     type: actionTypes.DRAG_BRIDGING_POINT,
     point: newPoint
   })
+}
+
+export const setHoverBridgingMainPolyline = (polylineId) =>
+(dispatch, getState) => {
+  const roofSpecInverters = getState().undoableReducer.present
+    .editingWiringManager.roofSpecInverters;
+  const editingRoofIndex = getState().undoableReducer.present
+    .editingWiringManager.editingRoofIndex;
+  const editingInverterIndex = getState().undoableReducer.present
+    .editingWiringManager.editingInverterIndex;
+  const bridgingMainPolylineIndex =
+    roofSpecInverters[editingRoofIndex][editingInverterIndex].bridging
+    .findIndex(bridging => bridging.mainPolyline.entityId === polylineId);
+  if (bridgingMainPolylineIndex !== null) {
+    return dispatch({
+      type: actionTypes.SET_HOVER_BRIDGING_MAIN_POLYLINE,
+      bridgingMainPolylineIndex: bridgingMainPolylineIndex,
+    })
+  }
+}
+
+export const releaseHoverBridgingMainPolyline = () => {
+  return {
+    type: actionTypes.RELEASE_HOVER_BRIDGING_MAINPOLYLINE
+  }
+}
+
+export const complementPointOnBridging = (heightOffset=0.2) =>
+(dispatch, getState) => {
+  const workingBuilding = getState().buildingManagerReducer.workingBuilding;
+  const roofSpecInverters = getState().undoableReducer.present
+    .editingWiringManager.roofSpecInverters;
+  const editingRoofIndex = getState().undoableReducer.present
+    .editingWiringManager.editingRoofIndex;
+  const editingInverterIndex = getState().undoableReducer.present
+    .editingWiringManager.editingInverterIndex;
+  const editingBridgingMainPolylineIndex = getState().undoableReducer.present
+    .editingWiringManager.editingBridgingMainPolylineIndex;
+  const mainPolyline = roofSpecInverters[editingRoofIndex][editingInverterIndex]
+    .bridging[editingBridgingMainPolylineIndex].mainPolyline;
+  const rightClickCartesian3 = getState().undoableReducer.present
+    .drawingManagerReducer.rightClickCartesian3;
+  const indexToAdd = mainPolyline.determineAddPointPosition(rightClickCartesian3);
+
+  let newPoint = null;
+  if (workingBuilding.type === 'FLAT') {
+    newPoint = Point.fromCoordinate(Coordinate.fromCartesian(
+      rightClickCartesian3, workingBuilding.foundationHeight + heightOffset
+    ), null, null, null, Cesium.Color.DARKCYAN)
+  } else {
+    newPoint = Point.fromCoordinate(
+      Coordinate.fromCartesian(rightClickCartesian3), null, null, null,
+      Cesium.Color.DARKCYAN
+    );
+    newPoint.setCoordinate(
+      null, null,
+      Coordinate.heightOfArbitraryNode(
+        workingBuilding.pitchedRoofPolygons[editingRoofIndex], newPoint
+      ) + workingBuilding.foundationHeight + heightOffset
+    );
+  }
+
+  return dispatch({
+    type: actionTypes.COMPLEMENT_POINT_ON_BRIDGING,
+    indexToAdd: indexToAdd,
+    point: newPoint
+  });
 }
 
 const makeInverterPolygonAndCenter = (
