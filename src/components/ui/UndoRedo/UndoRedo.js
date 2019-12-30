@@ -5,6 +5,7 @@ import {
   Button } from 'antd';
 import { ActionCreators } from 'redux-undo';
 import { connect } from 'react-redux';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../store/actions/index';
 
@@ -19,14 +20,14 @@ const UndoRedo = (props) => {
             props.onUndo();
           }}
           disabled={!props.canUndo}
-        >Undo</Button>
+        ><FormattedMessage id='undo' /></Button>
         <Button
           style = {{position: "relative", left:'20px'}}
           type='default'
           icon='redo'
           onClick={props.onRedo}
           disabled={!props.canRedo}
-        >Redo</Button>
+        ><FormattedMessage id='redo' /></Button>
       </div>
   );
 };

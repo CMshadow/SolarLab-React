@@ -4,6 +4,9 @@ const zh_CN = {
   twoD_diagram:'2D图示',
   report:'报告',
 
+  undo: '撤销',
+  redo: '回退',
+
   buildingName: '房屋名称',
   yourBuildingName: '房屋名称',
   buildingType: '房屋类型',
