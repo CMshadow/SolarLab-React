@@ -57,7 +57,7 @@ class SketchDiagram extends Component {
         {/* {this.state.button} */}
         <Stage
           ref="stage"
-          style={{position: "absolute", top: 50, left: 0, right: 0, bottom: 0}}
+          style={{position: "absolute", top: 64, left: 0, right: 0, bottom: 0}}
           height={window.innerHeight}
           width={window.innerWidth}
         />

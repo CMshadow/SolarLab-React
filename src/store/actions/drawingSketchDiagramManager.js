@@ -522,7 +522,7 @@ export const drawNormalShadow = (layer,AngleList, DistanceList, scale, start, ce
       stroke: '#84848a',
       strokeWidth: 0,
       closed : true,
-      opacity: 0.8
+      opacity: 0.5
   });
   layer.add(poly);
   
@@ -544,12 +544,12 @@ export const drawNormalShadow = (layer,AngleList, DistanceList, scale, start, ce
     // newShadow.push(centerNodesAngles[0]);
     newShadow.push(centerNode);
     //console.log(colorList[gradient-level-1]);
-    let customizeOpacity = 0.5;
+    let customizeOpacity = 0.3;
     if (level <= 10) {
-      customizeOpacity = 0.0;
+      customizeOpacity = 0;
     }
     if (level > 10 && level < 30) {
-      customizeOpacity = 0.1 + level * ( 0.4 / 20);
+      customizeOpacity = 0.1 + level * ( 0.2 / 20);
     }
     let poly1 = new Konva.Line({
         points: newShadow,

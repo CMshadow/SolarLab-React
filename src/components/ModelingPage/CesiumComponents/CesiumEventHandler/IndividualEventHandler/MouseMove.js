@@ -219,6 +219,67 @@ const MouseMoveHandler = (props) => {
         }
         break;
 
+      case 'READY_DRAG_INVERTER':
+        if(
+          anyPickedObject &&
+          anyPickedObject.id.id ===
+          props.roofSpecInverters[props.editingRoofIndex][props.editingInverterIndex]
+          .polygonCenter.entityId
+        ) {
+          if (props.hoverInverterCenter) {
+            props.releaseHoverInverterCenter();
+          } else {
+            props.setHoverInverterCenter();
+          }
+        } else {
+          if (props.hoverInverterCenter) props.releaseHoverInverterCenter();
+        }
+        break;
+
+      case 'DRAG_INVERTER':
+        props.dragInverter();
+        break;
+
+      case 'EDIT_BRIDGING':
+        if (anyPickedObject) {
+          const allBridgingPointIds =
+            props.roofSpecInverters[props.editingRoofIndex][
+            props.editingInverterIndex].bridging.flatMap(bridging =>
+              bridging.mainPolyline.points.slice(1,)
+            ).map(p => p.entityId);
+          const allBridgingMainPolylineIds =
+            props.roofSpecInverters[props.editingRoofIndex][
+            props.editingInverterIndex].bridging.map(bridging =>
+              bridging.mainPolyline.entityId
+            );
+          if (allBridgingPointIds.includes(anyPickedObject.id.id)) {
+            props.setHoverBridgingPoint(anyPickedObject.id.id);
+            if (props.editingBridgingMainPolylineIndex !== null)
+              props.releaseHoverBridgingMainPolyline();
+          } else if (allBridgingMainPolylineIds.includes(anyPickedObject.id.id)){
+            props.setHoverBridgingMainPolyline(anyPickedObject.id.id);
+            if (props.editingBridgingPointIndex !== null)
+              props.releaseHoverBridgingPoint();
+          } else {
+            if (props.editingBridgingPointIndex !== null)
+              props.releaseHoverBridgingPoint();
+            if (props.editingBridgingMainPolylineIndex !== null)
+              props.releaseHoverBridgingMainPolyline();
+          }
+        } else {
+          if (props.editingBridgingPointIndex !== null)
+            props.releaseHoverBridgingPoint();
+          if (props.editingBridgingMainPolylineIndex !== null)
+            props.releaseHoverBridgingMainPolyline();
+        }
+        break;
+
+      case 'DRAG_BRIDGING':
+        if (props.editingBridgingPointIndex !== null) {
+          props.dragBridgingPoint()
+        }
+        break;
+
       default:
         break;
     }
@@ -294,8 +355,21 @@ const mapStateToProps = state => {
       state.undoableReducer.present.editingWiringManager.editingStartPoint,
     editingEndPoint:
       state.undoableReducer.present.editingWiringManager.editingEndPoint,
+    editingRoofIndex:
+      state.undoableReducer.present.editingWiringManager.editingRoofIndex,
+    editingInverterIndex:
+      state.undoableReducer.present.editingWiringManager.editingInverterIndex,
     hoverWiringPointPosition:
       state.undoableReducer.present.editingWiringManager.hoverWiringPointPosition,
+    roofSpecInverters:
+      state.undoableReducer.present.editingWiringManager.roofSpecInverters,
+    hoverInverterCenter:
+      state.undoableReducer.present.editingWiringManager.hoverInverterCenter,
+    editingBridgingPointIndex:
+      state.undoableReducer.present.editingWiringManager.editingBridgingPointIndex,
+    editingBridgingMainPolylineIndex:
+      state.undoableReducer.present.editingWiringManager
+      .editingBridgingMainPolylineIndex
   };
 };
 
@@ -358,6 +432,28 @@ const mapDispatchToProps = dispatch => {
     ),
     releaseHoverRoofTopPointIndex: (point) => dispatch(
       actions.releaseHoverRoofTopPointIndex(point)
+    ),
+    releaseHoverInverterCenter: () => dispatch(
+      actions.releaseHoverInverterCenter()
+    ),
+    setHoverInverterCenter: () => dispatch(
+      actions.setHoverInverterCenter()
+    ),
+    dragInverter: () => dispatch(actions.dragInverter()),
+    setHoverBridgingPoint: (pointId) => dispatch(
+      actions.setHoverBridgingPoint(pointId)
+    ),
+    releaseHoverBridgingPoint: () => dispatch(
+      actions.releaseHoverBridgingPoint()
+    ),
+    dragBridgingPoint: () => dispatch(
+      actions.dragBridgingPoint()
+    ),
+    setHoverBridgingMainPolyline: (polylineId) => dispatch(
+      actions.setHoverBridgingMainPolyline(polylineId)
+    ),
+    releaseHoverBridgingMainPolyline: () => dispatch(
+      actions.releaseHoverBridgingMainPolyline()
     ),
   };
 };

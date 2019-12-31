@@ -11,6 +11,7 @@ import {
   Col,
   Button,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 
@@ -34,13 +35,13 @@ class CreateKeepoutForm extends PureComponent {
   generateTypeText = () => {
     switch (this.state.type) {
       case 'TREE':
-        return 'Tree';
+        return <FormattedMessage id='naerbyTree' />;
       case 'VENT':
-        return 'Vent';
+        return <FormattedMessage id='rooftopVent' />;
       case 'ENV':
-        return 'Obstacle';
+        return <FormattedMessage id='EnvirKeepout' />;
       default:
-        return 'Keepout';
+        return <FormattedMessage id='rooftopKeepout' />;
     }
   };
 
@@ -60,7 +61,7 @@ class CreateKeepoutForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4> {this.generateTypeText()} Height </h4>
+            <h4> {this.generateTypeText()}<FormattedMessage id='Keepout_height' /></h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('height', {
@@ -84,7 +85,7 @@ class CreateKeepoutForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4> Keepout Setback </h4>
+            <h4> <FormattedMessage id='keepout_setback' /> </h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('setback', {
@@ -108,7 +109,7 @@ class CreateKeepoutForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4> Passage Width </h4>
+            <h4> <FormattedMessage id='passage_width' /> </h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('passageWidth', {
@@ -132,7 +133,7 @@ class CreateKeepoutForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4> Radius </h4>
+            <h4> <FormattedMessage id='vent_radius' /> </h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('radius', {
@@ -156,7 +157,7 @@ class CreateKeepoutForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4> Angle </h4>
+            <h4> <FormattedMessage id='vent_angle' /> </h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('angle', {
@@ -180,7 +181,7 @@ class CreateKeepoutForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4> Vent Heading </h4>
+            <h4><FormattedMessage id='vent_heading' /> </h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('heading', {
@@ -206,7 +207,7 @@ class CreateKeepoutForm extends PureComponent {
         <Form.Item>
           <Row>
             <Col span={12} offset={1}>
-              <h4> Keepout Type </h4>
+              <h4> <FormattedMessage id='keepOutType' /></h4>
             </Col>
             <Col span={10}>
               {getFieldDecorator('type', {
@@ -216,12 +217,12 @@ class CreateKeepoutForm extends PureComponent {
                   onChange={(value,option) => {
                     this.setState({type:value});
                   }}>
-                  <Option value='KEEPOUT'>Keepout</Option>
-                  <Option value='PASSAGE'>Passage</Option>
-                  <Option value='VENT'>Vent</Option>
-                  <Option value='TREE'>Tree</Option>
+                  <Option value='KEEPOUT'><FormattedMessage id='rooftopKeepout' /></Option>
+                  <Option value='PASSAGE'><FormattedMessage id='rooftopPassage' /></Option>
+                  <Option value='VENT'><FormattedMessage id='rooftopVent' /></Option>
+                  <Option value='TREE'><FormattedMessage id='naerbyTree' /></Option>
                   <Option value='ENV' title='Environmental Obstacle'>
-                    Env Obstacle
+                    <FormattedMessage id='EnvirKeepout' />
                   </Option>
                 </Select>
               )}
@@ -248,7 +249,7 @@ class CreateKeepoutForm extends PureComponent {
         <Row type="flex" justify="center">
           <Col span={16}>
             <Button type='primary' shape='round' htmlType="submit" block>
-              Create Keepout
+              <FormattedMessage id='create_keepout_button' />
             </Button>
           </Col>
         </Row>

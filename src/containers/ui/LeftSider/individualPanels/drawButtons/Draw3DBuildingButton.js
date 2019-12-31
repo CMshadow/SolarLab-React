@@ -5,6 +5,7 @@ import {
   Col,
   Button,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
@@ -32,7 +33,7 @@ const draw3DBuildingButton = (props) => {
           props.CreatePitchedBuildingRoofTopPolygon();
         }
       }}
-    >Generate 3D Model</Button>
+    ><FormattedMessage id='generate3Dmodel_button' /></Button>
 
   );
 

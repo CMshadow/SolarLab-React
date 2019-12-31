@@ -5,6 +5,7 @@ import {
   Col,
   Button,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 
@@ -28,7 +29,7 @@ const FinishModelingButton = (props) => {
         props.bindAllKeepout();
         props.fetchUserPanels();
       }}
-    >Finish Modeling</Button>
+    ><FormattedMessage id='finish_modeling' /></Button>
 
   );
   return (

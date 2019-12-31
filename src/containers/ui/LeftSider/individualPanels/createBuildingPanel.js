@@ -43,7 +43,7 @@ class CreateBuildingPanel extends PureComponent {
 
   numberInputRules = [{
     type: 'number',
-    message: 'Please provide a valid number'
+    message: <FormattedMessage id='errMes_valid_buildingName' />
   },{
     required: true,
     message: 'Cannot be empty'
@@ -60,9 +60,9 @@ class CreateBuildingPanel extends PureComponent {
           <Col {...this.rowLayout.label}>
             <Tooltip
               placement="topLeft"
-              title="The height of the building foundation"
+              title= {intl.formatMessage({id:'hint_foundationHeight'})}
             >
-              <h4>Building Height <Icon type="question-circle" /></h4>
+              <h4><FormattedMessage id='buildingHeight' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -89,9 +89,9 @@ class CreateBuildingPanel extends PureComponent {
           <Col {...this.rowLayout.label}>
             <Tooltip
               placement="topLeft"
-              title="The height of parapet beyond the rooftop"
+              title= {intl.formatMessage({id:'hint_parpet'})}
             >
-              <h4>Parapet Height <Icon type="question-circle" /></h4>
+              <h4><FormattedMessage id='parapetHeight' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -118,9 +118,9 @@ class CreateBuildingPanel extends PureComponent {
           <Col {...this.rowLayout.label}>
             <Tooltip
               placement="topLeft"
-              title="The setback distance from hips towards fields of the roof"
+              title= {intl.formatMessage({id:'hint_hip'})}
             >
-              <h4>Hip Setback <Icon type="question-circle" /></h4>
+              <h4><FormattedMessage id='hipSetback' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -147,9 +147,9 @@ class CreateBuildingPanel extends PureComponent {
           <Col {...this.rowLayout.label}>
             <Tooltip
               placement="topLeft"
-              title="The setback distance from ridges towards fields of the roof"
+              title= {intl.formatMessage({id:'hint_ridge'})}
             >
-              <h4>Ridge Setback <Icon type="question-circle" /></h4>
+              <h4><FormattedMessage id='ridgeSetback' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -187,7 +187,7 @@ class CreateBuildingPanel extends PureComponent {
                 initialValue: this.props.buildingInfoFields.name,
                 rules: [{
                   required: true,
-                  message: 'Please provide a building name'
+                  message: <FormattedMessage id='errMes_buildingName' />
                 }],})(
                   <Input
                     placeholder= {intl.formatMessage({id:'yourBuildingName'})}
@@ -204,7 +204,7 @@ class CreateBuildingPanel extends PureComponent {
         <Form.Item>
           <Row>
             <Col span={10} offset={2}>
-              <h4> Building Type </h4>
+              <h4> <FormattedMessage id='buildingType' /> </h4>
             </Col>
             <Col span={10}>
               {getFieldDecorator('type', {
@@ -215,8 +215,8 @@ class CreateBuildingPanel extends PureComponent {
                   onChange={(value,option) => {
                     this.setState({type:value});
                   }}>
-                  <Option value='FLAT'>Flat Roof</Option>
-                  <Option value='PITCHED'>Pitched Roof</Option>
+                  <Option value='FLAT'><FormattedMessage id='flatRoof' /></Option>
+                  <Option value='PITCHED'><FormattedMessage id='pitchedRoof' /></Option>
                 </Select>
               )}
             </Col>
@@ -228,7 +228,7 @@ class CreateBuildingPanel extends PureComponent {
         <Form.Item>
           <Row>
             <Col span={12} offset={2}>
-              <h3>Working on </h3>
+              <h3><FormattedMessage id='workingon' /></h3>
             </Col>
           </Row>
           <Row>
@@ -242,8 +242,8 @@ class CreateBuildingPanel extends PureComponent {
                   }}
                   buttonStyle='solid'
                 >
-                  <Radio.Button value="2D">Satellite Map</Radio.Button>
-                  <Radio.Button value="3D">Drone 3D Model</Radio.Button>
+                  <Radio.Button value="2D"><FormattedMessage id='satelliteMap' /></Radio.Button>
+                  <Radio.Button value="3D"><FormattedMessage id='drone3DMap' /></Radio.Button>
                 </Radio.Group>
               )}
             </Col>
@@ -263,9 +263,9 @@ class CreateBuildingPanel extends PureComponent {
             <Col {...this.rowLayout.label}>
               <Tooltip
                 placement="topLeft"
-                title="The setback distance from eaves towards building inside"
+                title= {intl.formatMessage({id:'hint_eave'})}
               >
-                <h4>Eave Setback <Icon type="question-circle" /></h4>
+                <h4><FormattedMessage id='eaveSetback' /> <Icon type="question-circle" /></h4>
               </Tooltip>
             </Col>
             <Col {...this.rowLayout.field}>
@@ -300,7 +300,7 @@ class CreateBuildingPanel extends PureComponent {
             <Button type='primary' shape='round' icon='plus' size='large'
               htmlType="submit" block
             >
-              Create a Building
+              <FormattedMessage id='createAbuilding' />
             </Button>
           </Col>
         </Row>

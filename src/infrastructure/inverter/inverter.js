@@ -4,8 +4,9 @@ import Wiring from './wiring';
 class Inverter {
   constructor (
     entityId = null, inverterId = null, inverterName = null, serialNum = null,
-    panelPerString = null, stringPerInverter = null, wiring = null,
-    bridging = null, inverterPolygon = null, inverterPolygonCenter = null
+    panelPerString = null, stringPerInverter = null, mpptSetup = null,
+    wiring = null, bridging = null, inverterPolygon = null,
+    inverterPolygonCenter = null,
   ) {
     this.entityId = entityId || uuid();
     this.inverterId = inverterId;
@@ -18,6 +19,7 @@ class Inverter {
     this.bridging = bridging || [];
     this.polygon = inverterPolygon;
     this.polygonCenter = inverterPolygonCenter;
+    this.mpptSetup = mpptSetup;
   }
 
   static fromInverter (inverter) {
@@ -31,9 +33,11 @@ class Inverter {
     const newBridging = inverter.bridging;
     const newPolygon = inverter.polygon;
     const newPolygonCenter = inverter.polygonCenter;
+    const newMpptSetup = inverter.mpptSetup
     return new Inverter(
       newEntityId, newInverterId, newInverterName, newSerial, newPanelPerString,
-      newStringPerInverter, newWiring, newBridging, newPolygon, newPolygonCenter
+      newStringPerInverter, newMpptSetup, newWiring, newBridging, newPolygon,
+      newPolygonCenter,
     )
   }
 
