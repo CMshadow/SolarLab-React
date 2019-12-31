@@ -37,7 +37,11 @@ class NavigationBar extends Component{
           <Menu.Item style = {{background:"#202020"}} key='3' onClick={this.SketchDiagramHandler}>
             <FormattedMessage id='twoD_diagram' />
           </Menu.Item>
-          <Menu.Item style = {{background:"#202020"}} key='4'>
+          <Menu.Item style = {{background:"#202020"}} key='4' onClick={this.SingleLineDiagramSwitchHandler}>
+            <FormattedMessage id='single_line_diagram' />
+          </Menu.Item>
+
+          <Menu.Item style = {{background:"#202020"}} key='5'>
             <FormattedMessage id='report' />
           </Menu.Item>
         </Menu>

@@ -10,16 +10,8 @@ import Aux from '../../../hoc/Auxiliary/Auxiliary';
 class  SingleLineDiagramStage extends Component {
 
   state = {
-    button: <Button
-      type = 'primary'
-      size = 'large'
-      shape = 'round'
-      block
-      onClick = {() => {
-        // this.props.createSingleLineDiagram();
-        this.initState();
-      }}
-    >Generate Single Line Diagram</Button>
+    width: window.innerWidth,
+    height: window.innerHeight
   }
 
   componentDidMount() {
@@ -43,6 +35,9 @@ class  SingleLineDiagramStage extends Component {
     this.props.createSingleLineDiagram(this.Sketch);
     // //draw flat building
     this.stage.add(this.Sketch);
+    // this.setState({width: this.props.buildingDiagramStageWidth});
+    // this.setState({height: this.props.buildingDiagramStageHeight})
+    console.log("height: "+this.props.buildingDiagramStageHeight)
   }
 
 
@@ -50,7 +45,7 @@ class  SingleLineDiagramStage extends Component {
     return (
       <Aux>
         {/* {this.state.button} */}
-        <Stage ref="stage" height={window.innerHeight * 1.5} width={window.innerWidth}/>
+        <Stage ref="stage" height={this.props.buildingDiagramStageHeight} width={this.props.buildingDiagramStageWidth}/>
       </Aux>
     );
   } 
@@ -61,7 +56,7 @@ class  SingleLineDiagramStage extends Component {
 const mapStateToProps = state => {
   return {
     buildingDiagramStageWidth:
-      state.drawingSingleLineDiagramReducer.backgroundRect,
+      state.drawingSingleLineDiagramReducer.stageWidth,
     buildingDiagramStageHeight:
       state.drawingSingleLineDiagramReducer.stageHeight,
     buildingDiagramLayer:

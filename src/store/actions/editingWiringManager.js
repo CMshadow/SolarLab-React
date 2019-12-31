@@ -32,7 +32,7 @@ export const fetchUserInverters = () => (dispatch, getState) => {
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Backend Error',
-      error.response.data.errorMessage
+      error.response.data.errorMessage || error
     )
   })
 }
@@ -87,7 +87,7 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Inverter Error',
-      error.response.data.errorMessage
+      error.response.data.errorMessage || error
     )
   })
 }
@@ -144,7 +144,7 @@ export const calculateManualInverter = (roofIndex, inverterID) =>
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Inverter Error',
-      error.response.data.errorMessage
+      error.response.data.errorMessage || error
     )
   })
 }

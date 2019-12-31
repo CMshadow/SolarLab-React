@@ -156,7 +156,7 @@ export const fetchUserPanels = () => (dispatch, getState) => {
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Backend Error',
-      error.response.data.errorMessage
+      error.response.data.errorMessage || error
     )
   })
 }
