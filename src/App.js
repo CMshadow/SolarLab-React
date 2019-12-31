@@ -7,7 +7,7 @@ import { IntlProvider } from 'react-intl';
 import CustomLayout from './hoc/Layout/Layout';
 import ModelingPage from './components/ModelingPage/ModelingPage';
 import SketchDiagram from './components/SketchDiagram/SketchDiagram';
-
+import Dashboard from './containers/Report/Dashboard/Dashboard';
 import zhCN from 'antd/es/locale/zh_CN';
 
 
@@ -21,8 +21,9 @@ class App extends Component {
         <ConfigProvider locale={zhCN}>
           <CustomLayout>
             <Switch>
-              <Route path="/Modeling" exact component={ModelingPage} />
-              <Route path='/SketchDiagram'  component={SketchDiagram} />
+              <Route path='/Modeling' exact component={ModelingPage} />
+              <Route path='/SketchDiagram' exact component={SketchDiagram} />
+              <Route path='/Report' exact component={Dashboard}/>
             </Switch>
           </CustomLayout>
         </ConfigProvider>

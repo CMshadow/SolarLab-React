@@ -1,8 +1,13 @@
 import { Menu } from 'antd';
 import React, { Component } from 'react';
 import 'antd/dist/antd.css';
+import { connect } from 'react-redux';
 import { Route, Switch, withRouter } from 'react-router-dom';
+
+import * as actions from '../../../store/actions/index';
+
 import { FormattedMessage } from 'react-intl';
+
 
 class NavigationBar extends Component{
 
@@ -14,6 +19,12 @@ class NavigationBar extends Component{
   ModelingSwitchHandler = () => {
     // console.log(this.props)
     this.props.history.push('/Modeling');
+  }
+
+  ReportSwitchHandler = () => {
+    // console.log(this.props)
+    this.props.request();
+    this.props.history.push('/Report');
   }
 
   render() {
@@ -39,7 +50,26 @@ class NavigationBar extends Component{
         </Menu>
       )
     }
+
   }
+}
 
+const mapDispatchToProps = dispatch => {
+  return {
+      request: () => {
+          dispatch(actions.request_metadata());
+          dispatch(actions.request_loss());
+          dispatch(actions.request_electricity_bill());
+          dispatch(actions.request_pv_production());
+          dispatch(actions.request_cash_flow());
+          dispatch(actions.request_board_working_condition_left());
+          dispatch(actions.request_board_working_condition_center());
+          dispatch(actions.request_board_working_condition_right());
+          dispatch(actions.request_energy());
+          dispatch(actions.request_weather());
+      }
+      
+ };
+};
 
-export default withRouter(NavigationBar);
+export default connect(null, mapDispatchToProps)(withRouter(NavigationBar));
