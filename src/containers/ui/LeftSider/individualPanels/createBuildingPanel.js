@@ -16,6 +16,7 @@ import {
 
 import * as classes from './createBuildingPanel.module.css';
 import * as actions from '../../../../store/actions/index';
+
 const { Option } = Select;
 
 class CreateBuildingPanel extends PureComponent {

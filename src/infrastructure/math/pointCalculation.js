@@ -70,18 +70,31 @@ export const minPanelTiltAngleOnPitchedRoof = (plane_points, panelBrng) => {
     return minPanelTilt * 180 / Math.PI;
 }
 
-const getHighAndFixedIndex = (panel_points, p_ratio) => {
-    for (var i = 1; i < 4; ++i) {
-        var delta_lon = panel_points[0].lon - panel_points[i].lon;
-        var delta_lat = panel_points[0].lat - panel_points[i].lat;
-        var delta_height = panel_points[0].height - panel_points[i].height;
+//const getHighAndFixedIndex = (panel_points, p_ratio) => {
+//    for (var i = 1; i < 4; ++i) {
+//        var delta_lon = panel_points[0].lon - panel_points[i].lon;
+//        var delta_lat = panel_points[0].lat - panel_points[i].lat;
+//        var delta_height = panel_points[0].height - panel_points[i].height;
 
-        if (delta_lon / p_ratio[0] === delta_height && delta_lat / p_ratio[1] === delta_height) {
-            if (delta_height < 0) return [0, i];
-            else return [i, 0];
-        }
-    }
-    return null;
+//        if (delta_lon / p_ratio[0] === delta_height && delta_lat / p_ratio[1] === delta_height) {
+//            if (delta_height < 0) return [0, i];
+//            else return [i, 0];
+//        }
+//    }
+//    return null;
+//}
+
+export const generatePanelPoints = (point, panel_al, panel_az, ratio) => {
+    let delta_lon_meter = Math.cos(panel_az);
+    let delta_lat_meter = Math.sin(panel_az);
+    let delta_height = Math.tan(panel_al);
+
+    let new_lon = point.lon + delta_lon_meter * ratio[0];
+    let new_lat = point.lat + delta_lat_meter * ratio[1];
+    let new_height = point.height - delta_height;
+
+    var low_point = new Point(new_lon, new_lat, new_height);
+    return [point, low_point];
 }
 
 /**
@@ -93,22 +106,19 @@ const getHighAndFixedIndex = (panel_points, p_ratio) => {
  * @return {Number}                ��Ӱ���� in meters
  */
 export const calculatePanelShadowLength = (
-  plane_points, panel_points, panel_al, panel_az, solar_position
+  plane_points, panel_al, panel_az, solar_position
 ) => {
 
     const ratio = getRatio(plane_points[0].lon, plane_points[0].lat);
+
+    var panel_points = generatePanelPoints(plane_points[0], panel_al, panel_az, ratio);
 
     const panel_position = [panel_al, panel_az];
     const p_vec = shadow_vector(panel_position);
     const p_ratio = [ratio[0] * p_vec[0], ratio[1] * p_vec[1]];
 
-    const panel_pair = getHighAndFixedIndex(panel_points, p_ratio);
-    if (panel_pair === null) {
-        console.log("error");
-        return null;
-    }
-    const high_point = panel_points[panel_pair[0]];
-    const fix_point = panel_points[panel_pair[1]];
+    const high_point = panel_points[0];
+    const low_point = panel_points[1];
 
     const s_vec = shadow_vector(solar_position);
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
@@ -121,7 +131,7 @@ export const calculatePanelShadowLength = (
         joint.lon, joint.lat, joint.height
     );
     const fix_cartesian = Cesium.Cartesian3.fromDegrees(
-        fix_point.lon, fix_point.lat, fix_point.height
+        low_point.lon, low_point.lat, low_point.height
     );
 
     const delta_x = fix_cartesian.x - joint_cartesian.x;
