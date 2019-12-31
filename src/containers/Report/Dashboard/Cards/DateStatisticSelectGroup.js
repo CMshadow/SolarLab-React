@@ -6,22 +6,8 @@ import BoardWorkingCondition from "./BoardWorkingCondition";
 import Energy from "./Energy";
 
 import UtilFunctions from "../../../../infrastructure/util/UtilFunctions";
-// import store from "../../store";
 
 import * as actions from '../../../../store/actions/index';
-// import { reload_weather } from "../../request_functions/request_weather";
-// import { reload_energy } from "../../request_functions/request_energy";
-// import { reload_board_working_condition_left } from "../../request_functions/request_board_working_condition_left";
-// import { reload_board_working_condition_center } from "../../request_functions/request_board_working_condition_center";
-// import { reload_board_working_condition_right } from "../../request_functions/request_board_working_condition_right";
-
-// const reload = (displayMode) => {
-//     reload_weather(store, displayMode);
-//     reload_energy(store, displayMode);
-//     reload_board_working_condition_left(store, displayMode);
-//     reload_board_working_condition_center(store, displayMode);
-//     reload_board_working_condition_right(store, displayMode);
-// };
 
 // generate month select group
 const monthGroup = [];
@@ -213,9 +199,9 @@ const mapDispatchToProps = dispatch => {
             dispatch(actions.reload_board_working_condition_center(displayMode));
             dispatch(actions.reload_board_working_condition_right(displayMode));
         }
-        
+
    };
 };
-  
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(DateStatisticSelectGroup);

@@ -1,6 +1,7 @@
 
 // structure of global state
 const defaultState = {
+  reportId: '50f0ed52-45f8-44bd-a783-1495262723cb',
   metadata: {
     loaded: false,
     option: {}
