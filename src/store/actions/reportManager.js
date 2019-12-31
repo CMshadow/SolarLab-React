@@ -40,6 +40,11 @@ const mapInverterToAbb = (inverterNum) => {
   return `inverter_${inverterNum}`;
 }
 
+// export const postBuildingData = () => (dispatch, getState) => {
+//   const workingBuilding = getState().buildingManagerReducer.workingBuilding;
+//   const json = workingBuilding.
+// }
+
 export const request_weather = () => (dispatch, getState) => {
   let displayMode = getState().undoableReducer.present.reportManager.displayMode;
   axios.get(

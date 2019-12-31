@@ -21,9 +21,9 @@ class App extends Component {
         <ConfigProvider locale={zhCN}>
           <CustomLayout>
             <Switch>
-              <Route path="/Modeling" exact component={ModelingPage} />
-              <Route path='/SketchDiagram'  component={SketchDiagram} />
-              <Route  path={'/Report'} exact component={Dashboard}/>
+              <Route path='/Modeling' exact component={ModelingPage} />
+              <Route path='/SketchDiagram' exact component={SketchDiagram} />
+              <Route path='/Report' exact component={Dashboard}/>
             </Switch>
           </CustomLayout>
         </ConfigProvider>
