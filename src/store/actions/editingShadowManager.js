@@ -146,6 +146,7 @@ export const projectAllShadow = (sunPositionCollection) =>
       specialParapetShadows.push({
         from: obj.kptId,
         to: roofPolygon.entityId,
+        type: obj.keepOutType,
         polygon: new Shadow(null, null,
           shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
         ),
@@ -190,6 +191,7 @@ export const projectAllShadow = (sunPositionCollection) =>
         from: obj.kptId,
         to: roofPolygon.entityId,
         keepoutCoordinates: obj.kptOutlineCoordinates,
+        type: obj.keepOutType,
         polygon: new Shadow(null, null,
           shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
         )
@@ -309,6 +311,7 @@ const projectKeepoutShadow = (
               geoJSON: new FoundLine(beautifiedPoints).makeGeoJSON(),
               kptOutlineCoordinates: kpt.getOutlineCoordinates(),
               kptId: kpt.id,
+              keepOutType: keepoutType
             })
           }
         })
