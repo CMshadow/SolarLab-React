@@ -4,70 +4,72 @@ import { Stage, Layer, Rect, Text } from 'react-konva';
 import * as actions from './index'
 import * as actionTypes from './actionTypes';
 
-export const initStage = (layer) => {
+export const initStage = (layer) => (dispatch, getState) => {
   // let layer = new Konva.Layer();
+  let currentBuilding = getState().buildingManagerReducer
+  .workingBuilding;
+
+  let size_times = 5;
   
-    let size_times = 5;
+  let backgroundColor = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width: window.innerWidth * size_times,
+    height: window.innerHeight * size_times,
+    fill: '#15152e',
+  });
 
-    let backgroundColor = new Konva.Rect({
-      x: 0,
-      y: 0,
-      width: window.innerWidth * size_times,
-      height: window.innerHeight * size_times,
-      fill: '#15152e',
-    });
+  layer.add(backgroundColor);
 
-    layer.add(backgroundColor);
+  for (let i = 0; i < window.innerHeight * size_times / 50; ++i) {
+      let gridHorizontalLine = new Konva.Line({
+          points: [0, i * 50 , window.innerWidth * size_times, i * 50],
+          stroke: '#7b7b85',
+          strokeWidth: 1.5,
+          lineCap: 'round',
+          lineJoin: 'round'
+      });
+      layer.add(gridHorizontalLine);
+  }
+  for (let i = 0; i < window.innerHeight * size_times / 10; ++i) {
+      let gridHorizontalLine2 = new Konva.Line({
+          points: [0, i * 10 , window.innerWidth * size_times, i * 10],
+          stroke: '#3f3f4c',
+          strokeWidth: 1,
+          lineCap: 'round',
+          lineJoin: 'round'
+      });
+      layer.add(gridHorizontalLine2);
+  }
+  for (let j = 0; j < window.innerWidth * size_times / 50; ++j) {
+      let gridVerticalLine = new Konva.Line({
+          points: [j * 50, 0 , j * 50, window.innerHeight * size_times],
+          stroke: '#7b7b85',
+          strokeWidth: 1.5,
+          lineCap: 'round',
+          lineJoin: 'round'
+      });
+      layer.add(gridVerticalLine);
+  }
+  for (let j = 0; j < window.innerWidth * size_times / 10; ++j) {
+      let gridVerticalLine2 = new Konva.Line({
+          points: [j * 10, 0 , j * 10, window.innerHeight * size_times],
+          stroke: '#3f3f4c',
+          strokeWidth: 1,
+          lineCap: 'round',
+          lineJoin: 'round'
+      });
+      layer.add(gridVerticalLine2);
+  }
 
-    for (let i = 0; i < window.innerHeight * size_times / 50; ++i) {
-        let gridHorizontalLine = new Konva.Line({
-            points: [0, i * 50 , window.innerWidth * size_times, i * 50],
-            stroke: '#7b7b85',
-            strokeWidth: 1.5,
-            lineCap: 'round',
-            lineJoin: 'round'
-        });
-        layer.add(gridHorizontalLine);
-    }
-    for (let i = 0; i < window.innerHeight * size_times / 10; ++i) {
-        let gridHorizontalLine2 = new Konva.Line({
-            points: [0, i * 10 , window.innerWidth * size_times, i * 10],
-            stroke: '#3f3f4c',
-            strokeWidth: 1,
-            lineCap: 'round',
-            lineJoin: 'round'
-        });
-        layer.add(gridHorizontalLine2);
-    }
-    for (let j = 0; j < window.innerWidth * size_times / 50; ++j) {
-        let gridVerticalLine = new Konva.Line({
-            points: [j * 50, 0 , j * 50, window.innerHeight * size_times],
-            stroke: '#7b7b85',
-            strokeWidth: 1.5,
-            lineCap: 'round',
-            lineJoin: 'round'
-        });
-        layer.add(gridVerticalLine);
-    }
-    for (let j = 0; j < window.innerWidth * size_times / 10; ++j) {
-        let gridVerticalLine2 = new Konva.Line({
-            points: [j * 10, 0 , j * 10, window.innerHeight * size_times],
-            stroke: '#3f3f4c',
-            strokeWidth: 1,
-            lineCap: 'round',
-            lineJoin: 'round'
-        });
-        layer.add(gridVerticalLine2);
-    }
-
-    let pancelCollection = panelArrayCollection(layer, 4);
-    let combinerCollection = CombinerBoxCollections(layer, pancelCollection.distance, pancelCollection.connectPoint1, pancelCollection.connectPoint2, 4);
-    let disconnectCellection = DisconnectCollection(layer, combinerCollection.distance, 5, 2);
-    let InvertersCollection = InverterCollection(layer, disconnectCellection.distance, 5, 2, disconnectCellection.connectPoint);
-    let inverterConnecterComponent = InterConnecter(layer, InvertersCollection.distance, InvertersCollection.connectPoint );
-    let AC_Disconnectc_Component = ACDisconnect(layer, inverterConnecterComponent.distance, inverterConnecterComponent.connectPoint);
-    let ServerPanelComponent = ServerPanel(layer, AC_Disconnectc_Component.distance, AC_Disconnectc_Component.connectPoint);
-    let MeterComponent = Meter(layer, ServerPanelComponent.distance, ServerPanelComponent.connectPoint);
+  let pancelCollection = panelArrayCollection(layer, 4);
+  let combinerCollection = CombinerBoxCollections(layer, pancelCollection.startPosition,pancelCollection.distance, pancelCollection.connectPoint1, pancelCollection.connectPoint2, 4);
+  let disconnectCellection = DisconnectCollection(layer, combinerCollection.distance, 5, 4);
+  let InvertersCollection = InverterCollection(layer, disconnectCellection.distance, 5, disconnectCellection.numOfAccess, disconnectCellection.connectPoint);
+  let inverterConnecterComponent = InterConnecter(layer, InvertersCollection.distance, InvertersCollection.connectPoint );
+  let AC_Disconnectc_Component = ACDisconnect(layer, inverterConnecterComponent.distance, inverterConnecterComponent.connectPoint);
+  let ServerPanelComponent = ServerPanel(layer, AC_Disconnectc_Component.distance, AC_Disconnectc_Component.connectPoint);
+  let MeterComponent = Meter(layer, ServerPanelComponent.distance, ServerPanelComponent.connectPoint);
 
   return({
     type: actionTypes.INIT_STAGE,
@@ -84,12 +86,11 @@ export const panelArrayCollection = (layer, numOfArray) =>{
   let font_size = Math.floor(h_min / 5);
   let connectAccess1 = [];
   let connectAccess2 = [];
-  let startX = 250;
+  let startX = 300;
   let startY = 0;
   for (let i = 0; i < numOfArray; ++i) {
    
     // startPoint
-    
     if (window.innerWidth * 0.12 > w_min) {
       w_min = window.innerWidth * 0.12
     }
@@ -490,24 +491,22 @@ export const panelArrayCollection = (layer, numOfArray) =>{
 }
 
 
-export const CombinerBoxCollections = (layer, distance, connectPoint1, connectPoint2, numOfCombiner) => {
+export const CombinerBoxCollections = (layer, startPosition ,distance, connectPoint1, connectPoint2, numOfCombiner) => {
   let w_min = distance[1];
   let h_min = distance[1];
   let stroke_Width = 2;
   let font_size = Math.floor(h_min / 7);
   let nextDistance = 0;
+  let startX = startPosition[0] + distance[0] * 1.3;
+  let startY = startPosition[1];
   // startPoint
   for (let i = 0; i < numOfCombiner; ++i) {
     if (window.innerWidth * 0.05 > w_min) {
       w_min = window.innerWidth * 0.05;
       h_min = window.innerWidth * 0.05
     }
-    // if (window.innerHeight * 0.1 > h_min) {
-    //   h_min = window.innerHeight * 0.1
-    // }
-    
-    let startX = window.innerWidth * 0.1 + distance[0] * 1.3;
-    let startY = (window.innerHeight * 0.15) + (distance[1] * 1.8) * i;
+
+    startY = (window.innerHeight * 0.15) + (distance[1] * 1.8) * i;
 
     let panelArrayBounary = new Konva.Rect({
         x: startX,
@@ -810,6 +809,7 @@ export const DisconnectCollection = (layer, distance, numOfDisconnect ,inverterA
     type: actionTypes.DISCONNECT_CELLECTION,
     connectPoint: outConnectPoints,
     distance: [nextDistance, distance[1] * 1.8],
+    numOfAccess: inverterAccess,
     layer: layer
   });
 }
