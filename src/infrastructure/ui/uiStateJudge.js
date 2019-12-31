@@ -13,13 +13,29 @@ export const showDrawingPanel = (uiState) => {
 
 export const showEditing3DPanel = (uiState) => {
   return (
-    uiState === 'EDITING_3D'
+    uiState === 'EDITING_3D' ||
+    uiState === 'EDITING_ROOFTOP'
   )
 };
 
 export const showSetUpPVPanel = (uiState) => {
   return (
     uiState === 'SETUP_PV'
+  )
+};
+
+export const showSetUpWiringPanel = (uiState) => {
+  return (
+    uiState === 'SETUP_WIRING' ||
+    uiState === 'EDITING_WIRING' ||
+    uiState === 'DRAGGING_WIRING' ||
+    uiState === 'MANUAL_WIRING'
+  )
+};
+
+export const showSetUpBridgingPanel = (uiState) => {
+  return (
+    uiState === 'SETUP_BRIDGING'
   )
 };
 

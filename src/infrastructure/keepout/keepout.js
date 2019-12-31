@@ -8,7 +8,8 @@ class Keepout {
 
   constructor (
     id = null, type = null, drew = null, editing = null, outline = null,
-    polygon = null, polygonPart2 = null
+    polygon = null, polygonPart2 = null, buildingBelong = null,
+    roofIndexBelong = null
   ) {
     this.id = id ? id : uuid();
     this.type = type ? type : 'KEEPOUT';
@@ -17,6 +18,8 @@ class Keepout {
     this.outlinePolyline = outline ? outline : null;
     this.outlinePolygon = polygon ? polygon : null;
     this.outlinePolygonPart2 = polygonPart2 ? polygonPart2 : null;
+    this.buildingBelong = buildingBelong || null;
+    this.roofIndexBelong = roofIndexBelong !== null ? roofIndexBelong : null;
   }
 
   setFinishedDrawing = () => {
@@ -31,12 +34,34 @@ class Keepout {
     this.isEditing = false;
   }
 
+  bindBuilding = (buildingId) => {
+    this.buildingBelong = buildingId;
+  }
+
+  bindRoofIndex = (roofIndex) => {
+    this.roofIndexBelong = roofIndex;
+  }
+
+  getOutlineCoordinates = () => {
+    return this.outlinePolyline.getPointsCoordinatesArray(false);
+  }
+
+  getOutlinePart2Coordinates = () => {
+    return this.outlinePolygonPart2.convertHierarchyToFoundLine()
+    .getPointsCoordinatesArray(false);
+  }
+
   static fromKeepout (keepout) {
     const newId = keepout.id;
     const newType = keepout.type;
     const newDrew = keepout.finishedDrawing;
     const newIsEditing = keepout.isEditing;
-    return new Keepout(newId, newType, newDrew, newIsEditing);
+    const newBuildingBelong = keepout.buildingBelong;
+    const newRoofIndexBelong = keepout.roofIndexBelong;
+    return new Keepout(
+      newId, newType, newDrew, newIsEditing, newBuildingBelong,
+      newRoofIndexBelong
+    );
   }
 }
 

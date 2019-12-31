@@ -22,14 +22,14 @@ class  SingleLineDiagramStage extends Component {
     >Generate Single Line Diagram</Button>
   }
 
-  // componentDidMount() {
-  //   // log stage react wrapper
-  //   console.log(this.refs.stage);
-  //   // log Konva.Stage instance
-  //   console.log(this.refs.stage.getStage());
+  componentDidMount() {
+    // log stage react wrapper
+    // console.log(this.refs.stage);
+    // log Konva.Stage instance
+    // console.log(this.refs.stage.getStage());
     
-  //   // this.initState();
-  // }
+    this.initState();
+  }
 
   initState() {
 
@@ -49,8 +49,8 @@ class  SingleLineDiagramStage extends Component {
   render(){
     return (
       <Aux>
-        {this.state.button}
-        <Stage ref="stage" height={window.innerHeight * 1.5} width={window.innerWidth} />
+        {/* {this.state.button} */}
+        <Stage ref="stage" height={window.innerHeight * 1.5} width={window.innerWidth}/>
       </Aux>
     );
   } 

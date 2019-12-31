@@ -27,7 +27,13 @@ class ProjectInfo {
     this.globalOptimalTilt = optimalTilt;
   }
 
-  setGlobalOptimal(azimuth, tilt) {
+  determineTimeZone = () => {
+    if (parseInt(this.projectLon / 15) === 0) return 0;
+    else if ((this.projectLon / 15) < 0) return Math.floor(this.projectLon / 15);
+    else return Math.ceil(this.projectLon / 15);
+  }
+
+  setGlobalOptimal = (azimuth, tilt) => {
     this.globalOptimalAzimuth = azimuth;
     this.globalOptimalTilt = tilt;
   }

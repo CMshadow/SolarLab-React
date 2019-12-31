@@ -17,9 +17,11 @@ const FinishModelingButton = (props) => {
       loading = {props.backendLoading}
       block
       onClick = {() => {
+        props.bindShadow();
         if (props.workingBuilding.type === 'FLAT') {
           props.bindFoundPolyline();
           props.bindFoundPolygons();
+          props.bindParapetShadow();
         } else {
           props.bindPitchedPolygons();
         }
@@ -52,6 +54,8 @@ const mapDispatchToProps = dispatch => {
     bindFoundPolygons: () => dispatch(actions.bindFoundPolygons()),
     bindPitchedPolygons: () => dispatch(actions.bindPitchedPolygons()),
     bindAllKeepout: () => dispatch(actions.bindAllKeepout()),
+    bindShadow: () => dispatch(actions.bindShadow()),
+    bindParapetShadow: () => dispatch(actions.bindParapetShadow()),
     fetchUserPanels: () => dispatch(actions.fetchUserPanels())
   };
 };

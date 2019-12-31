@@ -11,6 +11,11 @@ const MouseMoveHandler = (props) => {
   const mouseMoveActions = (event) => {
     props.setMouseCartesian3(event.endPosition, props.viewer);
     const anyPickedObject = props.viewer.scene.pick(event.endPosition);
+    const pickedObjectIdArray =
+      props.viewer.scene.drillPick(event.endPosition).map(
+        elem => elem.id.id
+      );
+
     switch(props.uiState) {
       case 'DRAWING_FOUND':
         props.onDragPolyline(event.endPosition, props.viewer);
@@ -50,11 +55,6 @@ const MouseMoveHandler = (props) => {
         break;
 
       case 'DRAWING_INNER':
-        const pickedObjectIdArray =
-          props.viewer.scene.drillPick(event.endPosition).map(
-            elem => elem.id.id
-          );
-
         if (
           pickedObjectIdArray.includes(props.drawingPolyline.entityId) &&
           props.hoverInnerPointId === null &&
@@ -124,7 +124,7 @@ const MouseMoveHandler = (props) => {
             }
             // If hover on tree's center point
             else if (
-              props.drawingKeepoutPolyline.centerPoint && 
+              props.drawingKeepoutPolyline.centerPoint &&
               anyPickedObject.id.id ===
               props.drawingKeepoutPolyline.centerPoint.entityId
             ) {
@@ -139,6 +139,83 @@ const MouseMoveHandler = (props) => {
             // Release hover point if it exists
             if (props.hoverKeepoutPointIndex !== null) props.releaseKeepoutHoverPointIndex();
           }
+        }
+        break;
+
+      case 'EDITING_WIRING':
+        if(anyPickedObject) {
+          // Find out hover on which point
+          const onTopPointPosition =
+            anyPickedObject.id.id === props.editingStartPoint.entityId ?
+            'START' :
+            anyPickedObject.id.id === props.editingEndPoint.entityId ?
+            'END' : null
+
+          // Set hover point if available
+          if (onTopPointPosition) {
+            props.setHoverWiringPoint(onTopPointPosition);
+          } else {
+            if (props.hoverWiringPointPosition !== null) props.releaseHoverWiringPoint();
+          }
+        } else {
+          // Release hover point if it exists
+          if (props.hoverWiringPointPosition !== null) props.releaseHoverWiringPoint();
+        }
+        break;
+
+      case 'DRAGGING_WIRING':
+        const selectConnected = pickedObjectIdArray.reduce((acc, id) => {
+          if (props.connectedPanelId.includes(id)) {
+            acc.push(id);
+            return acc
+          } else {
+            return acc
+          }
+        }, [])
+        const selectDisconnected = pickedObjectIdArray.reduce((acc, id) => {
+          if (props.disconnectedPanelId.includes(id)) {
+            acc.push(id);
+            return acc
+          } else {
+            return acc
+          }
+        }, [])
+        if (selectDisconnected.length !== 0) {
+          props.setMouseDragStatus(selectDisconnected[0]);
+          props.attachPVPanel(selectDisconnected[0]);
+        } else if (selectConnected.length !== 0) {
+          props.setMouseDragStatus(selectConnected[0]);
+          props.releasePVPanel(selectConnected[0]);
+        } else {
+          props.setMouseDragStatus(null);
+        }
+        props.dynamicWiringLine();
+        break;
+
+      case 'EDITING_ROOFTOP':
+        if(anyPickedObject) {
+          // Find out hover on which point
+          const onTopPoint = props.editingInnerPlanePoints.find(element => {
+            return element.entityId === anyPickedObject.id.id
+          })
+          // Set hover point if available
+          if (onTopPoint) {
+            if (props.threePointsInfo[props.editingInnerPlaneIndex]) {
+              const fixedPointsId = Object.keys(
+                props.threePointsInfo[props.editingInnerPlaneIndex]
+              ).map(k =>
+                props.editingInnerPlanePoints[
+                  props.threePointsInfo[props.editingInnerPlaneIndex][k].pointIndex
+                ].entityId
+              );
+              if (!fixedPointsId.includes(onTopPoint.entityId))
+                props.setHoverRoofTopPointIndex(onTopPoint);
+            } else {
+              props.setHoverRoofTopPointIndex(onTopPoint);
+            }
+          }
+        } else {
+          if (props.rooftopHoverPoint) props.releaseHoverRoofTopPointIndex();
         }
         break;
 
@@ -196,6 +273,29 @@ const mapStateToProps = state => {
     pickedKeepoutPointIndex:
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .pickedPointIndex,
+
+    editingInnerPlaneIndex:
+      state.undoableReducer.present.drawingRooftopManagerReducer
+      .editingInnerPlaneIndex,
+    rooftopHoverPoint:
+      state.undoableReducer.present.drawingRooftopManagerReducer.hoverPoint,
+    editingInnerPlanePoints:
+      state.undoableReducer.present.drawingRooftopManagerReducer
+      .editingInnerPlanePoints,
+    threePointsInfo:
+      state.undoableReducer.present.drawingRooftopManagerReducer
+      .threePointsInfo,
+
+    disconnectedPanelId:
+      state.undoableReducer.present.editingPVPanelManagerReducer.disconnectedPanelId,
+    connectedPanelId:
+      state.undoableReducer.present.editingPVPanelManagerReducer.connectedPanelId,
+    editingStartPoint:
+      state.undoableReducer.present.editingWiringManager.editingStartPoint,
+    editingEndPoint:
+      state.undoableReducer.present.editingWiringManager.editingEndPoint,
+    hoverWiringPointPosition:
+      state.undoableReducer.present.editingWiringManager.hoverWiringPointPosition,
   };
 };
 
@@ -238,6 +338,26 @@ const mapDispatchToProps = dispatch => {
     ),
     moveKeepoutPickedPoint: (cartesian, viewer) => dispatch(
       actions.moveKeepoutPickedPoint(cartesian, viewer)
+    ),
+
+    setHoverWiringPoint: (position) => dispatch(
+      actions.setHoverWiringPoint(position)
+    ),
+    releaseHoverWiringPoint: (position) => dispatch(
+      actions.releaseHoverWiringPoint(position)
+    ),
+    dynamicWiringLine: () => dispatch(
+      actions.dynamicWiringLine()
+    ),
+    attachPVPanel: (panelId) => dispatch(actions.attachPVPanel(panelId)),
+    releasePVPanel: (panelId) => dispatch(actions.releasePVPanel(panelId)),
+    setMouseDragStatus: (obj) => dispatch(actions.setMouseDragStatus(obj)),
+
+    setHoverRoofTopPointIndex: (point) => dispatch(
+      actions.setHoverRoofTopPointIndex(point)
+    ),
+    releaseHoverRoofTopPointIndex: (point) => dispatch(
+      actions.releaseHoverRoofTopPointIndex(point)
     ),
   };
 };

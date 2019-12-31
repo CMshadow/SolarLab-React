@@ -23,6 +23,9 @@ import axios from '../../../../axios-setup';
 import * as MyMath from '../../../../infrastructure/math/math';
 import BearingCollection from '../../../../infrastructure/math/bearingCollection';
 import errorNotification from '../../../../components/ui/Notification/ErrorNotification';
+import { minPanelTiltAngleOnPitchedRoof } from '../../../../infrastructure/math/pointCalculation';
+import { sunPosition } from '../../../../infrastructure/math/sunPositionCalculation';
+
 const { Option } = Select;
 const { TabPane } = Tabs;
 const ButtonGroup = Button.Group;
@@ -52,8 +55,8 @@ class SetUpPVPanel extends Component {
     event.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.props.setupPanelParams(values, this.state.selectRoofIndex)
-        this.props.generatePanels(this.state.selectRoofIndex)
+        this.props.setupPanelParams(values, this.state.selectRoofIndex || 0)
+        this.props.generatePanels(this.state.selectRoofIndex || 0)
       }
     });
   }
@@ -152,8 +155,12 @@ class SetUpPVPanel extends Component {
   updateEcoFormFields = () => {
     this.props.form.setFieldsValue({
       azimuth: this.props.projectInfo.globalOptimalAzimuth,
-      tilt: this.props.projectInfo.globalOptimalTilt,
-    })
+      tilt: this.props.projectInfo.globalOptimalTilt
+    });
+    this.setState({
+      azimuth: this.props.projectInfo.globalOptimalAzimuth,
+      tilt: this.props.projectInfo.globalOptimalTilt
+    });
     this.determineRowSpace(1.3, this.state.orientation, this.state.selectPanelID);
   }
 
@@ -197,11 +204,6 @@ class SetUpPVPanel extends Component {
             )) :
             Math.round(brngCollection.findClosestBrng(0));
         }
-        console.log({
-          longitude: this.props.projectInfo.projectLon,
-          latitude: this.props.projectInfo.projectLat,
-          azimuth: azimuth
-        })
         this.setIsFetchingTrue();
         axios.get('/optimal-calculation/calculate-tilt', {
           params: {
@@ -210,12 +212,15 @@ class SetUpPVPanel extends Component {
             azimuth: azimuth
           }
         }).then(response => {
-          console.log(response)
           this.setIsFetchingFalse();
           this.props.form.setFieldsValue({
             azimuth: azimuth,
             tilt: response.data.optimalTilt,
-          })
+          });
+          this.setState({
+            azimuth: azimuth,
+            tilt: response.data.optimalTilt
+          });
           this.determineRowSpace(
             1.3, this.state.orientation, this.state.selectPanelID
           );
@@ -236,8 +241,16 @@ class SetUpPVPanel extends Component {
           this.state.azimuth
         this.props.form.setFieldsValue({
           azimuth: azimuth,
-          tilt: 0,
+          tilt: Math.ceil(
+            this.props.workingBuilding.pitchedRoofPolygons[roofIndex].obliquity
+          ),
         })
+        this.setState({
+          azimuth: azimuth,
+          tilt: Math.ceil(
+            this.props.workingBuilding.pitchedRoofPolygons[roofIndex].obliquity
+          ),
+        });
         this.determineRowSpace(
           1.3, this.state.orientation, this.state.selectPanelID
         );
@@ -277,7 +290,7 @@ class SetUpPVPanel extends Component {
                   key={ind}
                   value={ind}
                 >
-                  {`Pitched Roof ${ind}`}
+                  {`Pitched Roof ${ind+1}`}
                 </Option>
               )}
             </Select>
@@ -313,6 +326,7 @@ class SetUpPVPanel extends Component {
                 <Option
                   key={d.panelID}
                   value={d.panelID}
+                  title={d.panelName}
                 >
                   {d.panelName}
                 </Option>
@@ -361,7 +375,7 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="Panel tilt angle"
+              title="Panel tilt respect to the ground"
             >
               <h4>Panel Tilt <Icon type="question-circle" /></h4>
             </Tooltip>
@@ -372,13 +386,22 @@ class SetUpPVPanel extends Component {
               initialValue: this.state.tilt
             })(
               <InputNumber
-                min={0}
+                min={
+                  this.state.selectRoofIndex !== null ?
+                  Math.ceil(minPanelTiltAngleOnPitchedRoof(
+                    this.props.workingBuilding.pitchedRoofPolygons[
+                      this.state.selectRoofIndex
+                    ].convertHierarchyToPoints(),
+                    this.state.azimuth
+                  )) :
+                  0
+                }
                 max={45}
                 step={5}
                 formatter={value => `${value}\xB0`}
                 parser={value => value.replace('\xB0', '')}
                 onChange = {e => this.setState({tilt:e})}
-                disabled = {this.state.tab !== 'manual'}
+                disabled = {this.state.tab === 'eco'}
               />
             )}
           </Col>
@@ -448,7 +471,6 @@ class SetUpPVPanel extends Component {
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
                 onChange = {e => this.setState({rowSpace:e})}
-                disabled = {this.state.tab !== 'manual'}
               />
             )}
           </Col>
@@ -700,7 +722,17 @@ class SetUpPVPanel extends Component {
                 >
                   Preview
                 </Button>
-                <Button type='primary' shape='round' size='large' disabled>
+                <Button
+                  type='primary'
+                  shape='round'
+                  size='large'
+                  disabled = {
+                    Object.keys(this.props.panels).length === 0 ||
+                    this.props.backendLoading ||
+                    this.state.isFetching
+                  }
+                  onClick = {this.props.fetchUserInverters}
+                >
                   Continue <Icon type='right' />
                 </Button>
               </ButtonGroup>
@@ -722,12 +754,14 @@ const mapStateToProps = state => {
     userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
     roofSpecParams: state.undoableReducer.present.editingPVPanelManagerReducer
       .roofSpecParams,
-    projectInfo: state.projectManagerReducer.projectInfo
+    projectInfo: state.projectManagerReducer.projectInfo,
+    panels: state.undoableReducer.present.editingPVPanelManagerReducer.panels
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
+    fetchUserInverters: () => dispatch(actions.fetchUserInverters()),
     setupPanelParams: (values, roofIndex) =>
       dispatch(actions.setupPanelParams(values, roofIndex)),
     generatePanels: (roofIndex) => dispatch(actions.generatePanels(roofIndex)),

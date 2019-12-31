@@ -84,19 +84,21 @@ export const panelArrayCollection = (layer, numOfArray) =>{
   let font_size = Math.floor(h_min / 5);
   let connectAccess1 = [];
   let connectAccess2 = [];
+  let startX = 250;
+  let startY = 0;
   for (let i = 0; i < numOfArray; ++i) {
    
     // startPoint
     
     if (window.innerWidth * 0.12 > w_min) {
-      w_min = window.innerWidth * 0.1
+      w_min = window.innerWidth * 0.12
     }
     if (window.innerHeight * 0.1 > h_min) {
       h_min = window.innerHeight * 0.1
     }
-    
-    let startX = window.innerWidth * 0.1;
-    let startY = (window.innerHeight * 0.15) + (h_min * 1.8) * i;
+
+    if (startX < window.innerWidth * 0.1) startX = window.innerWidth * 0.1;
+    startY = (window.innerHeight * 0.15) + (h_min * 1.8) * i;
     // draw dash boundary box
     let panelArrayBounary = new Konva.Rect({
       x: startX,
@@ -481,6 +483,7 @@ export const panelArrayCollection = (layer, numOfArray) =>{
     type: actionTypes.PANEL_ARRAY_COLLECTION,
     layer: layer,
     distance: [w_min, h_min],
+    startPosition: [startX, startY],
     connectPoint1: connectAccess1,
     connectPoint2: connectAccess2
   });

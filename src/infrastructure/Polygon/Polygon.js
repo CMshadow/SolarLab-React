@@ -129,7 +129,7 @@ class Polygon {
     lowestNode = null,
     edgesCollection = null
   ){
-    const newID = id ? id : polygon.id;
+    const newID = id ? id : polygon.entityId;
     const newName = name ? name : polygon.name;
     const newHeight = height ? height: polygon.height;
     const newHierarchy = hierarchy ? [...hierarchy]: polygon.hierarchy;
@@ -244,6 +244,21 @@ class Polygon {
     }
     points.push(firstAndLastPoint);
     return new FoundLine(points);
+  }
+
+  convertHierarchyToPoints = () => {
+    const points = [];
+    for (let i = 0; i < this.hierarchy.length; i+=3) {
+      points.push(
+        new Point(this.hierarchy[i], this.hierarchy[i+1], this.hierarchy[i+2])
+      );
+    }
+    return points
+  }
+
+  convertHierarchyToFoundLine = () => {
+    const points = this.convertHierarchyToPoints();
+    return new FoundLine([...points, points[0]]);
   }
 
 }

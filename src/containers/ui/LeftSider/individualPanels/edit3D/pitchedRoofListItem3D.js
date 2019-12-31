@@ -12,6 +12,7 @@ import * as actions from '../../../../../store/actions/index';
 import * as classes from './roofListItem3D.module.css';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import EditPitchedRoofForm from './editPitchedRoofForm3D';
+import EditInnerRoofForm from './editInnerRoofForm3D';
 
 class PitchedRoofListItem3D extends Component {
   state = {
@@ -31,9 +32,16 @@ class PitchedRoofListItem3D extends Component {
         bordered={false}
         bodyStyle={{padding: '5px'}}
       >
-        <EditPitchedRoofForm {...this.props} toggleEdit={this.toggleEdit}/>
+        {
+          this.props.edgesCollection.reduce((acc, val) =>
+            val.type === 'Ridge' ? acc + 1 : acc
+          , 0) !== this.props.edgesCollection.length ?
+          <EditPitchedRoofForm {...this.props} /> :
+          <EditInnerRoofForm {...this.props} />
+        }
       </Card>
     );
+
     return (
       <List.Item
         extra={this.state.enableEdit ? editCard : null}
@@ -42,14 +50,23 @@ class PitchedRoofListItem3D extends Component {
             type="primary"
             shape='circle'
             size='small'
-            onClick={this.toggleEdit}
+            disabled={
+              this.props.editingRoofIndex !== null &&
+              this.props.editingRoofIndex !== this.props.roofIndex
+            }
+            onClick={() => {
+              this.toggleEdit(this.props.roofIndex);
+              this.props.editingRoofIndex !== null ?
+              this.props.releaseEditingRoofIndex() :
+              this.props.setEditingRoofIndex(this.props.roofIndex)
+            }}
             ghost={!this.state.enableEdit}
           >
             <FontAwesomeIcon icon={faCog} />
           </Button>
         ]}
       >
-        Pitched Roof
+        {`Pitched Roof ${this.props.roofIndex+1}`}
       </List.Item>
     );
   }

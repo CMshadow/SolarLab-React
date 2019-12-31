@@ -84,13 +84,20 @@ export {
   calculateHighestandLowestNodes,
   calculateObliquityAndObliquity,
   checkEdgeTypeOfPath,
-  updateSingleRoofTop
+  updateSingleRoofTop,
+  showOnlyOneRoofPlane,
+  showAllRoofPlane,
+  setHoverRoofTopPointIndex,
+  releaseHoverRoofTopPointIndex,
+  setPickedRoofTopPointIndex,
+  releasePickedRoofTopPointIndex
 } from './drawingRooftopManager';
 
 
 export {
   createAllKeepoutPolygon,
-  reRenderKeepoutPolygon
+  reRenderKeepoutPolygon,
+  updateKeepoutOnRoof
 } from './drawingKeepoutPolygonManager'
 
 export {
@@ -104,7 +111,13 @@ export {
   setUIStateEditingKeepout,
   setPreviousUIState,
   setUIStateEditing3D,
-  setUIStateSetUpPV
+  setUIStateEditingRoofTop,
+  setUIStateSetUpPV,
+  setUIStateSetUpWiring,
+  setUIStateEditingWiring,
+  setUIStateDraggingWiring,
+  setUIStateManualWiring,
+  setUIStateSetUpBridging
 } from './uiStateManager';
 
 export {
@@ -114,6 +127,10 @@ export {
   bindFoundPolyline,
   bindFoundPolygons,
   bindPitchedPolygons,
+  bindShadow,
+  bindParapetShadow,
+  bindPVPanels,
+  bindInverters,
   resetBuilding
 } from './buildingManager';
 
@@ -122,11 +139,37 @@ export {
 } from './keepoutManager';
 
 export {
+  projectAllShadow
+} from './editingShadowManager';
+
+export {
   setupPanelParams,
   generatePanels,
   cleanPanels,
-  fetchUserPanels
+  fetchUserPanels,
+  setPVConnected,
+  setPVDisConnected,
+  setRoofAllPVDisConnected
 } from './editingPVPanelManager';
+
+export {
+  fetchUserInverters,
+  calculateAutoInverter,
+  calculateManualInverter,
+  autoWiring,
+  manualWiring,
+  setManualWiringStart,
+  editWiring,
+  stopEditWiring,
+  setHoverWiringPoint,
+  releaseHoverWiringPoint,
+  setPickedWiringPoint,
+  releasePickedWiringPoint,
+  releasePVPanel,
+  attachPVPanel,
+  dynamicWiringLine,
+  setMouseDragStatus
+} from './editingWiringManager';
 
 export {
   calculateOrFetchGlobalOptimal,
@@ -136,9 +179,21 @@ export {
 
 export {
   setDebugPoints,
-  setDebugPolylines
+  setDebugPolylines,
+  setDebugPolygons,
+  setDebugShadowPolygons,
 } from './debugRender';
 
+
+export {
+  initStageSketchDiagram,
+  drawFlatBuildingOutline,
+  drawFlatBuildingSetBack,
+  drawSolarPanel,
+  drawWiring,
+  drawPitchedBuildingOutline,
+  drawKeepOut
+} from './drawingSketchDiagramManager';
 
 export {
   initStage,

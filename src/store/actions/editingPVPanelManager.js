@@ -23,9 +23,12 @@ const makeCombiGeometry = (props) => {
     kpt.keepout.outlinePolygon.toFoundLine().makeGeoJSON());
   const geoVentKeepout = props.allVentKeepout.map(kpt =>
     kpt.keepout.outlinePolygon.toFoundLine().makeGeoJSON());
+  const geoShadow = Object.keys(props.allShadow).map(k =>
+    props.allShadow[k].polygon.toFoundLine().makeGeoJSON());
   const geoNormalKeepoutInOne = makeUnionPolygonGeoJson(geoNormalKeepout);
   const geoPassageKeepoutInOne = makeUnionPolygonGeoJson(geoPassageKeepout);
   const geoVentKeepoutInOne = makeUnionPolygonGeoJson(geoVentKeepout);
+  const geoShadowInOne = makeUnionPolygonGeoJson(geoShadow);
   let keepoutCombi = null;
   let finalCombi = null;
   if (geoNormalKeepoutInOne.geometry.coordinates.length !== 0) {
@@ -35,6 +38,9 @@ const makeCombiGeometry = (props) => {
     }
     if(geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
       keepoutCombi = turf.union(keepoutCombi, geoVentKeepoutInOne);
+    }
+    if(geoShadowInOne.geometry.coordinates.length !== 0) {
+      keepoutCombi = turf.union(keepoutCombi, geoShadowInOne);
     }
     finalCombi = geoFoundation.map(geo => {
       const diff = turf.difference(geo, keepoutCombi);
@@ -51,6 +57,9 @@ const makeCombiGeometry = (props) => {
     if(geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
       keepoutCombi = turf.union(keepoutCombi, geoVentKeepoutInOne);
     }
+    if(geoShadowInOne.geometry.coordinates.length !== 0) {
+      keepoutCombi = turf.union(keepoutCombi, geoShadowInOne);
+    }
     finalCombi = geoFoundation.map(geo => {
       const diff = turf.difference(geo, keepoutCombi);
       if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
@@ -63,6 +72,21 @@ const makeCombiGeometry = (props) => {
   }
   else if (geoVentKeepoutInOne.geometry.coordinates.length !== 0) {
     keepoutCombi = geoVentKeepoutInOne;
+    if(geoShadowInOne.geometry.coordinates.length !== 0) {
+      keepoutCombi = turf.union(keepoutCombi, geoShadowInOne);
+    }
+    finalCombi = geoFoundation.map(geo => {
+      const diff = turf.difference(geo, keepoutCombi);
+      if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
+        diff.geometry.coordinates = [diff.geometry.coordinates];
+        return diff;
+      } else {
+        return diff;
+      }
+    });
+  }
+  else if (geoShadowInOne.geometry.coordinates.length !== 0) {
+    keepoutCombi = geoShadowInOne;
     finalCombi = geoFoundation.map(geo => {
       const diff = turf.difference(geo, keepoutCombi);
       if (typeof(diff.geometry.coordinates[0][0][0]) === 'number') {
@@ -119,11 +143,7 @@ const makeRequestData = (props) => {
 export const fetchUserPanels = () => (dispatch, getState) => {
   const userID = getState().authReducer.userID;
   dispatch(setBackendLoadingTrue());
-  axios.get(`/${userID}/panel`, {
-    params: {
-      attributes: JSON.stringify(['panelName', 'panelID', 'panelWidth', 'panelLength'])
-    }
-  })
+  axios.get(`/${userID}/panel`)
   .then(response => {
     dispatch({
       type: actionTypes.FETCH_USER_PANELS,
@@ -150,8 +170,10 @@ export const generatePanels = (roofIndex) => (dispatch, getState) => {
       workingBuilding.pitchedRoofPolygonsExcludeStb[roofIndex],
     allNormalKeepout: getState().keepoutManagerReducer.normalKeepout,
     allPassageKeepout: getState().keepoutManagerReducer.passageKeepout,
-    allVentKeepout: getState().keepoutManagerReducer.ventKeepout
+    allVentKeepout: getState().keepoutManagerReducer.ventKeepout,
+    allShadow: workingBuilding.shadow
   }
+  console.log(props)
   const data = makeRequestData(props);
   const params = getState().undoableReducer.present.editingPVPanelManagerReducer
     .roofSpecParams[roofIndex];
@@ -205,18 +227,35 @@ const generateFlatRoofPanels = (dispatch, requestData) => {
       roofIndex: 0,
       panels: JSON.parse(response.data.body).panelLayout.map(partialRoof =>
         partialRoof.map(array =>
-          array.map(panel => ({
-            ...panel,
-            pv: new PV(null, null, Polygon.makeHierarchyFromPolyline(
-              Polyline.fromPolyline(panel.pvPolyline)
-            ))
-          }))
+          array.map(panel => {
+            const pvPolyline = Polyline.fromPolyline(panel.pvPolyline)
+            const brng = Point.bearing(
+              pvPolyline.points[0], pvPolyline.points[2]
+            );
+            const dist = Point.surfaceDistance(
+              pvPolyline.points[0], pvPolyline.points[2]
+            );
+            const center = Point.destination(
+              pvPolyline.points[0], brng, dist / 2);
+            center.setCoordinate(
+              null, null, pvPolyline.points[0].height +
+              (pvPolyline.points[2].height - pvPolyline.points[0].height) / 2
+            )
+            return {
+              ...panel,
+              center: center,
+              pv: new PV(
+                null, null, Polygon.makeHierarchyFromPolyline(pvPolyline)
+              )
+            };
+          })
         )
       )
     });
     return dispatch(setBackendLoadingFalse());
   })
   .catch(error => {
+    console.log(error)
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Backend Error',
@@ -236,12 +275,28 @@ const generatePitchedRoofPanels = (dispatch, requestData, pitchedRoofIndex) => {
       roofIndex: pitchedRoofIndex,
       panels: JSON.parse(response.data.body).panelLayout.map(partialRoof =>
         partialRoof.map(array =>
-          array.map(panel => ({
-            ...panel,
-            pv: new PV(null, null, Polygon.makeHierarchyFromPolyline(
-              Polyline.fromPolyline(panel.pvPolyline)
-            ))
-          }))
+          array.map(panel => {
+            const pvPolyline = Polyline.fromPolyline(panel.pvPolyline)
+            const brng = Point.bearing(
+              pvPolyline.points[0], pvPolyline.points[2]
+            );
+            const dist = Point.surfaceDistance(
+              pvPolyline.points[0], pvPolyline.points[2]
+            );
+            const center = Point.destination(
+              pvPolyline.points[0], brng, dist);
+            center.setCoordinate(
+              null, null, pvPolyline.points[0].height +
+              (pvPolyline.points[2].height - pvPolyline.points[0].height) / 2
+            )
+            return {
+              ...panel,
+              center: center,
+              pv: new PV(
+                null, null, Polygon.makeHierarchyFromPolyline(pvPolyline)
+              )
+            };
+          })
         )
       )
     });
@@ -267,6 +322,29 @@ export const setupPanelParams = (values, roofIndex) => {
 export const cleanPanels = (roofIndex) => {
   return {
     type: actionTypes.CLEAN_EDITING_PANELS,
+    roofIndex: roofIndex
+  };
+}
+
+export const setPVConnected = (roofIndex, panelId) => {
+  return {
+    type: actionTypes.SET_PV_CONNECTED,
+    panelId: panelId,
+    roofIndex: roofIndex
+  };
+}
+
+export const setPVDisConnected = (roofIndex, panelId) => {
+  return {
+    type: actionTypes.SET_PV_DISCONNECTED,
+    panelId: panelId,
+    roofIndex: roofIndex
+  };
+}
+
+export const setRoofAllPVDisConnected = (roofIndex) => {
+  return {
+    type: actionTypes.SET_ROOF_ALL_PV_DISCONNECTED,
     roofIndex: roofIndex
   };
 }

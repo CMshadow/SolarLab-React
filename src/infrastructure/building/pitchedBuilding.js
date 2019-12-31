@@ -4,9 +4,10 @@ import Building from './building';
 class PitchedBuilding extends Building {
   constructor (
     name, serial, foundHt, eaveStb, hipStb, ridgeStb, pitchedRoofPolygons=null,
-    pitchedRoofPolygonsExcludeStb=null
+    pitchedRoofPolygonsExcludeStb=null, shadow=null, pv=null, inverters=null,
+    pvParams=null
   ) {
-    super(name, serial, foundHt, eaveStb);
+    super(name, serial, foundHt, eaveStb, shadow, pv, inverters, pvParams);
     this.type = 'PITCHED';
     this.hipSetback = hipStb;
     this.ridgeSetback = ridgeStb;
@@ -25,7 +26,8 @@ class PitchedBuilding extends Building {
   static fromBuilding (
     pitchedBuilding, name=null, serial=null, foundHt=null, eaveStb=null,
     hipStb=null, ridgeStb=null, pitchedRoofPolygons=null,
-    pitchedRoofPolygonsExcludeStb=null
+    pitchedRoofPolygonsExcludeStb=null, shadow=null, pv=null, inverters=null,
+    pvParams=null
   ) {
     const newName = name ? name : pitchedBuilding.name;
     const newSerial = serial ? serial : pitchedBuilding.serial;
@@ -44,11 +46,30 @@ class PitchedBuilding extends Building {
       pitchedRoofPolygonsExcludeStb ?
       pitchedRoofPolygonsExcludeStb :
       pitchedBuilding.pitchedRoofPolygonsExcludeStb;
+    const newShadow = shadow || pitchedBuilding.shadow;
+    const newPV = pv || pitchedBuilding.pv;
+    const newInverters = inverters || pitchedBuilding.inverters;
+    const newPVParams = pvParams || pitchedBuilding.pvParams;
     return new PitchedBuilding(newName, newSerial, newFoundHt, newEaveStb,
       newHipStb, newRidgeStb, newpitchedRoofPolygons,
-      newpitchedRoofPolygonsExcludeStb
+      newpitchedRoofPolygonsExcludeStb, newShadow, newPV, newInverters,
+      newPVParams
     );
   }
+
+  getRoofCoordinates = () => {
+    return this.pitchedRoofPolygons.map(polygon =>
+      polygon.convertHierarchyToFoundLine().getPointsCoordinatesArray(false)
+    )
+  };
+
+  getRoofExcludeStbCoordinates = () => {
+    return this.pitchedRoofPolygonsExcludeStb.map(parial =>
+      parial.flatMap(polygon =>
+        polygon.convertHierarchyToFoundLine().getPointsCoordinatesArray(false)
+      )
+    )
+  };
 }
 
 export default PitchedBuilding;

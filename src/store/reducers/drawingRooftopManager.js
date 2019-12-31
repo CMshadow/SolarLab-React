@@ -1,5 +1,6 @@
 import * as Cesium from 'cesium';
 import * as actionTypes from '../actions/actionTypes';
+import Point from '../../infrastructure/point/point';
 import Coordinate from '../../infrastructure/point/coordinate';
 import RoofTop from '../../infrastructure/rooftop/rooftop';
 import Polygon from '../../infrastructure/Polygon/Polygon';
@@ -13,6 +14,12 @@ const initState = {
   RooftopCollection: new RoofTop(),
   EnableToBuild: false,
 
+	editingInnerPlaneIndex: null,
+	threePointsIndex: null,
+	editingInnerPlanePoints: null,
+	hoverPoint: null,
+	pickedPointIndex: null,
+	threePointsInfo: {}
 }
 
 
@@ -31,38 +38,128 @@ const build3DRoofTopModeling = (state, action) => {
 }
 
 const updateSingleRoofTop = (state, action) => {
-	const newRooftop = Polygon.copyPolygon(
-		state.RooftopCollection.rooftopCollection[action.updateIndex]
-	);
-	newRooftop.setHierarchy(action.newPolygonHierarchy);
-	newRooftop.obliquity = action.newObliquity;
-	newRooftop.lowestNode[2] = action.newLowestHeight;
-	newRooftop.highestNode[2] = action.newHighestHeight;
-	const newRooftopExcludeStb = state.RooftopCollection
-	.rooftopExcludeStb[action.updateIndex].map(stbPolyogn => {
- 		const newStbFoundLine = stbPolyogn.toFoundLine();
-		newStbFoundLine.points.forEach(p => {
-			p.setCoordinate(
-				null, null,
-				Coordinate.heightOfArbitraryNode(newRooftop, p) +
-				newRooftop.lowestNode[2]
-			)
-		})
-		console.log(newStbFoundLine)
-		const newStbHierarchy = Polygon.makeHierarchyFromPolyline(
-			newStbFoundLine, null, 0.005
-		);
-		console.log(newStbHierarchy)
-		return new Polygon(null, null, null, newStbHierarchy);
-	})
-	console.log(newRooftopExcludeStb)
-  const newRooftopCollection = RoofTop.CopyPolygon(state.RooftopCollection);
-	newRooftopCollection.rooftopCollection[action.updateIndex] = newRooftop;
-	newRooftopCollection.rooftopExcludeStb[action.updateIndex] = newRooftopExcludeStb;
   return{
     ...state,
-    RooftopCollection: newRooftopCollection
+    RooftopCollection: action.newRooftopCollection
   }
+}
+
+const showOnlyOneRoofPlane = (state, action) => {
+	const showIndex =
+		state.RooftopCollection.rooftopCollection.reduce((acc, roof, ind) =>
+			roof.entityId === action.roofId ? ind : acc
+		, 0);
+	const innerPlanePoints = state.RooftopCollection.rooftopCollection[showIndex]
+		.convertHierarchyToPoints();
+	if (state.threePointsInfo[showIndex]) {
+		Object.keys(state.threePointsInfo[showIndex]).forEach(k => {
+			let color = Cesium.Color.SLATEBLUE ;
+			switch (k) {
+				default:
+					break;
+				case '1':
+					color = Cesium.Color.PLUM;
+					break;
+				case '2':
+					color = Cesium.Color.OLIVEDRAB;
+			}
+			innerPlanePoints[state.threePointsInfo[showIndex][k].pointIndex].setColor(
+				color
+			)
+		});
+	}
+	return {
+		...state,
+		editingInnerPlaneIndex: showIndex,
+		threePointsIndex: action.threePointIndex,
+		editingInnerPlanePoints: innerPlanePoints
+	};
+}
+
+const showAllRoofPlane = (state, action) => {
+	return {
+		...state,
+		editingInnerPlaneIndex: null,
+		threePointsIndex: null,
+		editingInnerPlanePoints: null,
+		hoverPoint: null,
+		pickedPointIndex: null,
+	};
+}
+
+const setHoverRoofTopPointIndex = (state, action) => {
+	const newPoint = Point.fromPoint(action.point);
+	newPoint.setColor(Cesium.Color.ORANGE);
+	const newEditingInnerPlanePoints = state.editingInnerPlanePoints.map(p => {
+		if (p.entityId !== newPoint.entityId) {
+			return p;
+		} else {
+			return newPoint;
+		}
+	});
+	return {
+		...state,
+		editingInnerPlanePoints: newEditingInnerPlanePoints,
+		hoverPoint: newPoint
+	};
+}
+
+const releaseHoverRoofTopPointIndex = (state, action) => {
+	const newPoint = Point.fromPoint(state.hoverPoint);
+	newPoint.setColor(Cesium.Color.WHITE);
+	const newEditingInnerPlanePoints = state.editingInnerPlanePoints.map(p => {
+		if (p.entityId !== newPoint.entityId) {
+			return p;
+		} else {
+			return newPoint;
+		}
+	});
+	return {
+		...state,
+		editingInnerPlanePoints: newEditingInnerPlanePoints,
+		hoverPoint: null
+	};
+}
+
+const setPickedRoofTopPointIndex = (state, action) => {
+	let color = Cesium.Color.SLATEBLUE;
+	switch (state.threePointsIndex) {
+		default:
+			break;
+		case 1:
+			color = Cesium.Color.PLUM;
+			break;
+		case 2:
+			color = Cesium.Color.OLIVEDRAB;
+	};
+	const newEditingInnerPlanePoints = state.editingInnerPlanePoints.map((p, i) =>
+		i === action.pointIndex ?
+		Point.fromPoint(p, null, null, null, null, null, null, color) :
+		p
+	);
+	return {
+		...state,
+		editingInnerPlanePoints: newEditingInnerPlanePoints,
+		pickedPointIndex: action.pointIndex,
+		hoverPoint: null,
+		threePointsInfo : {
+			...state.threePointsInfo,
+			[state.editingInnerPlaneIndex]: {
+				...state.threePointsInfo[state.editingInnerPlaneIndex],
+				[state.threePointsIndex]: {
+					pointIndex: action.pointIndex,
+				}
+			}
+		}
+	}
+}
+
+const releasePickedRoofTopPointIndex = (state, action) => {
+	return {
+		...state,
+		pickedPointIndex: null,
+		hoverPoint: null
+	};
 }
 
 const reducer = (state=initState, action) => {
@@ -71,6 +168,18 @@ const reducer = (state=initState, action) => {
 			return build3DRoofTopModeling(state, action);
 		case actionTypes.UPDATE_SINGLE_ROOF_TOP:
 			return updateSingleRoofTop(state, action);
+		case actionTypes.SHOW_ONLY_ONE_ROOF:
+			return showOnlyOneRoofPlane(state, action);
+		case actionTypes.SHOW_ALL_ROOF:
+			return showAllRoofPlane(state, action);
+		case actionTypes.SET_HOVER_ROOFTOP_POINT:
+			return setHoverRoofTopPointIndex(state, action);
+		case actionTypes.RELEASE_HOVER_ROOFTOP_POINT:
+			return releaseHoverRoofTopPointIndex(state, action);
+		case actionTypes.SET_PICKED_ROOFTOP_POINT:
+			return setPickedRoofTopPointIndex(state, action);
+		case actionTypes.RELEASE_PICKED_ROOFTOP_POINT:
+			return releasePickedRoofTopPointIndex(state, action);
 		default:
 			return state;
 	}

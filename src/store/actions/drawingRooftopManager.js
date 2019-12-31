@@ -9,6 +9,7 @@ import Node from '../../infrastructure/edgesMap/node/node';
 import Edge from '../../infrastructure/edgesMap/edge/edge';
 import EdgesMap from '../../infrastructure/edgesMap/edgesMap';
 import * as MathHelper from '../../infrastructure/math/RoofTop_MathHelper';
+import * as SunInfomation from '../../infrastructure/math/sunPositionCalculation';
 import * as MathCoordHelp from '../../infrastructure/math/math';
 import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
@@ -156,7 +157,6 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
 export const initNodesCollection = (
   buildingOutline, newNodeCollection, newOuterEdgeCollection
 ) => {
-
   // Build outer edges-points relations
   for (let i = 0; i < buildingOutline.length; i+=3) {
     newNodeCollection.push(
@@ -292,9 +292,9 @@ export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, N
       pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].height);
       pathParameters.roofPlaneNodeIdsList.push(NodesCollection[nodeIndex].id);
     }
+
     pathParameters.roofHighestLowestNodes = calculateHighestandLowestNodes(pathParameters.roofPlaneCoordinateArray).highestAndLowestNodes;
     pathInformationCollection.push(pathParameters);
-    console.log("id test: " + pathParameters.roofPlaneNodeIdsList)
   }
 
   return({
@@ -309,7 +309,7 @@ export const calculateObliquityAndObliquity = (NodesCollection, path) => {
   let endOuterNode = null;
   let roofBrng = null;
   let obliquity = null;
-  console.log("path: "+path);
+  // console.log("path: "+path);
   for (let i = 0; i < path.length; ++i) {
     let nodeIndex = path[i];
     // console.log("node type: "+nodeIndex +" -> "+NodesCollection[nodeIndex].bound);
@@ -519,7 +519,7 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
       lowestNode.node = outerEdgeSNode;
       newHierarchyMap.set(currentEdge.startNodePara.id, newLowest);
       newHierarchyMap.set(currentEdge.endNodePara.id, newLowest);
-      console.log("outerEdge brg: "+ outerEdgeBrng);
+      // console.log("outerEdge brg: "+ outerEdgeBrng);
     }
 
     else if (currentEdge.type === 'Ridge') {
@@ -574,7 +574,7 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
     // console.log("selected node: " + innerNodesCollection.innerNodesList[nodeIndex].node + ", lon: " + node.lon + ', lat: '+ node.lat + ', height: '+ node.height);
     let nextNode = new Coordinate(node.lon, node.lat, node.height);
     // console.log("nextNode coord: lon: " + nextNode.lon + ', lat: '+ nextNode.lat + ', height: '+ nextNode.height);
-    console.log("rooftop brg: "+ workingRoofTopCollection.rooftopCollection[roofIndex].brng);
+    // console.log("rooftop brg: "+ workingRoofTopCollection.rooftopCollection[roofIndex].brng);
     let interCoord = Coordinate.intersection(outerEdgeSNode, outerEdgeBrng, nextNode, workingRoofTopCollection.rooftopCollection[roofIndex].brng);
 
     let dist = Coordinate.surfaceDistance(nextNode, interCoord);
@@ -596,7 +596,7 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
   for (let node of innerNodesCollection.innerNodesList) {
     if (node.node.id !== hightestNode.id) {
       node.node.height = Math.tan(newObliquity * Math.PI/180) * node.dist + newLowest;
-      console.log("after update:" + node.node.id);
+      // console.log("after update:" + node.node.id);
       newHierarchyMap.set(node.node.id, node.node.height);
     } else {
       newHierarchyMap.set(node.node.id, hightestNode.height);
@@ -619,13 +619,95 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
 
   //update rooftop hierarchy structure
 
-  console.log("updated new Hierarchy: "+newHierarchy);
+  // console.log("updated new Hierarchy: "+newHierarchy);
+  /*
+    以下为CMshadow修改的代码
+   */
+  const newRooftop = Polygon.copyPolygon(
+    getState().undoableReducer.present.drawingRooftopManagerReducer
+    .RooftopCollection.rooftopCollection[roofIndex]
+ 	);
+ 	newRooftop.setHierarchy(newHierarchy);
+ 	newRooftop.obliquity = newObliquity;
+ 	newRooftop.lowestNode[2] = newLowest;
+ 	newRooftop.highestNode[2] = newHighest;
+
+ 	const newRooftopExcludeStb = getState().undoableReducer.present
+  .drawingRooftopManagerReducer.RooftopCollection
+ 	.rooftopExcludeStb[roofIndex].map(stbPolyogn => {
+  	const newStbFoundLine = stbPolyogn.toFoundLine();
+ 		newStbFoundLine.points.forEach(p => {
+ 			p.setCoordinate(
+ 				null, null,
+ 				Coordinate.heightOfArbitraryNode(newRooftop, p) +
+ 				newRooftop.lowestNode[2]
+ 			)
+ 		})
+ 		const newStbHierarchy = Polygon.makeHierarchyFromPolyline(
+ 			newStbFoundLine, null, 0.005
+ 		);
+ 		return new Polygon(null, null, null, newStbHierarchy);
+ 	})
+
+  const newRooftopCollection = RoofTop.CopyPolygon(
+    getState().undoableReducer.present.drawingRooftopManagerReducer
+    .RooftopCollection
+  );
+ 	newRooftopCollection.rooftopCollection[roofIndex] = newRooftop;
+ 	newRooftopCollection.rooftopExcludeStb[roofIndex] = newRooftopExcludeStb;
+
   return dispatch({
     type: actionTypes.UPDATE_SINGLE_ROOF_TOP,
-    newPolygonHierarchy:newHierarchy,
-    updateIndex: roofIndex,
-    newObliquity: newObliquity,
-    newLowestHeight: newLowest,
-    newHighestHeight: newHighest
+    newRooftopCollection: newRooftopCollection
   });
+}
+
+export const showOnlyOneRoofPlane = (roofId, threePointIndex) => {
+  return {
+    type: actionTypes.SHOW_ONLY_ONE_ROOF,
+    roofId: roofId,
+    threePointIndex: threePointIndex
+  };
+}
+
+export const showAllRoofPlane = () => {
+  return {
+    type: actionTypes.SHOW_ALL_ROOF
+  };
+}
+
+export const setHoverRoofTopPointIndex = (point) => {
+  return {
+    type: actionTypes.SET_HOVER_ROOFTOP_POINT,
+    point: point
+  };
+}
+
+export const releaseHoverRoofTopPointIndex = () => {
+  return {
+    type: actionTypes.RELEASE_HOVER_ROOFTOP_POINT,
+  };
+}
+
+export const setPickedRoofTopPointIndex = (threePointInd) => (dispatch, getState) => {
+	const editingInnerPlanePoints =
+    getState().undoableReducer.present.drawingRooftopManagerReducer
+    .editingInnerPlanePoints;
+  const hoverPoint =
+    getState().undoableReducer.present.drawingRooftopManagerReducer.hoverPoint;
+  const pointIndex = editingInnerPlanePoints.reduce((matchInd, p, i) =>
+    p.entityId === hoverPoint.entityId ? i : matchInd
+  , 0);
+  dispatch(actions.setUIStateEditing3D());
+  return dispatch({
+    type: actionTypes.SET_PICKED_ROOFTOP_POINT,
+    pointIndex: pointIndex,
+    threePointsIndex: threePointInd
+  })
+}
+
+export const releasePickedRoofTopPointIndex = () => {
+	return {
+    type: actionTypes.RELEASE_PICKED_ROOFTOP_POINT
+  };
 }

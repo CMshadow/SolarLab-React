@@ -46,6 +46,7 @@ export const createAllKeepoutPolygon = () => (dispatch, getState) => {
 
 export const createNormalKeepoutPolygon = (normalKeepout) =>
 (dispatch, getState) => {
+  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
   const foundPolyline =
     getState().undoableReducer.present.drawingManagerReducer.drawingPolyline;
   const foundHeight =
@@ -91,7 +92,9 @@ export const createNormalKeepoutPolygon = (normalKeepout) =>
           null, null, foundHeight, stbHierarchies[index], null, null,
           Color.ORANGE
         ) :
-        null
+        null,
+        buildingId,
+        0
       )
     });
     dispatch({
@@ -109,6 +112,7 @@ export const createNormalKeepoutPolygon = (normalKeepout) =>
 
 export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
 (dispatch, getState) => {
+  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
   const pitchedRoofPolygons = getState().undoableReducer.present
     .drawingRooftopManagerReducer.RooftopCollection.rooftopCollection;
   const pitchedRoofsFoundLine = pitchedRoofPolygons.map(polygon =>
@@ -199,7 +203,9 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
           null, null, pitchedRoofPolygons[roofIndex].lowestNode[2], stbHierarchy,
           null, null, Color.ORANGE
         ) :
-        null
+        null,
+        buildingId,
+        roofIndex
       )
     })
 
@@ -218,6 +224,7 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
 
 export const createPassageKeepoutPolygon = (passageKeepout) =>
 (dispatch, getState) => {
+  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
   const foundPolyline =
     getState().undoableReducer.present.drawingManagerReducer.drawingPolyline;
   const foundHeight =
@@ -256,7 +263,9 @@ export const createPassageKeepoutPolygon = (passageKeepout) =>
         new Polygon(
           null, null, foundHeight, stbHierarchies[index], null, null,
           Color.ORANGE
-        )
+        ),
+        buildingId,
+        0
       )
     });
     dispatch({
@@ -274,6 +283,7 @@ export const createPassageKeepoutPolygon = (passageKeepout) =>
 
 export const createPassageKeepoutPolygonPitched = (passageKeepout) =>
 (dispatch, getState) => {
+  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
   const pitchedRoofPolygons = getState().undoableReducer.present
     .drawingRooftopManagerReducer.RooftopCollection.rooftopCollection;
   const pitchedRoofsFoundLine = pitchedRoofPolygons.map(polygon =>
@@ -338,7 +348,9 @@ export const createPassageKeepoutPolygonPitched = (passageKeepout) =>
         new Polygon(
           null, null, foundHeight, stbHierarchy, null, null,
           Color.ORANGE
-        )
+        ),
+        buildingId,
+        roofIndex
       )
     })
     dispatch({
@@ -356,6 +368,7 @@ export const createPassageKeepoutPolygonPitched = (passageKeepout) =>
 
 export const createVentKeepoutPolygon = (ventKeepout) =>
 (dispatch, getState) => {
+  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
   const foundPolyline =
     getState().undoableReducer.present.drawingManagerReducer.drawingPolyline;
   const foundHeight =
@@ -379,7 +392,9 @@ export const createVentKeepoutPolygon = (ventKeepout) =>
       new Polygon(
         null, null, foundHeight, hierarchy, null, null,
         Color.ORANGE
-      )
+      ),
+      buildingId,
+      0
     )
   });
   dispatch({
@@ -390,6 +405,7 @@ export const createVentKeepoutPolygon = (ventKeepout) =>
 
 export const createVentKeepoutPolygonPitched = (ventKeepout) =>
 (dispatch, getState) => {
+  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
   const pitchedRoofPolygons = getState().undoableReducer.present
     .drawingRooftopManagerReducer.RooftopCollection.rooftopCollection;
   const pitchedRoofsFoundLine = pitchedRoofPolygons.map(polygon =>
@@ -431,7 +447,9 @@ export const createVentKeepoutPolygonPitched = (ventKeepout) =>
       new Polygon(
         null, null, foundHeight, hierarchy, null, null,
         Color.ORANGE
-      )
+      ),
+      buildingId,
+      roofIndex
     )
   });
   dispatch({
@@ -489,7 +507,9 @@ export const reRenderKeepoutPolygon = (type, id, values) =>
       const allKeepout =
         getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
       const normalKeepout = allKeepout.filter(kpt => kpt.type === 'KEEPOUT');
-      dispatch(createNormalKeepoutPolygon(normalKeepout));
+      getState().buildingManagerReducer.workingBuilding.type === 'FLAT' ?
+      dispatch(createNormalKeepoutPolygon(normalKeepout)) :
+      dispatch(createNormalKeepoutPolygonPitched(normalKeepout))
       break;
     }
 
@@ -497,7 +517,9 @@ export const reRenderKeepoutPolygon = (type, id, values) =>
       const allKeepout =
         getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
       const passageKeepout = allKeepout.filter(kpt => kpt.type === 'PASSAGE');
-      dispatch(createPassageKeepoutPolygon(passageKeepout));
+      getState().buildingManagerReducer.workingBuilding.type === 'FLAT' ?
+      dispatch(createPassageKeepoutPolygon(passageKeepout)) :
+      dispatch(createPassageKeepoutPolygonPitched(passageKeepout))
       break;
     }
 
@@ -505,7 +527,9 @@ export const reRenderKeepoutPolygon = (type, id, values) =>
       const allKeepout =
         getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
       const ventKeepout = allKeepout.filter(kpt => kpt.type === 'VENT');
-      dispatch(createVentKeepoutPolygon(ventKeepout));
+      getState().buildingManagerReducer.workingBuilding.type === 'FLAT' ?
+      dispatch(createVentKeepoutPolygon(ventKeepout)) :
+      dispatch(createVentKeepoutPolygonPitched(ventKeepout))
       break;
     }
 
@@ -526,3 +550,127 @@ export const reRenderKeepoutPolygon = (type, id, values) =>
     }
   }
 };
+
+export const updateKeepoutOnRoof = (roofIndex) => (dispatch, getState) => {
+  if (getState().buildingManagerReducer.workingBuilding.type === 'PITCHED') {
+    dispatch(updateKeepoutOnPitchedRoof(roofIndex))
+  }
+}
+
+export const updateKeepoutOnPitchedRoof = (roofIndex) => (dispatch, getState) => {
+  const roofPolygon = getState().undoableReducer.present
+    .drawingRooftopManagerReducer.RooftopCollection.rooftopCollection[roofIndex];
+  const roofLowestHeight = roofPolygon.lowestNode[2];
+  const normalKeepout = getState().undoableReducer.present
+    .drawingKeepoutPolygonManagerReducer.normalKeepout;
+  const passageKeepout = getState().undoableReducer.present
+    .drawingKeepoutPolygonManagerReducer.passageKeepout;
+  const ventKeepout = getState().undoableReducer.present
+    .drawingKeepoutPolygonManagerReducer.ventKeepout;
+  const newNormalKeepout = normalKeepout.map(kpt => {
+    if (kpt.roofIndexBelong !== roofIndex) {
+      return kpt;
+    } else {
+      let kptAvgHeight = 0;
+      let kptAvgHeightDenominator = 0;
+      kpt.outlinePolyline.points.forEach(p => {
+        kptAvgHeight += (
+          Coordinate.heightOfArbitraryNode(roofPolygon, p) + roofLowestHeight
+        );
+        kptAvgHeightDenominator += 1;
+      })
+      kptAvgHeight = kptAvgHeight / kptAvgHeightDenominator;
+      const newKptHier = Polygon.makeHierarchyFromPolyline(
+        kpt.outlinePolyline, kptAvgHeight + kpt.height
+      );
+
+      let newStbHier = null;
+      if (kpt.outlinePolygonPart2) {
+        const stbLine = kpt.outlinePolygonPart2.toFoundLine();
+        stbLine.points.forEach(p => {
+          p.setCoordinate(
+            null, null,
+            Coordinate.heightOfArbitraryNode(roofPolygon, p) + roofLowestHeight
+          );
+        })
+        newStbHier = Polygon.makeHierarchyFromPolyline(stbLine, null, 0.01);
+      }
+
+      return NormalKeepout.fromKeepout(
+        kpt, null, null, null,
+        new Polygon(
+          null, null, kptAvgHeight + kpt.height,
+          newKptHier, null, null, Color.GOLD
+        ),
+        kpt.setback !== 0 ?
+        new Polygon(
+          null, null, roofLowestHeight, newStbHier,
+          null, null, Color.ORANGE
+        ) :
+        null
+      )
+    }
+  })
+  dispatch({
+    type: actionTypes.CREATE_ALL_NORMAL_KEEPOUT_POLYGON,
+    normalKeepout: newNormalKeepout
+  });
+
+  const newPassageKeepout = passageKeepout.map(kpt => {
+    if (kpt.roofIndexBelong !== roofIndex) {
+      return kpt;
+    } else {
+      const passageFoundLine = kpt.outlinePolygon.toFoundLine();
+      passageFoundLine.points.forEach(p => {
+        p.setCoordinate(
+          null, null,
+          Coordinate.heightOfArbitraryNode(roofPolygon, p) + roofLowestHeight
+        );
+      })
+      const newKptHier = Polygon.makeHierarchyFromPolyline(
+        passageFoundLine, null, 0.01
+      );
+
+      return Passage.fromKeepout(
+        kpt, null, null,
+        new Polygon(
+          null, null, roofLowestHeight,
+          newKptHier, null, null, Color.ORANGE
+        )
+      )
+    }
+  })
+  dispatch({
+    type: actionTypes.CREATE_ALL_PASSAGE_KEEPOUT_POLYGON,
+    passageKeepout: newPassageKeepout
+  });
+
+  const newVentKeepout = ventKeepout.map(kpt => {
+    if (kpt.roofIndexBelong !== roofIndex) {
+      return kpt;
+    } else {
+      const ventFoundLine = kpt.outlinePolygon.toFoundLine();
+      ventFoundLine.points.forEach(p => {
+        p.setCoordinate(
+          null, null,
+          Coordinate.heightOfArbitraryNode(roofPolygon, p) + roofLowestHeight
+        );
+      })
+      const newKptHier = Polygon.makeHierarchyFromPolyline(
+        ventFoundLine, null, 0.01
+      );
+
+      return Vent.fromKeepout(
+        kpt, null, null, null, null,
+        new Polygon(
+          null, null, roofLowestHeight,
+          newKptHier, null, null, Color.ORANGE
+        )
+      )
+    }
+  })
+  dispatch({
+    type: actionTypes.CREATE_ALL_VENT_KEEPOUT_POLYGON,
+    ventKeepout: newVentKeepout
+  });
+}

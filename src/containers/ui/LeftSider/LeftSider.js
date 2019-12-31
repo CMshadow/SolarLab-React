@@ -10,6 +10,8 @@ import CreateBuildingPanel from './individualPanels/createBuildingPanel';
 import DrawBuildingPanel from './individualPanels/drawBuildingPanel';
 import Editing3DPanel from './individualPanels/editing3DPanel';
 import SetUpPVPanel from './individualPanels/setUpPVPanel';
+import SetUpWiringPanel from './individualPanels/setUpWiringPanel';
+import SetUpBridgingPanel from './individualPanels/setUpBridgingPanel';
 import * as uiStateJudge from '../../../infrastructure/ui/uiStateJudge';
 
 const { Sider } = Layout;
@@ -43,10 +45,16 @@ class LeftSider extends Component {
       else if (uiStateJudge.showSetUpPVPanel(this.props.uiState)) {
         content = (<SetUpPVPanel/>)
       }
+      else if (uiStateJudge.showSetUpWiringPanel(this.props.uiState)) {
+        content = (<SetUpWiringPanel/>)
+      }
+      else if (uiStateJudge.showSetUpBridgingPanel(this.props.uiState)) {
+        content = (<SetUpBridgingPanel/>)
+      }
     }
 
     return (
-      <Layout style={{ minHeight: '100vh' }}>
+      <Layout style={{ minHeight: '100vh', position:"fixed", top:'50px'}}>
         <Sider
           className={classes.leftSider}
           width={325}

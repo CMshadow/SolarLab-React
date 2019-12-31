@@ -4,7 +4,6 @@ import * as actionTypes from '../actions/actionTypes';
 import Polygon from '../../infrastructure/Polygon/Polygon';
 import Wall from '../../infrastructure/Polygon/wall';
 
-
 const initialState = {
 	BuildingFoundation: [],
 	BuildingFoundationExcludeStb: [],

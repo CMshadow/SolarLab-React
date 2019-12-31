@@ -1,12 +1,14 @@
 import React, { Component } from 'react';
-import { Layout } from 'antd';
-// import { connect } from 'react-redux';
+import { Menu, Icon, Layout, Checkbox, Slider, InputNumber, Row, Col, Button } from 'antd';
+import { connect } from 'react-redux';
 
 import 'antd/dist/antd.css';
+
 import * as classes from './LeftSider.module.css';
 
+import * as uiStateJudge from '../../../../infrastructure/ui/uiStateJudge';
 
-const { Sider } = Layout;
+const { Sider, Content } = Layout;
 
 class LeftSider extends Component {
 
@@ -22,24 +24,85 @@ class LeftSider extends Component {
 
   render() {
 
-    let content = "test single diagram demo";
+    let content = <Button
+      type = 'primary'
+      size = 'large'
+      shape = 'round'
+      block
+      onClick = {() => {
+        // this.props.createSingleLineDiagram();
+        // this.initState();
+      }}
+    >Generate Single Line Diagram</Button>
 
 
     return (
-      <Layout style={{ minHeight: '100vh' }}>
+      <Layout style={{ minHeight: '100vh', position:'fixed', top: '50px' }}>
         <Sider
-          className={classes.leftSider}
-          width={325}
-          collapsedWidth={50}
-          collapsible
-          onCollapse={this.onCollapse}
+            collapsible
+/*          collapsed={this.state.collapsed}
+            onMouseOver={this.handleMouseOver}
+            onMouseLeave={this.handleMouseOut}*/
+            style={{ backgroundColor: '#fafafa' }}
         >
-          {content}
+          <Menu
+              theme="light"
+              mode="inline"
+              // onClick={this.handleMenuDownload}
+              style={{ backgroundColor: '#fafafa' }}
+          >
+            <Menu.SubMenu
+              key="sub1"
+              title={<span><Icon type="user" /><span>Building</span></span>}
+              
+            >
+              <Menu.Item key="3">Building 1</Menu.Item>
+              <Menu.Item key="4">Building 2</Menu.Item>
+              <Menu.Item key="5">Building 3</Menu.Item>
+            </Menu.SubMenu>
+            <Menu.Item key="report">
+                <Icon type="pie-chart" />
+                <span>Screenshot </span>
+            </Menu.Item>
+
+            <Menu.Item key="Size"  style={{height:"auto"}}>
+                <Icon type="zoom-in" />
+                <span>Zoom-In/Out </span>
+
+                  <Row style={{ display:"block" }}>
+                    <Col span={24}>
+                        <Slider
+                            min={0.1}
+                            max={3}
+                            // onChange={this.onSliderChange}
+                            defaultValue = {1}
+                            // value ={typeof this.state.size === 'number' ? this.state.size : 1}
+                            step={0.1}
+                        />
+                    </Col>
+                    
+                </Row>
+            </Menu.Item>
+              
+            <Menu.SubMenu
+                key="sub2"
+                title={<span><Icon type="team" /><span>Team</span></span>}
+            >
+                <Menu.Item key="6">Team 1</Menu.Item>
+                <Menu.Item key="8">Team 2</Menu.Item>
+            </Menu.SubMenu>
+          </Menu>
         </Sider>
-      </Layout>
+
+    </Layout>
     );
   }
 }
 
+const mapStateToProps = state => {
+  return {
+    // uiState: state.undoableReducer.present.uiStateManagerReducer.uiState
+  };
+};
 
-export default LeftSider;
+export default connect(mapStateToProps)(LeftSider);

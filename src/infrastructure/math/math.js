@@ -2,7 +2,6 @@ import * as Cesium from 'cesium';
 
 import Coordinate from '../point/coordinate';
 
-
 export const coordinateToVector = (coordinate) => {
   const latRadians = Cesium.Math.toRadians(coordinate.lat);
   const lonRadians = Cesium.Math.toRadians(coordinate.lon);

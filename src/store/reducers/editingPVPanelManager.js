@@ -1,11 +1,13 @@
 import * as Cesium from 'cesium';
 
 import * as actionTypes from '../actions/actionTypes';
-import ProjectInfo from '../../infrastructure/projectInfo/projectInfo';
+import PV from '../../infrastructure/Polygon/PV';
 
 const initialState = {
   panels: {},
-  backendLoading: false,
+  connectedPanelId: [],
+  disconnectedPanelId: [],
+
   parameters: {
     azimuth: 180,
     tilt: 10,
@@ -69,6 +71,195 @@ const fetchUserPanels = (state, action) => {
   }
 }
 
+const updatePVConnected = (state, action) => {
+  const wiringPanelIds = action.wiring.allPanels.map(pv => pv.entityId);
+  const newPanels = {...state.panels};
+  const changes = newPanels[action.roofIndex].map(partial =>
+    partial.map(panelArray =>
+      panelArray.map(panel => {
+        if (wiringPanelIds.includes(panel.pv.entityId)) {
+          const newPV = PV.copyPolygon(panel.pv);
+          newPV.setConnected();
+          newPV.setColor(Cesium.Color.ROYALBLUE.withAlpha(0.75));
+          return {
+            ...panel,
+            pv: newPV
+          };
+        } else {
+          return panel;
+        }
+      })
+    )
+  );
+  newPanels[action.roofIndex] = changes;
+  const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
+    newPanels[roofIndex].flatMap(partial => {
+      const partialRoofPanels = partial.flatMap(originPanelArray => {
+        const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
+        if (panelArray.length === 0) return [];
+        return panelArray.map(panel => panel.pv.entityId);
+      })
+      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+    })
+  )
+  const connectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
+    newPanels[roofIndex].flatMap(partial => {
+      const partialRoofPanels = partial.flatMap(originPanelArray => {
+        const panelArray = originPanelArray.filter(panel => panel.pv.connected);
+        if (panelArray.length === 0) return [];
+        return panelArray.map(panel => panel.pv.entityId);
+      })
+      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+    })
+  )
+  return {
+    ...state,
+    panels: newPanels,
+    connectedPanelId: connectedPanelIds,
+    disconnectedPanelId: disconnectedPanelIds
+  };
+}
+
+const setPVConnected = (state, action) => {
+  const newPanels = {...state.panels};
+  const changes = newPanels[action.roofIndex].map(partial =>
+    partial.map(panelArray =>
+      panelArray.map(panel => {
+        if (panel.pv.entityId === action.panelId) {
+          const newPV = PV.copyPolygon(panel.pv);
+          newPV.setConnected();
+          newPV.setColor(Cesium.Color.ROYALBLUE.withAlpha(0.75));
+          return {
+            ...panel,
+            pv: newPV
+          };
+        } else {
+          return panel;
+        }
+      })
+    )
+  );
+  newPanels[action.roofIndex] = changes;
+  const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
+    newPanels[roofIndex].flatMap(partial => {
+      const partialRoofPanels = partial.flatMap(originPanelArray => {
+        const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
+        if (panelArray.length === 0) return [];
+        return panelArray.map(panel => panel.pv.entityId);
+      })
+      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+    })
+  )
+  const connectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
+    newPanels[roofIndex].flatMap(partial => {
+      const partialRoofPanels = partial.flatMap(originPanelArray => {
+        const panelArray = originPanelArray.filter(panel => panel.pv.connected);
+        if (panelArray.length === 0) return [];
+        return panelArray.map(panel => panel.pv.entityId);
+      })
+      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+    })
+  )
+  return {
+    ...state,
+    panels: newPanels,
+    connectedPanelId: connectedPanelIds,
+    disconnectedPanelId: disconnectedPanelIds
+  };
+}
+
+const setPVDisConnected = (state, action) => {
+  const newPanels = {...state.panels};
+  const changes = newPanels[action.roofIndex].map(partial =>
+    partial.map(panelArray =>
+      panelArray.map(panel => {
+        if (panel.pv.entityId === action.panelId) {
+          const newPV = PV.copyPolygon(panel.pv);
+          newPV.releaseConnected();
+          newPV.setColor(Cesium.Color.RED.withAlpha(0.5));
+          return {
+            ...panel,
+            pv: newPV
+          };
+        } else {
+          return panel;
+        }
+      })
+    )
+  );
+  newPanels[action.roofIndex] = changes;
+  const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
+    newPanels[roofIndex].flatMap(partial => {
+      const partialRoofPanels = partial.flatMap(originPanelArray => {
+        const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
+        if (panelArray.length === 0) return [];
+        return panelArray.map(panel => panel.pv.entityId);
+      })
+      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+    })
+  )
+  const connectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
+    newPanels[roofIndex].flatMap(partial => {
+      const partialRoofPanels = partial.flatMap(originPanelArray => {
+        const panelArray = originPanelArray.filter(panel => panel.pv.connected);
+        if (panelArray.length === 0) return [];
+        return panelArray.map(panel => panel.pv.entityId);
+      })
+      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+    })
+  )
+  return {
+    ...state,
+    panels: newPanels,
+    connectedPanelId: connectedPanelIds,
+    disconnectedPanelId: disconnectedPanelIds
+  };
+}
+
+const setRoofAllPVDisConnected = (state, action) => {
+  const newPanels = {...state.panels};
+  const changes = newPanels[action.roofIndex].map(partial =>
+    partial.map(panelArray =>
+      panelArray.map(panel => {
+        const newPV = PV.copyPolygon(panel.pv);
+        newPV.releaseConnected();
+        newPV.setColor(Cesium.Color.RED.withAlpha(0.5));
+        return {
+          ...panel,
+          pv: newPV
+        };
+      })
+    )
+  );
+  newPanels[action.roofIndex] = changes;
+  const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
+    newPanels[roofIndex].flatMap(partial => {
+      const partialRoofPanels = partial.flatMap(originPanelArray => {
+        const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
+        if (panelArray.length === 0) return [];
+        return panelArray.map(panel => panel.pv.entityId);
+      })
+      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+    })
+  )
+  const connectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
+    newPanels[roofIndex].flatMap(partial => {
+      const partialRoofPanels = partial.flatMap(originPanelArray => {
+        const panelArray = originPanelArray.filter(panel => panel.pv.connected);
+        if (panelArray.length === 0) return [];
+        return panelArray.map(panel => panel.pv.entityId);
+      })
+      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
+    })
+  )
+  return {
+    ...state,
+    panels: newPanels,
+    connectedPanelId: connectedPanelIds,
+    disconnectedPanelId: disconnectedPanelIds
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SETUP_PANEL_PARAMS:
@@ -79,6 +270,14 @@ const reducer = (state=initialState, action) => {
       return generatePanels(state, action);
     case actionTypes.FETCH_USER_PANELS:
       return fetchUserPanels(state, action);
+    case actionTypes.AUTO_WIRING:
+      return updatePVConnected(state, action);
+    case actionTypes.SET_PV_CONNECTED:
+      return setPVConnected(state, action);
+    case actionTypes.SET_PV_DISCONNECTED:
+      return setPVDisConnected(state, action);
+    case actionTypes.SET_ROOF_ALL_PV_DISCONNECTED:
+      return setRoofAllPVDisConnected(state, action);
     default: return state;
   }
 };

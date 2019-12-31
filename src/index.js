@@ -27,8 +27,11 @@ import projectManagerReducer from './store/reducers/projectManager';
 import drawingPolygonManagerReducer from './store/reducers/drawingPolygonManager';
 import drawingKeepoutPolygonManagerReducer from './store/reducers/drawingKeepoutPolygonManager';
 import editingPVPanelManagerReducer from './store/reducers/editingPVPanelManager';
+import editingWiringManager from './store/reducers/editingWiringManager';
 import debugRenderReducer from './store/reducers/debugRender';
 import drawingRooftopManagerReducer from './store/reducers/drawingRooftopManager';
+import editingShadowManager from './store/reducers/editingShadowManager';
+import drawingSketchDiagramManagerReducer from './store/reducers/drawingSketchDiagramManager';
 import drawingSingleLineDiagramReducer from './store/reducers/drawingSingleLineDiagramManager';
 
 // IMPORT MORE REDBUX REDUCERS OVER HERE
@@ -48,6 +51,7 @@ const rootReducer = combineReducers({
   buildingManagerReducer: buildingManagerReducer,
   keepoutManagerReducer: keepoutManagerReducer,
   debugRenderReducer:debugRenderReducer,
+  drawingSketchDiagramManagerReducer,
   drawingSingleLineDiagramReducer,
   undoableReducer: undoable(combineReducers({
     drawingManagerReducer: drawingManagerReducer,
@@ -57,7 +61,10 @@ const rootReducer = combineReducers({
     drawingPolygonManagerReducer: drawingPolygonManagerReducer,
     drawingKeepoutPolygonManagerReducer: drawingKeepoutPolygonManagerReducer,
     drawingRooftopManagerReducer: drawingRooftopManagerReducer,
-    editingPVPanelManagerReducer: editingPVPanelManagerReducer
+    editingShadowManager: editingShadowManager,
+    editingPVPanelManagerReducer: editingPVPanelManagerReducer,
+    editingWiringManager: editingWiringManager
+
   }), {
     initTypes: [actionTypes.SET_VIEWER],
     filter: includeAction([
