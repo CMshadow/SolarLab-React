@@ -3,6 +3,7 @@ import * as Cesium from 'cesium';
 import * as martinez from 'martinez-polygon-clipping';
 
 import * as actionTypes from '../actions/actionTypes';
+import * as actions from '../actions/index';
 import {
   shadow_vector,
   getRatio,
@@ -80,6 +81,7 @@ export const projectAllShadow = (sunPositionCollection) =>
   const foundationHeight = getState().buildingManagerReducer.workingBuilding
     .foundationHeight;
 
+  dispatch(actions.setBackendLoadingTrue());
   // 女儿墙转换为普通障碍物
   const wallKeepout =
     buildingType === 'PITCHED' ||
@@ -144,6 +146,7 @@ export const projectAllShadow = (sunPositionCollection) =>
       specialParapetShadows.push({
         from: obj.kptId,
         to: roofPolygon.entityId,
+        type: obj.keepOutType,
         polygon: new Shadow(null, null,
           shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
         ),
@@ -188,6 +191,7 @@ export const projectAllShadow = (sunPositionCollection) =>
         from: obj.kptId,
         to: roofPolygon.entityId,
         keepoutCoordinates: obj.kptOutlineCoordinates,
+        type: obj.keepOutType,
         polygon: new Shadow(null, null,
           shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
         )
@@ -207,6 +211,7 @@ export const projectAllShadow = (sunPositionCollection) =>
     specialParapetShadowPolygonsDict[obj.polygon.entityId] = obj
   });
 
+  dispatch(actions.setBackendLoadingFalse());
   return dispatch({
     type: actionTypes.PROJECT_ALL_SHADOW,
     shadows: shadowPolygonsDict,
@@ -306,6 +311,7 @@ const projectKeepoutShadow = (
               geoJSON: new FoundLine(beautifiedPoints).makeGeoJSON(),
               kptOutlineCoordinates: kpt.getOutlineCoordinates(),
               kptId: kpt.id,
+              keepOutType: keepoutType
             })
           }
         })

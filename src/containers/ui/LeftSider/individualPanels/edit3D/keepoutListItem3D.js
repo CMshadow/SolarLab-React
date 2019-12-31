@@ -12,6 +12,7 @@ import {
   Button,
   Card
 } from 'antd';
+import { injectIntl } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 import * as classes from './keepoutListItem3D.module.css';
@@ -30,6 +31,7 @@ class KeepoutListItem extends Component {
   };
 
   render() {
+    // console.log(this.props.type)
     const editCard = (
       <Card
         className = {classes.editCard}
@@ -54,10 +56,10 @@ class KeepoutListItem extends Component {
           </Button>
         ]}
       >
-        {this.props.type}
+        {this.props.intl.formatMessage({id: this.props.type})}
       </List.Item>
     );
   }
 };
 
-export default KeepoutListItem;
+export default injectIntl(KeepoutListItem);

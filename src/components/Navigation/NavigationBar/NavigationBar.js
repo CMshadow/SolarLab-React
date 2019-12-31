@@ -3,7 +3,11 @@ import React, { Component } from 'react';
 import 'antd/dist/antd.css';
 import { connect } from 'react-redux';
 import { Route, Switch, withRouter } from 'react-router-dom';
+
 import * as actions from '../../../store/actions/index';
+
+import { FormattedMessage } from 'react-intl';
+
 
 class NavigationBar extends Component{
 
@@ -25,18 +29,28 @@ class NavigationBar extends Component{
 
   render() {
     return (
-      <Menu
-        theme='dark'
-        mode='horizontal'
-        defaultSelectedKeys={['2']}
-        style={{ lineHeight: '64px', background:"#202020" }}
-      >
-        <Menu.Item style = {{background:"#202020"}} key='1'>Home</Menu.Item>
-        <Menu.Item style = {{background:"#202020"}} key='2' onClick={this.ModelingSwitchHandler}>Modeling</Menu.Item>
-        <Menu.Item style = {{background:"#202020"}} key='3' onClick={this.SketchDiagramHandler}>2D Diagram</Menu.Item>
-        <Menu.Item style = {{background:"#202020"}} key='4' onClick={this.ReportSwitchHandler}>Report</Menu.Item>
-      </Menu>
-    )
+        <Menu
+          theme='dark'
+          mode='horizontal'
+          defaultSelectedKeys={['1']}
+          style={{ lineHeight: '64px', background:"#202020" }}
+        >
+          <Menu.Item style = {{background:"#202020"}} key='1'>
+            <FormattedMessage id='home' />
+          </Menu.Item>
+          <Menu.Item style = {{background:"#202020"}} key='2' onClick={this.ModelingSwitchHandler}>
+            <FormattedMessage id='modeling' />
+          </Menu.Item>
+          <Menu.Item style = {{background:"#202020"}} key='3' onClick={this.SketchDiagramHandler}>
+            <FormattedMessage id='twoD_diagram' />
+          </Menu.Item>
+          <Menu.Item style = {{background:"#202020"}} key='4'>
+            <FormattedMessage id='report' />
+          </Menu.Item>
+        </Menu>
+      )
+    }
+
   }
 }
 

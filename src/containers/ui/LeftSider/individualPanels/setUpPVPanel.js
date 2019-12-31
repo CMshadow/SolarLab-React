@@ -17,6 +17,7 @@ import {
 } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRectanglePortrait, faRectangleLandscape } from '@fortawesome/pro-light-svg-icons'
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../store/actions/index';
 import axios from '../../../../axios-setup';
@@ -314,7 +315,7 @@ class SetUpPVPanel extends Component {
             <Select
               showSearch
               optionFilterProp='children'
-              placeholder='Select a panel'
+              placeholder={this.props.intl.formatMessage({id:'select_a_panel'})}
               onChange={(e) => {
                 this.setState({selectPanelID: e});
                 if (this.state.tab !== 'manual') {
@@ -344,9 +345,9 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="The azimuth of the panels, 180° is south, 0° is north"
+              title={this.props.intl.formatMessage({id:'Azimuth_description'})}
             >
-              <h4>Panel Azimuth <Icon type="question-circle" /></h4>
+              <h4><FormattedMessage id='panel_azimuth' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col span={6}>
@@ -375,9 +376,9 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="Panel tilt respect to the ground"
+              title={this.props.intl.formatMessage({id:'Tilt_description'})}
             >
-              <h4>Panel Tilt <Icon type="question-circle" /></h4>
+              <h4><FormattedMessage id='panel_tilt' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col span={6}>
@@ -415,9 +416,9 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="The orientation of panels, portrait or landscape"
+              title={this.props.intl.formatMessage({id:'orientation_description'})}
             >
-              <h4>Panel Orientation <Icon type="question-circle" /></h4>
+              <h4><FormattedMessage id='panel_orientation' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col span={8}>
@@ -454,9 +455,9 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="The spacing between each row of panels"
+              title={this.props.intl.formatMessage({id:'row_spacing_description'})}
             >
-              <h4>Row Spacing <Icon type="question-circle" /></h4>
+              <h4><FormattedMessage id='row_spacing' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col span={6}>
@@ -484,9 +485,11 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="The spacing between two panels in one row"
+              title={
+                this.props.intl.formatMessage({id:'panel_spacing_description'})
+              }
             >
-              <h4>Panel Spacing <Icon type="question-circle" /></h4>
+              <h4><FormattedMessage id='panel_spacing' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col span={6}>
@@ -514,9 +517,9 @@ class SetUpPVPanel extends Component {
           <Col span={8} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="Panel alignments to the left edge, center, or right edge"
+              title={this.props.intl.formatMessage({id:'alignment_description'})}
             >
-              <h4>Align <Icon type="question-circle" /></h4>
+              <h4><FormattedMessage id='align_ment' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col span={12}>
@@ -546,9 +549,9 @@ class SetUpPVPanel extends Component {
           <Col span={8} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="Individual panels or a fixed number of panels to form a panel array"
+              title={this.props.intl.formatMessage({id:'layoutmode_description'})}
             >
-              <h4>Mode <Icon type="question-circle" /></h4>
+              <h4><FormattedMessage id='layoutMode' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
           <Col span={10}>
@@ -558,8 +561,8 @@ class SetUpPVPanel extends Component {
               <Select
                 onChange={e => this.setState({mode:e})}
               >
-                <Option value='individual'>Individual</Option>
-                <Option value='array'>Panel Array</Option>
+                <Option value='individual'><FormattedMessage id='single_row_panel_layout' /></Option>
+                <Option value='array'><FormattedMessage id='multi_row_panel_layout' /></Option>
               </Select>
             )}
           </Col>
@@ -573,9 +576,14 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="The number of rows for a panel array"
+              title={
+                this.props.intl.formatMessage({id:'rows_per_array_description'})
+              }
             >
-              <h4>Rows / Array <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='rows_per_array' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col span={6}>
@@ -600,9 +608,12 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="The number of panels on each row"
+              title={this.props.intl.formatMessage({id:'panel_per_row_description'})}
             >
-              <h4>Panels / Row <Icon type="question-circle" /></h4>
+              <h4>
+                < FormattedMessage id='panel_per_row' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col span={6}>
@@ -624,7 +635,7 @@ class SetUpPVPanel extends Component {
     return (
       <div>
         <Row type="flex" justify="center">
-          <h3>Setup PV Panels on Roof</h3>
+          <h3><FormattedMessage id='setUpPVPanelonRoof' /></h3>
         </Row>
         <Form onSubmit={this.handleSubmit}>
 
@@ -646,7 +657,7 @@ class SetUpPVPanel extends Component {
               }
             }}
           >
-            <TabPane tab="Manual" key="manual">
+            <TabPane tab=<FormattedMessage id='manual_panel' /> key="manual">
               {panelAzimuth}
               {panelTilt}
               {panelOrientation}
@@ -657,7 +668,7 @@ class SetUpPVPanel extends Component {
             <TabPane
               tab={
                 this.props.workingBuilding.type === 'FLAT' ?
-                'Max Panels' :
+                <FormattedMessage id='max_panels' /> :
                 'Roof Direction'
               }
               key="max"
@@ -677,7 +688,7 @@ class SetUpPVPanel extends Component {
             <TabPane
               tab={
                 this.props.projectInfo.globalOptimalTilt ?
-                'Max Eco' :
+                <FormattedMessage id='max_Econ' /> :
                 <Tooltip
                   placement="topLeft"
                   title="Maximum Economy calculation is in progress. Please \
@@ -720,7 +731,7 @@ class SetUpPVPanel extends Component {
                   htmlType="submit" loading={this.props.backendLoading}
                   disabled={this.state.isFetching}
                 >
-                  Preview
+                  <FormattedMessage id='preview_layout' />
                 </Button>
                 <Button
                   type='primary'
@@ -733,7 +744,7 @@ class SetUpPVPanel extends Component {
                   }
                   onClick = {this.props.fetchUserInverters}
                 >
-                  Continue <Icon type='right' />
+                  <FormattedMessage id='continue_layout' /> <Icon type='right' />
                 </Button>
               </ButtonGroup>
             </Col>
@@ -773,4 +784,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'setupPVPanel' })(SetUpPVPanel));
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(Form.create({ name: 'setupPVPanel' })(SetUpPVPanel)));

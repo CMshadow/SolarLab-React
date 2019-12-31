@@ -39,7 +39,10 @@ export const createPolygonFoundationWrapper = () => (dispatch, getState) => {
       height: foundHeight,
       coordinatesArrays: buildingCoordinatesArray
     })
+  })
+  .then(() => {
     dispatch(actions.createAllKeepoutPolygon());
+  }).then(() => {
     dispatch(setBackendLoadingFalse());
     dispatch(actions.setUIStateEditing3D());
   })

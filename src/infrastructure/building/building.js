@@ -62,7 +62,8 @@ class Building {
       return {
         shadowCoordinates: this.shadow[shadowId].polygon.convertHierarchyToFoundLine()
           .getPointsCoordinatesArray(false),
-        keepoutCoordinates: this.shadow[shadowId].keepoutCoordinates
+        keepoutCoordinates: this.shadow[shadowId].keepoutCoordinates,
+        keepoutType: this.shadow[shadowId].type,
       }
     }).filter(obj => obj.keepoutCoordinates.length > 2)
   }

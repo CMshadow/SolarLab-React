@@ -71,6 +71,11 @@ const LeftClickHandler = (props) => {
         }
         break;
 
+      case 'PLACE_INVERTER':
+        props.placeInverter();
+        props.setUIStateSetUpBridging();
+        break;
+
       default:
         break;
     }
@@ -130,7 +135,9 @@ const mapDispatchToProps = dispatch => {
     ),
     setPickedRoofTopPointIndex: () => dispatch(
       actions.setPickedRoofTopPointIndex()
-    )
+    ),
+    setUIStateSetUpBridging: () => dispatch(actions.setUIStateSetUpBridging()),
+    placeInverter: () => dispatch(actions.placeInverter())
   };
 };
 

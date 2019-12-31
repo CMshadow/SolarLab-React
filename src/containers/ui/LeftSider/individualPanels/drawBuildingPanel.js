@@ -5,6 +5,8 @@ import { faPen } from '@fortawesome/pro-light-svg-icons'
 import {
   Divider,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
+
 
 import * as uiStateJudge from '../../../../infrastructure/ui/uiStateJudge';
 import DrawFoundButton from './drawButtons/drawFoundButton';
@@ -15,14 +17,14 @@ import DrawBuilding3DPolygon from './drawButtons/Draw3DBuildingButton';
 const DrawBuildingPanel = (props) => {
   const drawFound = (
     <div>
-      <Divider>Step 1</Divider>
+      <Divider><FormattedMessage id='Step_1' /></Divider>
       <DrawFoundButton />
     </div>
   )
 
   const drawInner = (
     <div>
-      <Divider>Step 2</Divider>
+      <Divider><FormattedMessage id='Step_2_P' /></Divider>
       <DrawInnerButton />
     </div>
   )
@@ -31,8 +33,8 @@ const DrawBuildingPanel = (props) => {
     <div>
       {
         props.workingBuilding.type === 'PITCHED' ?
-        <Divider>Step 3</Divider> :
-        <Divider>Step 2</Divider>
+        <Divider><FormattedMessage id='Step_3' /></Divider> :
+        <Divider><FormattedMessage id='Step_2_F' /></Divider>
       }
       <DrawKeepoutList />
     </div>
@@ -40,7 +42,7 @@ const DrawBuildingPanel = (props) => {
 
   const generate3D = (
     <div>
-      <Divider>Generate 3D Model</Divider>
+      <Divider><FormattedMessage id='generate3Dmodel' /></Divider>
       <DrawBuilding3DPolygon />
     </div>
   )

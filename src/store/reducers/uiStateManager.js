@@ -135,6 +135,41 @@ const setUIStateSetUpBridging = (state, action) => {
   };
 }
 
+const setUIStatePlaceInverter = (state, action) => {
+  return {
+    ...state,
+    uiState: 'PLACE_INVERTER'
+  };
+}
+
+const setUIStateReadyDragInverter = (state, action) => {
+  return {
+    ...state,
+    uiState: 'READY_DRAG_INVERTER'
+  };
+}
+
+const setUIStateDragInverter = (state, action) => {
+  return {
+    ...state,
+    uiState: 'DRAG_INVERTER'
+  };
+}
+
+const setUIStateEditBridging = (state, action) => {
+  return {
+    ...state,
+    uiState: 'EDIT_BRIDGING',
+  };
+}
+
+const setUIStateDragBridging = (state, action) => {
+  return {
+    ...state,
+    uiState: 'DRAG_BRIDGING',
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_UI_STATE_READY_DRAWING:
@@ -171,6 +206,16 @@ const reducer = (state=initialState, action) => {
       return setUIStateManualWiring(state, action);
     case actionTypes.SET_UI_STATE_SETUP_BRIDGING:
       return setUIStateSetUpBridging(state, action);
+    case actionTypes.SET_UI_STATE_PLACE_INVERTER:
+      return setUIStatePlaceInverter(state, action);
+    case actionTypes.SET_UI_STATE_READY_DRAG_INVERTER:
+      return setUIStateReadyDragInverter(state, action);
+    case actionTypes.SET_UI_STATE_DRAG_INVERTER:
+      return setUIStateDragInverter(state, action);
+    case actionTypes.SET_UI_STATE_EDIT_BRIDGING:
+      return setUIStateEditBridging(state, action);
+    case actionTypes.SET_UI_STATE_DRAG_BRIDGING:
+      return setUIStateDragBridging(state, action);
     default: return state;
   }
 };

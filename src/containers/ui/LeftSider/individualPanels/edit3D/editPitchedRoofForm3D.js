@@ -8,6 +8,7 @@ import {
   Button,
   Radio
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 
@@ -33,7 +34,7 @@ class EditPitchedRoofForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4>Lowest Height</h4>
+            <h4><FormattedMessage id='roofLowestHeight' /></h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('lowestHeight', {
@@ -65,10 +66,10 @@ class EditPitchedRoofForm extends PureComponent {
                 }}
               >
                 <Radio.Button value="height" defaultChecked>
-                  Height
+                  <FormattedMessage id='roofHeightPerspective' />
                 </Radio.Button>
                 <Radio.Button value="angle">
-                  Angle
+                  <FormattedMessage id='roofAnglePerspective' />
                 </Radio.Button>
               </Radio.Group>
             )}
@@ -80,7 +81,7 @@ class EditPitchedRoofForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4>Highest Height</h4>
+            <h4><FormattedMessage id='roofHighestHeight' /></h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('highestHeight', {
@@ -104,7 +105,7 @@ class EditPitchedRoofForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4>Pitched Angle</h4>
+            <h4><FormattedMessage id='roofPitchedAngle' /></h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('pitchedAngle', {

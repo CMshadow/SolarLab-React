@@ -15,6 +15,7 @@ import {
   Tabs,
   Spin
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../store/actions/index';
 import axios from '../../../../axios-setup';
@@ -27,77 +28,6 @@ class SetUpWiringPanel extends Component {
     tab: 'manual',
     selectRoofIndex: 0,
     selectInverterID: null,
-  }
-
-  generateReportJSON = (building, roofIndex) => {
-    const matchPanelInfo = this.props.userPanels.find(info =>
-      info.panelID === building.pvParams[roofIndex].panelID
-    );
-
-    const inverter_solution_collection =
-      Object.keys(this.props.roofSpecInverters).flatMap(roofIndex =>
-      this.props.roofSpecInverters[roofIndex].map(inverter => {
-        const matchInverterInfo = this.props.userInverters.find(info =>
-          info.inverterID === inverter.inverterId
-        )
-
-        return {
-          model: inverter.inverterName,
-          inverter_serial_number: inverter.serial,
-          panels_per_string: inverter.panelPerString,
-          string_per_inverter: inverter.stringPerInverter,
-          model_full_info: {
-            ...matchInverterInfo,
-            id: matchInverterInfo.inverterID,
-            model: matchInverterInfo.inverterName,
-            createdByUser: matchInverterInfo.userID,
-            wiring: inverter.wiring.map(wiring => {
-              return {wiring_length:[wiring.polyline.polylineLength(), 0, 0]}
-            }),
-            bridging: []
-          }
-        }
-      })
-    )
-
-    return {
-      projectName: '演示项目',
-      projectId: '0000-0000-0000-0001',
-      username: '演示用户',
-      projectAddress: '',
-      projectCreatedAt: '2020-01-01T10:00:00Z',
-      projectUpdatedAt: '2020-01-01T10:00:00Z',
-      name: building.name,
-      data: {
-        building: {
-          pv_panel_parameters: {
-            tilt_angle: building.pvParams[roofIndex].tilt,
-            azimuth: building.pvParams[roofIndex].azimuth,
-            model_full_info: {
-              ...matchPanelInfo,
-              id: matchPanelInfo.panelID,
-              model: matchPanelInfo.panelName,
-              length: matchPanelInfo.panelLength,
-              width: matchPanelInfo.panelWidth,
-              createdByUser: matchPanelInfo.userID,
-            }
-          },
-          inverter_wiring: {
-            inverter_solution_collection: inverter_solution_collection
-          },
-          Time: {
-            year: 2018,
-            summer_month: 6,
-            winter_month: 12,
-            month: 6,
-            day: 22,
-            hour1: 10,
-            hour2: 15,
-            UTCOffset: 0
-          },
-        }
-      }
-    }
   }
 
   render() {
@@ -152,7 +82,7 @@ class SetUpWiringPanel extends Component {
             <Select
               showSearch
               optionFilterProp='children'
-              placeholder='Select a inverter'
+              placeholder={this.props.intl.formatMessage({id:'select_a_inverter'})}
               onChange={(e) => {
                 this.setState({selectInverterID: e});
                 this.props.calculateManualInverter(
@@ -179,7 +109,7 @@ class SetUpWiringPanel extends Component {
     return (
       <div>
         <Row type="flex" justify="center">
-          <h3>Setup Wiring</h3>
+          <h3><FormattedMessage id='setup_wiring' /></h3>
         </Row>
         <Form>
           {pitchedRoofSelect}
@@ -194,7 +124,7 @@ class SetUpWiringPanel extends Component {
                 this.props.calculateAutoInverter(this.state.selectRoofIndex)
             }}
           >
-            <TabPane tab="Manual" key="manual">
+            <TabPane tab={this.props.intl.formatMessage({id:'wiring_manual_selection'})} key="manual">
               <Spin
                 spinning={this.props.backendLoading}
                 indicator={<Icon type="loading" spin />}
@@ -203,7 +133,7 @@ class SetUpWiringPanel extends Component {
               </Spin>
             </TabPane>
             <TabPane
-              tab='Auto'
+              tab={this.props.intl.formatMessage({id:'wiring_auto_selection'})}
               key="auto"
             >
               <Row>
@@ -229,7 +159,7 @@ class SetUpWiringPanel extends Component {
             }
             onClick = {this.props.setUIStateSetUpBridging}
           >
-            Continue <Icon type='right' />
+            <FormattedMessage id='continue_button_wiring' /> <Icon type='right' />
           </Button>
         </Row>
       </div>
@@ -272,4 +202,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'setupWiringPanel' })(SetUpWiringPanel));
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(Form.create({ name: 'setupWiringPanel' })(SetUpWiringPanel)));

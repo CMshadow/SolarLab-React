@@ -7,6 +7,7 @@ import {
   Button,
   Card
 } from 'antd';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 import * as classes from './roofListItem3D.module.css';
@@ -66,7 +67,7 @@ class PitchedRoofListItem3D extends Component {
           </Button>
         ]}
       >
-        {`Pitched Roof ${this.props.roofIndex+1}`}
+        <FormattedMessage id='pitchedRoof' />{`${this.props.roofIndex+1}`}
       </List.Item>
     );
   }
