@@ -1,32 +1,33 @@
 {
-  "bid": "db875942-0c9e-44e8-9b6e-09d2ada4efa0",
-  "name": "Loss",
-  "date": "year",
-  "type": "pie",
-  "xLabel": "Loss Item",
-  "yLabel": "Loss Value",
-  "data": {
-    "Loss Item": [
-      "Degradation",
-      "Connection",
-      "Mismatch",
-      "DC Wiring",
-      "Tilt Azimuth",
-      "Soiling",
-      "Effective Irradiance",
-      "Environmental",
-      "Conversion"
-    ],
-    "Loss Value": [
-      0.01,
-      0.005,
-      0.02,
-      0.003426815729599242,
-      0.0001992102126862072,
-      0.020000000000000018,
-      0.03755985598854639,
-      0.05140593894929868,
-      0.023664179787143746
-    ]
-  }
+    "year": {
+        "date": "year",
+        "type": "pie",
+        "title": "loss",
+        "xLabel": "Loss Item",
+        "yLabel": "Loss Value",
+        "data": {
+            "Loss Item": [
+                "Degradation",
+                "Connection",
+                "Mismatch",
+                "DC Wiring",
+                "Tilt Azimuth",
+                "Soiling",
+                "Effective Irradiance",
+                "Environmental",
+                "Conversion"
+            ],
+            "Loss Value": [
+                0.01,
+                0.005,
+                0.02,
+                0.0026837086441385827,
+                0.05185816158727685,
+                0.020000000000000018,
+                0.042812706245954235,
+                0.047080617421703885,
+                0.028267247786672667
+            ]
+        }
+    }
 }

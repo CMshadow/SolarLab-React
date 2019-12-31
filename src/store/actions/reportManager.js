@@ -1,5 +1,6 @@
 import UtilFunctions from "../../infrastructure/util/UtilFunctions";
 import Numeral from "../../infrastructure/util/NumeralCustom";
+import axios from '../../axios-setup';
 
 export const request_weather = () => (dispatch, getState) => {
   let displayMode = getState().undoableReducer.present.reportManager.displayMode;
@@ -210,6 +211,7 @@ export const request_pv_production = () => (dispatch, getState) => {
   fetch('./mock/Monthly PV Production.json')
     .then(response => response.json())
     .then(response_json => {
+      response_json = response_json.year;
       let load_option = {};
       let xAxis = {};
       let yAxis = {};
@@ -264,12 +266,10 @@ export const request_pv_production = () => (dispatch, getState) => {
 };
 
 export const request_metadata = () => (dispatch, getState) => {
-  console.log('hello')
   fetch('./mock/Get Report Meta Data.json')
     .then(response => response.json())
     .then(response_json => {
-      console.log(response_json)
-      let load_option = response_json;
+      let load_option = {data:response_json};
       // set document title
       document.title = load_option['data']['Project_Name'] + ' - Albedo';
       dispatch({
@@ -287,7 +287,7 @@ export const request_loss = () => (dispatch, getState) => {
   fetch('./mock/Loss.json')
     .then(response => response.json())
     .then(response_json => {
-
+      response_json = response_json.year;
       // sort loss item & value
       let loss_item = response_json.data["Loss Item"];
       let loss_value = response_json.data["Loss Value"];
@@ -582,6 +582,7 @@ export const request_electricity_bill = () => (dispatch, getState) => {
   fetch('./mock/Monthly Electricity Bill.json')
     .then(response => response.json())
     .then(response_json => {
+      response_json = response_json.year;
       //console.log(response_json);
       let load_option = {};
       let xAxis = {};
@@ -658,6 +659,7 @@ export const request_cash_flow = () => (dispatch, getState) => {
   fetch('./mock/Cash Flow.json')
     .then(response => response.json())
     .then(response_json => {
+      response_json = response_json.year;
       let load_option = {};
       let xAxis = {};
       let yAxis = {};

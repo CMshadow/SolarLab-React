@@ -1,42 +1,37 @@
 {
-  "projectId": "8b9e6897-2a79-424f-8463-9e0e56efb01a",
-  "bid": "db875942-0c9e-44e8-9b6e-09d2ada4efa0",
-  "username": "liuhongtaotm@outlook.com",
-  "data": {
-    "Address": "北京798艺术区",
-    "Annual_PV_Production": "157093302.2",
-    "Battery": 27732,
+    "Address": "",
     "Building_Name": "1",
-    "CO2_Reduced": "71.5",
-    "Inverter": {
-      "Cost": "20655.0",
-      "Model": "Schneider Electric Solar Inverters USA: Conext CL 25000NA 480V [CEC 2015]",
-      "Quantity": 3
-    },
-    "LCOE": "432.8",
-    "PV_Installed_Capacity": "83198.5",
-    "Panel": {
-      "Cost": "46530.0",
-      "Model": "Jinko-JKM295P",
-      "Quantity": 282
-    },
-    "Payback_period": 2.591508844329308,
-    "Project_Cost": "67987.1",
-    "Project_Created_Time": null,
-    "Project_Name": "Project_1",
-    "Project_Updated_Time": "2019-08-19T18:32:32.800Z",
-    "Revenue": "1570933.0",
-    "Selected_Day": 22,
-    "Selected_Month": 6,
-    "System_Efficiency": 82.91424197580982,
+    "Project_Name": "演示项目",
+    "Project_Created_Time": "2020-01-01T10:00:00Z",
+    "Project_Updated_Time": "2020-01-01T10:00:00Z",
+    "PV_Installed_Capacity": "14161.4",
+    "Annual_PV_Production": "25093104.0",
+    "Project_Cost": "9565.7",
+    "Weather_Data": "",
     "Temperature_Module": "Sandia Module Temperature Module",
     "Weather_Condition": "Daily Condition",
-    "Weather_Data": "北京798艺术区",
-    "Wire": {
-      "Cost": "802.1",
-      "Model": "GoldBull (10 AWG)",
-      "Quantity": "1336.9"
+    "Selected_Month": 6,
+    "Selected_Day": 22,
+    "CO2_Reduced": "11.4",
+    "Revenue": "250931.0",
+    "Payback_period": 2.2826754906536837,
+    "Battery": 4720,
+    "System_Efficiency": 77.22975583142538,
+    "kWh/kWp": 1771.9316647366431,
+    "LCOE": "381.2",
+    "Panel": {
+        "Model": "Jinko-JKM295P",
+        "Cost": "5952.0",
+        "Quantity": 48
     },
-    "kWh/kWp": 1888.1756008264877
-  }
+    "Inverter": {
+        "Model": "Advanced Energy Industries: AE_3TL-12_10 480V [CEC 2014]",
+        "Cost": "3500.0",
+        "Quantity": 1
+    },
+    "Wire": {
+        "Model": "GoldBull (10 AWG)",
+        "Cost": "113.7",
+        "Quantity": "189.4"
+    }
 }
