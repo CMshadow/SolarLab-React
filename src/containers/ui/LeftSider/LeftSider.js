@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout } from 'antd';
+import { Layout, Button, Icon } from 'antd';
 import { connect } from 'react-redux';
 
 import 'antd/dist/antd.css';
@@ -20,6 +20,7 @@ class LeftSider extends Component {
 
   state = {
     siderCollapse: false,
+
   }
 
   onCollapse = (collapsed, type) => {
@@ -27,6 +28,11 @@ class LeftSider extends Component {
       siderCollapse: collapsed
     });
   }
+  toggle = () => {
+    this.setState({
+      siderCollapse: !this.state.siderCollapse,
+    });
+  };
 
   render() {
 
@@ -52,6 +58,13 @@ class LeftSider extends Component {
         content = (<SetUpBridgingPanel/>)
       }
     }
+    let buttomBar = "325px";
+    if (this.state.siderCollapse === false) { 
+      buttomBar = "325px";
+    }
+    else{
+      buttomBar = "50px";
+    }
 
     return (
       <Layout style={{ minHeight: '100vh', position:"fixed", top:'64px'}}>
@@ -62,12 +75,20 @@ class LeftSider extends Component {
           collapsible
           onCollapse={this.onCollapse}
           trigger={null}
+          collapsed={this.state.siderCollapse}
         >
           {content}
 
+
         </Sider>
-        <Layout style = {{height:'60px',width:'325px', background :'#c0c0c0',position:"absolute", bottom:'60px'}}>
+        <Layout style = {{height:'60px',width: buttomBar, background:'#a0a0a0', position:"absolute", bottom:'60px'}}>
           {this.state.siderCollapse ? null : <UndoRedo />}
+        <Icon
+              className="trigger"
+              style = {{position:"absolute", right:'0px'}}
+              type={this.state.siderCollapse ? 'menu-unfold' : 'menu-fold'}
+              onClick={this.toggle}
+        />
         </Layout>
       </Layout>
     );

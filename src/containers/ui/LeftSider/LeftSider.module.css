@@ -3,7 +3,7 @@
   /* margin: 0px 0px 0px 0px; */
   background-color: rgba(255, 255, 255, 0.95);
   overflow: auto;
-  height: calc(100vh - 118px);
+  height: calc(100vh - 120px);
   position: fixed;
   left: 0,
 }

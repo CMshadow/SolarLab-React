@@ -28,6 +28,7 @@ const UndoRedo = (props) => {
           onClick={props.onRedo}
           disabled={!props.canRedo}
         ><FormattedMessage id='redo' /></Button>
+
       </div>
   );
 };
