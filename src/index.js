@@ -33,7 +33,7 @@ import drawingRooftopManagerReducer from './store/reducers/drawingRooftopManager
 import editingShadowManager from './store/reducers/editingShadowManager';
 import drawingSketchDiagramManagerReducer from './store/reducers/drawingSketchDiagramManager';
 import drawingSingleLineDiagramReducer from './store/reducers/drawingSingleLineDiagramManager';
-
+import reportManager from './store/reducers/reportManager';
 // IMPORT MORE REDBUX REDUCERS OVER HERE
 
 /*
@@ -63,8 +63,8 @@ const rootReducer = combineReducers({
     drawingRooftopManagerReducer: drawingRooftopManagerReducer,
     editingShadowManager: editingShadowManager,
     editingPVPanelManagerReducer: editingPVPanelManagerReducer,
-    editingWiringManager: editingWiringManager
-
+    editingWiringManager: editingWiringManager,
+    reportManager: reportManager
   }), {
     initTypes: [actionTypes.SET_VIEWER],
     filter: includeAction([

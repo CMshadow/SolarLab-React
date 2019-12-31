@@ -1,0 +1,23 @@
+.only-print {
+    display: none!important;
+}
+.non-print {
+    display: block;
+}
+
+@media print {
+    .ant-notification-notice {
+        display: none!important;
+    }
+
+    canvas {
+        break-inside: avoid-page!important;
+    }
+
+    .only-print {
+        display: block!important;
+    }
+    .non-print {
+        display: none!important;
+    }
+}
