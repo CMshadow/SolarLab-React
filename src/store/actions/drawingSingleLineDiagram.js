@@ -8,7 +8,7 @@ import { element } from 'prop-types';
 export const initStage = (layer) => (dispatch, getState) => {
   // let layer = new Konva.Layer();
   let size_times = 30;
-  let stageHeight = [window.innerWidth, window.innerHeight];
+  let stageSize = [window.innerWidth, window.innerHeight];
   let backgroundGrid = backgroundGrids(layer, size_times);
 
   let currentBuilding = getState().buildingManagerReducer
@@ -63,11 +63,12 @@ export const initStage = (layer) => (dispatch, getState) => {
 
 
     };
-    stageHeight[1] = nextStartPosition[1];
+    stageSize[1] = nextStartPosition[1];
     let inverterConnecterComponent = InterConnecter(layer, inverterDist, inverterConnectList);
     let AC_Disconnectc_Component = ACDisconnect(layer, inverterConnecterComponent.distance, inverterConnecterComponent.connectPoint);
     let ServerPanelComponent = ServerPanel(layer, AC_Disconnectc_Component.distance, AC_Disconnectc_Component.connectPoint);
     let MeterComponent = Meter(layer, ServerPanelComponent.distance, ServerPanelComponent.connectPoint);
+    stageSize[0] = MeterComponent.maxWidth;
     // let pancelCollection = panelArrayCollection(layer, startPosition, 4);
     // let combinerCollection = CombinerBoxCollections(layer, pancelCollection.startPosition,pancelCollection.distance, pancelCollection.connectPoint1, pancelCollection.connectPoint2, 4);
     // let disconnectCellection = DisconnectCollection(layer, combinerCollection.distance, 5, 4);
@@ -81,8 +82,8 @@ export const initStage = (layer) => (dispatch, getState) => {
 
   return dispatch({
     type: actionTypes.INIT_STAGE,
-    stageWidth: window.innerWidth,
-    stageHeight: stageHeight[1],
+    stageWidth: stageSize[0],
+    stageHeight: stageSize[1],
     layer: layer
   });
 }
@@ -1559,6 +1560,7 @@ export const Meter = (layer, distance, connectPoint) => {
   let stroke_Width = 2;
   let font_size = Math.floor(h_min / 7);
   let nextDistance = 0;
+  let finalPosition = null;
   if (font_size < 8) {
     font_size = 8;
   }
@@ -1575,7 +1577,7 @@ export const Meter = (layer, distance, connectPoint) => {
   let startX = window.innerWidth * 0.02 + distance;
   let startY = (window.innerHeight * 0.15);
   nextDistance = startX + w_min;
-
+  finalPosition = nextDistance + w_min * 2;
   let MeterBounary = new Konva.Rect({
     x: startX,
     y: startY,
@@ -1631,6 +1633,7 @@ export const Meter = (layer, distance, connectPoint) => {
     type: actionTypes.METER,
     connectPoint: [startX + 0.25 * w_min, startY + h_min * 0.75],
     distance: nextDistance,
+    maxWidth: finalPosition,
     layer: layer
   });
 }

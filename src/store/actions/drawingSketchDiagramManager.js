@@ -228,7 +228,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         });
       }
 
-      layer.add(group);
+      
 
       const workingBuilding = getState().buildingManagerReducer.workingBuilding;
       let tilts = null;
@@ -256,12 +256,15 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
       .then(response => response.data)
       .then(poa => {
         console.log(poa)
-        let Monthly_Irradiance_List = [64.5, 91.6, 120, 149.4, 166.0, 152.9, 146.6, 130.2, 119.7, 90.4, 67.9, 53.8];
-        drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient);
-        HistogramDispaly(layer, window.innerWidth, window.innerHeight, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
+        // let Monthly_Irradiance_List = [64.5, 91.6, 120, 149.4, 166.0, 152.9, 146.6, 130.2, 119.7, 90.4, 67.9, 53.8];
       })
-    }
 
+      let Monthly_Irradiance_List = [64.5, 91.6, 120, 149.4, 166.0, 152.9, 146.6, 130.2, 119.7, 90.4, 67.9, 53.8];
+      drawColorBar(group, screenWidth*0.9, screenHeight*0.2, gradient, [710, 1820]);
+      HistogramDispaly(group, window.innerWidth, window.innerHeight, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
+      layer.add(group);
+    }
+     
 
 
   return({
@@ -702,66 +705,71 @@ export const drawTreeShadow = (layer,AngleList, DistanceList, scale, start, cent
 
 }
 
-export const drawColorBar = (layer, Xwidth, Yheight, gradient) => {
+export const drawColorBar = (layer, Xwidth, Yheight, gradient, range) => {
   let width_bar= 30;
   let height_bar = 300;
+  let Irradiance_base = range[0].toFixed(1);
+  let Irradiance_max = range[1].toFixed(1);
   let colorBar = mathHelp.calculateGradientColor(gradient);
   let rect = [Xwidth,Yheight, Xwidth+width_bar, Yheight, Xwidth+width_bar, Yheight+height_bar, Xwidth,Yheight+height_bar];
-
+  
   let poly = new Konva.Line({
         points: rect,
-  fill: colorBar[0],
+        fill: colorBar[0],
         stroke: '#84848a',
         strokeWidth: 0,
         closed : true,
         opacity: 1
     });
-
-  layer.add(poly);
-  let newCoordXY = [];
-  for (let i = 0; i < rect.length; i+=2) {
-    let newCoordX = [];
-    let newCoordY = [];
-    if(i === 2 || i === 4){
-      newCoordX = mathHelp.calculateGradientCorrdinate(rect[i],rect[i],gradient);
-      newCoordY = mathHelp.calculateGradientCorrdinate(rect[i+1],rect[7],gradient);
+    
+    layer.add(poly);
+    let newCoordXY = [];
+    for (let i = 0; i < rect.length; i+=2) {
+      let newCoordX = [];
+      let newCoordY = [];
+      if(i === 2 || i === 4){
+        newCoordX = mathHelp.calculateGradientCorrdinate(rect[i],rect[i],gradient);
+        newCoordY = mathHelp.calculateGradientCorrdinate(rect[i+1],rect[7],gradient);
+      }
+      else{
+        newCoordX = mathHelp.calculateGradientCorrdinate(rect[i],rect[6],gradient);
+        newCoordY = mathHelp.calculateGradientCorrdinate(rect[i+1],rect[7],gradient);
+      }
+      newCoordXY.push(newCoordX);
+      newCoordXY.push(newCoordY);
     }
-    else{
-      newCoordX = mathHelp.calculateGradientCorrdinate(rect[i],rect[6],gradient);
-      newCoordY = mathHelp.calculateGradientCorrdinate(rect[i+1],rect[7],gradient);
-    }
-    newCoordXY.push(newCoordX);
-    newCoordXY.push(newCoordY);
-  }
 
-  for (let level = 0; level < gradient; level++) {
-    let newShadow = []
+    for (let level = 0; level < gradient; level++) {
+      let newShadow = []
     for (let i = 0; i < newCoordXY.length; ++i) {
       newShadow.push(newCoordXY[i][level]);
     }
     newShadow.push([rect[6],rect[7]]);
     let poly1 = new Konva.Line({
           points: newShadow,
-    fill: colorBar[level],
+          fill: colorBar[level],
           stroke: '#84848a',
           strokeWidth: 0,
           closed : true,
           opacity: 0.1
-    });
-    layer.add(poly1);
-    //console.log(level);
-  }
+          
+      });
+      layer.add(poly1);
+      //console.log(level);
+    }
 
-  let frameValue = height_bar;
-  let height_diff = height_bar/5;
-  let frame = [Xwidth+width_bar*1.1,Yheight, Xwidth+width_bar*1.5,Yheight,
-        Xwidth+width_bar*1.1, Yheight+height_diff*1, Xwidth+width_bar*1.5, Yheight+height_diff*1,
-      Xwidth+width_bar*1.1, Yheight+height_diff*2, Xwidth+width_bar*1.5, Yheight+height_diff*2,
-      Xwidth+width_bar*1.1, Yheight+height_diff*3, Xwidth+width_bar*1.5, Yheight+height_diff*3,
-      Xwidth+width_bar*1.1, Yheight+height_diff*4, Xwidth+width_bar*1.5, Yheight+height_diff*4,
-      Xwidth+width_bar*1.1, Yheight+height_diff*5, Xwidth+width_bar*1.5, Yheight+height_diff*5];
+    let frameValue = Irradiance_max;
+    let frameDifference =  height_bar / 5;
+    let height_diff = ((Irradiance_max - Irradiance_base) / 5).toFixed(1);
+    console.log("height diff: "+height_diff);
+    let frame = [Xwidth+width_bar*1.1,Yheight, Xwidth+width_bar*1.5,Yheight,
+          Xwidth+width_bar*1.1, Yheight+frameDifference*1, Xwidth+width_bar*1.5, Yheight+frameDifference*1,
+        Xwidth+width_bar*1.1, Yheight+frameDifference*2, Xwidth+width_bar*1.5, Yheight+frameDifference*2,
+        Xwidth+width_bar*1.1, Yheight+frameDifference*3, Xwidth+width_bar*1.5, Yheight+frameDifference*3, 
+        Xwidth+width_bar*1.1, Yheight+frameDifference*4, Xwidth+width_bar*1.5, Yheight+frameDifference*4, 
+        Xwidth+width_bar*1.1, Yheight+frameDifference*5, Xwidth+width_bar*1.5, Yheight+frameDifference*5];
 
-  let frotSize = 15;
+ let frotSize = 15;
   for(let i = 0; i < frame.length; i+=4){
     let line = new Konva.Line({
           points: [frame[i],frame[i+1],frame[i+2],frame[i+3]],
@@ -779,11 +787,13 @@ export const drawColorBar = (layer, Xwidth, Yheight, gradient) => {
       });
 
       frameValue-=height_diff;
+      frameValue = frameValue.toFixed(1);
+      //console.log("frame value: "+frameValue);
       layer.add(line);
       layer.add(frameText);
+
     }
 }
-
 
 export const HistogramDispaly  = (layer, Histogram_X_Position, Histogram_Y_Position, Histogram_Width, Histogram_Height, Monthly_Irradiance) => {
 
