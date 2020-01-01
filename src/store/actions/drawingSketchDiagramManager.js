@@ -260,8 +260,8 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
       })
 
       let Monthly_Irradiance_List = [64.5, 91.6, 120, 149.4, 166.0, 152.9, 146.6, 130.2, 119.7, 90.4, 67.9, 53.8];
-      drawColorBar(group, screenWidth*0.9, screenHeight*0.2, gradient, [710, 1820]);
-      HistogramDispaly(group, window.innerWidth, window.innerHeight, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
+      drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient, [710, 1820]);
+      HistogramDispaly(layer, window.innerWidth, window.innerHeight, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
       layer.add(group);
     }
      
