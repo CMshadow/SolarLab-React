@@ -2,6 +2,7 @@ const zh_CN = {
   home: ' 主页 ',
   modeling: ' 建模 ',
   twoD_diagram: ' 2D图示 ',
+  single_line_diagram: '原理图',
   report: ' 报告 ',
 
   undo: ' 撤销 ',

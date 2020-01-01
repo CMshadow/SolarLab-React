@@ -5,14 +5,6 @@ import * as mathHelp from '../../infrastructure/math/SketchDiagramHelper';
 import * as actions from './index'
 import * as actionTypes from './actionTypes';
 
-let Shadow_Summer_AngleList = [203.6306115739924,202.6185143511102,193.33976794096097,191.5393838426062,189.03376278005598,198.42533890265324,201.66638679691025];
-let Shadow_Summer_DistanceList = [28.39150282959019,28.31844680411861,27.77452575639235,27.556007085648414,25.278367752113983,23.451479901559246,23.830051733407995];
-
-let Shadow_Whole_AngleList = [205.82251788159206,203.75620693154826,203.6306115739924,202.6185143511102,193.33976794096097,191.5393838426062,189.95869507233905,187.1601120421614,186.17700253613287,186.4998866385308,196.78555982074656,204.19201156169558];
-let Shadow_Whole_DistanceList = [27.136581821115527,28.353321512593233,28.39150282959019,28.31844680411861,27.77452575639235,27.556007085648414,26.165245794818684,23.923648408618945,23.081346644784666,22.851143969012522,20.877163209330327,22.54215049912012];
-
-
-
 
 export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) => (dispatch, getState) => {
     let currentBuilding = getState().buildingManagerReducer
@@ -135,10 +127,6 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         let buildingWiringCollection = drawWiring(group, WiringCollection[0], WiringCollection[1], AutoScale, startPosition_stage);
       }
 
-      // console.log(currentBuilding.getShadowCoordinates())
-      // // console.log(currentBuilding.getShadowCoordinates()[0])
-      // console.log("女儿墙")
-      // console.log(currentBuilding.getParapetShadowCoordinates())
       if (keekoutCollections.normalKeepout.length > 0) {
         // console.log(keekoutCollections.normalKeepout)
         keekoutCollections.normalKeepout.forEach(element => {
@@ -149,6 +137,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
       console.log("阴影")
       console.log(currentBuilding.getShadowCoordinates())
       currentBuilding.getShadowCoordinates().forEach(element => {
+        console.log(' - ' + element)
         let keepoutShadow = mathHelp.convertNormalShadowto2D(startPosition, element.shadowCoordinates);
         let keepout = mathHelp.convertKeepoutTo2D(startPosition,element.keepoutCoordinates )
         let centerNode = mathHelp.calculateCenterofPolygon(keepout[0], keepout[1], AutoScale, startPosition_stage)
@@ -203,12 +192,13 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         });
       }
 
-
+      layer.add(group);
+      
+      drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient);
 
     }
     
-    layer.add(group);
-    drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient);
+    
 
   return({
     type: actionTypes.INIT_STAGE_SKETCH_DIAGRAM,
