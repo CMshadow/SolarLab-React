@@ -1,6 +1,7 @@
 import Konva from 'konva';
 import { Stage, Layer, Rect, Text } from 'react-konva';
 
+import axios from '../../axios-setup';
 import * as mathHelp from '../../infrastructure/math/SketchDiagramHelper';
 import * as actions from './index'
 import * as actionTypes from './actionTypes';
@@ -204,10 +205,36 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
 
       layer.add(group);
 
-      let Monthly_Irradiance_List = [64.5, 91.6, 120, 149.4, 166.0, 152.9, 146.6, 130.2, 119.7, 90.4, 67.9, 53.8];
-      drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient);
-      HistogramDispaly(layer, window.innerWidth, window.innerHeight, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
- 
+      const workingBuilding = getState().buildingManagerReducer.workingBuilding;
+      let tilts = null;
+      let azimuths = null;
+      if (workingBuilding.type === 'FLAT') {
+        tilts = [0];
+        azimuths = [0];
+      } else {
+        tilts = workingBuilding.pitchedRoofPolygons.map(polygon =>
+          polygon.obliquity
+        );
+        azimuths = workingBuilding.pitchedRoofPolygons.map(polygon =>
+          polygon.brng
+        );
+      }
+
+      axios.get('/calculate-poa', {
+        params: {
+          tilts: JSON.stringify(tilts),
+          azimuths: JSON.stringify(azimuths),
+          longitude: getState().projectManagerReducer.projectInfo.projectLon,
+          latitude: getState().projectManagerReducer.projectInfo.projectLat,
+        }
+      })
+      .then(response => response.data)
+      .then(poa => {
+        console.log(poa)
+        let Monthly_Irradiance_List = [64.5, 91.6, 120, 149.4, 166.0, 152.9, 146.6, 130.2, 119.7, 90.4, 67.9, 53.8];
+        drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient);
+        HistogramDispaly(layer, window.innerWidth, window.innerHeight, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
+      })
     }
 
 
@@ -685,7 +712,7 @@ export const HistogramDispaly  = (layer, Histogram_X_Position, Histogram_Y_Posit
 
   let Vertical_Axis_Scale = Histogram_Height / ((Math.floor(Math.max(...Monthly_Irradiance) / 50) + 1)* 50);
   let MaxHistorgram = 0;
-  
+
 
   let backgroundRect = new Konva.Rect({
     x: Histogram_Position[0],
@@ -698,7 +725,7 @@ export const HistogramDispaly  = (layer, Histogram_X_Position, Histogram_Y_Posit
     opacity: 0.5
   });
   Group.add(backgroundRect);
-  
+
 
   // //画纵轴
 
@@ -746,7 +773,7 @@ export const HistogramDispaly  = (layer, Histogram_X_Position, Histogram_Y_Posit
       Group.add(Histogram_Monthly_Irradiance);
   }
 
-  //画单位 
+  //画单位
   let Histogram_Monthly_Irradiance_Unit = new Konva.Text({
         x: startPosition[0] - Histogram_Width * 0.05,
         y: startPosition[1] - Histogram_Height * 0.07,
@@ -784,7 +811,7 @@ export const HistogramDispaly  = (layer, Histogram_X_Position, Histogram_Y_Posit
     lineCap: 'round',
     lineJoin: 'round'
   });
-  
+
   //画刻度
   unit_length = (endPosition[0] - startPosition[0]) / 13;
   let month_Position = [];
@@ -829,7 +856,7 @@ export const HistogramDispaly  = (layer, Histogram_X_Position, Histogram_Y_Posit
   }
   Group.add(Draw_Horizontal_Axis);
 
-  
+
   layer.add(Group);
 
 }
