@@ -45,13 +45,6 @@ class Overview extends Component {
                         <Col span={6} style={{ paddingLeft: 8 }}>
                             <Descriptions title="Layout" />
                             <Skeleton loading={ !this.state.isImageLoaded } active />
-                            <img
-                                src="/mock/mock_image.jpg"
-                                alt="Layout"
-                                ref={this.imageRef}
-                                onLoad={this.handleImageLoadedEvent}
-                                style={{ width: '100%', height: 'auto', display: this.state.isImageLoaded ? 'block' : 'none' }}
-                            />
                         </Col>
                     </Row>
                 </Card>
@@ -67,4 +60,3 @@ function mapStateToProps(state) {
 }
 
 export default connect(mapStateToProps)(Overview);
-
