@@ -248,3 +248,8 @@ export const INVERTER_CONNECTER = 'INVERTER_CONNECTER';
 export const AC_DISCONNECT = 'AC_DISCONNECT';
 export const SERVERPANEL = 'SERVERPANEL';
 export const METER = 'METER';
+
+/**
+ * reportManager.us
+ */
+export const SET_REPORT_ID = 'SET_REPORT_ID';
