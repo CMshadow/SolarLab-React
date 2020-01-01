@@ -225,7 +225,6 @@ export {
 } from './drawingSingleLineDiagram';
 
 export {
-  postBuildingData,
   request_weather,
   reload_weather,
   request_pv_production,
