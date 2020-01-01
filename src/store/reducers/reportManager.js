@@ -1,7 +1,8 @@
+import * as actionTypes from '../actions/actionTypes';
 
 // structure of global state
 const defaultState = {
-  reportId: '50f0ed52-45f8-44bd-a783-1495262723cb',
+  reportId: null,
   metadata: {
     loaded: false,
     option: {}
@@ -54,6 +55,12 @@ const defaultState = {
 // reducer: a function, renew and return a new state
 const reducer = (state = defaultState, action) => {
   switch (action.type) {
+    case actionTypes.SET_REPORT_ID:
+      state = {
+        ...state,
+        reportId: action.reportId
+      }
+      break;
     // success responses (don't need reload)
     case 'SUCCESS_METADATA':
       state = {

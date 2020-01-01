@@ -1,6 +1,7 @@
 import UtilFunctions from "../../infrastructure/util/UtilFunctions";
 import Numeral from "../../infrastructure/util/NumeralCustom";
 import axios from '../../axios-setup';
+import * as actionTypes from './actionTypes';
 
 const mapIntegerMonthToAbb = (month) => {
   switch (month) {
@@ -41,17 +42,31 @@ const mapInverterToAbb = (inverterNum) => {
 }
 
 export const postBuildingData = (json) => (dispatch, getState) => {
-  console.log(json)
   axios.post(
     'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report',
     JSON.stringify(json),
     {
       headers: {
-      'Content-Type': 'application/json;charset=UTF-8'
+      'Content-Type': 'application/json'
       }
     }
   )
-  .then(response => {console.log(response)})
+  .then(response => {
+    dispatch({
+      type: actionTypes.SET_REPORT_ID,
+      reportId: response.data.id
+    });
+    dispatch(request_metadata());
+    dispatch(request_loss());
+    dispatch(request_electricity_bill());
+    dispatch(request_pv_production());
+    dispatch(request_cash_flow());
+    dispatch(request_board_working_condition_left());
+    dispatch(request_board_working_condition_center());
+    dispatch(request_board_working_condition_right());
+    dispatch(request_energy());
+    dispatch(request_weather());
+  })
 }
 
 export const request_weather = () => (dispatch, getState) => {
