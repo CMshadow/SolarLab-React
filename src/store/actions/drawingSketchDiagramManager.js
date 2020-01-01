@@ -79,13 +79,13 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
       let startPosition_stage = null;
       if (currentBuildingPara.type === 'FLAT') {
         console.log("Flat Building")
-        
+
         // console.log("wiring: "+currentBuilding.getWiringCoordinates());
         startPosition = currentBuilding.getRoofCoordinates()[0][0];
 
         let BuildingRoof = mathHelp.convertFlatFoundationto2D(currentBuilding.getRoofCoordinates()[0]);
         AutoScale = mathHelp.calculateAutoScale(BuildingRoof[1], screenHeight);
-         
+
         let buildingOutline = drawFlatBuildingOutline(group, BuildingRoof[0],BuildingRoof[1], AutoScale, screenWidth, screenHeight);
         startPosition_stage = buildingOutline.startNodePosition;
 
@@ -98,8 +98,8 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         let WiringCollection = mathHelp.convertWiringto2D(startPosition, currentBuilding.getWiringCoordinates());
         let buildingWiringCollection = drawWiring(group, WiringCollection[0], WiringCollection[1], AutoScale, buildingOutline.startNodePosition);
 
-        
-        
+
+
       }
       if (currentBuilding.type === "PITCHED") {
         console.log("Pitched Building")
@@ -110,7 +110,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
             AutoScale = mathHelp.calculateAutoScale(BuildingRoof[1], screenHeight);
             let buildingOutline = drawFlatBuildingOutline(group, BuildingRoof[0],BuildingRoof[1], AutoScale, screenWidth, screenHeight);
             startPosition_stage = buildingOutline.startNodePosition;
-            
+
           } else {
             let PitchedRoofOutline = mathHelp.convertFlatFoundationSetBackTo2D(startPosition,currentBuilding.getRoofCoordinates()[i]);
             let PitchedBuildingSetBack = drawPitchedBuildingOutline(group, PitchedRoofOutline[0],PitchedRoofOutline[1], AutoScale, startPosition_stage);
@@ -138,12 +138,22 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
       console.log(currentBuilding.getShadowCoordinates())
       currentBuilding.getShadowCoordinates().forEach(element => {
         console.log(' - ' + element)
-        let keepoutShadow = mathHelp.convertNormalShadowto2D(startPosition, element.shadowCoordinates);
-        let keepout = mathHelp.convertKeepoutTo2D(startPosition,element.keepoutCoordinates )
-        let centerNode = mathHelp.calculateCenterofPolygon(keepout[0], keepout[1], AutoScale, startPosition_stage)
-        let keepOutShadowSketch = drawNormalShadow(group, keepoutShadow[0], keepoutShadow[1], AutoScale, startPosition_stage, centerNode ,gradient)
-      })
+        if (element.keepoutType === 'normal') {
+          let keepoutShadow = mathHelp.convertNormalShadowto2D(startPosition, element.shadowCoordinates);
+          let keepout = mathHelp.convertKeepoutTo2D(startPosition,element.keepoutCoordinates )
+          let centerNode = mathHelp.calculateCenterofPolygon(keepout[0], keepout[1], AutoScale, startPosition_stage)
+          let keepOutShadowSketch = drawNormalShadow(group, keepoutShadow[0], keepoutShadow[1], AutoScale, startPosition_stage, centerNode ,gradient);
+        } else if (element.keepoutType === 'vent' || element.keepoutType === 'passage'){
+          let keepoutShadow = mathHelp.convertNormalShadowto2D(startPosition, element.shadowCoordinates);
+          let keepout = mathHelp.convertKeepoutTo2D(startPosition,element.keepoutCoordinates )
+          let centerNode = mathHelp.calculateCenterofPolygon(keepout[0], keepout[1], AutoScale, startPosition_stage)
+          let keepOutShadowSketch = drawNormalShadow(group, keepoutShadow[0], keepoutShadow[1], AutoScale, startPosition_stage, centerNode ,gradient);
+        }  else if (element.keepoutType === 'tree') {
+          let keepoutShadow = mathHelp.convertNormalShadowto2D(startPosition, element.shadowCoordinates);
+          let keepout = mathHelp.convertKeepoutTo2D(startPosition,element.keepoutCoordinates )
 
+        }
+      })
 
       if (currentBuilding.type === 'FLAT') {
         currentBuilding.getParapetShadowCoordinates().forEach(element => {
@@ -164,7 +174,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         keekoutCollections.passageKeepout.forEach(element => {
           let keepout = mathHelp.convertKeepoutTo2D(startPosition, element.getOutlineCoordinates());
           // console.log(element.getOutlineCoordinates())
-          let keepout_Poly = drawKeepOut(group, keepout[0], keepout[1], AutoScale, startPosition_stage)
+          let keepout_Poly = drawFlatKeepout(group, keepout[0], keepout[1], AutoScale, startPosition_stage)
         });
       }
       if (keekoutCollections.ventKeepout.length > 0) {
@@ -172,7 +182,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         keekoutCollections.ventKeepout.forEach(element => {
           let keepout = mathHelp.convertKeepoutTo2D(startPosition, element.getOutlineCoordinates());
           // console.log(keepout)
-          let keepout_Poly = drawKeepOut(group, keepout[0], keepout[1], AutoScale, startPosition_stage)
+          let keepout_Poly = drawFlatKeepout(group, keepout[0], keepout[1], AutoScale, startPosition_stage)
         });
       }
       if (keekoutCollections.treeKeepout.length > 0) {
@@ -193,12 +203,12 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
       }
 
       layer.add(group);
-      
+
       drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient);
 
     }
-    
-    
+
+
 
   return({
     type: actionTypes.INIT_STAGE_SKETCH_DIAGRAM,
@@ -226,12 +236,12 @@ export const drawFlatBuildingOutline = (layer, AngleList, DistanceList, scale, s
         closed : true,
     });
     layer.add(poly);
-    
+
     return({
       type: actionTypes.DRAW_FLAT_BUILDING_OUTLINE,
       startNodePosition: [verticesList[0],verticesList[1]],
       layer: layer
-    }); 
+    });
 }
 
 export const drawPitchedBuildingOutline = (layer, AngleList, DistanceList, scale, start) => {
@@ -254,7 +264,7 @@ export const drawPitchedBuildingOutline = (layer, AngleList, DistanceList, scale
     type: actionTypes.DRAW_PITCHED_BUILDING_SET_BACK,
     // flatBuildingSetBack: poly,
     layer: layer
-  }); 
+  });
 }
 
  export const drawFlatBuildingSetBack = (layer, SetBackAngleList, SetbackDistList, scale, start) => {
@@ -280,7 +290,7 @@ export const drawPitchedBuildingOutline = (layer, AngleList, DistanceList, scale
     type: actionTypes.DRAW_FLAT_BUILDING_SET_BACK,
     flatBuildingSetBack: poly,
     layer: layer
-  }); 
+  });
 }
 
 export const drawKeepoutSetBack = (layer, SetBackAngleList, SetbackDistList, scale, start) => {
@@ -306,7 +316,7 @@ export const drawKeepoutSetBack = (layer, SetBackAngleList, SetbackDistList, sca
     type: actionTypes.DRAW_FLAT_BUILDING_SET_BACK,
     flatBuildingSetBack: poly,
     layer: layer
-  }); 
+  });
 }
 
 export const drawSolarPanel = (layer, SolarPanelAngle, SolarPanelDist, scale, start) => {
@@ -335,7 +345,7 @@ export const drawSolarPanel = (layer, SolarPanelAngle, SolarPanelDist, scale, st
     type: actionTypes.DRAW_SOLAR_PANEL,
     solarPanelArrayCollection: solarPanelArrays,
     layer: layer
-  }); 
+  });
 }
 
 
@@ -361,7 +371,7 @@ export const drawWiring = (layer, wiring_AngleList, wiring_DistList, scale, star
     type: actionTypes.DRAW_WIRING,
     // wiringCollection: verticesList,
     layer: layer
-  }); 
+  });
 }
 
 export const drawKeepOut = (layer, AngleList, DistanceList, scale, start) => {
@@ -387,9 +397,31 @@ export const drawKeepOut = (layer, AngleList, DistanceList, scale, start) => {
     type: actionTypes.DRAW_KEEPOUT,
     // wiringCollection: verticesList,
     layer: layer
-  }); 
+  });
 }
 
+export const drawFlatKeepout = (layer, AngleList, DistanceList, scale, start) => {
+  let verticesList = [];
+  for(let i = 0; i < AngleList.length; i++){
+      let nextPosition = mathHelp.calculateNextPosition(AngleList[i],DistanceList[i]*scale,
+          start[0], start[1] );
+      verticesList.push(nextPosition[0], nextPosition[1]);
+  }
+  let poly = new Konva.Line({
+    points: verticesList,
+    fill: '#212127',
+    stroke: '#84848a',
+    strokeWidth: 0,
+    closed : true,
+
+  });
+  layer.add(poly);
+  return({
+    type: actionTypes.DRAW_KEEPOUT,
+    // wiringCollection: verticesList,
+    layer: layer
+  });
+}
 
 export const drawTree = (layer, AngleList, DistanceList, scale, start) => {
   let verticesList = [];
@@ -414,7 +446,7 @@ export const drawTree = (layer, AngleList, DistanceList, scale, start) => {
     type: actionTypes.DRAW_KEEPOUT,
     // wiringCollection: verticesList,
     layer: layer
-  }); 
+  });
 }
 
 
@@ -437,7 +469,7 @@ export const drawParapetShadow = (layer,AngleList, DistanceList, scale, start, c
       opacity: 0.5
   });
   layer.add(poly);
-  
+
   // let centerNodesList = [];
   // for(let i = 0; i < centerNodesAngles.length; i++){
   //   let nextPosition = mathHelp.calculateNextPosition(centerNodesAngles[i],centerNodesDist[i]*scale,
@@ -465,7 +497,7 @@ export const drawParapetShadow = (layer,AngleList, DistanceList, scale, start, c
   //       newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],nextPosition[0], gradient);
   //       newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],nextPosition[1], gradient);
   //     // }
-      
+
   //     newCoordXY.push(newCoordX);
   //     newCoordXY.push(newCoordY);
   //   }
@@ -484,13 +516,13 @@ export const drawParapetShadow = (layer,AngleList, DistanceList, scale, start, c
   //         strokeWidth: 0,
   //         closed : true,
   //         opacity: 0 + level * (0.1 / gradient)
-            
+
   //     });
   //     layer.add(poly1);
   //   }
 
   // }
-  
+
 
 }
 
@@ -514,8 +546,8 @@ export const drawNormalShadow = (layer,AngleList, DistanceList, scale, start, ce
       closed : true,
       opacity: 0.5
   });
-  layer.add(poly);
-  
+  // layer.add(poly);
+
 
   let newCoordXY = [];
   for (let k = 0; k < verticesList.length; k+=2) {
@@ -536,7 +568,7 @@ export const drawNormalShadow = (layer,AngleList, DistanceList, scale, start, ce
     //console.log(colorList[gradient-level-1]);
     let customizeOpacity = 0.3;
     if (level <= 10) {
-      customizeOpacity = 0;
+      customizeOpacity = 0.02;
     }
     if (level > 10 && level < 30) {
       customizeOpacity = 0.1 + level * ( 0.2 / 20);
@@ -548,11 +580,11 @@ export const drawNormalShadow = (layer,AngleList, DistanceList, scale, start, ce
         strokeWidth: 0,
         closed : true,
         opacity: customizeOpacity
-          
+
     });
     layer.add(poly1);
   }
-  
+
 }
 
 
@@ -561,7 +593,7 @@ export const drawColorBar = (layer, Xwidth, Yheight, gradient) => {
   let height_bar = 300;
   let colorBar = mathHelp.calculateGradientColor(gradient);
   let rect = [Xwidth,Yheight, Xwidth+width_bar, Yheight, Xwidth+width_bar, Yheight+height_bar, Xwidth,Yheight+height_bar];
-  
+
   let poly = new Konva.Line({
         points: rect,
   fill: colorBar[0],
@@ -570,7 +602,7 @@ export const drawColorBar = (layer, Xwidth, Yheight, gradient) => {
         closed : true,
         opacity: 1
     });
-    
+
   layer.add(poly);
   let newCoordXY = [];
   for (let i = 0; i < rect.length; i+=2) {
@@ -611,8 +643,8 @@ export const drawColorBar = (layer, Xwidth, Yheight, gradient) => {
   let frame = [Xwidth+width_bar*1.1,Yheight, Xwidth+width_bar*1.5,Yheight,
         Xwidth+width_bar*1.1, Yheight+height_diff*1, Xwidth+width_bar*1.5, Yheight+height_diff*1,
       Xwidth+width_bar*1.1, Yheight+height_diff*2, Xwidth+width_bar*1.5, Yheight+height_diff*2,
-      Xwidth+width_bar*1.1, Yheight+height_diff*3, Xwidth+width_bar*1.5, Yheight+height_diff*3, 
-      Xwidth+width_bar*1.1, Yheight+height_diff*4, Xwidth+width_bar*1.5, Yheight+height_diff*4, 
+      Xwidth+width_bar*1.1, Yheight+height_diff*3, Xwidth+width_bar*1.5, Yheight+height_diff*3,
+      Xwidth+width_bar*1.1, Yheight+height_diff*4, Xwidth+width_bar*1.5, Yheight+height_diff*4,
       Xwidth+width_bar*1.1, Yheight+height_diff*5, Xwidth+width_bar*1.5, Yheight+height_diff*5];
 
   let frotSize = 15;
@@ -637,5 +669,3 @@ export const drawColorBar = (layer, Xwidth, Yheight, gradient) => {
       layer.add(frameText);
     }
 }
-
-
