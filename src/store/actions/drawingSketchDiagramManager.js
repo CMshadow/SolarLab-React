@@ -204,8 +204,10 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
 
       layer.add(group);
 
+      let Monthly_Irradiance_List = [64.5, 91.6, 120, 149.4, 166.0, 152.9, 146.6, 130.2, 119.7, 90.4, 67.9, 53.8];
       drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient);
-
+      HistogramDispaly(layer, window.innerWidth, window.innerHeight, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
+ 
     }
 
 
@@ -668,4 +670,166 @@ export const drawColorBar = (layer, Xwidth, Yheight, gradient) => {
       layer.add(line);
       layer.add(frameText);
     }
+}
+
+
+export const HistogramDispaly  = (layer, Histogram_X_Position, Histogram_Y_Position, Histogram_Width, Histogram_Height, Monthly_Irradiance) => {
+
+
+  let Histogram_Position = [Histogram_X_Position- Histogram_Width, Histogram_Y_Position - Histogram_Height];
+  let Annual_Irradiance = [];
+  let Group = new Konva.Group();
+  let Month_Name = ["Jan","Feb","Mar","Apr",
+                    "May","Jun","Jul","Aug","Sept",
+                    "Oct","Nov","Dec"];
+
+  let Vertical_Axis_Scale = Histogram_Height / ((Math.floor(Math.max(...Monthly_Irradiance) / 50) + 1)* 50);
+  let MaxHistorgram = 0;
+  
+
+  let backgroundRect = new Konva.Rect({
+    x: Histogram_Position[0],
+    y: Histogram_Position[1],
+    width: Histogram_Width,
+    height: Histogram_Height,
+    fill: '#706D6C',
+    shadowBlur: 10,
+    cornerRadius: 10,
+    opacity: 0.5
+  });
+  Group.add(backgroundRect);
+  
+
+  // //画纵轴
+
+  let startPosition = [Histogram_Position[0] + Histogram_Width * 0.1,
+                      Histogram_Position[1] + Histogram_Height * 0.1];
+  let endPosition = [Histogram_Position[0] + Histogram_Width * 0.1,
+                      Histogram_Position[1] + Histogram_Height * 0.9];
+  let Draw_Vertical_Axis = new Konva.Line({
+    points: [startPosition[0],startPosition[1],endPosition[0],endPosition[1]],
+    stroke: 'white',
+    strokeWidth: 1,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  MaxHistorgram = endPosition[1] - startPosition[1];
+  //画刻度
+  let unit_number = Math.floor(Math.max(...Monthly_Irradiance) / 50) + 1;
+  let unit_length = MaxHistorgram / unit_number;
+  let month_Irradiance_value_Position = [];
+
+  for (let i = 1; i <= unit_number; ++i) {
+      let Vertical_Axis_Scale = new Konva.Line({
+        points: [endPosition[0],endPosition[1] - i * unit_length, endPosition[0] + Histogram_Height* 0.02, endPosition[1] - i * unit_length],
+        stroke: 'white',
+        strokeWidth: 1,
+        lineCap: 'round',
+        lineJoin: 'round'
+      });
+      Group.add(Vertical_Axis_Scale);
+      month_Irradiance_value_Position.push([endPosition[0],endPosition[1] - i * unit_length]);
+  }
+  //画刻度值
+  for (let i = 1; i < unit_number + 1; ++i) {
+      let Histogram_Monthly_Irradiance = new Konva.Text({
+        x: month_Irradiance_value_Position[i-1][0]- Histogram_Width * 0.05,
+        y: month_Irradiance_value_Position[i-1][1],
+        text: 50 * i ,
+        fontSize: Histogram_Height * 0.05,
+        fontFamily: 'Calibri',
+        fill: 'white'
+        // shadowBlur: 10,
+        // cornerRadius: 10,
+        // opacity: 0.5
+      });
+      Group.add(Histogram_Monthly_Irradiance);
+  }
+
+  //画单位 
+  let Histogram_Monthly_Irradiance_Unit = new Konva.Text({
+        x: startPosition[0] - Histogram_Width * 0.05,
+        y: startPosition[1] - Histogram_Height * 0.07,
+        text: 'kWh/m^2' ,
+        fontSize: Histogram_Height * 0.05,
+        fontFamily: 'Calibri',
+        fill: 'white'
+  });
+    // let Irradiance_Unit_Square = new Konva.Text({
+    //       x: startPosition[0] + Histogram_Width * 0.015,
+    //       y: startPosition[1] - Histogram_Height * 0.07,
+    //       text: '2' ,
+    //       fontSize: Histogram_Height * 0.04,
+    //       fontFamily: 'Calibri',
+    //       fill: 'white'
+    //       // shadowBlur: 10,
+    //       // cornerRadius: 10,
+    //       // opacity: 0.5
+    // });
+
+    // Group.add(Irradiance_Unit_Square);
+  Group.add(Histogram_Monthly_Irradiance_Unit);
+
+  Group.add(Draw_Vertical_Axis);
+  //画横轴
+
+  startPosition = [Histogram_Position[0] + Histogram_Width * 0.1,
+                      Histogram_Position[1] + Histogram_Height * 0.9];
+  endPosition = [Histogram_Position[0] + Histogram_Width * 0.9,
+                      Histogram_Position[1] + Histogram_Height * 0.9];
+  let Draw_Horizontal_Axis = new Konva.Line({
+    points: [startPosition[0],startPosition[1],endPosition[0],endPosition[1]],
+    stroke: 'white',
+    strokeWidth: 1,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  
+  //画刻度
+  unit_length = (endPosition[0] - startPosition[0]) / 13;
+  let month_Position = [];
+  for (let i = 1; i < 13; ++i) {
+      let Horizontal_Axis_Scale = new Konva.Line({
+        points: [startPosition[0]+unit_length * i,startPosition[1],startPosition[0]+unit_length * i, startPosition[1] - Histogram_Height * 0.02],
+        stroke: 'white',
+        strokeWidth: 1,
+        lineCap: 'round',
+        lineJoin: 'round'
+      });
+      Group.add(Horizontal_Axis_Scale);
+      month_Position.push([startPosition[0]+unit_length * i, startPosition[1]]);
+  }
+  //画柱状图
+  for (let i = 0; i < 12; ++i) {
+      let Histogram_Monthly = new Konva.Rect({
+        x: month_Position[i][0] - unit_length * 0.3,
+        y: month_Position[i][1],
+        width: unit_length * 0.6,
+        height: -MaxHistorgram * ( Monthly_Irradiance[i] / ((Math.floor(Math.max(...Monthly_Irradiance) / 50) + 1)* 50) ),
+        fill: '#F68D08',
+          shadowBlur: 5,
+        // cornerRadius: 10,
+        // opacity: 0.5
+      });
+      Group.add(Histogram_Monthly);
+  }
+  for (let i = 0; i < 12; ++i) {
+      let Histogram_Monthly_Name = new Konva.Text({
+        x: month_Position[i][0]- unit_length * 0.3,
+        y: month_Position[i][1],
+        text: Month_Name[i],
+        fontSize: unit_length*0.4,
+        fontFamily: 'Calibri',
+        fill: 'white'
+        // shadowBlur: 10,
+        // cornerRadius: 10,
+        // opacity: 0.5
+      });
+      Group.add(Histogram_Monthly_Name);
+  }
+  Group.add(Draw_Horizontal_Axis);
+
+  
+  layer.add(Group);
+
 }
