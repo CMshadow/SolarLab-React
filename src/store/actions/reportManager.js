@@ -40,10 +40,19 @@ const mapInverterToAbb = (inverterNum) => {
   return `inverter_${inverterNum}`;
 }
 
-// export const postBuildingData = () => (dispatch, getState) => {
-//   const workingBuilding = getState().buildingManagerReducer.workingBuilding;
-//   const json = workingBuilding.
-// }
+export const postBuildingData = (json) => (dispatch, getState) => {
+  console.log(json)
+  axios.post(
+    'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report',
+    JSON.stringify(json),
+    {
+      headers: {
+      'Content-Type': 'application/json;charset=UTF-8'
+      }
+    }
+  )
+  .then(response => {console.log(response)})
+}
 
 export const request_weather = () => (dispatch, getState) => {
   let displayMode = getState().undoableReducer.present.reportManager.displayMode;

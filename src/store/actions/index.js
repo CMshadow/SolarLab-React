@@ -213,6 +213,7 @@ export {
 } from './drawingSketchDiagramManager';
 
 export {
+  postBuildingData,
   request_weather,
   reload_weather,
   request_pv_production,
