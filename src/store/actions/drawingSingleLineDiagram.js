@@ -1074,7 +1074,7 @@ export const InterConnecter = (layer, distance, connectPoints) => {
   let w_min = 65;
   let h_min = 100 + numOfInverter * 10;
   let stroke_Width = 2;
-  let font_size = Math.floor(h_min / 7);
+  let font_size = Math.floor(w_min / 5);
   let connectPointList = [];
   let nextDistance = 0;
 
