@@ -136,7 +136,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         });
       }
       console.log("阴影")
-      console.log(currentBuilding.getShadowCoordinates())
+      // console.log(currentBuilding.getShadowCoordinates())
       currentBuilding.getShadowCoordinates().forEach(element => {
         console.log(' - ' + element)
         if (element.keepoutType === 'normal') {
@@ -151,8 +151,33 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
           let keepOutShadowSketch = drawNormalShadow(group, keepoutShadow[0], keepoutShadow[1], AutoScale, startPosition_stage, centerNode ,gradient);
         }  else if (element.keepoutType === 'tree') {
           let keepoutShadow = mathHelp.convertNormalShadowto2D(startPosition, element.shadowCoordinates);
-          let keepout = mathHelp.convertKeepoutTo2D(startPosition,element.keepoutCoordinates )
+          let keepout = mathHelp.convertKeepoutTo2D(startPosition,element.keepoutCoordinates)
+          let centerNodeOfTree = mathHelp.calculateCenterofPolygon(keepout[0], keepout[1], AutoScale, startPosition_stage);
 
+          let distance = [];
+          for (let i = 0; i < keepoutShadow[0].length; ++i) {
+            distance.push([keepoutShadow[0][i], keepoutShadow[0][i], mathHelp.calculateDistanceForTree([keepoutShadow[0][i], keepoutShadow[1][i]], centerNodeOfTree)]);
+          }
+          let closestIndex1 = 0;
+          let min1 = Number.MAX_VALUE;
+          for (let i = 0; i < distance.length; ++i) {
+            if (distance[i] < min1) {
+              min1 = distance[i];
+              closestIndex1 = i;
+            }
+          }
+          let slicedDistance = distance.filter(item => item === min1);
+          let min2 = Number.MAX_VALUE;
+          let closestIndex2 = 1;
+          for (let i = 0; i < slicedDistance.length; ++i) {
+            if (distance[i] < min2) {
+              min2 = distance[i];
+              closestIndex2 = i;
+            }
+          }
+          let centerNodeOfShadow = [closestIndex1, closestIndex2];
+          
+          let keepOutShadowSketch = drawTreeShadow(group, keepoutShadow[0], keepoutShadow[1], AutoScale, startPosition_stage, centerNodeOfShadow ,gradient);
         }
       })
 
@@ -616,6 +641,66 @@ export const drawNormalShadow = (layer,AngleList, DistanceList, scale, start, ce
 
 }
 
+export const drawTreeShadow = (layer,AngleList, DistanceList, scale, start, centerNode ,gradient) => {
+  // console.log(centerNode);
+  let verticesList = [];
+  for(let i = 0; i < AngleList.length; i++){
+      let nextPosition = mathHelp.calculateNextPosition(AngleList[i],DistanceList[i]*scale,
+          start[0], start[1] );
+      verticesList.push([nextPosition[0], nextPosition[1]]);
+  }
+  let colorFull = mathHelp.calculateGradientColor(gradient);
+  // console.log("color: "+colorFull)
+  // let poly = new Konva.Line({
+  //     points: verticesList,
+  //     fill: colorFull[0],
+  //     stroke: '#84848a',
+  //     strokeWidth: 0,
+  //     closed : true,
+  //     opacity: 0.5
+  // });
+  // // layer.add(poly);
+  let closestPoint1 = verticesList[centerNode[0]];
+  let closestPoint2 = verticesList[centerNode[1]];
+  let centerPoint = [(closestPoint1[0] + closestPoint2[0]) / 2, (closestPoint1[1] + closestPoint2[1]) / 2]
+  verticesList = verticesList.flatMap(element => element);
+  let newCoordXY = [];
+  for (let k = 0; k < verticesList.length; k+=2) {
+    let newCoordX = null;
+    let newCoordY = null;
+    newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],centerPoint[0], gradient);
+    newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],centerPoint[1], gradient);
+    newCoordXY.push(newCoordX);
+    newCoordXY.push(newCoordY);
+  }
+  for (let level = 0; level < gradient; level++) {
+    let newShadow = [];
+    for (let x = 0; x < newCoordXY.length; ++x) {
+      newShadow.push(newCoordXY[x][level]);
+    }
+    // newShadow.push(centerNodesAngles[0]);
+    newShadow.push(centerPoint);
+    //console.log(colorList[gradient-level-1]);
+    let customizeOpacity = 0.3;
+    if (level <= 10) {
+      customizeOpacity = 0.02;
+    }
+    if (level > 10 && level < 30) {
+      customizeOpacity = 0.1 + level * ( 0.2 / 20);
+    }
+    let poly1 = new Konva.Line({
+        points: newShadow,
+        fill: colorFull[level],
+        stroke: '#84848a',
+        strokeWidth: 0,
+        closed : true,
+        opacity: customizeOpacity
+
+    });
+    layer.add(poly1);
+  }
+
+}
 
 export const drawColorBar = (layer, Xwidth, Yheight, gradient) => {
   let width_bar= 30;
@@ -782,19 +867,7 @@ export const HistogramDispaly  = (layer, Histogram_X_Position, Histogram_Y_Posit
         fontFamily: 'Calibri',
         fill: 'white'
   });
-    // let Irradiance_Unit_Square = new Konva.Text({
-    //       x: startPosition[0] + Histogram_Width * 0.015,
-    //       y: startPosition[1] - Histogram_Height * 0.07,
-    //       text: '2' ,
-    //       fontSize: Histogram_Height * 0.04,
-    //       fontFamily: 'Calibri',
-    //       fill: 'white'
-    //       // shadowBlur: 10,
-    //       // cornerRadius: 10,
-    //       // opacity: 0.5
-    // });
 
-    // Group.add(Irradiance_Unit_Square);
   Group.add(Histogram_Monthly_Irradiance_Unit);
 
   Group.add(Draw_Vertical_Axis);

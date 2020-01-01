@@ -290,3 +290,7 @@ export const calculateGradientColor = (gradient) => {
   }
   return colorFull;
 }
+
+export const calculateDistanceForTree = (point1, point2) => {
+  return Math.sqrt((point1[0] - point2[0])*(point1[1] - point2[0]), (point1[1] - point2[1])*(point1[1] - point2[1]))
+}
