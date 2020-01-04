@@ -66,7 +66,7 @@ const rootReducer = combineReducers({
     editingWiringManager: editingWiringManager,
     reportManager: reportManager
   }), {
-    initTypes: [actionTypes.SET_VIEWER],
+    initTypes: ['@@redux/INIT'],
     filter: includeAction([
       actionTypes.CLICK_ADD_POINT_ON_POLYLINE,
       actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,

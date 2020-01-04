@@ -9,9 +9,9 @@ class Building {
     this.foundationHeight = foundHt;
     this.eaveSetback = eaveStb;
     this.shadow = shadow;
-    this.pv = pv;
-    this.inverters = inverters;
-    this.pvParams = pvParams;
+    this.pv = pv || {};
+    this.inverters = inverters || {};
+    this.pvParams = pvParams || {};
   }
 
   bindShadow = (shadow) => {

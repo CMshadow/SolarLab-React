@@ -17,7 +17,13 @@ const CustomViewer = (props) => {
 
   return (
     <Viewer
-      ref={ref => { if (!props.viewer && ref) props.onSetViewer(ref.cesiumElement)}}
+      ref={ref => {
+        if (!props.viewer && ref && ref.cesiumElement) {
+          console.log(ref.cesiumElement)
+
+          props.onSetViewer(ref.cesiumElement)
+        }
+      }}
       style={{position: "absolute", top: 64, left: 0, right: 0, bottom: 0}}
       terrainProvider={props.enableTerrain ? worldTerrain : null}
       imageryProvider={bingMap}

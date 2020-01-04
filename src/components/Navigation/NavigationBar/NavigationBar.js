@@ -127,25 +127,25 @@ class NavigationBar extends Component{
   }
 
   SketchDiagramHandler = () => {
-    // console.log(this.props)
-    // console.log(props.history.history)
-    this.props.history.push('/SketchDiagram');
+    if (this.props.history.location.pathname !=='/SketchDiagram')
+      this.props.history.push('/SketchDiagram');
   }
   ModelingSwitchHandler = () => {
-    // console.log(this.props)
-    this.props.history.push('/Modeling');
+    if (this.props.history.location.pathname !=='/Modeling')
+      this.props.history.push('/Modeling');
   }
 
   ReportSwitchHandler = () => {
-    const requestJSON = this.generateReportJSON(this.props.workingBuilding, 0);	    // console.log(this.props)
-    this.props.postBuildingData(requestJSON);
-    // this.props.request();
-    this.props.history.push('/Report');
+    if (this.props.history.location.pathname !=='/Report') {
+      const requestJSON = this.generateReportJSON(this.props.workingBuilding, 0);
+      this.props.postBuildingData(requestJSON);
+      this.props.history.push('/Report');
+    }
   }
 
   SingleLineDiagramSwitchHandler = () => {
-    // console.log(this.props)
-    this.props.history.push('/SingleLineDigram');
+    if (this.props.history.location.pathname !=='/SingleLineDigram')
+      this.props.history.push('/SingleLineDigram');
   }
 
   render() {
@@ -156,19 +156,38 @@ class NavigationBar extends Component{
         defaultSelectedKeys={['2']}
         style={{ lineHeight: '64px', background:"#202020" }}
       >
-        <Menu.Item style = {{background:"#202020"}} key='1'>
+        <Menu.Item
+          style = {{background:"#202020"}}
+          key='1'
+        >
           <FormattedMessage id='home' />
         </Menu.Item>
-        <Menu.Item style = {{background:"#202020"}} key='2' onClick={this.ModelingSwitchHandler}>
+        <Menu.Item
+          style = {{background:"#202020"}}
+          key='2'
+          onClick={this.ModelingSwitchHandler}
+        >
           <FormattedMessage id='modeling' />
         </Menu.Item>
-        <Menu.Item style = {{background:"#202020"}} key='3' onClick={this.SketchDiagramHandler}>
+        <Menu.Item
+          style = {{background:"#202020"}}
+          key='3'
+          onClick={this.SketchDiagramHandler}
+        >
           <FormattedMessage id='twoD_diagram' />
         </Menu.Item>
-        <Menu.Item style = {{background:"#202020"}} key='4' onClick={this.SingleLineDiagramSwitchHandler}>
+        <Menu.Item
+          style = {{background:"#202020"}}
+          key='4'
+          onClick={this.SingleLineDiagramSwitchHandler}
+        >
             <FormattedMessage id='single_line_diagram' />
           </Menu.Item>
-        <Menu.Item style = {{background:"#202020"}} key='5' onClick={this.ReportSwitchHandler}>
+        <Menu.Item
+          style = {{background:"#202020"}}
+          key='5'
+          onClick={this.ReportSwitchHandler}
+        >
           <FormattedMessage id='report' />
         </Menu.Item>
       </Menu>
