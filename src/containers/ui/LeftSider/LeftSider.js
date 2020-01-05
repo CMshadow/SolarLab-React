@@ -77,19 +77,32 @@ class LeftSider extends Component {
           trigger={null}
           collapsed={this.state.siderCollapse}
         >
+        <Layout className = {classes.upperPart}>
           {content}
-
+        </Layout>
 
         </Sider>
-        <Layout style = {{height:'60px',width: buttomBar, background:'#a0a0a0', position:"absolute", bottom:'60px'}}>
+        
+        <Sider 
+          style = {{height:'60px',width: buttomBar, background:'#a0a0a0', position:"absolute", bottom:'60px'}}
+          width={325}
+          collapsedWidth={50}
+          collapsible
+          onCollapse={this.onCollapse}
+          trigger={null}
+          collapsed={this.state.siderCollapse}>
+        <Layout  
+          style = {{height:'60px',width: buttomBar, background: null, position:"absolute"}}
+          className = {classes.lowerPart}>
           {this.state.siderCollapse ? null : <UndoRedo />}
+        </Layout>
         <Icon
               className="trigger"
               style = {{position:"absolute", right:'0px'}}
               type={this.state.siderCollapse ? 'menu-unfold' : 'menu-fold'}
               onClick={this.toggle}
         />
-        </Layout>
+        </Sider>
       </Layout>
     );
   }
