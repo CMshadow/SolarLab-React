@@ -30,6 +30,7 @@ class ShadowControl extends Component {
   handleSubmit = (event) => {
     const dayStep = 4;
     event.preventDefault();
+
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
         let startDate = values.dateRange[0].clone().startOf('day');
@@ -163,9 +164,9 @@ class ShadowControl extends Component {
 
         {/*The button to validate & process to re-project shadow*/}
         <Row type="flex" justify="center">
-          <Col span={16}>
-            <Button type='primary' shape='round' size='small'
-              htmlType="submit" block ghost
+          <Col span={12}>
+            <Button type='primary' shape='round' htmlType="submit" block ghost
+              loading={this.props.backendLoading}
             >
               <FormattedMessage id='project_shadow' />
             </Button>
@@ -180,6 +181,7 @@ class ShadowControl extends Component {
 const mapStateToProps = state => {
   return {
     projectInfo: state.projectManagerReducer.projectInfo,
+    backendLoading: state.projectManagerReducer.backendLoading,
   };
 };
 

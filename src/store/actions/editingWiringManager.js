@@ -32,7 +32,7 @@ export const fetchUserInverters = () => (dispatch, getState) => {
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Backend Error',
-      error.response.data.errorMessage
+      error.response.data.errorMessage || error
     )
   })
 }
@@ -87,7 +87,7 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Inverter Error',
-      error.response.data.errorMessage
+      error.response.data.errorMessage || error
     )
   })
 }
@@ -144,7 +144,7 @@ export const calculateManualInverter = (roofIndex, inverterID) =>
     dispatch(setBackendLoadingFalse());
     return errorNotification(
       'Inverter Error',
-      error.response.data.errorMessage
+      error.response.data.errorMessage || error
     )
   })
 }
@@ -243,6 +243,7 @@ const arrayAutoWiring = (roofInd, inverterInd, wiringInd) =>
       }
     })
   }
+  const panelRows = string.map(p => p.row);
 
   const panelsOnString = string.map(p => p.pv);
   const panelCenterPoints = string.map(p => {
@@ -255,7 +256,7 @@ const arrayAutoWiring = (roofInd, inverterInd, wiringInd) =>
   );
   const newWiring = new Wiring(
     null, panelsOnString[0], panelsOnString.slice(-1)[0], panelsOnString,
-    wiringPolyline
+    wiringPolyline, panelRows
   );
   dispatch({
     type: actionTypes.AUTO_WIRING,

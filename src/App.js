@@ -7,12 +7,13 @@ import { IntlProvider } from 'react-intl';
 import CustomLayout from './hoc/Layout/Layout';
 import ModelingPage from './components/ModelingPage/ModelingPage';
 import SketchDiagram from './components/SketchDiagram/SketchDiagram';
-
+import Dashboard from './containers/Report/Dashboard/Dashboard';
 import zhCN from 'antd/es/locale/zh_CN';
 
 
 import zh_CN from './locale/zh_CN';
 import en_US from './locale/en_US';
+import SingleLineDiagram from './components/SingleLineDiagramPage/SingleLineDiagramPage';
 
 class App extends Component {
   render () {
@@ -23,6 +24,8 @@ class App extends Component {
             <Switch>
               <Route path="/Modeling" exact component={ModelingPage} />
               <Route path='/SketchDiagram'  component={SketchDiagram} />
+              <Route path='/SingleLineDigram' component={SingleLineDiagram} />
+              <Route path='/Report' exact component={Dashboard}/>
             </Switch>
           </CustomLayout>
         </ConfigProvider>

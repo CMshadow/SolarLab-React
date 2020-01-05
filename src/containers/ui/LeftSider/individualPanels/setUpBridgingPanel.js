@@ -58,7 +58,6 @@ class SetUpBridgingPanel extends Component {
         matchInverterInfo.pso = Number(matchInverterInfo.pso);
         matchInverterInfo.mpptLow = Number(matchInverterInfo.mpptLow);
         matchInverterInfo.vdcmin = Number(matchInverterInfo.vdcmin);
-        matchInverterInfo.vs0 = Number(matchInverterInfo.vs0);
         matchInverterInfo.cost = Number(matchInverterInfo.cost);
         matchInverterInfo.vac = Number(matchInverterInfo.vac);
         matchInverterInfo.pnt = Number(matchInverterInfo.pnt);

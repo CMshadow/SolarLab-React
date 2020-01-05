@@ -485,7 +485,9 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title={this.props.intl.formatMessage({id:'panel_spacing_description'})}
+              title={
+                this.props.intl.formatMessage({id:'panel_spacing_description'})
+              }
             >
               <h4><FormattedMessage id='panel_spacing' /> <Icon type="question-circle" /></h4>
             </Tooltip>
@@ -574,9 +576,14 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="The number of rows for a panel array"
+              title={
+                this.props.intl.formatMessage({id:'rows_per_array_description'})
+              }
             >
-              <h4>Rows / Array <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='rows_per_array' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col span={6}>
@@ -601,9 +608,12 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={4}>
             <Tooltip
               placement="topLeft"
-              title="The number of panels on each row"
+              title={this.props.intl.formatMessage({id:'panel_per_row_description'})}
             >
-              <h4>Panels / Row <Icon type="question-circle" /></h4>
+              <h4>
+                < FormattedMessage id='panel_per_row' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col span={6}>

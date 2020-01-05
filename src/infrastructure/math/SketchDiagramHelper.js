@@ -290,3 +290,108 @@ export const calculateGradientColor = (gradient) => {
   }
   return colorFull;
 }
+
+export const calculateDistanceForTree = (point1, point2) => {
+  return Math.sqrt((point1[0] - point2[0])*(point1[1] - point2[0]), (point1[1] - point2[1])*(point1[1] - point2[1]))
+}
+
+// export const convertBridgeto2D = (startPos) => {
+
+//     var bridgings_angle = [];
+//     var bridgings_distance = [];
+//     var bridgings_inline_angle = [];
+//     var bridgings_inline_distance = [];
+//     var inverter_angle_list= [];
+//     var inverter_distList = [];
+
+//     for(var i = 0; i < building.inverter_wiring.inverter_solution_collection.length; ++i){
+//         //对于每一个INVERTER_SOLUTION object
+//         //转化逆变器坐标数据
+//         //console.log("location: "+ Cesium.Cartesian3.fromDegrees(tempBase[i],tempBase[i+1]));
+//         var nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],building.inverter_wiring.inverter_solution_collection[i].inverter_polygon_center[0],building.inverter_wiring.inverter_solution_collection[i].inverter_polygon_center[1]);
+//         inverter_angle_list.push(nextAngle);
+//         inverter_distList.push(Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]), Cesium.Cartesian3.fromDegrees(building.inverter_wiring.inverter_solution_collection[i].inverter_polygon_center[0],building.inverter_wiring.inverter_solution_collection[i].inverter_polygon_center[1])));
+
+//         //对于当前逆变器接入的每一条走线
+//         for(var j = 0; j < building.inverter_wiring.inverter_solution_collection[i].wiring.length; ++j){
+//             //对于每一个WIRING object
+//             var wiring_angleList = [];
+//             var wiring_distList = [];
+//             for(var k = 0; k <building.inverter_wiring.inverter_solution_collection[i].wiring[j].wiring_polyline_nodes_coordinates.length; k+=3 ){
+//                 var nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],
+//                     building.inverter_wiring.inverter_solution_collection[i].wiring[j].wiring_polyline_nodes_coordinates[k],
+//                     building.inverter_wiring.inverter_solution_collection[i].wiring[j].wiring_polyline_nodes_coordinates[k+1]);
+//                 wiring_angleList.push(nextAngle);
+//                 wiring_distList.push(Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]),
+//                     Cesium.Cartesian3.fromDegrees(building.inverter_wiring.inverter_solution_collection[i].wiring[j].wiring_polyline_nodes_coordinates[k],
+//                     building.inverter_wiring.inverter_solution_collection[i].wiring[j].wiring_polyline_nodes_coordinates[k+1])));
+//             }
+//             //转化编号位置
+//             var centerAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],
+//                     building.inverter_wiring.inverter_solution_collection[i].wiring[j].wiring_center_position[0],
+//                     building.inverter_wiring.inverter_solution_collection[i].wiring[j].wiring_center_position[1]);
+//             var centerDist = Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]),
+//                     Cesium.Cartesian3.fromDegrees(building.inverter_wiring.inverter_solution_collection[i].wiring[j].wiring_center_position[0],
+//                     building.inverter_wiring.inverter_solution_collection[i].wiring[j].wiring_center_position[1]));
+
+//             //存储相关数据
+//             wirings_angle.push(wiring_angleList);
+//             wirings_distance.push(wiring_distList);
+//             wirings_serial_number_list.push(building.inverter_wiring.inverter_solution_collection[i].wiring[j].wiring_serial_number);
+//             wirings_serial_number_list_position.push([centerAngle, centerDist]);
+//             // console.log("wiring ang "+wiring_angleList)
+//             // console.log("wiring dis "+wiring_distList)
+//         }
+
+//         //对于当前逆变器接入的每一个桥架
+//         for(var j = 0; j < building.inverter_wiring.inverter_solution_collection[i].bridging.length; ++j){
+//             //对于每一个BRIDGE object
+//             var bridging_angleList = [];
+//             var bridging_distList = [];
+
+//             //转化桥架位置
+//             for(var k = 0; k <building.inverter_wiring.inverter_solution_collection[i].bridging[j].bridge_polyline_nodes_coordinates.length; k+=3 ){
+//                 var nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],
+//                     building.inverter_wiring.inverter_solution_collection[i].bridging[j].bridge_polyline_nodes_coordinates[k],
+//                     building.inverter_wiring.inverter_solution_collection[i].bridging[j].bridge_polyline_nodes_coordinates[k+1]);
+//                 bridging_angleList.push(nextAngle);
+//                 bridging_distList.push(Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]),
+//                     Cesium.Cartesian3.fromDegrees(building.inverter_wiring.inverter_solution_collection[i].bridging[j].bridge_polyline_nodes_coordinates[k],
+//                     building.inverter_wiring.inverter_solution_collection[i].bridging[j].bridge_polyline_nodes_coordinates[k+1])));
+
+//             }
+//             bridgings_angle.push(bridging_angleList);
+//             bridgings_distance.push(bridging_distList);
+//             // console.log("bridging ang "+bridging_angleList)
+//             // console.log("bridging dis "+bridging_distList)
+//             //转化桥架与走线连接线数据
+//             for(var k = 0; k <building.inverter_wiring.inverter_solution_collection[i].bridging[j].inline_polyline_nodes_coordinates.length; k++ ){
+//                 var bridging_inline_angleList = [];
+//                 var bridging_inline_distList = [];
+//                 //console.log("   123431241234  "+building.inverter_wiring.inverter_solution_collection[i].bridging[j].inline_polyline_nodes_coordinates[k])
+
+//                 for(var m = 0; m <building.inverter_wiring.inverter_solution_collection[i].bridging[j].inline_polyline_nodes_coordinates[k].length; m+=3 ){
+
+//                     var nextAngle = calculate_bearing_by_two_lon_lat(startPos[0],startPos[1],
+//                         building.inverter_wiring.inverter_solution_collection[i].bridging[j].inline_polyline_nodes_coordinates[k][m],
+//                         building.inverter_wiring.inverter_solution_collection[i].bridging[j].inline_polyline_nodes_coordinates[k][m+1]);
+//                     bridging_inline_angleList.push(nextAngle);
+//                     bridging_inline_distList.push(Cesium.Cartesian3.distance(Cesium.Cartesian3.fromDegrees(startPos[0],startPos[1]),
+//                         Cesium.Cartesian3.fromDegrees(building.inverter_wiring.inverter_solution_collection[i].bridging[j].inline_polyline_nodes_coordinates[k][m],
+//                         building.inverter_wiring.inverter_solution_collection[i].bridging[j].inline_polyline_nodes_coordinates[k][m+1])));
+//                 }
+//                 bridgings_inline_angle.push(bridging_inline_angleList);
+//                 bridgings_inline_distance.push(bridging_inline_distList);
+//                 // console.log("inline ang "+bridging_inline_angleList)
+//                 // console.log("inline dis "+bridging_inline_distList)
+//             }
+
+//         }
+//     }
+
+//     //走线，桥架，逆变器存入数据库
+//      return [ bridgings_angle,bridgings_distance,
+//               bridgings_inline_angle,bridgings_inline_distance,
+//               inverter_angle_list,inverter_distList];
+
+// }
