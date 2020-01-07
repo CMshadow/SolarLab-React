@@ -20,3 +20,10 @@ export const disableRotate = () => {
     type: actionTypes.DISABLE_ROTATION
   };
 };
+
+export const selectMap = (map) => {
+  return {
+    type: actionTypes.SELECT_MAP,
+    selectedMap: map
+  };
+}

@@ -5,6 +5,8 @@ import * as actionTypes from '../actions/actionTypes';
 const initialState = {
   viewer: null,
   enableRotate: true,
+
+  selectedMap: 'google'
 };
 
 const setViewer = (state, action) => {
@@ -37,11 +39,19 @@ const disableRotate = (state, action) => {
   };
 };
 
+const selectMap = (state, action) => {
+  return {
+    ...state,
+    selectedMap: action.selectedMap
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.SET_VIEWER: return setViewer(state, action);
     case actionTypes.ENABLE_ROTATION: return enableRotate(state, action);
     case actionTypes.DISABLE_ROTATION: return disableRotate(state, action);
+    case actionTypes.SELECT_MAP: return selectMap(state, action);
     default: return state;
   }
 };

@@ -1,7 +1,7 @@
 .rightSider {
-  height: calc(25vh);
+  height: 100px;
   background-color: rgba(255, 255, 255, 0);
-  margin: 68px 0px;
+  margin: 64px 0px;
   overflow: auto;
   right: 0,
 }

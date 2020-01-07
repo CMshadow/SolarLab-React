@@ -4,6 +4,7 @@
 export const SET_VIEWER = 'SET_VIEWER';
 export const ENABLE_ROTATION = 'ENABLE_ROTATION';
 export const DISABLE_ROTATION = 'DISABLE_ROTATION';
+export const SELECT_MAP = 'SELECT_MAP';
 
 /*
   drawingManager.js
