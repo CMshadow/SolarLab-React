@@ -1,15 +1,31 @@
-.leftSider {
-  /* height: 100vh; */
-  /* margin: 0px 0px 0px 0px; */
-  background-color: rgba(255, 255, 255, 0.95);
-  overflow: auto;
-/*  height: calc(100vh - 120px);*/
-  height: calc(100vh - 120px);
-  position: fixed;
-  left: 0,
+.outerLayout {
+  min-height: 100vh;
+  position: "fixed";
 }
 
-.lowerPart{
+.leftSider {
+  background-color: rgba(255, 255, 255, 0.95);
+  height: calc(100vh - 64px);
+  left: 0;
+  top: 64px;
+}
+
+.upperPart {
+  overflow: auto;
+  position: 'fixed';
   background-color: rgba(255, 255, 255, 0);
-    
+  height: calc(100vh - 124px);
+}
+
+.lowerPart {
+  position: "fixed";
+  height: 60px;
+  background-color: #a0a0a0;
+  bottom: 0;
+}
+
+.collapseButton {
+  position: "relative";
+  left: -12.5px;
+  top: 50vh;
 }

@@ -58,16 +58,9 @@ class LeftSider extends Component {
         content = (<SetUpBridgingPanel/>)
       }
     }
-    let buttomBar = "325px";
-    if (this.state.siderCollapse === false) { 
-      buttomBar = "325px";
-    }
-    else{
-      buttomBar = "50px";
-    }
 
     return (
-      <Layout style={{ minHeight: '100vh', position:"fixed", top:'64px'}}>
+      <Layout className={classes.outerLayout}>
         <Sider
           className={classes.leftSider}
           width={325}
@@ -77,32 +70,22 @@ class LeftSider extends Component {
           trigger={null}
           collapsed={this.state.siderCollapse}
         >
-        <Layout className = {classes.upperPart}>
-          {content}
-        </Layout>
-
+          <Layout className = {classes.upperPart}>
+            {content}
+          </Layout>
+          <Layout className = {classes.lowerPart}>
+            {this.state.siderCollapse ? null : <UndoRedo />}
+          </Layout>
         </Sider>
-        
-        <Sider 
-          style = {{height:'60px',width: buttomBar, background:'#a0a0a0', position:"absolute", bottom:'60px'}}
-          width={325}
-          collapsedWidth={50}
-          collapsible
-          onCollapse={this.onCollapse}
-          trigger={null}
-          collapsed={this.state.siderCollapse}>
-        <Layout  
-          style = {{height:'60px',width: buttomBar, background: null, position:"absolute"}}
-          className = {classes.lowerPart}>
-          {this.state.siderCollapse ? null : <UndoRedo />}
-        </Layout>
-        <Icon
-              className="trigger"
-              style = {{position:"absolute", right:'0px'}}
-              type={this.state.siderCollapse ? 'menu-unfold' : 'menu-fold'}
-              onClick={this.toggle}
+        <Button
+          className={classes.collapseButton}
+          icon={this.state.siderCollapse ? 'right' : 'left'}
+          shape='circle'
+          size='small'
+          onClick={() => {
+            this.toggle();
+          }}
         />
-        </Sider>
       </Layout>
     );
   }
