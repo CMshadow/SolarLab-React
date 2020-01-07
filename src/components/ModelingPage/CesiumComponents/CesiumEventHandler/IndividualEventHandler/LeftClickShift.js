@@ -9,10 +9,29 @@ import * as actions from '../../../../../store/actions/index';
 const LeftClickShiftHandler = (props) => {
 
   const leftClickActions = (event) => {
+    const PickedObjectsArray = props.viewer.scene.drillPick(event.position);
+    const pickedObjectIdArray = PickedObjectsArray.map(elem => elem.id.id);
+
     switch (props.uiState) {
       case 'DRAWING_FOUND':
-        props.disableRotate();
-        props.addPointOnPolyline(event.position, props.viewer, true);
+        if (
+          pickedObjectIdArray.includes(props.drawingFoundPolyline.points[0].entityId)
+        ) {
+          props.terminateDrawing();
+          props.setUIStateFoundDrew();
+          props.enableRotate();
+        } else if (
+          props.drawingFoundPolyline.points.slice(1,).map(p => p.entityId)
+          .reduce((include, id) => {
+            include = pickedObjectIdArray.includes(id) ? true : include;
+            return include;
+          }, false)
+        ) {
+          break;
+        } else {
+          props.disableRotate();
+          props.addPointOnPolyline(event.position, props.viewer, true);
+        }
         break;
 
       case 'DRAWING_INNER':
@@ -22,8 +41,32 @@ const LeftClickShiftHandler = (props) => {
         break;
 
       case 'DRAWING_KEEPOUT':
-        props.disableRotate();
-        props.addPointOnKeepoutPolyline(event.position, props.viewer, true);
+        switch (props.linkedKeepoutType) {
+          default:
+          case 'ENV':
+          case 'KEEPOUT':
+          case 'PASSAGE':
+            if (
+              pickedObjectIdArray.includes(
+                props.drawingKeepoutPolyline.points[0].entityId
+              )
+            ) {
+              props.terminateKeepoutDrawing();
+              props.setUIStateEditingKeepout();
+            } else if (
+              props.drawingKeepoutPolyline.points.slice(1,).map(p => p.entityId)
+              .reduce((include, id) => {
+                include = pickedObjectIdArray.includes(id) ? true : include;
+                return include;
+              }, false)
+            ) {
+              break;
+            } else {
+              props.disableRotate();
+              props.addPointOnKeepoutPolyline(event.position, props.viewer, true);
+            }
+            break;
+        }
         break;
 
       default:
@@ -44,12 +87,20 @@ const mapStateToProps = state => {
   return {
     viewer: state.cesiumReducer.viewer,
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    drawingFoundPolyline:
+      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+    drawingKeepoutPolyline:
+      state.undoableReducer.present.drawingKeepoutManagerReducer
+      .drawingKeepoutPolyline,
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     disableRotate: () => dispatch(actions.disableRotate()),
+    enableRotate: () => dispatch(actions.enableRotate()),
+    setUIStateFoundDrew: () => dispatch(actions.setUIStateFoundDrew()),
+    setUIStateEditingKeepout: () => dispatch(actions.setUIStateEditingKeepout()),
     addPointOnPolyline: (cartesian, viewer, fixedMode) => dispatch(
       actions.addPointOnPolyline(cartesian, viewer, fixedMode)
     ),
@@ -58,7 +109,9 @@ const mapDispatchToProps = dispatch => {
     ),
     addOrClickPoint: (cartesian, viewer, pickedObject) => dispatch(
       actions.addOrClickPoint(cartesian, viewer, pickedObject)
-    )
+    ),
+    terminateDrawing: () => dispatch(actions.terminateDrawing()),
+    terminateKeepoutDrawing: () => dispatch(actions.terminateKeepoutDrawing()),
   };
 };
 

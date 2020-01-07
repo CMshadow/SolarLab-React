@@ -21,6 +21,14 @@ const LeftClickHandler = (props) => {
           props.terminateDrawing();
           props.setUIStateFoundDrew();
           props.enableRotate();
+        } else if (
+          props.drawingFoundPolyline.points.slice(1,).map(p => p.entityId)
+          .reduce((include, id) => {
+            include = pickedObjectIdArray.includes(id) ? true : include;
+            return include;
+          }, false)
+        ) {
+          break;
         } else {
           props.disableRotate();
           props.addPointOnPolyline(event.position, props.viewer);
@@ -48,6 +56,14 @@ const LeftClickHandler = (props) => {
             ) {
               props.terminateKeepoutDrawing();
               props.setUIStateEditingKeepout();
+            } else if (
+              props.drawingKeepoutPolyline.points.slice(1,).map(p => p.entityId)
+              .reduce((include, id) => {
+                include = pickedObjectIdArray.includes(id) ? true : include;
+                return include;
+              }, false)
+            ) {
+              break;
             } else {
               props.disableRotate();
               props.addPointOnKeepoutPolyline(event.position, props.viewer);

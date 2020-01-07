@@ -365,31 +365,23 @@ const treeKeepoutDailyShadow = (
   keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio,
   treeCenter, treeRadius
 ) => {
-  console.log('treeCenter')
-  console.log(treeCenter)
-  const PointCount = {};
   // 一天中每个时段一个阴影节点Points array
-  const allShadowPoints = daily_s_vec.flatMap(s_vec => {
+  const allTreeShadowPts = daily_s_vec.flatMap(s_vec => {
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
     const treePoints = generateTreePolygon(treeCenter, treeRadius, s_ratio, s_vec);
-    const trunkPoints = generateTreePolygon(treeCenter, treeRadius / 10, s_ratio, s_vec);
-    const shadow = projectTreeOnPlane(
-      treeCenter, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio
-    ).filter(s => s.length > 0);
-    shadow.forEach(s =>
-      s.forEach(p => {
-        p.getCoordinate(true) in PointCount ?
-        PointCount[p.getCoordinate(true)] += 1 :
-        PointCount[p.getCoordinate(true)] = 1
-      })
-    );
-    return shadow.filter(s => s.length > 0);
+    const treeShadow = projectTreeOnPlane(
+      treeCenter, treePoints, null, foundationPoints, plane_equation, s_ratio
+    )
+    return treeShadow.filter(s => s.length > 0);
   });
+  const treeComplementShadowPts = allTreeShadowPts[0].map((p,i) => {
+    const complement = allTreeShadowPts.map(pts => pts[i]);
+    complement.push(treeCenter);
+    complement.splice(0, 0, treeCenter);
+    return complement;
+  }).filter(comp => !new Polyline(comp).isSelfIntersection());
 
-  const complementShadowPoints =
-    findComplementShadowPoints(allShadowPoints, PointCount);
-
-  return allShadowPoints.concat(complementShadowPoints);
+  return allTreeShadowPts.concat(treeComplementShadowPts)
 }
 
 const findComplementShadowPoints = (allShadowPoints, PointCount) => {
