@@ -669,7 +669,7 @@ class SetUpPVPanel extends Component {
               tab={
                 this.props.workingBuilding.type === 'FLAT' ?
                 <FormattedMessage id='max_panels' /> :
-                'Roof Direction'
+                <FormattedMessage id='roofDirection' />
               }
               key="max"
             >

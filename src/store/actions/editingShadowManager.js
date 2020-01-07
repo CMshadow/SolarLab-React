@@ -365,7 +365,8 @@ const treeKeepoutDailyShadow = (
   keepoutPoints, foundationPoints, plane_equation, daily_s_vec, ratio,
   treeCenter, treeRadius
 ) => {
-
+  console.log('treeCenter')
+  console.log(treeCenter)
   const PointCount = {};
   // 一天中每个时段一个阴影节点Points array
   const allShadowPoints = daily_s_vec.flatMap(s_vec => {

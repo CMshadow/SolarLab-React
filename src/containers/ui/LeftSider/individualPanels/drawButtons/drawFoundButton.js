@@ -33,7 +33,7 @@ const DrawFoundButton = (props) => {
       size='large'
       shape='round'
       block
-      loading={true}
+      disabled
     >
       <FormattedMessage id='drawingOnMap' />
     </Button>

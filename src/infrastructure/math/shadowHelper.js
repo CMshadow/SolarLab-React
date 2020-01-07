@@ -38,7 +38,9 @@ export const getPlaneEquationForPoint = (point1, point2, point3) => {
   return [a, b, c, d]; // ax + by + cz + d = 0
 }
 
-export const getPlaneEquationForCartesian = (cartesian1, cartesian2, cartesian3) => {
+export const getPlaneEquationForCartesian = (
+  cartesian1, cartesian2, cartesian3
+) => {
 
   const a = (cartesian2.y - cartesian1.y) * (cartesian3.z - cartesian1.z) -
             (cartesian2.z - cartesian1.z) * (cartesian3.y - cartesian1.y);
@@ -54,7 +56,9 @@ export const getPlaneEquationForCartesian = (cartesian1, cartesian2, cartesian3)
   return [a, b, c, d]; // ax + by + cz + d = 0
 }
 
-export const getPlaneLineIntersectPointPosition = (point1, point2, plane_equation) => {
+export const getPlaneLineIntersectPointPosition = (
+  point1, point2, plane_equation
+) => {
   const l1 = point2.lon - point1.lon;
   const l2 = point2.lat - point1.lat;
   const l3 = point2.height - point1.height;
@@ -123,7 +127,9 @@ export const getShadowLineForPoint = (point, s_ratio, plane_equation) => {
   return [plane_point1, plane_point2]
 }
 
-export const getParallelogramsForPlane = (point_list, s_ratio, plane_equation) => {
+export const getParallelogramsForPlane = (
+  point_list, s_ratio, plane_equation
+) => {
   if (point_list.length <= 1) return null;
   const point_pair_list = point_list.map(p =>
     getShadowLineForPoint(p, s_ratio, plane_equation)
@@ -210,8 +216,12 @@ export const projectPlaneOnAnother = (
   }
 }
 
-export const projectTreeOnPlane = (center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio) => {
-  let shadowPoints = treePoints.map(p => getShadowLineForPoint(p, s_ratio, plane_equation)[1]);
+export const projectTreeOnPlane = (
+  center, treePoints, trunkPoints, foundationPoints, plane_equation, s_ratio
+) => {
+  let shadowPoints = treePoints.map(p =>
+    getShadowLineForPoint(p, s_ratio, plane_equation)[1]
+  );
   shadowPoints.push(shadowPoints[0]);
   // console.log(shadowPoints)
   // console.log(trunkPoints.flatMap(p=>p.getCoordinate(true)))
@@ -240,7 +250,9 @@ export const projectTreeOnPlane = (center, treePoints, trunkPoints, foundationPo
   }
 }
 
-export const getSphereLineIntersection = (center_cartesian, radius, vx, vy, vz) => {
+export const getSphereLineIntersection = (
+  center_cartesian, radius, vx, vy, vz
+) => {
   const cx = center_cartesian.x;
   const cy = center_cartesian.y;
   const cz = center_cartesian.z;
@@ -335,7 +347,9 @@ export const rotatePoint = (T, Rx, Ry, Rz, current) => {
   return result;
 }
 
-export const rotatePointWrapper = (vx, vy, vz, center_cartesian, current_matrix, theta) => {
+export const rotatePointWrapper = (
+  vx, vy, vz, center_cartesian, current_matrix, theta
+) => {
   const mod = Math.sqrt(vx * vx + vy * vy + vz * vz);
 
   const a = vx / mod;
@@ -429,9 +443,12 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
       [result_cartesian_list[i].z],
       [1]
     ];
-    const new_matrix = rotatePointWrapper(vx, vy, vz, center_cartesian, current_matrix, theta);
-    result_cartesian_list.push(
-      new Cesium.Cartesian3(new_matrix[0][0], new_matrix[1][0], new_matrix[2][0]));
+    const new_matrix = rotatePointWrapper(
+      vx, vy, vz, center_cartesian, current_matrix, theta
+    );
+    result_cartesian_list.push(new Cesium.Cartesian3(
+      new_matrix[0][0], new_matrix[1][0], new_matrix[2][0]
+    ));
   }
 
   const result_point_list = [];
@@ -450,7 +467,11 @@ export const generateTreePolygon = (centerPoint, radius, s_ratio, s_vec) => {
       Cesium.Math.toDegrees(temp.latitude).toFixed(12)
     );
     result_point_list.push(
-        cartesianToPoint(result_cartesian_list[i].x, result_cartesian_list[i].y, result_cartesian_list[i].z)
+      cartesianToPoint(
+        result_cartesian_list[i].x,
+        result_cartesian_list[i].y,
+        result_cartesian_list[i].z
+      )
     );
   }
 
