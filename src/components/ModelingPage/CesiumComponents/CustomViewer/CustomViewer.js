@@ -13,12 +13,13 @@ const bingMap = new Cesium.BingMapsImageryProvider({
 });
 
 const aMap = new Cesium.UrlTemplateImageryProvider({
-  url: 'https://wprd01.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=6',
+  url: 'https://webst01.is.autonavi.com/appmaptile?x={x}&y={y}&z={z}&lang=zh_cn&size=1&scl=1&style=6',
   maximumLevel: 18
 });
 
 const googleMap = new Cesium.UrlTemplateImageryProvider({
-  url: 'https://www.google.cn/maps/vt?lyrs=s&hl=zh-CN&x={x}&y={y}&z={z}',
+  url: 'https://mt{s}.google.cn/vt/?lyrs=s&hl=zh-CN&x={x}&y={y}&z={z}',
+  subdomains: ['1', '2', '3'],
   maximumLevel: 20
 });
 
