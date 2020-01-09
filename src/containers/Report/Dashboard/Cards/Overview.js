@@ -19,7 +19,7 @@ class Overview extends Component {
 
     render () {
         return (
-            <Col span={this.props.span * 6} style={{ padding: 8 }}>
+            <Col span={24}>
                 <Card
                     style={{ height: '100%', cursor: 'default' }}
                     hoverable={ true }
@@ -28,8 +28,8 @@ class Overview extends Component {
                     <Title>{ this.props.metadata.loaded ? this.props.metadata.option.data['Project_Name'] : 'Loading...' }</Title>
                     <Divider />
 
-                    <Row type="flex">
-                        <Col span={18} style={{ paddingRight: 8 }}>
+                    <Row type="flex" gutter={[16, 16]}>
+                        <Col span={18}>
                             { this.props.metadata.loaded &&
                             <Descriptions title="Overview" size='small' layout="vertical" bordered>
                                 <Descriptions.Item label={<b>Project Name</b>} >{ this.props.metadata.option.data['Project_Name'] }</Descriptions.Item>
@@ -42,7 +42,7 @@ class Overview extends Component {
                             </Descriptions> }
                         </Col>
 
-                        <Col span={6} style={{ paddingLeft: 8 }}>
+                        <Col span={6}>
                             <Descriptions title="Layout" />
                             <Skeleton loading={ !this.state.isImageLoaded } active />
                         </Col>

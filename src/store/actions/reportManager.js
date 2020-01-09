@@ -315,6 +315,7 @@ export const request_pv_production = () => (dispatch, getState) => {
     yAxis.axisLabel = {
       formatter: (value) => (Numeral(value).format('0 a') + 'Wh')
     };
+    const grid = { left: '20%' };
 
     let current_series;
 
@@ -328,6 +329,7 @@ export const request_pv_production = () => (dispatch, getState) => {
     load_option.yAxis = yAxis;
     load_option.series = series;
     load_option.tooltip = tooltip;
+    load_option.grid = grid
     load_option.title = {
       text: 'Monthly PV Production',
       x: 'center',
