@@ -58,7 +58,7 @@ class SketchDiagram extends Component {
         <Stage
           ref="stage"
           style={{position: "absolute", top: 64, left: 0, right: 0, bottom: 0}}
-          height={window.innerHeight}
+          height={window.innerHeight - 64}
           width={window.innerWidth}
         />
       </Aux>

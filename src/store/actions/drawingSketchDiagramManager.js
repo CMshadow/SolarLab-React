@@ -10,78 +10,22 @@ import * as actionTypes from './actionTypes';
 export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) => (dispatch, getState) => {
     let currentBuilding = getState().buildingManagerReducer
     .workingBuilding;
+
     let currentBuildingPara = getState().buildingManagerReducer
     .buildingInfoFields;
 
     let keekoutCollections = getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer;
 
-
-    // console.log(currentBuilding)
-    // console.log(currentBuildingPara)
     let size_times = 5;
     let gradient = 50;
 
-    let backgroundColor = new Konva.Rect({
-      x: 0,
-      y: 0,
-      width: window.innerWidth * size_times,
-      height: window.innerHeight * size_times,
-      fill: '#15152e',
-    });
-
-    layer.add(backgroundColor);
-
-    for (let i = 0; i < window.innerHeight * size_times / 50; ++i) {
-        let gridHorizontalLine = new Konva.Line({
-            points: [0, i * 50 , window.innerWidth * size_times, i * 50],
-            stroke: '#7b7b85',
-            strokeWidth: 1.5,
-            lineCap: 'round',
-            lineJoin: 'round'
-        });
-        layer.add(gridHorizontalLine);
-    }
-    for (let i = 0; i < window.innerHeight * size_times / 10; ++i) {
-        let gridHorizontalLine2 = new Konva.Line({
-            points: [0, i * 10 , window.innerWidth * size_times, i * 10],
-            stroke: '#3f3f4c',
-            strokeWidth: 1,
-            lineCap: 'round',
-            lineJoin: 'round'
-        });
-        layer.add(gridHorizontalLine2);
-    }
-    for (let j = 0; j < window.innerWidth * size_times / 50; ++j) {
-        let gridVerticalLine = new Konva.Line({
-            points: [j * 50, 0 , j * 50, window.innerHeight * size_times],
-            stroke: '#7b7b85',
-            strokeWidth: 1.5,
-            lineCap: 'round',
-            lineJoin: 'round'
-        });
-        layer.add(gridVerticalLine);
-    }
-    for (let j = 0; j < window.innerWidth * size_times / 10; ++j) {
-        let gridVerticalLine2 = new Konva.Line({
-            points: [j * 10, 0 , j * 10, window.innerHeight * size_times],
-            stroke: '#3f3f4c',
-            strokeWidth: 1,
-            lineCap: 'round',
-            lineJoin: 'round'
-        });
-        layer.add(gridVerticalLine2);
-    }
-
-
+    backgroundGrids(layer, size_times); 
+    
     if (currentBuilding != null) {
-      console.log("building 2d")
       let AutoScale = null;
       let startPosition = null;
       let startPosition_stage = null;
       if (currentBuildingPara.type === 'FLAT') {
-        console.log("Flat Building")
-
-        // console.log("wiring: "+currentBuilding.getWiringCoordinates());
         startPosition = currentBuilding.getRoofCoordinates()[0][0];
 
         let BuildingRoof = mathHelp.convertFlatFoundationto2D(currentBuilding.getRoofCoordinates()[0]);
@@ -98,8 +42,41 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
 
         let WiringCollection = mathHelp.convertWiringto2D(startPosition, currentBuilding.getWiringCoordinates());
         let buildingWiringCollection = drawWiring(group, WiringCollection[0], WiringCollection[1], AutoScale, buildingOutline.startNodePosition);
+        //Inverter
+        const allInverters = Object.keys(currentBuilding.inverters)
+        .flatMap(roofIndex =>
+          currentBuilding.inverters[roofIndex].map(inverter => inverter)
+        );
+        allInverters.forEach(element => {
 
-
+          if (element !== null && element.bridging !== null) {
+            console.log(element.bridging)
+            element.bridging.forEach(bridging => {
+              if (bridging.subPolyline !== null) {
+                bridging.subPolyline.forEach(subLine => {
+                  let subBridgeLine = mathHelp.covnertSubPolylineto2D(startPosition,subLine.getPointsCoordinatesArray());
+                  let buidlingInveterSubBridgeLine = drawInlineBridge(group, subBridgeLine[0], subBridgeLine[1], AutoScale, buildingOutline.startNodePosition);
+                })
+              }
+              if (bridging.mainPolyline != null) {
+                // console.log("main line of each inverer")
+                // console.log(bridging.mainPolyline);
+                let BridgeLine = mathHelp.covnertBridgeMainPolylineto2D(startPosition,bridging.mainPolyline.getPointsCoordinatesArray());
+                let buidlingInveterSubBridgeLine = drawBridgeLine(group, BridgeLine[0], BridgeLine[1], AutoScale, buildingOutline.startNodePosition);
+              }
+            })
+            // console.log(element.polygonCenter.getCoordinate())
+            // let inverter = mathHelp.covnertSubPolylineto2D(startPosition, element.bridging);
+            // console.log(inverter);
+            // let buildingInvertersCollection = drawInventer(group, inverter[0], inverter[1], AutoScale, startPosition_stage);
+          }
+          console.log("inverter")
+          if (element !== null && element.polygonCenter !== null) {
+            let inverter = mathHelp.convertInverterto2D(startPosition, element.polygonCenter.getCoordinate());
+            let buildingInvertersCollection = drawInventer(group, inverter[0], inverter[1], AutoScale, buildingOutline.startNodePosition);
+          }
+          
+        })
 
       }
       if (currentBuilding.type === "PITCHED") {
@@ -126,6 +103,30 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         let buildingPanelArrays = drawSolarPanel(group, SolarPanelArrays[0], SolarPanelArrays[1], AutoScale, startPosition_stage);
         let WiringCollection = mathHelp.convertWiringto2D(startPosition, currentBuilding.getWiringCoordinates());
         let buildingWiringCollection = drawWiring(group, WiringCollection[0], WiringCollection[1], AutoScale, startPosition_stage);
+
+        //Inverter
+        // const allInverters = Object.keys(currentBuilding.inverters)
+        // .flatMap(roofIndex =>
+        //   currentBuilding.inverters[roofIndex].map(inverter => inverter)
+        // );
+        // allInverters.forEach(element => {
+        //   console.log("inverter")
+        //   if (element !== null && element.polygonCenter !== null) {
+        //     // console.log(element.polygonCenter.getCoordinate())
+        //     let inverter = mathHelp.convertInverterto2D(startPosition, element.polygonCenter.getCoordinate());
+        //     // console.log(inverter);
+        //     let buildingInvertersCollection = drawInventer(group, inverter[0], inverter[1], AutoScale, startPosition_stage);
+        //   }
+        //   if (element !== null && element.bridging !== null) {
+        //     console.log(element.bridging)
+            
+        //     // console.log(element.polygonCenter.getCoordinate())
+        //     // let inverter = mathHelp.covnertSubPolylineto2D(startPosition, element.bridging);
+        //     // console.log(inverter);
+        //     // let buildingInvertersCollection = drawInventer(group, inverter[0], inverter[1], AutoScale, startPosition_stage);
+        //   }
+          
+        // })
       }
 
       if (keekoutCollections.normalKeepout.length > 0) {
@@ -261,7 +262,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
       layer.add(group);
       let Monthly_Irradiance_List = [64.5, 91.6, 120, 149.4, 166.0, 152.9, 146.6, 130.2, 119.7, 90.4, 67.9, 53.8];
       drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient, [710, 1820]);
-      HistogramDispaly(layer, window.innerWidth, window.innerHeight, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
+      HistogramDispaly(layer, window.innerWidth, window.innerHeight - 64, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
       // layer.add(group);
     }
      
@@ -274,6 +275,62 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
     layer: layer
   });
 }
+
+export const backgroundGrids = (layer, size_times) => {
+
+  let backgroundColor = new Konva.Rect({
+    x: 0,
+    y: 0,
+    width: window.innerWidth * size_times,
+    height: window.innerHeight * size_times,
+    fill: '#15152e',
+  });
+
+  layer.add(backgroundColor);
+
+  for (let i = 0; i < window.innerHeight * size_times / 50; ++i) {
+      let gridHorizontalLine = new Konva.Line({
+          points: [0, i * 50 , window.innerWidth * size_times, i * 50],
+          stroke: '#7b7b85',
+          strokeWidth: 1.5,
+          lineCap: 'round',
+          lineJoin: 'round'
+      });
+      layer.add(gridHorizontalLine);
+  }
+  for (let i = 0; i < window.innerHeight * size_times / 10; ++i) {
+      let gridHorizontalLine2 = new Konva.Line({
+          points: [0, i * 10 , window.innerWidth * size_times, i * 10],
+          stroke: '#3f3f4c',
+          strokeWidth: 1,
+          lineCap: 'round',
+          lineJoin: 'round'
+      });
+      layer.add(gridHorizontalLine2);
+  }
+  for (let j = 0; j < window.innerWidth * size_times / 50; ++j) {
+      let gridVerticalLine = new Konva.Line({
+          points: [j * 50, 0 , j * 50, window.innerHeight * size_times],
+          stroke: '#7b7b85',
+          strokeWidth: 1.5,
+          lineCap: 'round',
+          lineJoin: 'round'
+      });
+      layer.add(gridVerticalLine);
+  }
+  for (let j = 0; j < window.innerWidth * size_times / 10; ++j) {
+      let gridVerticalLine2 = new Konva.Line({
+          points: [j * 10, 0 , j * 10, window.innerHeight * size_times],
+          stroke: '#3f3f4c',
+          strokeWidth: 1,
+          lineCap: 'round',
+          lineJoin: 'round'
+      });
+      layer.add(gridVerticalLine2);
+  }
+}
+
+
 
 export const drawFlatBuildingOutline = (layer, AngleList, DistanceList, scale, screenWidth, screenHeight) => {
     let verticesList = [screenWidth * 0.45, screenHeight * 0.05];
@@ -431,6 +488,41 @@ export const drawWiring = (layer, wiring_AngleList, wiring_DistList, scale, star
   });
 }
 
+export const drawInlineBridge = (layer, Inline_Bridge_Angle, Inline_Bridge_Dist, scale, start) => {
+  let verticesList = [];
+  for(let i = 0; i < Inline_Bridge_Angle.length; i++){
+    let nextPosition = mathHelp.calculateNextPosition(Inline_Bridge_Angle[i],Inline_Bridge_Dist[i]*scale,start[0], start[1]);
+      verticesList.push(nextPosition[0], nextPosition[1]);
+  }
+  let poly = new Konva.Line({
+      points: verticesList,
+    stroke: '#42b0f4',
+    strokeWidth: 3,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  layer.add(poly);
+    
+}
+
+export const drawBridgeLine = (layer, Inline_Bridge_Angle, Inline_Bridge_Dist, scale, start) => {
+  let verticesList = [];
+  for(let i = 0; i < Inline_Bridge_Angle.length; i++){
+    let nextPosition = mathHelp.calculateNextPosition(Inline_Bridge_Angle[i],Inline_Bridge_Dist[i]*scale,start[0], start[1]);
+      verticesList.push(nextPosition[0], nextPosition[1]);
+  }
+  let poly = new Konva.Line({
+      points: verticesList,
+    stroke: '#42b0f4',
+    strokeWidth: 3,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  layer.add(poly);
+    
+}
+
+
 export const drawKeepOut = (layer, AngleList, DistanceList, scale, start) => {
   let verticesList = [];
   for(let i = 0; i < AngleList.length; i++){
@@ -515,70 +607,70 @@ export const drawParapetShadow = (layer,AngleList, DistanceList, scale, start, c
           start[0], start[1] );
       verticesList.push(nextPosition[0], nextPosition[1]);
   }
-  let colorFull = mathHelp.calculateGradientColor(gradient);
-  console.log("color: "+colorFull)
-  let poly = new Konva.Line({
-      points: verticesList,
-      fill: '#636363',
-      stroke: '#84848a',
-      strokeWidth: 0,
-      closed : true,
-      opacity: 0.5
-  });
-  layer.add(poly);
+  // let colorFull = mathHelp.calculateGradientColor(gradient);
+  // console.log("color: "+colorFull)
+  // let poly = new Konva.Line({
+  //     points: verticesList,
+  //     fill: '#636363',
+  //     stroke: '#84848a',
+  //     strokeWidth: 0,
+  //     closed : true,
+  //     opacity: 0.5
+  // });
+  // layer.add(poly);
 
-  // let centerNodesList = [];
-  // for(let i = 0; i < centerNodesAngles.length; i++){
-  //   let nextPosition = mathHelp.calculateNextPosition(centerNodesAngles[i],centerNodesDist[i]*scale,
-  //       start[0], start[1] );
-  //   centerNodesList.push(nextPosition[0], nextPosition[1]);
-  //   // var circle = new Konva.Circle({
-  //   //   x: nextPosition[0],
-  //   //   y: nextPosition[1],
-  //   //   radius: 5,
-  //   //   fill: 'red',
-  //   //   stroke: 'black',
-  //   //   strokeWidth: 4
-  //   // });
+  let centerNodesList = [];
+  for(let i = 0; i < centerNodesAngles.length; i++){
+    let nextPosition = mathHelp.calculateNextPosition(centerNodesAngles[i],centerNodesDist[i]*scale,
+        start[0], start[1] );
+    centerNodesList.push(nextPosition[0], nextPosition[1]);
+    // var circle = new Konva.Circle({
+    //   x: nextPosition[0],
+    //   y: nextPosition[1],
+    //   radius: 5,
+    //   fill: 'red',
+    //   stroke: 'black',
+    //   strokeWidth: 4
+    // });
 
-  //   // // add the shape to the layer
-  //   // layer.add(circle);
-  //   let newCoordXY = [];
-  //   for (let k = 0; k < verticesList.length; k+=2) {
-  //     let newCoordX = null;
-  //     let newCoordY = null;
-  //     // if(k <= (verticesList.length / 2)) {
-  //     //   newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],centerNodesList[0], gradient);
-  //     //   newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],centerNodesList[1], gradient);
-  //     // } else {
-  //       newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],nextPosition[0], gradient);
-  //       newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],nextPosition[1], gradient);
-  //     // }
+    // // add the shape to the layer
+    // layer.add(circle);
+    let newCoordXY = [];
+    for (let k = 0; k < verticesList.length; k+=2) {
+      let newCoordX = null;
+      let newCoordY = null;
+      // if(k <= (verticesList.length / 2)) {
+      //   newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],centerNodesList[0], gradient);
+      //   newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],centerNodesList[1], gradient);
+      // } else {
+        newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],nextPosition[0], gradient);
+        newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],nextPosition[1], gradient);
+      // }
 
-  //     newCoordXY.push(newCoordX);
-  //     newCoordXY.push(newCoordY);
-  //   }
-  //   for (let level = 0; level < gradient; level++) {
-  //     let newShadow = [];
-  //     for (let x = 0; x < newCoordXY.length; ++x) {
-  //       newShadow.push(newCoordXY[x][level]);
-  //     }
-  //     // newShadow.push(centerNodesAngles[0]);
-  //     // newShadow.push(centerNodesDist[0]);
-  //     //console.log(colorList[gradient-level-1]);
-  //     let poly1 = new Konva.Line({
-  //         points: newShadow,
-  //         fill: colorFull[level],
-  //         stroke: '#84848a',
-  //         strokeWidth: 0,
-  //         closed : true,
-  //         opacity: 0 + level * (0.1 / gradient)
+      newCoordXY.push(newCoordX);
+      newCoordXY.push(newCoordY);
+    }
+    for (let level = 0; level < gradient; level++) {
+      let newShadow = [];
+      for (let x = 0; x < newCoordXY.length; ++x) {
+        newShadow.push(newCoordXY[x][level]);
+      }
+      // newShadow.push(centerNodesAngles[0]);
+      // newShadow.push(centerNodesDist[0]);
+      //console.log(colorList[gradient-level-1]);
+      let poly1 = new Konva.Line({
+          points: newShadow,
+          fill: '#ff0000',
+          stroke: '#84848a',
+          strokeWidth: 0,
+          closed : true,
+          opacity: 0 + level * (0.1 / gradient)
 
-  //     });
-  //     layer.add(poly1);
-  //   }
+      });
+      layer.add(poly1);
+    }
 
-  // }
+  }
 
 
 }
@@ -594,15 +686,15 @@ export const drawNormalShadow = (layer,AngleList, DistanceList, scale, start, ce
       verticesList.push(nextPosition[0], nextPosition[1]);
   }
   let colorFull = mathHelp.calculateGradientColor(gradient);
-  console.log("color: "+colorFull)
-  let poly = new Konva.Line({
-      points: verticesList,
-      fill: colorFull[0],
-      stroke: '#84848a',
-      strokeWidth: 0,
-      closed : true,
-      opacity: 0.5
-  });
+  // console.log("color: "+colorFull)
+  // let poly = new Konva.Line({
+  //     points: verticesList,
+  //     fill: colorFull[0],
+  //     stroke: '#84848a',
+  //     strokeWidth: 0,
+  //     closed : true,
+  //     opacity: 0.5
+  // });
   // layer.add(poly);
 
 
@@ -621,22 +713,15 @@ export const drawNormalShadow = (layer,AngleList, DistanceList, scale, start, ce
       newShadow.push(newCoordXY[x][level]);
     }
     // newShadow.push(centerNodesAngles[0]);
-    newShadow.push(centerNode);
+    // newShadow.push(centerNodesDist[0]);
     //console.log(colorList[gradient-level-1]);
-    let customizeOpacity = 0.3;
-    if (level <= 10) {
-      customizeOpacity = 0.02;
-    }
-    if (level > 10 && level < 30) {
-      customizeOpacity = 0.1 + level * ( 0.2 / 20);
-    }
     let poly1 = new Konva.Line({
         points: newShadow,
-        fill: colorFull[level],
+        fill: '#ff0000',
         stroke: '#84848a',
         strokeWidth: 0,
         closed : true,
-        opacity: customizeOpacity
+        opacity: 0.001 + level * (0.4 / gradient)
 
     });
     layer.add(poly1);
@@ -682,22 +767,15 @@ export const drawTreeShadow = (layer,AngleList, DistanceList, scale, start, cent
       newShadow.push(newCoordXY[x][level]);
     }
     // newShadow.push(centerNodesAngles[0]);
-    newShadow.push(centerPoint);
+    // newShadow.push(centerNodesDist[0]);
     //console.log(colorList[gradient-level-1]);
-    let customizeOpacity = 0.3;
-    if (level <= 10) {
-      customizeOpacity = 0.02;
-    }
-    if (level > 10 && level < 30) {
-      customizeOpacity = 0.1 + level * ( 0.2 / 20);
-    }
     let poly1 = new Konva.Line({
         points: newShadow,
-        fill: colorFull[level],
+        fill: '#ff0000',
         stroke: '#84848a',
         strokeWidth: 0,
         closed : true,
-        opacity: customizeOpacity
+        opacity: 0 + level * (0.2 / gradient)
 
     });
     layer.add(poly1);
@@ -938,8 +1016,24 @@ export const HistogramDispaly  = (layer, Histogram_X_Position, Histogram_Y_Posit
       Group.add(Histogram_Monthly_Name);
   }
   Group.add(Draw_Horizontal_Axis);
-
-
   layer.add(Group);
+}
 
+export const drawInventer = (layer, Inventer_AngleList, Inventer_DistList, scale, start) => {
+  let verticesList = [];
+  for(let i = 0; i < Inventer_AngleList.length; i++){
+    let nextPosition = mathHelp.calculateNextPosition(Inventer_AngleList[i],Inventer_DistList[i]*scale,start[0], start[1]);
+      verticesList.push(nextPosition[0], nextPosition[1]);
+
+    let poly = new Konva.Rect({
+        x: nextPosition[0] - scale * 0.5,
+        y: nextPosition[1] - scale * 0.5,
+        width: scale,
+        height: scale,
+        fill: 'white',
+        stroke: '#black',
+        strokeWidth: 1.5
+      });
+      layer.add(poly);
+    }
 }

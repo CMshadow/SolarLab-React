@@ -4,7 +4,7 @@ import { Stage, Layer, Rect, Text } from 'react-konva';
 import * as actions from './index'
 import * as actionTypes from './actionTypes';
 import { element } from 'prop-types';
-
+import gridLogo from '../../assets/images/grid.png';
 export const initStage = (layer) => (dispatch, getState) => {
   // let layer = new Konva.Layer();
   let size_times = 30;
@@ -13,14 +13,14 @@ export const initStage = (layer) => (dispatch, getState) => {
 
   let currentBuilding = getState().buildingManagerReducer
   .workingBuilding;
-  console.log("CHECK SLD")
+  // console.log("CHECK SLD")
   if (currentBuilding !== null) {
     const allInverters = Object.keys(currentBuilding.inverters)
     .flatMap(roofIndex =>
       currentBuilding.inverters[roofIndex].map(inverter => inverter)
     );
 
-    console.log(allInverters)
+    // console.log(allInverters)
     let numOfInverter = allInverters.length;
     let nextStartPosition = [280, window.innerHeight * 0.15];
     let inverterConnectList = [];
@@ -42,7 +42,7 @@ export const initStage = (layer) => (dispatch, getState) => {
         let pancelCollection = panelArrayCollection(layer, nextStartPosition ,PancelsOfInverter, currentInverter.panelPerString);
         let combinerCollection = CombinerBoxCollections(layer, nextStartPosition,pancelCollection.distance, pancelCollection.connectPoint1, pancelCollection.connectPoint2, PancelsOfInverter);
         let disconnectCellection = DisconnectCollection(layer, nextStartPosition, combinerCollection.distance, 1, PancelsOfInverter);
-        console.log(disconnectCellection.connectPoint);
+        // console.log(disconnectCellection.connectPoint);
         ConnectConbinerToDisconnect(layer, combinerCollection.connectPoints, disconnectCellection.connectPoint);
         let InvertersCollection = InverterCollection(layer, nextStartPosition ,disconnectCellection.distance, 1, disconnectCellection.numOfAccess, disconnectCellection.accessOutPoint);
 
@@ -53,7 +53,7 @@ export const initStage = (layer) => (dispatch, getState) => {
         let pancelCollection = panelArrayCollection(layer, nextStartPosition ,PancelsOfInverter,currentInverter.panelPerString);
         let combinerCollection = CombinerBoxCollections(layer, nextStartPosition,pancelCollection.distance, pancelCollection.connectPoint1, pancelCollection.connectPoint2, PancelsOfInverter);
         let disconnectCellection = DisconnectCollection(layer, nextStartPosition, combinerCollection.distance, 1, PancelsOfInverter);
-        console.log(disconnectCellection.connectPoint);
+        // console.log(disconnectCellection.connectPoint);
         ConnectConbinerToDisconnect(layer, combinerCollection.connectPoints, disconnectCellection.connectPoint);
         let InvertersCollection = InverterCollection(layer, nextStartPosition ,disconnectCellection.distance, 1, disconnectCellection.numOfAccess, disconnectCellection.accessOutPoint);
         nextStartPosition = pancelCollection.startPosition;
@@ -69,17 +69,15 @@ export const initStage = (layer) => (dispatch, getState) => {
     let ServerPanelComponent = ServerPanel(layer, AC_Disconnectc_Component.distance, AC_Disconnectc_Component.connectPoint);
     let MeterComponent = Meter(layer, ServerPanelComponent.distance, ServerPanelComponent.connectPoint);
     stageSize[0] = MeterComponent.maxWidth;
-    // let pancelCollection = panelArrayCollection(layer, startPosition, 4);
-    // let combinerCollection = CombinerBoxCollections(layer, pancelCollection.startPosition,pancelCollection.distance, pancelCollection.connectPoint1, pancelCollection.connectPoint2, 4);
-    // let disconnectCellection = DisconnectCollection(layer, combinerCollection.distance, 5, 4);
-    // let InvertersCollection = InverterCollection(layer, disconnectCellection.distance, numOfInverter, disconnectCellection.numOfAccess, disconnectCellection.connectPoint);
-    // let inverterConnecterComponent = InterConnecter(layer, InvertersCollection.distance, InvertersCollection.connectPoint );
-    // let AC_Disconnectc_Component = ACDisconnect(layer, inverterConnecterComponent.distance, inverterConnecterComponent.connectPoint);
-    // let ServerPanelComponent = ServerPanel(layer, AC_Disconnectc_Component.distance, AC_Disconnectc_Component.connectPoint);
-    // let MeterComponent = Meter(layer, ServerPanelComponent.distance, ServerPanelComponent.connectPoint);
+
 
   }
-
+  if (stageSize[0] < window.innerWidth) {
+    stageSize[0] = window.innerWidth;
+  }
+  if (stageSize[1] < window.innerHeight) {
+    stageSize[1] = window.innerHeight;
+  }
   return dispatch({
     type: actionTypes.INIT_STAGE,
     stageWidth: stageSize[0],
@@ -826,7 +824,7 @@ export const DisconnectCollection = (layer, startPosition, distance, numOfDiscon
   let w_min = 50;
   let h_min = 65 + (inverterAccess - 2) * 15;
   let stroke_Width = 2;
-  let font_size = Math.floor(h_min / 7);
+  let font_size = Math.floor(w_min / 5);
   let nextDistance = 0;
   let circleAccessInList = [];
   let circleAccessOutList = [];
@@ -1592,7 +1590,7 @@ export const Meter = (layer, distance, connectPoint) => {
     x: startX + w_min * 0.5, 
     y: startY + h_min * 0.5,
     radius: w_min * 0.35,
-    // fill: 'white',
+    fill: 'white',
     stroke: 'white',
     strokeWidth: stroke_Width
   });
