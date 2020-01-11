@@ -13,6 +13,7 @@ import CesiumRender from './CesiumComponents/CesiumRenders/CesiumRender';
 import LeftSider from '../../containers/ui/LeftSider/LeftSider';
 import RightSider from '../../containers/ui/RightSider/RightSider';
 import CustomContextMenu from '../ui/CustomContextMenu/CustomContextMenu';
+import CesiumNavigator from './CesiumComponents/CesiumNavigator/CesiumNavigator';
 
 const { Content } = Layout;
 
@@ -36,6 +37,7 @@ const ModelingPage = (props) => {
         <LeftSider />
       </Content>
       <RightSider />
+      <CesiumNavigator/>
     </Layout>
   );
 };
