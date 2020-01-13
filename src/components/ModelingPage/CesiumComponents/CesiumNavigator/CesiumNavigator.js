@@ -1,8 +1,5 @@
-import React from 'react';
 import { connect } from 'react-redux';
-import * as Cesium from 'cesium';
 import CesiumNavigation from 'cesium-navigation-es6';
-
 
 const CesiumNavigator = (props) => {
   const options = {

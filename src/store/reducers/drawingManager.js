@@ -245,13 +245,17 @@ const setHoverPolyline = (state, action) => {
 };
 
 const releaseHoverPolyline = (state, action) => {
-  const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
-  newPolyline.setColor(Cesium.Color.WHITE);
-  return {
-    ...state,
-    drawingPolyline: newPolyline,
-    hoverPolyline: false
-  };
+  if (state.hoverPolyline) {
+    const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
+    newPolyline.setColor(Cesium.Color.WHITE);
+    return {
+      ...state,
+      drawingPolyline: newPolyline,
+      hoverPolyline: false
+    };
+  } else {
+    return state;
+  }
 };
 
 const setHoverPointIndex = (state, action) => {
@@ -265,13 +269,17 @@ const setHoverPointIndex = (state, action) => {
 };
 
 const releaseHoverPointIndex = (state, action) => {
-  const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
-  newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.WHITE);
-  return {
-    ...state,
-    drawingPolyline: newPolyline,
-    hoverPointIndex: null
-  };
+  if (state.hoverPointIndex !== null) {
+    const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
+    newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.WHITE);
+    return {
+      ...state,
+      drawingPolyline: newPolyline,
+      hoverPointIndex: null
+    };
+  } else {
+    return state;
+  }
 };
 
 const setPickedPointIndex = (state, action) => {

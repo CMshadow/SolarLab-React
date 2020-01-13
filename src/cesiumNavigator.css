@@ -1,0 +1,7 @@
+.compass {
+  right: 100px;
+}
+
+body cesium-viewer compass compass-outer-ring compass-outer-ring-background {
+  fill: black;
+}

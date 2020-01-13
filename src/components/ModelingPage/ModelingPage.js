@@ -32,12 +32,12 @@ const ModelingPage = (props) => {
             <CesiumEventHandlers />
             <CesiumRender />
           </CustomViewer>
+          <CesiumNavigator/>
         </ContextMenuTrigger>
         <CustomContextMenu />
         <LeftSider />
       </Content>
       <RightSider />
-      <CesiumNavigator/>
     </Layout>
   );
 };

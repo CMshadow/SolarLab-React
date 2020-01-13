@@ -7,7 +7,8 @@ import thunk from 'redux-thunk';
 import undoable, { includeAction } from 'redux-undo';
 
 import './index.css';
-import './ContextMenu.css';
+import './contextMenu.css';
+import './cesiumNavigator.css'
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import * as actionTypes from './store/actions/actionTypes';
