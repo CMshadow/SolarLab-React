@@ -1,12 +1,14 @@
-import { Menu } from 'antd';
+import { Menu, Avatar } from 'antd';
 import React, { Component } from 'react';
 import 'antd/dist/antd.css';
 import { connect } from 'react-redux';
 import { Route, Switch, withRouter } from 'react-router-dom';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../store/actions/index';
 import './NavigationBar.css';
-import { FormattedMessage } from 'react-intl';
+
+const { SubMenu } = Menu;
 
 class NavigationBar extends Component{
   generateReportJSON = (building, roofIndex) => {
@@ -185,6 +187,17 @@ class NavigationBar extends Component{
         >
           <FormattedMessage id='report' />
         </Menu.Item>
+        <SubMenu
+          title={
+            <Avatar
+              style={{backgroundColor: '#f56a00', verticalAlign: 'middle'}}
+            >U</Avatar>
+          }
+          style={{ float: 'right' }}
+        >
+          <Menu.Item key="setting:3">Option 1</Menu.Item>
+          <Menu.Item key="setting:4">Option 2</Menu.Item>
+        </SubMenu>
       </Menu>
     )
   }
