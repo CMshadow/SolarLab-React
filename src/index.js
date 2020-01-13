@@ -7,7 +7,8 @@ import thunk from 'redux-thunk';
 import undoable, { includeAction } from 'redux-undo';
 
 import './index.css';
-import './ContextMenu.css';
+import './contextMenu.css';
+import './cesiumNavigator.css'
 import App from './App';
 import * as serviceWorker from './serviceWorker';
 import * as actionTypes from './store/actions/actionTypes';
@@ -26,9 +27,14 @@ import keepoutManagerReducer from './store/reducers/keepoutManager';
 import projectManagerReducer from './store/reducers/projectManager';
 import drawingPolygonManagerReducer from './store/reducers/drawingPolygonManager';
 import drawingKeepoutPolygonManagerReducer from './store/reducers/drawingKeepoutPolygonManager';
+import editingPVPanelManagerReducer from './store/reducers/editingPVPanelManager';
+import editingWiringManager from './store/reducers/editingWiringManager';
 import debugRenderReducer from './store/reducers/debugRender';
 import drawingRooftopManagerReducer from './store/reducers/drawingRooftopManager';
-
+import editingShadowManager from './store/reducers/editingShadowManager';
+import drawingSketchDiagramManagerReducer from './store/reducers/drawingSketchDiagramManager';
+import drawingSingleLineDiagramReducer from './store/reducers/drawingSingleLineDiagramManager';
+import reportManager from './store/reducers/reportManager';
 // IMPORT MORE REDBUX REDUCERS OVER HERE
 
 /*
@@ -46,6 +52,8 @@ const rootReducer = combineReducers({
   buildingManagerReducer: buildingManagerReducer,
   keepoutManagerReducer: keepoutManagerReducer,
   debugRenderReducer:debugRenderReducer,
+  drawingSketchDiagramManagerReducer,
+  drawingSingleLineDiagramReducer,
   undoableReducer: undoable(combineReducers({
     drawingManagerReducer: drawingManagerReducer,
     drawingInnerManagerReducer: drawingInnerManagerReducer,
@@ -53,9 +61,13 @@ const rootReducer = combineReducers({
     drawingKeepoutManagerReducer: drawingKeepoutManagerReducer,
     drawingPolygonManagerReducer: drawingPolygonManagerReducer,
     drawingKeepoutPolygonManagerReducer: drawingKeepoutPolygonManagerReducer,
-    drawingRooftopManagerReducer: drawingRooftopManagerReducer
+    drawingRooftopManagerReducer: drawingRooftopManagerReducer,
+    editingShadowManager: editingShadowManager,
+    editingPVPanelManagerReducer: editingPVPanelManagerReducer,
+    editingWiringManager: editingWiringManager,
+    reportManager: reportManager
   }), {
-    initTypes: [actionTypes.SET_VIEWER],
+    initTypes: ['@@redux/INIT'],
     filter: includeAction([
       actionTypes.CLICK_ADD_POINT_ON_POLYLINE,
       actionTypes.CLICK_COMPLEMENT_POINT_ON_POLYLINE,

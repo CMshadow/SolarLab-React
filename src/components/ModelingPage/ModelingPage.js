@@ -13,6 +13,7 @@ import CesiumRender from './CesiumComponents/CesiumRenders/CesiumRender';
 import LeftSider from '../../containers/ui/LeftSider/LeftSider';
 import RightSider from '../../containers/ui/RightSider/RightSider';
 import CustomContextMenu from '../ui/CustomContextMenu/CustomContextMenu';
+import CesiumNavigator from './CesiumComponents/CesiumNavigator/CesiumNavigator';
 
 const { Content } = Layout;
 
@@ -22,8 +23,13 @@ const ModelingPage = (props) => {
       <Content>
         <ContextMenuTrigger id="cesium_context_menu">
           <CustomViewer enableTerrain={false}>
+            <CesiumNavigator/>
             <CesiumScreenSpaceCameraController />
-            <FlyTo flyTo={props.initialCor} />
+            <FlyTo flyTo={[
+              props.projectInfo.projectLon,
+              props.projectInfo.projectLat,
+              props.projectInfo.projectZoom]}
+            />
             <CesiumEventHandlers />
             <CesiumRender />
           </CustomViewer>
@@ -38,7 +44,7 @@ const ModelingPage = (props) => {
 
 const mapStateToProps = state => {
   return {
-    initialCor: state.cesiumReducer.initialCor,
+    projectInfo: state.projectManagerReducer.projectInfo,
   };
 }
 

@@ -6,7 +6,7 @@ class DeletePointContextMenu extends Component {
     return (
       <ContextMenu
         id="cesium_context_menu"
-        hideOnLeave={true}
+        hideOnLeave={false}
       >
         <MenuItem
           onClick={this.props.deleteFunction}

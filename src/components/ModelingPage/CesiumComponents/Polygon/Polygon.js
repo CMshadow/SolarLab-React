@@ -4,7 +4,7 @@ import * as Cesium from 'cesium';
 
 
 
-/* 
+/*
     Polygon: Create Basic 3D Polygon
 */
 
@@ -17,7 +17,7 @@ const polygonVisualize = (props) => {
 				hierarchy: Cesium.Cartesian3.fromDegreesArrayHeights(props.hierarchy),
 				perPositionHeight: props.perPositionHeight,
 				extrudedHeight: props.extrudedHeight,
-				outline: false,
+				outline: props.name === 'roofPlane' ? true : false,
 				outlineColor: props.outlineColor,
 				outlineWidth: props.outlineWidth,
 				material: props.material,

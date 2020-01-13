@@ -5,6 +5,7 @@ import {
   Row,
   Button,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../store/actions/index';
 
@@ -21,13 +22,13 @@ class LockMap extends PureComponent {
 
   render () {
     return (
-      <Row>
+      <Row style={{top:'20px'}}>
         <Tooltip
           placement='bottomRight'
           title={
             this.props.enableRotateStatus ?
-            'Lock moving map' :
-            'Unlock moving map'
+            <FormattedMessage id='lockMovingMap'/> :
+            <FormattedMessage id='unlockMovingMap'/>
           }
         >
           <Button

@@ -5,31 +5,31 @@ import {
   Button } from 'antd';
 import { ActionCreators } from 'redux-undo';
 import { connect } from 'react-redux';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../store/actions/index';
 
 const UndoRedo = (props) => {
   return (
-    <Row>
-      <Col span={10} offset={2}>
+      <div style = {{margin: "0 auto", position: "relative",top: "12px"}}>
         <Button
+          style = {{position: "relative", right:'20px'}}
           type='default'
           icon='undo'
           onClick={() => {
             props.onUndo();
           }}
           disabled={!props.canUndo}
-        >Undo</Button>
-      </Col>
-      <Col span={10}>
+        ><FormattedMessage id='undo' /></Button>
         <Button
+          style = {{position: "relative", left:'20px'}}
           type='default'
           icon='redo'
           onClick={props.onRedo}
           disabled={!props.canRedo}
-        >Redo</Button>
-      </Col>
-    </Row>
+        ><FormattedMessage id='redo' /></Button>
+
+      </div>
   );
 };
 

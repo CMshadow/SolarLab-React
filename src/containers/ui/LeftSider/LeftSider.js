@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout } from 'antd';
+import { Layout, Button, Icon } from 'antd';
 import { connect } from 'react-redux';
 
 import 'antd/dist/antd.css';
@@ -10,6 +10,8 @@ import CreateBuildingPanel from './individualPanels/createBuildingPanel';
 import DrawBuildingPanel from './individualPanels/drawBuildingPanel';
 import Editing3DPanel from './individualPanels/editing3DPanel';
 import SetUpPVPanel from './individualPanels/setUpPVPanel';
+import SetUpWiringPanel from './individualPanels/setUpWiringPanel';
+import SetUpBridgingPanel from './individualPanels/setUpBridgingPanel';
 import * as uiStateJudge from '../../../infrastructure/ui/uiStateJudge';
 
 const { Sider } = Layout;
@@ -18,6 +20,7 @@ class LeftSider extends Component {
 
   state = {
     siderCollapse: false,
+
   }
 
   onCollapse = (collapsed, type) => {
@@ -25,6 +28,11 @@ class LeftSider extends Component {
       siderCollapse: collapsed
     });
   }
+  toggle = () => {
+    this.setState({
+      siderCollapse: !this.state.siderCollapse,
+    });
+  };
 
   render() {
 
@@ -32,6 +40,7 @@ class LeftSider extends Component {
     if (this.state.siderCollapse === false) {
       if (uiStateJudge.isIdleStates(this.props.uiState)) {
         content = (<CreateBuildingPanel/>);
+        // content = (<SetUpPVPanel/>);
       }
       else if (uiStateJudge.showDrawingPanel(this.props.uiState)) {
         content = (<DrawBuildingPanel/>);
@@ -42,20 +51,41 @@ class LeftSider extends Component {
       else if (uiStateJudge.showSetUpPVPanel(this.props.uiState)) {
         content = (<SetUpPVPanel/>)
       }
+      else if (uiStateJudge.showSetUpWiringPanel(this.props.uiState)) {
+        content = (<SetUpWiringPanel/>)
+      }
+      else if (uiStateJudge.showSetUpBridgingPanel(this.props.uiState)) {
+        content = (<SetUpBridgingPanel/>)
+      }
     }
 
     return (
-      <Layout style={{ minHeight: '100vh' }}>
+      <Layout className={classes.outerLayout}>
         <Sider
           className={classes.leftSider}
           width={325}
           collapsedWidth={50}
           collapsible
           onCollapse={this.onCollapse}
+          trigger={null}
+          collapsed={this.state.siderCollapse}
         >
-          {this.state.siderCollapse ? null : <UndoRedo />}
-          {content}
+          <Layout className = {classes.upperPart}>
+            {content}
+          </Layout>
+          <Layout className = {classes.lowerPart}>
+            {this.state.siderCollapse ? null : <UndoRedo />}
+          </Layout>
         </Sider>
+        <Button
+          className={classes.collapseButton}
+          icon={this.state.siderCollapse ? 'right' : 'left'}
+          shape='circle'
+          size='small'
+          onClick={() => {
+            this.toggle();
+          }}
+        />
       </Layout>
     );
   }

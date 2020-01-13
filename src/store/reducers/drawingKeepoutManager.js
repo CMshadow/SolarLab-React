@@ -599,6 +599,7 @@ const setHoverPointIndex = (state, action) => {
 
 const releaseHoverPointIndex = (state, action) => {
   let newPolyline = null;
+  console.log(state.hoverPointIndex)
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
     default:
     case 'ENV':

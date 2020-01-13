@@ -35,7 +35,7 @@ const LeftDownHandler = (props) => {
           if (onTopPoint) {
             props.setKeepoutPickedPointIndex(onTopPoint);
           } else if (
-            props.drawingKeepoutPolyline.centerPoint && 
+            props.drawingKeepoutPolyline.centerPoint &&
             pickedObject.id.id ===
             props.drawingKeepoutPolyline.centerPoint.entityId
           ) {
@@ -45,6 +45,49 @@ const LeftDownHandler = (props) => {
           }
         }
         break;
+
+      case 'MANUAL_WIRING':
+        if (pickedObject) {
+          if (props.disconnectedPanelId.includes(pickedObject.id.id)) {
+            props.disableRotate();
+            props.setManualWiringStart(pickedObject.id.id);
+            props.setPVConnected(props.editingRoofIndex, pickedObject.id.id)
+            props.setUIStateDraggingWiring();
+          }
+        }
+        break;
+
+      case 'EDITING_WIRING':
+        if (pickedObject) {
+          // Find out picked which point
+          const onTopPointPosition =
+            pickedObject.id.id === props.editingStartPoint.entityId ?
+            'START' :
+            pickedObject.id.id === props.editingEndPoint.entityId ?
+            'END' : null
+          // Set picked point if available
+          if (onTopPointPosition) {
+            props.disableRotate();
+            props.setPickedWiringPoint();
+            props.setUIStateDraggingWiring();
+          }
+        }
+        break;
+
+      case 'READY_DRAG_INVERTER':
+        if (pickedObject && props.hoverInverterCenter) {
+          props.disableRotate();
+          props.setUIStateDragInverter();
+        }
+        break;
+
+      case 'EDIT_BRIDGING':
+        if (props.editingBridgingIndex !== null) {
+          props.disableRotate();
+          props.setUIStateDragBridging();
+        }
+        break;
+
       default:
         break;
     }
@@ -68,6 +111,18 @@ const mapStateToProps = state => {
     drawingKeepoutPolyline:
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .drawingKeepoutPolyline,
+
+    editingStartPoint:
+      state.undoableReducer.present.editingWiringManager.editingStartPoint,
+    editingEndPoint:
+      state.undoableReducer.present.editingWiringManager.editingEndPoint,
+    disconnectedPanelId:
+      state.undoableReducer.present.editingPVPanelManagerReducer
+      .disconnectedPanelId,
+    editingRoofIndex:
+      state.undoableReducer.present.editingWiringManager.editingRoofIndex,
+    hoverInverterCenter:
+      state.undoableReducer.present.editingWiringManager.hoverInverterCenter
   };
 };
 
@@ -78,6 +133,19 @@ const mapDispatchToProps = dispatch => {
     setKeepoutPickedPointIndex: (point) => dispatch(
       actions.setKeepoutPickedPointIndex(point)
     ),
+    setPickedWiringPoint: () => dispatch(
+      actions.setPickedWiringPoint()
+    ),
+    setUIStateEditingWiring: () => dispatch(actions.setUIStateEditingWiring()),
+    setUIStateDraggingWiring: () => dispatch(actions.setUIStateDraggingWiring()),
+    setUIStateDragInverter: () => dispatch(actions.setUIStateDragInverter()),
+    setUIStateDragBridging: () => dispatch(actions.setUIStateDragBridging()),
+    setManualWiringStart: (panelId) => dispatch(
+      actions.setManualWiringStart(panelId)
+    ),
+    setPVConnected: (roofIndex, panelId) => dispatch(
+      actions.setPVConnected(roofIndex, panelId)
+    )
   };
 };
 

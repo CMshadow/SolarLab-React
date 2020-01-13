@@ -21,6 +21,14 @@ const LeftClickHandler = (props) => {
           props.terminateDrawing();
           props.setUIStateFoundDrew();
           props.enableRotate();
+        } else if (
+          props.drawingFoundPolyline.points.slice(1,).map(p => p.entityId)
+          .reduce((include, id) => {
+            include = pickedObjectIdArray.includes(id) ? true : include;
+            return include;
+          }, false)
+        ) {
+          break;
         } else {
           props.disableRotate();
           props.addPointOnPolyline(event.position, props.viewer);
@@ -48,6 +56,14 @@ const LeftClickHandler = (props) => {
             ) {
               props.terminateKeepoutDrawing();
               props.setUIStateEditingKeepout();
+            } else if (
+              props.drawingKeepoutPolyline.points.slice(1,).map(p => p.entityId)
+              .reduce((include, id) => {
+                include = pickedObjectIdArray.includes(id) ? true : include;
+                return include;
+              }, false)
+            ) {
+              break;
             } else {
               props.disableRotate();
               props.addPointOnKeepoutPolyline(event.position, props.viewer);
@@ -63,6 +79,17 @@ const LeftClickHandler = (props) => {
             props.addTreeTemplate(event.position, props.viewer);
             props.setUIStateEditingKeepout();
         }
+        break;
+
+      case 'EDITING_ROOFTOP':
+        if (pickedObjectIdArray.includes(props.rooftopHoverPoint.entityId)) {
+          props.setPickedRoofTopPointIndex();
+        }
+        break;
+
+      case 'PLACE_INVERTER':
+        props.placeInverter();
+        props.setUIStateSetUpBridging();
         break;
 
       default:
@@ -93,6 +120,8 @@ const mapStateToProps = state => {
     linkedKeepoutType:
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .linkedKeepoutType,
+    rooftopHoverPoint:
+      state.undoableReducer.present.drawingRooftopManagerReducer.hoverPoint
   };
 };
 
@@ -119,7 +148,12 @@ const mapDispatchToProps = dispatch => {
     ),
     addOrClickPoint: (cartesian, viewer, pickedObject) => dispatch(
       actions.addOrClickPoint(cartesian, viewer, pickedObject)
-    )
+    ),
+    setPickedRoofTopPointIndex: () => dispatch(
+      actions.setPickedRoofTopPointIndex()
+    ),
+    setUIStateSetUpBridging: () => dispatch(actions.setUIStateSetUpBridging()),
+    placeInverter: () => dispatch(actions.placeInverter())
   };
 };
 

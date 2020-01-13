@@ -13,13 +13,34 @@ export const showDrawingPanel = (uiState) => {
 
 export const showEditing3DPanel = (uiState) => {
   return (
-    uiState === 'EDITING_3D'
+    uiState === 'EDITING_3D' ||
+    uiState === 'EDITING_ROOFTOP'
   )
 };
 
 export const showSetUpPVPanel = (uiState) => {
   return (
     uiState === 'SETUP_PV'
+  )
+};
+
+export const showSetUpWiringPanel = (uiState) => {
+  return (
+    uiState === 'SETUP_WIRING' ||
+    uiState === 'EDITING_WIRING' ||
+    uiState === 'DRAGGING_WIRING' ||
+    uiState === 'MANUAL_WIRING'
+  )
+};
+
+export const showSetUpBridgingPanel = (uiState) => {
+  return (
+    uiState === 'SETUP_BRIDGING' ||
+    uiState === 'PLACE_INVERTER' ||
+    uiState === 'READY_DRAG_INVERTER' ||
+    uiState === 'DRAG_INVERTER' ||
+    uiState === 'EDIT_BRIDGING' ||
+    uiState === 'DRAG_BRIDGING'
   )
 };
 
@@ -90,7 +111,6 @@ export const isFoundDrew = (uiState) => {
 
 export const isInnerDrew = (uiState) => {
   return (
-    uiState === 'DRAWING_INNER' ||
     uiState === 'INNER_DREW' ||
     uiState === 'DRAWING_KEEPOUT' ||
     uiState === 'EDITING_KEEPOUT'

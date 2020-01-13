@@ -7,9 +7,12 @@ import {
   Col,
   Button,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
+
 
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import * as actions from '../../../../../store/actions/index';
+import ErrorNotification from '../../../../../components/ui/Notification/ErrorNotification';
 
 const DrawInnerButton = (props) => {
 
@@ -25,7 +28,7 @@ const DrawInnerButton = (props) => {
         props.setUIStateDrawingInner();
       }}
     >
-      Draw Inner Lines
+      <FormattedMessage id='drawinnerlines' />
     </Button>
   )
 
@@ -37,13 +40,19 @@ const DrawInnerButton = (props) => {
       block
       loading={props.drawingInnerPolyline}
       onClick={() => {
-        props.updatePointsRelation();
-        props.setUIStateInnerDrew();
-        props.enableRotate();
-        console.log(props.test)
+        if (props.checkInnerTypesProvided()) {
+          props.updatePointsRelation();
+          props.setUIStateInnerDrew();
+          props.enableRotate();
+        } else {
+          ErrorNotification(
+            props.intl.formatMessage({id:'ErrorInnerDrawing'}),
+            props.intl.formatMessage({id:'ErrorInnerLineType'})
+          )
+        }
       }}
     >
-      ...Drawing...
+      <FormattedMessage id='clicktofinishInnerline' />
     </Button>
   )
 
@@ -57,7 +66,7 @@ const DrawInnerButton = (props) => {
         props.setUIStateDrawingInner();
       }}
     >
-      Edit Inner Lines
+      <FormattedMessage id='editInnerLines' />
     </Button>
   )
 
@@ -75,8 +84,6 @@ const DrawInnerButton = (props) => {
 const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    test:
-      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
     drawingInnerPolyline:
       state.undoableReducer.present.drawingInnerManagerReducer
       .drawingInnerPolyline,
@@ -91,7 +98,8 @@ const mapDispatchToProps = dispatch => {
     updatePointsRelation: () => dispatch(actions.updatePointsRelation()),
     setUIStateDrawingInner: () => dispatch(actions.setUIStateDrawingInner()),
     setUIStateInnerDrew: () => dispatch(actions.setUIStateInnerDrew()),
+    checkInnerTypesProvided: () => dispatch(actions.checkInnerTypesProvided()),
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DrawInnerButton);
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(DrawInnerButton));

@@ -13,7 +13,7 @@ import KeyPressHandler from './IndividualEventHandler/KeyPress';
 
 const CesiumEventHandlers = () => {
   return (
-    <ScreenSpaceEventHandler>
+    <ScreenSpaceEventHandler useDefault>
        <LeftClickHandler />
        <LeftClickShiftHandler />
        <LeftDownHandler />

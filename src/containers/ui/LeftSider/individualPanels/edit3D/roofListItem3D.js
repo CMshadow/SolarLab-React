@@ -5,8 +5,10 @@ import { faCog } from '@fortawesome/pro-light-svg-icons'
 import {
   List,
   Button,
-  Card
+  Card,
+  Row
 } from 'antd';
+import { injectIntl } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 import * as classes from './roofListItem3D.module.css';
@@ -49,10 +51,10 @@ class RoofListItem extends Component {
           </Button>
         ]}
       >
-        Roof
+        {this.props.intl.formatMessage({id:'flatRoof'})}
       </List.Item>
     );
   }
 };
 
-export default RoofListItem;
+export default injectIntl(RoofListItem);

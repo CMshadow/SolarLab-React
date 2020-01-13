@@ -12,6 +12,7 @@ import {
   Button,
   Card
 } from 'antd';
+import { injectIntl } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 import * as classes from './keepoutListItem.module.css';
@@ -100,7 +101,7 @@ class KeepoutListItem extends Component {
           </Button>,
         ]}
       >
-        {this.props.type}
+        {this.props.intl.formatMessage({id: this.props.type})}
       </List.Item>
     );
   }
@@ -129,4 +130,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(KeepoutListItem);
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(KeepoutListItem));

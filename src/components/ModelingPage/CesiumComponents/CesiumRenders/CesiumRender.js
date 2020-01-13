@@ -5,9 +5,14 @@ import * as uiStateJudge from '../../../../infrastructure/ui/uiStateJudge';
 import DrawingManagerRender from './DrawingManagerRender';
 import Drawing3DFoundManagerRender from './Drawing3DFoundMangerRender';
 import DrawingInnerManagerRender from './DrawingInnerManagerRender';
-import DrawingBuildingRooftopRender from './DrawingRooftopManagerRender/DrawingRooftopManagerRender';
+import DrawingBuildingRooftopRender from './DrawingRooftopManagerRender';
 import DrawingKeepoutManagerRender from './DrawingKeepoutManagerRender';
 import DrawingKeepoutPolygonManagerRender from './DrawingKeepoutPolygonManagerRender';
+import ShadowRender from './ShadowRender';
+import EditingPVPanelRender from './EditingPVPanelRender';
+import EditingWiringRender from './EditingWiringRender';
+import EditingBridgingRender from './EditingBridgingRender';
+
 import DebugRender from './DebugRender';
 
 const CesiumRender = (props) => {
@@ -27,6 +32,10 @@ const CesiumRender = (props) => {
       <DrawingBuildingRooftopRender />
       <DrawingKeepoutPolygonManagerRender />
       <DrawingKeepoutManagerRender />
+      <ShadowRender />
+      <EditingPVPanelRender />
+      <EditingWiringRender />
+      <EditingBridgingRender />
       <DebugRender />
     </div>
   );

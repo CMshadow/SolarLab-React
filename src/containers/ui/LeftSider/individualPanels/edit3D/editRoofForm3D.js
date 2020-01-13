@@ -6,22 +6,13 @@ import {
   Row,
   Col,
   Button,
+  Popover
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 
 class EditRoofForm extends PureComponent {
-
-  handleSubmit = (event) => {
-    event.preventDefault();
-    this.props.form.validateFieldsAndScroll((err, values) => {
-      if (!err) {
-        this.props.updateBuilding(values);
-        this.props.createPolygonFoundationWrapper();
-        this.props.toggleEdit();
-      }
-    });
-  };
 
   numberInputRules = [
     {
@@ -40,7 +31,7 @@ class EditRoofForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4>Roof Height</h4>
+            <h4><FormattedMessage id='buildingHeight' /></h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('foundationHeight', {
@@ -64,7 +55,7 @@ class EditRoofForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4> Eave Setback </h4>
+            <h4> <FormattedMessage id='eaveSetback' /> </h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('eaveStb', {
@@ -88,7 +79,7 @@ class EditRoofForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4> Parapet Height </h4>
+            <h4> <FormattedMessage id='parapetHeight' /> </h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('parapetHeight', {
@@ -109,18 +100,10 @@ class EditRoofForm extends PureComponent {
     );
 
     return (
-      <Form onSubmit={this.handleSubmit}>
+      <Form>
         {foundationHeight}
         {eaveSetback}
         {this.props.workingBuilding.type === 'FLAT' ? parapetHeight: null}
-        {/*The button to validate & process to create a new building*/}
-        <Row type="flex" justify="center">
-          <Col span={16}>
-            <Button type='default' shape='round' htmlType="submit" block>
-              Update
-            </Button>
-          </Col>
-        </Row>
       </Form>
     );
   }
@@ -141,4 +124,18 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(Form.create({ name: 'editRoof' })(EditRoofForm));
+const formOptions = {
+  name: 'editRoof',
+  onValuesChange: (props, changedValues, allValues) => {
+    let valueValid = true;
+    Object.keys(allValues).forEach(k => {
+      if (typeof(allValues[k]) !== 'number') valueValid = false
+    });
+    if (valueValid) {
+      props.updateBuilding(allValues);
+      props.createPolygonFoundationWrapper();
+    }
+  }
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(Form.create(formOptions)(EditRoofForm));

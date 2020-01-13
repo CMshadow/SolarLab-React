@@ -5,6 +5,7 @@ import {
   Col,
   Button,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 
@@ -14,14 +15,21 @@ const FinishModelingButton = (props) => {
       type = 'primary'
       size = 'large'
       shape = 'round'
+      loading = {props.backendLoading}
       block
       onClick = {() => {
-        props.bindFoundPolyline();
-        props.bindFoundPolygons();
+        props.bindShadow();
+        if (props.workingBuilding.type === 'FLAT') {
+          props.bindFoundPolyline();
+          props.bindFoundPolygons();
+          props.bindParapetShadow();
+        } else {
+          props.bindPitchedPolygons();
+        }
         props.bindAllKeepout();
-        props.setUIStateSetUpPV();
+        props.fetchUserPanels();
       }}
-    >Finish Modeling</Button>
+    ><FormattedMessage id='finish_modeling' /></Button>
 
   );
   return (
@@ -37,6 +45,7 @@ const mapStateToProps = state => {
   return {
     uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     workingBuilding: state.buildingManagerReducer.workingBuilding,
+    backendLoading:  state.projectManagerReducer.backendLoading
   };
 };
 
@@ -44,8 +53,11 @@ const mapDispatchToProps = dispatch => {
   return {
     bindFoundPolyline: () => dispatch(actions.bindFoundPolyline()),
     bindFoundPolygons: () => dispatch(actions.bindFoundPolygons()),
+    bindPitchedPolygons: () => dispatch(actions.bindPitchedPolygons()),
     bindAllKeepout: () => dispatch(actions.bindAllKeepout()),
-    setUIStateSetUpPV: () => dispatch(actions.setUIStateSetUpPV())
+    bindShadow: () => dispatch(actions.bindShadow()),
+    bindParapetShadow: () => dispatch(actions.bindParapetShadow()),
+    fetchUserPanels: () => dispatch(actions.fetchUserPanels())
   };
 };
 

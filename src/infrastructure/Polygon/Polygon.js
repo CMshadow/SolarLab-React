@@ -49,7 +49,10 @@ class Polygon {
     shadow = null,
     show = null,
     brng = null,
-    obliquity = null
+    obliquity = null,
+    highestNode = null,
+    lowestNode = null,
+    edgesCollection = null
   ) {
     this.entityId = id ? id : uuid();
     this.name = name ? name: 'Polygon';
@@ -64,6 +67,9 @@ class Polygon {
     this.show = show? show: true;
     this.brng = brng ? brng : null;
     this.obliquity = obliquity ? obliquity : 0;
+    this.highestNode = highestNode? highestNode : null;
+    this.lowestNode = lowestNode? lowestNode : null;
+    this.edgesCollection = edgesCollection? [...edgesCollection] : null;
   }
 
   /**
@@ -118,9 +124,12 @@ class Polygon {
     shadow=null,
     show=null,
     brng = null,
-    obliquity = null
+    obliquity = null,
+    highestNode = null,
+    lowestNode = null,
+    edgesCollection = null
   ){
-    const newID = id ? id : polygon.id;
+    const newID = id ? id : polygon.entityId;
     const newName = name ? name : polygon.name;
     const newHeight = height ? height: polygon.height;
     const newHierarchy = hierarchy ? [...hierarchy]: polygon.hierarchy;
@@ -139,10 +148,13 @@ class Polygon {
     const newShow = show? show: true;
     const newBrng = brng? brng: polygon.brng;
     const newObliquily = obliquity? obliquity: polygon.obliquity;
+    const newHighestNode = highestNode? highestNode: polygon.highestNode;
+    const newLowestNode = lowestNode? lowestNode: polygon.lowestNode;
+    const newEdgesCollection = edgesCollection? [...edgesCollection]: polygon.edgesCollection;
     return new Polygon(
       newID, newName, newHeight, newHierarchy, newPerPositionHeight,
       newExtrudedHeight, newMaterial, newOutLineColor, newOutLineWidth,
-      newShadow, newShow, newBrng, newObliquily
+      newShadow, newShow, newBrng, newObliquily, newHighestNode, newLowestNode, newEdgesCollection
     );
   };
 
@@ -168,9 +180,11 @@ class Polygon {
     } else {
       polylineHierarchy = polyline.getPointsCoordinatesArray();
     }
-    if (overwriteHeight) {
-      for (let i = 0; i < polylineHierarchy.length; i+=3){
+    for (let i = 0; i < polylineHierarchy.length; i+=3){
+      if (overwriteHeight) {
         polylineHierarchy[i+2] = overwriteHeight + heightOffset;
+      } else {
+        polylineHierarchy[i+2] += heightOffset;
       }
     }
     return polylineHierarchy;
@@ -230,6 +244,21 @@ class Polygon {
     }
     points.push(firstAndLastPoint);
     return new FoundLine(points);
+  }
+
+  convertHierarchyToPoints = () => {
+    const points = [];
+    for (let i = 0; i < this.hierarchy.length; i+=3) {
+      points.push(
+        new Point(this.hierarchy[i], this.hierarchy[i+1], this.hierarchy[i+2])
+      );
+    }
+    return points
+  }
+
+  convertHierarchyToFoundLine = () => {
+    const points = this.convertHierarchyToPoints();
+    return new FoundLine([...points, points[0]]);
   }
 
 }

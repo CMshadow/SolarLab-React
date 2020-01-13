@@ -8,6 +8,8 @@ import {
   Col,
   Button,
 } from 'antd';
+import { injectIntl, FormattedMessage } from 'react-intl';
+
 
 import * as actions from '../../../../../store/actions/index';
 
@@ -21,7 +23,7 @@ const DrawFoundButton = (props) => {
       block
       onClick={props.setUIStateDrawingFound}
     >
-      Draw Building Outline
+      <FormattedMessage id='drawBuildingOutline' />
     </Button>
   )
 
@@ -31,9 +33,9 @@ const DrawFoundButton = (props) => {
       size='large'
       shape='round'
       block
-      loading={true}
+      disabled
     >
-      ...Drawing...
+      <FormattedMessage id='drawingOnMap' />
     </Button>
   )
 
@@ -50,7 +52,7 @@ const DrawFoundButton = (props) => {
         }
       }
     >
-      Click to Edit Outline
+      <FormattedMessage id='clicktoEditOutline' />
     </Button>
   )
 
@@ -66,7 +68,7 @@ const DrawFoundButton = (props) => {
         }
       }
     >
-      Click to Stop Editing
+      <FormattedMessage id='clicktoStopEditing' />
     </Button>
   )
 
@@ -103,4 +105,4 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-export default connect(mapStateToProps, mapDispatchToProps)(DrawFoundButton);
+export default connect(mapStateToProps, mapDispatchToProps)(injectIntl(DrawFoundButton));
