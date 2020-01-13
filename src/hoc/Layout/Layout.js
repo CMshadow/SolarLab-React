@@ -11,23 +11,14 @@ import './Layout.css';
 const { Header } = Layout;
 
 class CustomLayout extends Component {
-  state = {
-    showSideDrawer: false
-  }
 
   render () {
     return (
       <Layout style={{height:"100vh"}}>
 
         <Header className='header'>
-          <img className={classes.logo} src={logo} alt=''/>
+          <img className='logo' src={logo} alt=''/>
           <NavigationBar />
-
-//         <div className = "logo">
-//           <img src = {SolarlabLogo} alt = "logo" style = {{height:'35px'}} />
-//         </div>
-//         <NavigationBar/>
-
         </Header>
         {this.props.children}
       </Layout>

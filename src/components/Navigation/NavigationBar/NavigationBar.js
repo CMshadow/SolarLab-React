@@ -128,10 +128,16 @@ class NavigationBar extends Component{
     }
   }
 
+  HomePage = () => {
+    if (this.props.history.location.pathname !=='/')
+      this.props.history.push('/');
+  }
+
   SketchDiagramHandler = () => {
     if (this.props.history.location.pathname !=='/SketchDiagram')
       this.props.history.push('/SketchDiagram');
   }
+
   ModelingSwitchHandler = () => {
     if (this.props.history.location.pathname !=='/Modeling')
       this.props.history.push('/Modeling');
@@ -156,10 +162,16 @@ class NavigationBar extends Component{
         theme='dark'
         mode='horizontal'
         className='menu'
-        defaultSelectedKeys={['2']}
+        defaultSelectedKeys={
+          this.props.history.location.pathname === '/' ? ['1'] :
+          this.props.history.location.pathname === '/Modeling' ? ['2'] :
+          this.props.history.location.pathname === '/SketchDiagram' ? ['3'] :
+          this.props.history.location.pathname === '/SingleLineDigram' ? ['4'] : ['5']
+        }
       >
         <Menu.Item
           key='1'
+          onClick={this.HomePage}
         >
           <FormattedMessage id='home' />
         </Menu.Item>
