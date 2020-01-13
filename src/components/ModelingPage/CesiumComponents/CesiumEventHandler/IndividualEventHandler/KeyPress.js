@@ -19,7 +19,7 @@ class KeyPressHandler extends Component {
     const ellipsoid = this.props.viewer.scene.globe.ellipsoid;
     const camera = this.props.viewer.camera;
     const cameraHeight = ellipsoid.cartesianToCartographic(camera.position).height;
-    const moveRate = cameraHeight / 3000.0;
+    const moveRate = cameraHeight / 10000.0;
     if (this.state.moveUp) camera.moveUp(moveRate);
     if (this.state.moveDown) camera.moveDown(moveRate);
     if (this.state.moveLeft) camera.moveLeft(moveRate);
@@ -91,7 +91,7 @@ class KeyPressHandler extends Component {
 
   componentWillUnmount = () => {
     document.removeEventListener("keydown", e => this.recordKeyDownEvent(e));
-    document.addEventListener("keyup", e => this.recordKeyUpFunction(e));
+    document.removeEventListener("keyup", e => this.recordKeyUpFunction(e));
   };
 
   render () {
