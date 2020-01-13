@@ -16,7 +16,7 @@ class CustomLayout extends Component {
   render () {
     return (
       <Layout style={{height:"100vh"}}>
-        <Header style={{height:'64px', background:'#202020', width: '100%' ,position: 'fixed', top: 0, left: 0, zIndex: 1}}>
+        <Header className='header'>
         <div className = "logo">
           <img src = {SolarlabLogo} alt = "logo" style = {{height:'35px'}} />
         </div>

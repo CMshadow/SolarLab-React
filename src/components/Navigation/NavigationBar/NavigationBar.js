@@ -5,7 +5,7 @@ import { connect } from 'react-redux';
 import { Route, Switch, withRouter } from 'react-router-dom';
 
 import * as actions from '../../../store/actions/index';
-
+import './NavigationBar.css';
 import { FormattedMessage } from 'react-intl';
 
 class NavigationBar extends Component{
@@ -153,38 +153,33 @@ class NavigationBar extends Component{
       <Menu
         theme='dark'
         mode='horizontal'
+        className='menu'
         defaultSelectedKeys={['2']}
-        style={{ lineHeight: '64px', background:"#202020" }}
       >
         <Menu.Item
-          style = {{background:"#202020"}}
           key='1'
         >
           <FormattedMessage id='home' />
         </Menu.Item>
         <Menu.Item
-          style = {{background:"#202020"}}
           key='2'
           onClick={this.ModelingSwitchHandler}
         >
           <FormattedMessage id='modeling' />
         </Menu.Item>
         <Menu.Item
-          style = {{background:"#202020"}}
           key='3'
           onClick={this.SketchDiagramHandler}
         >
           <FormattedMessage id='twoD_diagram' />
         </Menu.Item>
         <Menu.Item
-          style = {{background:"#202020"}}
           key='4'
           onClick={this.SingleLineDiagramSwitchHandler}
         >
             <FormattedMessage id='single_line_diagram' />
           </Menu.Item>
         <Menu.Item
-          style = {{background:"#202020"}}
           key='5'
           onClick={this.ReportSwitchHandler}
         >
