@@ -1,4 +1,5 @@
 const CracoAntDesignPlugin = require("craco-antd");
+const CracoLessPlugin = require("craco-less");
 
 module.exports = {
   plugins: [
@@ -11,12 +12,10 @@ module.exports = {
         customizeTheme: {
           "@primary-color": "#368AC4",
           "@link-color": "#368AC4",
-          "@layout-header-background": "#202020",
-          "@menu-bg": "#202020"
-
-
+          "@layout-header-background": "rgba(20, 20, 20, 0.75)",
+          "@menu-bg": "rgba(20, 20, 20, 0.75)"
         }
-      }      
+      }
     }
   ]
 };

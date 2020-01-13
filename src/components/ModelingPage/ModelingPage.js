@@ -23,6 +23,7 @@ const ModelingPage = (props) => {
       <Content>
         <ContextMenuTrigger id="cesium_context_menu">
           <CustomViewer enableTerrain={false}>
+            <CesiumNavigator/>
             <CesiumScreenSpaceCameraController />
             <FlyTo flyTo={[
               props.projectInfo.projectLon,
@@ -32,7 +33,6 @@ const ModelingPage = (props) => {
             <CesiumEventHandlers />
             <CesiumRender />
           </CustomViewer>
-          <CesiumNavigator/>
         </ContextMenuTrigger>
         <CustomContextMenu />
         <LeftSider />

@@ -1,7 +1,13 @@
 .compass {
-  right: 100px;
+  position: absolute;
+  right: 50px !important;
+  top: 10px !important;
 }
 
-body cesium-viewer compass compass-outer-ring compass-outer-ring-background {
-  fill: black;
+.compass-outer-ring {
+  fill: #202020 !important;
+}
+
+.compass-gyro {
+  fill: #AAAAAA !important;
 }
