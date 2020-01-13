@@ -1,0 +1,13 @@
+.compass {
+  position: absolute;
+  right: 50px !important;
+  top: 10px !important;
+}
+
+.compass-outer-ring {
+  fill: #202020 !important;
+}
+
+.compass-gyro {
+  fill: #AAAAAA !important;
+}
