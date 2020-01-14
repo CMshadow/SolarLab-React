@@ -11,8 +11,6 @@ export default {
   lockMovingMap: '锁定拖动地图',
   unlockMovingMap: '解锁拖动地图',
 
-  Keepout: ' 障碍物 ',
-  Inverters: ' 逆变器 ',
   KEEPOUT: ' 屋面障碍物 ',
   PASSAGE: ' 预留通道 ',
   VENT: ' 屋顶通风口 ',

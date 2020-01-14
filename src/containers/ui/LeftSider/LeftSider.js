@@ -6,6 +6,8 @@ import 'antd/dist/antd.css';
 
 import * as classes from './LeftSider.module.css';
 import UndoRedo from '../../../components/ui/UndoRedo/UndoRedo';
+import HomePanel from './individualPanels/homePanel';
+import ManageBuildingPanel from './individualPanels/manageBuildingPanel';
 import CreateBuildingPanel from './individualPanels/createBuildingPanel';
 import DrawBuildingPanel from './individualPanels/drawBuildingPanel';
 import Editing3DPanel from './individualPanels/editing3DPanel';
@@ -39,8 +41,13 @@ class LeftSider extends Component {
     let content = null;
     if (this.state.siderCollapse === false) {
       if (uiStateJudge.isIdleStates(this.props.uiState)) {
+        content = (<HomePanel/>);
+      }
+      else if (uiStateJudge.showManageBuildingPanel(this.props.uiState)) {
+        content = (<ManageBuildingPanel />)
+      }
+      else if (uiStateJudge.showCreateBuildingPanel(this.props.uiState)) {
         content = (<CreateBuildingPanel/>);
-        // content = (<SetUpPVPanel/>);
       }
       else if (uiStateJudge.showDrawingPanel(this.props.uiState)) {
         content = (<DrawBuildingPanel/>);

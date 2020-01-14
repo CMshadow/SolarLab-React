@@ -1,3 +1,11 @@
+export const showManageBuildingPanel = (uiState) => {
+  return uiState === 'MANAGE_BUILDING';
+}
+
+export const showCreateBuildingPanel = (uiState) => {
+  return uiState === 'CREATE_NEW_BUILDING';
+}
+
 export const showDrawingPanel = (uiState) => {
   return (
     uiState === 'READY_DRAWING' ||
