@@ -20,7 +20,7 @@ const aMap = new Cesium.UrlTemplateImageryProvider({
 const googleMap = new Cesium.UrlTemplateImageryProvider({
   url: 'https://mt{s}.google.cn/vt/?lyrs=s&hl=zh-CN&x={x}&y={y}&z={z}',
   subdomains: ['1', '2', '3'],
-  // maximumLevel: 20
+  maximumLevel: 22
 });
 
 const CustomViewer = (props) => {

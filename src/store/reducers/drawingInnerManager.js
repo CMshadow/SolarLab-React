@@ -371,6 +371,8 @@ const setTypeRidge = (state, action) => {
 };
 
 const setHoverInnerLine = (state, action) => {
+  if (state.hoverInnerLineIndex !== null) releaseHoverInnerLine(state, action);
+
   const newPolyline = InnerLine.fromPolyline(
     state.fixedInnerPolylines[action.hoverInnerLineIndex]
   );
@@ -385,20 +387,26 @@ const setHoverInnerLine = (state, action) => {
 };
 
 const releaseHoverInnerLine = (state, action) => {
-  const newPolyline = InnerLine.fromPolyline(
-    state.fixedInnerPolylines[state.hoverInnerLineIndex]
-  );
-  newPolyline.setColorbyType();
-  const newFixedInnerPolylines = [...state.fixedInnerPolylines];
-  newFixedInnerPolylines.splice(state.hoverInnerLineIndex, 1, newPolyline);
-  return {
-    ...state,
-    fixedInnerPolylines: newFixedInnerPolylines,
-    hoverInnerLineIndex: null
-  };
+  if (state.hoverInnerLineIndex !== null) {
+    const newPolyline = InnerLine.fromPolyline(
+      state.fixedInnerPolylines[state.hoverInnerLineIndex]
+    );
+    newPolyline.setColorbyType();
+    const newFixedInnerPolylines = [...state.fixedInnerPolylines];
+    newFixedInnerPolylines.splice(state.hoverInnerLineIndex, 1, newPolyline);
+    return {
+      ...state,
+      fixedInnerPolylines: newFixedInnerPolylines,
+      hoverInnerLineIndex: null
+    };
+  } else {
+    return state;
+  }
 };
 
 const setHoverInnerPoint = (state, action) => {
+  if (state.hoverInnerPointId !== null) releaseHoverInnerPoint(state, action);
+
   const newPoint = Point.fromPoint(
     state.pointsRelation[action.hoverInnerPointId].object
   );
@@ -417,21 +425,25 @@ const setHoverInnerPoint = (state, action) => {
 };
 
 const releaseHoverInnerPoint = (state, action) => {
-  const newPoint = Point.fromPoint(
-    state.pointsRelation[state.hoverInnerPointId].object
-  );
-  newPoint.setColor(Cesium.Color.WHITE);
-  return {
-    ...state,
-    pointsRelation:{
-      ...state.pointsRelation,
-      [state.hoverInnerPointId]: {
-        ...state.pointsRelation[state.hoverInnerPointId],
-        object: newPoint
-      }
-    },
-    hoverInnerPointId: null
-  };
+  if (state.hoverInnerPointId !== null) {
+    const newPoint = Point.fromPoint(
+      state.pointsRelation[state.hoverInnerPointId].object
+    );
+    newPoint.setColor(Cesium.Color.WHITE);
+    return {
+      ...state,
+      pointsRelation:{
+        ...state.pointsRelation,
+        [state.hoverInnerPointId]: {
+          ...state.pointsRelation[state.hoverInnerPointId],
+          object: newPoint
+        }
+      },
+      hoverInnerPointId: null
+    };
+  } else {
+    return state;
+  }
 };
 
 const deleteInnerLine = (state, action) => {

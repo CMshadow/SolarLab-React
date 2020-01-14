@@ -259,6 +259,8 @@ const releaseHoverPolyline = (state, action) => {
 };
 
 const setHoverPointIndex = (state, action) => {
+  if (state.hoverPointIndex !== null) releaseHoverPointIndex(state, action);
+
   const newPolyline = FoundLine.fromPolyline(state.drawingPolyline);
   newPolyline.points[action.hoverPointIndex].setColor(Cesium.Color.ORANGE);
   return {

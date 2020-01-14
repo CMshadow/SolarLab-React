@@ -57,10 +57,17 @@ const DrawingKeepoutManagerRender = (props) => {
       ));
     }
     else {
-      drawingKeepoutPoints =
-        props.drawingKeepoutPolyline.points.map(elem => (
-        <CustomPoint key={elem.entityId} {...elem} />
-      ));
+      if (props.uiState === 'DRAWING_KEEPOUT') {
+        drawingKeepoutPoints =
+          props.drawingKeepoutPolyline.points.slice(0, -1).map(elem => (
+          <CustomPoint key={elem.entityId} {...elem} />
+        ));
+      } else {
+        drawingKeepoutPoints =
+          props.drawingKeepoutPolyline.points.map(elem => (
+          <CustomPoint key={elem.entityId} {...elem} />
+        ));
+      }
     }
 
   }
@@ -104,6 +111,7 @@ const DrawingKeepoutManagerRender = (props) => {
 
 const mapStateToProps = state => {
   return {
+    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
     drawingKeepoutPolyline:
       state.undoableReducer.present.drawingKeepoutManagerReducer
       .drawingKeepoutPolyline,

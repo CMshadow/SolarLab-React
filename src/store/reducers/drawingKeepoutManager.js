@@ -530,38 +530,44 @@ const setHoverPolyline = (state, action) => {
 };
 
 const releaseHoverPolyline = (state, action) => {
-  let newPolyline = null;
-  switch (state.keepoutList[state.linkedKeepoutIndex].type) {
-    default:
-    case 'ENV':
-    case 'KEEPOUT':
-      newPolyline = FoundLine.fromPolyline(state.drawingKeepoutPolyline);
-      newPolyline.setColor(Cesium.Color.YELLOW);
-      break;
+  if (state.hoverPolyline) {
+    let newPolyline = null;
+    switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+      default:
+      case 'ENV':
+      case 'KEEPOUT':
+        newPolyline = FoundLine.fromPolyline(state.drawingKeepoutPolyline);
+        newPolyline.setColor(Cesium.Color.YELLOW);
+        break;
 
-    case 'PASSAGE':
-      newPolyline = Polyline.fromPolyline(state.drawingKeepoutPolyline);
-      newPolyline.setColor(Cesium.Color.WHEAT);
-      break;
+      case 'PASSAGE':
+        newPolyline = Polyline.fromPolyline(state.drawingKeepoutPolyline);
+        newPolyline.setColor(Cesium.Color.WHEAT);
+        break;
 
-    case 'VENT':
-      newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
-      newPolyline.setColor(Cesium.Color.CADETBLUE);
-      break;
+      case 'VENT':
+        newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
+        newPolyline.setColor(Cesium.Color.CADETBLUE);
+        break;
 
-    case 'TREE':
-      newPolyline = Circle.fromPolyline(state.drawingKeepoutPolyline);
-      newPolyline.setColor(Cesium.Color.FORESTGREEN);
-      break;
+      case 'TREE':
+        newPolyline = Circle.fromPolyline(state.drawingKeepoutPolyline);
+        newPolyline.setColor(Cesium.Color.FORESTGREEN);
+        break;
+    }
+    return {
+      ...state,
+      drawingKeepoutPolyline: newPolyline,
+      hoverPolyline: false
+    };
+  } else {
+      return state;
   }
-  return {
-    ...state,
-    drawingKeepoutPolyline: newPolyline,
-    hoverPolyline: false
-  };
 };
 
 const setHoverPointIndex = (state, action) => {
+  if (state.hoverPointIndex !== null) releaseHoverPointIndex(state, action);
+  
   let newPolyline = null;
   switch (state.keepoutList[state.linkedKeepoutIndex].type) {
     default:
@@ -598,40 +604,43 @@ const setHoverPointIndex = (state, action) => {
 };
 
 const releaseHoverPointIndex = (state, action) => {
-  let newPolyline = null;
-  console.log(state.hoverPointIndex)
-  switch (state.keepoutList[state.linkedKeepoutIndex].type) {
-    default:
-    case 'ENV':
-    case 'KEEPOUT':
-      newPolyline = FoundLine.fromPolyline(state.drawingKeepoutPolyline);
-      newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.YELLOW);
-      break;
+  if (state.hoverPointIndex !== null) {
+    let newPolyline = null;
+    switch (state.keepoutList[state.linkedKeepoutIndex].type) {
+      default:
+      case 'ENV':
+      case 'KEEPOUT':
+        newPolyline = FoundLine.fromPolyline(state.drawingKeepoutPolyline);
+        newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.YELLOW);
+        break;
 
-    case 'PASSAGE':
-      newPolyline = Polyline.fromPolyline(state.drawingKeepoutPolyline);
-      newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.WHEAT);
-      break;
+      case 'PASSAGE':
+        newPolyline = Polyline.fromPolyline(state.drawingKeepoutPolyline);
+        newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.WHEAT);
+        break;
 
-    case 'VENT':
-      newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
-      newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.CADETBLUE);
-      break;
+      case 'VENT':
+        newPolyline = Sector.fromPolyline(state.drawingKeepoutPolyline);
+        newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.CADETBLUE);
+        break;
 
-    case 'TREE':
-      newPolyline = Circle.fromPolyline(state.drawingKeepoutPolyline);
-      if (state.hoverPointIndex === 'centerPoint') {
-        newPolyline.centerPoint.setColor(Cesium.Color.FORESTGREEN);
-      } else {
-        newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.FORESTGREEN);
-      }
-      break;
+      case 'TREE':
+        newPolyline = Circle.fromPolyline(state.drawingKeepoutPolyline);
+        if (state.hoverPointIndex === 'centerPoint') {
+          newPolyline.centerPoint.setColor(Cesium.Color.FORESTGREEN);
+        } else {
+          newPolyline.points[state.hoverPointIndex].setColor(Cesium.Color.FORESTGREEN);
+        }
+        break;
+    }
+    return {
+      ...state,
+      drawingKeepoutPolyline: newPolyline,
+      hoverPointIndex: null
+    };
+  } else {
+    return state;
   }
-  return {
-    ...state,
-    drawingKeepoutPolyline: newPolyline,
-    hoverPointIndex: null
-  };
 };
 
 const complementPointOnPolyline = (state, action) => {

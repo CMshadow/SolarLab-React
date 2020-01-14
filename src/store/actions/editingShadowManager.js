@@ -122,27 +122,12 @@ export const projectAllShadow = (sunPositionCollection) =>
 
     wallKeepoutShadows.forEach(obj => {
       let shadowHier = null;
-      if (buildingType === 'FLAT') {
-        const shadowPoints = new Shadow(
-          null, null, Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
-        ).convertHierarchyToPoints();
-        shadowHier = Polygon.makeHierarchyFromPolyline(
-          new Polyline(shadowPoints), foundationHeight, 0.015
-        );
-      } else {
-        const shadowPoints = new Shadow(
-          null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
-        ).convertHierarchyToPoints();
-        const newHeights = shadowPoints.map(p =>
-          Point.heightOfArbitraryNode(roofPolygon, p) + foundationHeight
-        );
-        shadowPoints.forEach((p, i) =>
-          p.setCoordinate(null, null, newHeights[i])
-        );
-        shadowHier = Polygon.makeHierarchyFromPolyline(
-          new Polyline(shadowPoints), null, 0.015
-        );
-      }
+      const shadowPoints = new Shadow(
+        null, null, Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
+      ).convertHierarchyToPoints();
+      shadowHier = Polygon.makeHierarchyFromPolyline(
+        new Polyline(shadowPoints), foundationHeight, 0.015
+      );
       specialParapetShadows.push({
         from: obj.kptId,
         to: roofPolygon.entityId,
@@ -174,10 +159,8 @@ export const projectAllShadow = (sunPositionCollection) =>
         const shadowPoints = new Shadow(
           null, null,Polygon.makeHierarchyFromGeoJSON(obj.geoJSON)
         ).convertHierarchyToPoints();
-        // console.log(obj.geoJSON)
-        // console.log(shadowPoints)
         const newHeights = shadowPoints.map(p =>
-          Point.heightOfArbitraryNode(roofPolygon, p) + foundationHeight
+          Point.heightOfArbitraryNode(roofPolygon, p) + roofPolygon.lowestNode[2]
         );
         shadowPoints.forEach((p, i) =>
           p.setCoordinate(null, null, newHeights[i])
