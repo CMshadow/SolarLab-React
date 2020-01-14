@@ -85,13 +85,13 @@ class KeyPressHandler extends Component {
   }
 
   componentDidMount = () => {
-    document.addEventListener("keydown", e => this.recordKeyDownEvent(e));
-    document.addEventListener("keyup", e => this.recordKeyUpFunction(e));
+    document.addEventListener("keydown", this.recordKeyDownEvent);
+    document.addEventListener("keyup", this.recordKeyUpFunction);
   };
 
   componentWillUnmount = () => {
-    document.removeEventListener("keydown", e => this.recordKeyDownEvent(e));
-    document.removeEventListener("keyup", e => this.recordKeyUpFunction(e));
+    document.removeEventListener("keydown", this.recordKeyDownEvent);
+    document.removeEventListener("keyup", this.recordKeyUpFunction);
   };
 
   render () {

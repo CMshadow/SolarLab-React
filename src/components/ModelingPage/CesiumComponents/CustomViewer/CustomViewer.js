@@ -20,7 +20,7 @@ const aMap = new Cesium.UrlTemplateImageryProvider({
 const googleMap = new Cesium.UrlTemplateImageryProvider({
   url: 'https://mt{s}.google.cn/vt/?lyrs=s&hl=zh-CN&x={x}&y={y}&z={z}',
   subdomains: ['1', '2', '3'],
-  maximumLevel: 20
+  // maximumLevel: 20
 });
 
 const CustomViewer = (props) => {
@@ -29,7 +29,6 @@ const CustomViewer = (props) => {
     <Viewer
       ref={ref => {
         if (ref && ref.cesiumElement) {
-          console.log(ref.cesiumElement)
           props.onSetViewer(ref.cesiumElement)
         }
       }}
