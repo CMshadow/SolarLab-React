@@ -18,6 +18,7 @@ const setViewer = (state, action) => {
   action.viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(
     Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK
   );
+  action.viewer.scene.screenSpaceCameraController.maximumZoomDistance = 500;
 
   return {
     ...state,
