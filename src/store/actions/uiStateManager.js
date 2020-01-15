@@ -1,5 +1,23 @@
 import * as actionTypes from './actionTypes';
 
+export const setUIStateIdel = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_IDLE
+  };
+}
+
+export const setUIStateManageBuilding = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_MANAGE_BUILDING
+  };
+}
+
+export const setUIStateCreateNewBuilding = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_CREATE_NEW_BUILDING
+  };
+}
+
 export const setUIStateReadyDrawing = () => {
   return {
     type: actionTypes.SET_UI_STATE_READY_DRAWING

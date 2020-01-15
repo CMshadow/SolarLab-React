@@ -107,7 +107,7 @@ class SetUpWiringPanel extends Component {
     )
 
     return (
-      <div>
+      <div style={{padding: '10px 10px 20px', overflow: 'auto'}}>
         <Row type="flex" justify="center">
           <h3><FormattedMessage id='setup_wiring' /></h3>
         </Row>

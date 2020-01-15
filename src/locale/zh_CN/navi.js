@@ -11,8 +11,6 @@ export default {
   lockMovingMap: '锁定拖动地图',
   unlockMovingMap: '解锁拖动地图',
 
-  Keepout: ' 障碍物 ',
-  Inverters: ' 逆变器 ',
   KEEPOUT: ' 屋面障碍物 ',
   PASSAGE: ' 预留通道 ',
   VENT: ' 屋顶通风口 ',
@@ -112,7 +110,7 @@ export default {
   panel_per_row_description: ' 每行板的数量 ',
   rows_per_array_description: ' 每单元行数 ',
   preview_layout: ' 预览 ',
-  continue_layout: ' 继续生成 ',
+  continue_layout: ' 继续 ',
   Azimuth_description: ' 光伏板朝向，默认0° 为正北，180° 为正南 ',
   Tilt_description: ' 光伏板与水平地面所成夹角 ',
   orientation_description: ' 每块光伏板摆放方向，纵向或横向 ',

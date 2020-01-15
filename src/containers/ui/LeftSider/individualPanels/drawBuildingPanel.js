@@ -65,7 +65,7 @@ const DrawBuildingPanel = (props) => {
   );
   console.log(props.uiState)
   return (
-    <div>
+    <div style={{padding: '10px 10px 20px', overflow: 'auto'}}>
       {
         props.workingBuilding.type === 'PITCHED' ?
         PitchedBuildingLayout :

@@ -5,6 +5,27 @@ const initialState = {
   uiState: 'IDLE',
 };
 
+const setUIStateIdel = (state, action) => {
+  return {
+    ...state,
+    uiState: 'IDLE'
+  };
+}
+
+const setUIStateManageBuilding = (state, action) => {
+  return {
+    ...state,
+    uiState: 'MANAGE_BUILDING'
+  }
+}
+
+const setUIStateCreateNewBuilding = (state, action) => {
+  return {
+    ...state,
+    uiState: 'CREATE_NEW_BUILDING'
+  };
+}
+
 const setUIStateDrawingFound = (state, action) => {
   return {
     ...state,
@@ -172,6 +193,12 @@ const setUIStateDragBridging = (state, action) => {
 
 const reducer = (state=initialState, action) => {
   switch (action.type) {
+    case actionTypes.SET_UI_STATE_IDLE:
+      return setUIStateIdel(state, action);
+    case actionTypes.SET_UI_STATE_MANAGE_BUILDING:
+      return setUIStateManageBuilding(state, action);
+    case actionTypes.SET_UI_STATE_CREATE_NEW_BUILDING:
+      return setUIStateCreateNewBuilding(state, action);
     case actionTypes.SET_UI_STATE_READY_DRAWING:
       return setUIStateReadyDrawing(state, action);
     case actionTypes.SET_UI_STATE_DRAWING_FOUND:

@@ -184,7 +184,7 @@ class SetUpBridgingPanel extends Component {
     null;
 
     return (
-      <div>
+      <div style={{padding: '10px 10px 20px', overflow: 'auto'}}>
         <Row type="flex" justify="center">
           <h3><FormattedMessage id='setupBridging' /></h3>
         </Row>
@@ -202,6 +202,7 @@ class SetUpBridgingPanel extends Component {
               console.log('finish building')
               this.props.bindPVPanels();
               this.props.bindInverters();
+              this.props.setUIStateIdel();
             }}
           >
             <FormattedMessage id='finish_bridging' /> <Icon type='check' />
@@ -234,6 +235,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
+    setUIStateIdel: () => dispatch(actions.setUIStateIdel()),
     bindPVPanels: () => dispatch(actions.bindPVPanels()),
     bindInverters: () => dispatch(actions.bindInverters())
   };

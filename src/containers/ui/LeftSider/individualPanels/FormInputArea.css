@@ -1,0 +1,13 @@
+.inputArea {
+  width: 100%;
+}
+
+.halfInputArea {
+  width: 50%;
+  text-align: center;
+}
+
+.oneThridInputArea {
+  width: 33.33%;
+  text-align: center;
+}

@@ -102,6 +102,9 @@ export {
 } from './drawingKeepoutPolygonManager'
 
 export {
+  setUIStateIdel,
+  setUIStateManageBuilding,
+  setUIStateCreateNewBuilding,
   setUIStateReadyDrawing,
   setUIStateDrawingFound,
   setUIStateFoundDrew,

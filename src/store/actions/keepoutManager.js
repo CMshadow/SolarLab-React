@@ -7,7 +7,7 @@ import Env from '../../infrastructure/keepout/env';
 
 export const bindAllKeepout = () => (dispatch, getState) => {
   const buildingIndex =
-    getState().projectManagerReducer.projectInfo.buildingCollection.length;
+    getState().projectManagerReducer.projectInfo.buildingGroupCollection.length;
   const normalKeepout =
     getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer
     .normalKeepout.map(kpt => NormalKeepout.fromKeepout(kpt));
