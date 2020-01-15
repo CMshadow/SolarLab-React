@@ -1,5 +1,9 @@
 import * as Cesium from 'cesium';
 
+import { getAltitudeAzimuth } from './pointCalculation'
+import Coordinate from '../point/coordinate';
+import Point from '../point/point';
+
 /**
  * Search all possible roof planes based on the edgeMap of the current building
  * @param  {[InnerEdgeCollection, OuterEdgeCollection]} [edgeList] EdgeMap that contains both inner and outer EdgesCollection
@@ -191,4 +195,20 @@ export const clockwise_comparator = (v1, v2, b, joint, node_list, flag) => {
         return -1;
     }
   } 
+}
+
+
+export const innerEdgeRoofTopTest = () =>{
+  let innerPoint1 = new Coordinate(-117.840115555862, 33.646001090657, 6.995);
+  let innerPoint2 = new Coordinate(-117.839951401447, 33.64601986082, 6.995);
+  let innerPoint3 = new Coordinate(-117.839917727935,33.645815773787,6.995);
+  let innerPoint4 = new Coordinate(-117.840084461032, 33.645796708494,6.995);
+
+  var new_height_45 = Coordinate.linearDistance(innerPoint1, innerPoint2);
+  console.log("new_height_45: " + new_height_45);
+  let test_point1 = new Point(innerPoint1.lon, innerPoint1.lat, innerPoint1.height + new_height_45);
+  let test_point2 = new Point(innerPoint2.lon, innerPoint2.lat, innerPoint2.height);
+  let test_point3 = new Point(innerPoint3.lon, innerPoint3.lat, innerPoint3.height);
+  var al_az = getAltitudeAzimuth(test_point3, test_point2, test_point1);
+  console.log("al_az: " + al_az);
 }

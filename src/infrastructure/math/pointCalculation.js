@@ -70,45 +70,54 @@ export const minPanelTiltAngleOnPitchedRoof = (plane_points, panelBrng) => {
     return minPanelTilt * 180 / Math.PI;
 }
 
-const getHighAndFixedIndex = (panel_points, p_ratio) => {
-    for (var i = 1; i < 4; ++i) {
-        var delta_lon = panel_points[0].lon - panel_points[i].lon;
-        var delta_lat = panel_points[0].lat - panel_points[i].lat;
-        var delta_height = panel_points[0].height - panel_points[i].height;
+//const getHighAndFixedIndex = (panel_points, p_ratio) => {
+//    for (var i = 1; i < 4; ++i) {
+//        var delta_lon = panel_points[0].lon - panel_points[i].lon;
+//        var delta_lat = panel_points[0].lat - panel_points[i].lat;
+//        var delta_height = panel_points[0].height - panel_points[i].height;
 
-        if (delta_lon / p_ratio[0] === delta_height && delta_lat / p_ratio[1] === delta_height) {
-            if (delta_height < 0) return [0, i];
-            else return [i, 0];
-        }
-    }
-    return null;
+//        if (delta_lon / p_ratio[0] === delta_height && delta_lat / p_ratio[1] === delta_height) {
+//            if (delta_height < 0) return [0, i];
+//            else return [i, 0];
+//        }
+//    }
+//    return null;
+//}
+
+export const generatePanelPoints = (point, panel_al, panel_az, ratio) => {
+    let delta_lon_meter = Math.cos(panel_az);
+    let delta_lat_meter = Math.sin(panel_az);
+    let delta_height = Math.tan(panel_al);
+
+    let new_lon = point.lon + delta_lon_meter * ratio[0];
+    let new_lat = point.lat + delta_lat_meter * ratio[1];
+    let new_height = point.height - delta_height;
+
+    var low_point = new Point(new_lon, new_lat, new_height);
+    return [point, low_point];
 }
 
 /**
  * [calculatePanelShadowLength description]
  * @param  {Point[]} plane_points  б���涥�㼯
- * @param  {Point[]} panel_points  ̫���ܰ嶥�㼯 in degrees
  * @param  {Number} panel_al       ̫���ܰ��߶Ƚ� in degrees
  * @param  {Number} panel_az       ̫���ܰ巽λ��
  * @return {Number}                ��Ӱ���� in meters
  */
 export const calculatePanelShadowLength = (
-  plane_points, panel_points, panel_al, panel_az, solar_position
+  plane_points, panel_al, panel_az, solar_position
 ) => {
 
     const ratio = getRatio(plane_points[0].lon, plane_points[0].lat);
+
+    var panel_points = generatePanelPoints(plane_points[0], panel_al, panel_az, ratio);
 
     const panel_position = [panel_al, panel_az];
     const p_vec = shadow_vector(panel_position);
     const p_ratio = [ratio[0] * p_vec[0], ratio[1] * p_vec[1]];
 
-    const panel_pair = getHighAndFixedIndex(panel_points, p_ratio);
-    if (panel_pair === null) {
-        console.log("error");
-        return null;
-    }
-    const high_point = panel_points[panel_pair[0]];
-    const fix_point = panel_points[panel_pair[1]];
+    const high_point = panel_points[0];
+    const low_point = panel_points[1];
 
     const s_vec = shadow_vector(solar_position);
     const s_ratio = [ratio[0] * s_vec[0], ratio[1] * s_vec[1]];
@@ -121,7 +130,7 @@ export const calculatePanelShadowLength = (
         joint.lon, joint.lat, joint.height
     );
     const fix_cartesian = Cesium.Cartesian3.fromDegrees(
-        fix_point.lon, fix_point.lat, fix_point.height
+        low_point.lon, low_point.lat, low_point.height
     );
 
     const delta_x = fix_cartesian.x - joint_cartesian.x;
@@ -129,4 +138,94 @@ export const calculatePanelShadowLength = (
     const delta_z = fix_cartesian.z - joint_cartesian.z;
 
     return Math.sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
+}
+
+export const getPrependicularFoot = (A, B, P) => {
+    const x1 = A.lon;
+    const y1 = A.lat;
+    const z1 = A.height;
+
+    const x2 = B.lon;
+    const y2 = B.lat;
+    const z2 = B.height;
+
+    const x3 = P.lon;
+    const y3 = P.lat;
+    const z3 = P.height;
+
+    const k = [x2 - x1, y2 - y1, z2 - z1];
+    const b = [x3 - x1, y3 - y1, z3 - z1];
+    const p = (k[0] * b[0] + k[1] * b[1] + k[2] * b[2]) / (k[0] * k[0] + k[1] * k[1] + k[2] * k[2]);
+
+    return new Point(p * (x2 - x1) + x1, p * (y2 - y1) + y1, p * (z2 - z1) + z1);
+}
+
+export const getAltitudeAzimuth = (point1, point2, point3) => {
+
+    var delta_lon = point3.lon - point2.lon;
+    var delta_lat = point3.lat - point2.lat;
+    var delta_height = point3.height - point2.height;
+
+    const target_height = point1.height - point2.height;
+
+    delta_lon = delta_lon / delta_height * target_height;
+    delta_lat = delta_lat / delta_height * target_height;
+
+    var high_ref_point = new Point(
+        point2.lon + delta_lon,
+        point2.lat + delta_lat,
+        point2.height + target_height
+    );
+
+    var vertical_point = point2;
+    var low_point = point1;
+    if (delta_height === 0) {
+        high_ref_point = point3;
+        low_point = point2;
+        vertical_point = point1;
+    } else if (target_height === 0) {
+        high_ref_point = point1;
+        low_point = point2;
+        vertical_point = point3;
+    }
+    var joint = getPrependicularFoot(high_ref_point, low_point, vertical_point);
+    
+    const joint_ref_cartesian = Cesium.Cartesian3.fromDegrees(
+        joint.lon, joint.lat, vertical_point.height
+    );
+    const p2_cartesian = Cesium.Cartesian3.fromDegrees(
+        vertical_point.lon, vertical_point.lat, vertical_point.height
+    );
+    const north_cartesian = Cesium.Cartesian3.fromDegrees(
+        vertical_point.lon, vertical_point.lat + 0.00001, vertical_point.height
+    );
+
+    // joint_ref_cartesian, p2_cartesian, north_cartesian
+    const v1x = joint_ref_cartesian.x - p2_cartesian.x;
+    const v1y = joint_ref_cartesian.y - p2_cartesian.y;
+    const v1z = joint_ref_cartesian.z - p2_cartesian.z;
+    const mod1 = Math.sqrt(v1x * v1x + v1y * v1y + v1z * v1z);
+
+    const v2x = north_cartesian.x - p2_cartesian.x;
+    const v2y = north_cartesian.y - p2_cartesian.y;
+    const v2z = north_cartesian.z - p2_cartesian.z;
+    const mod2 = Math.sqrt(v2x * v2x + v2y * v2y + v2z * v2z);
+
+    const cosine1 = (v1x * v2x + v1y * v2y + v1z * v2z) / (mod1 * mod2);
+    const azimuth = Math.acos(cosine1) * 180 / Math.PI;
+
+    const joint_cartesian = Cesium.Cartesian3.fromDegrees(
+        joint.lon, joint.lat, joint.height
+    );
+
+    // joint_cartesian, p2_partesian, joint_ref_cartesian
+    const v3x = joint_cartesian.x - p2_cartesian.x;
+    const v3y = joint_cartesian.y - p2_cartesian.y;
+    const v3z = joint_cartesian.z - p2_cartesian.z;
+    const mod3 = Math.sqrt(v3x * v3x + v3y * v3y + v3z * v3z);
+
+    const cosine2 = (v1x * v3x + v1y * v3y + v1z * v3z) / (mod1 * mod3);
+    const altitude = Math.acos(cosine2) * 180 / Math.PI;
+
+    return [altitude, azimuth];
 }
