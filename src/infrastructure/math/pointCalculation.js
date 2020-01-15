@@ -100,7 +100,6 @@ export const generatePanelPoints = (point, panel_al, panel_az, ratio) => {
 /**
  * [calculatePanelShadowLength description]
  * @param  {Point[]} plane_points  б���涥�㼯
- * @param  {Point[]} panel_points  ̫���ܰ嶥�㼯 in degrees
  * @param  {Number} panel_al       ̫���ܰ��߶Ƚ� in degrees
  * @param  {Number} panel_az       ̫���ܰ巽λ��
  * @return {Number}                ��Ӱ���� in meters
