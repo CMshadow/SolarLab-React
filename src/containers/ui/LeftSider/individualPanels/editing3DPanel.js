@@ -18,7 +18,7 @@ import Polyline from '../../../../infrastructure/line/polyline';
 const Editing3DPanel = (props) => {
 
   return (
-    <div>
+    <div style={{padding: '10px 10px 20px', overflow: 'auto'}}>
       <RoofList3D />
       <Divider />
       <KeepoutList3D />

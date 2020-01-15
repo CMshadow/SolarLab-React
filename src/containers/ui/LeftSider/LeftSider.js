@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Button, Icon } from 'antd';
+import { Layout, Button, BackTop } from 'antd';
 import { connect } from 'react-redux';
 
 import 'antd/dist/antd.css';
@@ -22,14 +22,8 @@ class LeftSider extends Component {
 
   state = {
     siderCollapse: false,
-
   }
 
-  onCollapse = (collapsed, type) => {
-    this.setState ({
-      siderCollapse: collapsed
-    });
-  }
   toggle = () => {
     this.setState({
       siderCollapse: !this.state.siderCollapse,
@@ -73,7 +67,6 @@ class LeftSider extends Component {
           width={325}
           collapsedWidth={50}
           collapsible
-          onCollapse={this.onCollapse}
           trigger={null}
           collapsed={this.state.siderCollapse}
         >

@@ -21,7 +21,7 @@ export const initBuilding = (values) => (dispatch, getState) => {
     Generate building serial
    */
   const buildingNum = getState().projectManagerReducer.projectInfo
-    .buildingCollection.length;
+    .buildingGroupCollection.length;
   let buildingSerial = null;
   if (buildingNum < 9) {
     buildingSerial = `0${buildingNum + 1}`;

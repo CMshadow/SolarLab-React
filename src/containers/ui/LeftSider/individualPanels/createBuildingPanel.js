@@ -15,7 +15,7 @@ import {
 } from 'antd';
 import { injectIntl, FormattedMessage } from 'react-intl';
 
-import * as classes from './createBuildingPanel.module.css';
+import './FormInputArea.css';
 import * as actions from '../../../../store/actions/index';
 
 const { Option } = Select;
@@ -30,8 +30,8 @@ class CreateBuildingPanel extends PureComponent {
     event.preventDefault();
     this.props.form.validateFieldsAndScroll((err, values) => {
       if (!err) {
-        this.props.setUIStateReadyDrawing();
         this.props.initBuilding(values);
+        this.props.setUIStateReadyDrawing();
         console.log('[Create Building Panel] Your are creating a new building')
       }
     });
@@ -71,7 +71,7 @@ class CreateBuildingPanel extends PureComponent {
               initialValue: this.props.buildingInfoFields.foundHt
             })(
               <InputNumber
-                className={classes.inputArea}
+                className='inputArea'
                 min={0}
                 max={500}
                 step={0.1}
@@ -100,7 +100,7 @@ class CreateBuildingPanel extends PureComponent {
               initialValue: this.props.buildingInfoFields.parapetHt
             })(
               <InputNumber
-                className={classes.inputArea}
+                className='inputArea'
                 min={0}
                 max={5}
                 step={0.1}
@@ -129,7 +129,7 @@ class CreateBuildingPanel extends PureComponent {
               initialValue: this.props.buildingInfoFields.hipStb
             })(
               <InputNumber
-                className={classes.inputArea}
+                className='inputArea'
                 min={0}
                 max={5}
                 step={0.1}
@@ -158,7 +158,7 @@ class CreateBuildingPanel extends PureComponent {
               initialValue: this.props.buildingInfoFields.ridgeStb
             })(
               <InputNumber
-                className={classes.inputArea}
+                className='inputArea'
                 min={0}
                 max={5}
                 step={0.1}
@@ -172,7 +172,7 @@ class CreateBuildingPanel extends PureComponent {
     );
 
     return (
-      <div style={{paddingTop: '10px'}}>
+      <div style={{padding: '10px 10px 20px', overflow: 'auto'}}>
         <Row>
           <Col span={20} offset={2}>
             <Button shape='circle' icon='arrow-left'
@@ -219,7 +219,7 @@ class CreateBuildingPanel extends PureComponent {
                   initialValue: this.props.buildingInfoFields.type
                 })(
                   <Select
-                    className={classes.inputArea}
+                    className='inputArea'
                     onChange={(value,option) => {
                       this.setState({type:value});
                     }}>
@@ -282,7 +282,7 @@ class CreateBuildingPanel extends PureComponent {
                   initialValue: this.props.buildingInfoFields.eaveStb
                 })(
                   <InputNumber
-                    className={classes.inputArea}
+                    className='inputArea'
                     min={0}
                     max={10}
                     step={0.1}

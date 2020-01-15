@@ -15,10 +15,10 @@ import * as actions from '../../../../store/actions/index';
 
 const HomePanel = (props) => {
   return (
-    <div style={{paddingTop: '24px'}}>
+    <div style={{padding: '24px 10px 20px', overflow: 'auto'}}>
       <Row>
         <Col span={18} offset={3}>
-          <Button type='primary' size='large' block ghost
+          <Button type='primary' shape='round' size='large' block ghost
             onClick={props.setUIStateManageBuilding}
           >
             <Icon type='bars'/><FormattedMessage id='manageBuilding' />
@@ -28,7 +28,7 @@ const HomePanel = (props) => {
       <Divider />
       <Row>
         <Col span={18} offset={3}>
-          <Button type='primary' size='large' block ghost
+          <Button type='primary' shape='round' size='large' block ghost
             onClick={props.setUIStateCreateNewBuilding}
           >
             <Icon type='plus'/><FormattedMessage id='createNewBuilding' />
@@ -38,7 +38,7 @@ const HomePanel = (props) => {
       <Divider />
       <Row>
         <Col span={18} offset={3}>
-        <Button type='primary' size='large' block ghost>
+        <Button type='primary' shape='round' size='large' block ghost>
           <FontAwesomeIcon icon={faDrone} />
           <FormattedMessage id='manageDroneModel' />
         </Button>

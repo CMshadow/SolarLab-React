@@ -10,7 +10,8 @@ import {
   Progress,
   Dropdown,
   Menu,
-  Icon
+  Icon,
+  Divider
 } from 'antd';
 import { injectIntl, FormattedMessage } from 'react-intl';
 
@@ -163,23 +164,33 @@ class ManageBuildingPanel extends Component {
 
   render () {
     return (
-      <Row>
-        <Col span={24}>
-          <ConfigProvider renderEmpty={() => emptyListTemplate({type: 'Building'})}>
-            <Table
-              size='middle'
-              pagination={false}
-              columns={this.columns}
-              // expandedRowRender={
-              //   (inverter, inverterInd) =>
-              //   this.expandedRowRender(inverter, inverterInd)
-              // }
-              dataSource={this.props.buildingCollection}
-              rowKey={record => record.buildingGroupId}
-            />,
-          </ConfigProvider>
-        </Col>
-      </Row>
+      <div style={{padding: '10px 10px 20px', overflow: 'auto'}}>
+        <Row>
+          <Col span={20} offset={2}>
+            <Button shape='circle' icon='arrow-left'
+              onClick={this.props.setUIStateIdel}
+            />
+          </Col>
+        </Row>
+        <Divider style={{margin: '10px 0px'}}/>
+        <Row>
+          <Col span={24}>
+            <ConfigProvider renderEmpty={() => emptyListTemplate({type: 'Building'})}>
+              <Table
+                size='middle'
+                pagination={false}
+                columns={this.columns}
+                // expandedRowRender={
+                //   (inverter, inverterInd) =>
+                //   this.expandedRowRender(inverter, inverterInd)
+                // }
+                dataSource={this.props.buildingCollection}
+                rowKey={record => record.buildingGroupId}
+              />,
+            </ConfigProvider>
+          </Col>
+        </Row>
+      </div>
     );
   };
 };

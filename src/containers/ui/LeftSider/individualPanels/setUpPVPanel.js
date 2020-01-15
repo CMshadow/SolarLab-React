@@ -2,7 +2,6 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
   Form,
-  Input,
   InputNumber,
   Divider,
   Tooltip,
@@ -19,13 +18,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRectanglePortrait, faRectangleLandscape } from '@fortawesome/pro-light-svg-icons'
 import { injectIntl, FormattedMessage } from 'react-intl';
 
+import './FormInputArea.css';
 import * as actions from '../../../../store/actions/index';
 import axios from '../../../../axios-setup';
 import * as MyMath from '../../../../infrastructure/math/math';
 import BearingCollection from '../../../../infrastructure/math/bearingCollection';
 import errorNotification from '../../../../components/ui/Notification/ErrorNotification';
 import { minPanelTiltAngleOnPitchedRoof } from '../../../../infrastructure/math/pointCalculation';
-import { sunPosition } from '../../../../infrastructure/math/sunPositionCalculation';
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -342,7 +341,7 @@ class SetUpPVPanel extends Component {
     const panelAzimuth = (
       <Form.Item>
         <Row>
-          <Col span={10} offset={4}>
+          <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
               title={this.props.intl.formatMessage({id:'Azimuth_description'})}
@@ -350,12 +349,13 @@ class SetUpPVPanel extends Component {
               <h4><FormattedMessage id='panel_azimuth' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
-          <Col span={6}>
+          <Col span={10}>
             {getFieldDecorator('azimuth', {
               rules: [...this.numberInputRules],
               initialValue: this.state.azimuth
             })(
               <InputNumber
+                className='inputArea'
                 min={0}
                 max={360}
                 step={1}
@@ -373,7 +373,7 @@ class SetUpPVPanel extends Component {
     const panelTilt = (
       <Form.Item>
         <Row>
-          <Col span={10} offset={4}>
+          <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
               title={this.props.intl.formatMessage({id:'Tilt_description'})}
@@ -381,12 +381,13 @@ class SetUpPVPanel extends Component {
               <h4><FormattedMessage id='panel_tilt' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
-          <Col span={6}>
+          <Col span={10}>
             {getFieldDecorator('tilt', {
               rules: [...this.numberInputRules],
               initialValue: this.state.tilt
             })(
               <InputNumber
+                className='inputArea'
                 min={
                   this.state.selectRoofIndex !== null ?
                   Math.ceil(minPanelTiltAngleOnPitchedRoof(
@@ -413,7 +414,7 @@ class SetUpPVPanel extends Component {
     const panelOrientation = (
       <Form.Item>
         <Row>
-          <Col span={10} offset={4}>
+          <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
               title={this.props.intl.formatMessage({id:'orientation_description'})}
@@ -421,11 +422,12 @@ class SetUpPVPanel extends Component {
               <h4><FormattedMessage id='panel_orientation' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
-          <Col span={8}>
+          <Col span={10}>
             {getFieldDecorator('orientation', {
               initialValue: this.state.orientation
             })(
               <Radio.Group
+                className='inputArea'
                 buttonStyle='solid'
                 onChange={(e) => {
                   this.setState({orientation: e.target.value})
@@ -436,10 +438,10 @@ class SetUpPVPanel extends Component {
                   }
                 }}
               >
-                <Radio.Button value="portrait">
+                <Radio.Button className='halfInputArea' value="portrait">
                   <FontAwesomeIcon icon={faRectanglePortrait} />
                 </Radio.Button>
-                <Radio.Button value="landscape">
+                <Radio.Button className='halfInputArea' value="landscape">
                   <FontAwesomeIcon icon={faRectangleLandscape} />
                 </Radio.Button>
               </Radio.Group>
@@ -452,7 +454,7 @@ class SetUpPVPanel extends Component {
     const rowSpacing = (
       <Form.Item>
         <Row>
-          <Col span={10} offset={4}>
+          <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
               title={this.props.intl.formatMessage({id:'row_spacing_description'})}
@@ -460,12 +462,13 @@ class SetUpPVPanel extends Component {
               <h4><FormattedMessage id='row_spacing' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
-          <Col span={6}>
+          <Col span={10}>
             {getFieldDecorator('rowSpace', {
               rules: [...this.numberInputRules],
               initialValue:this.state.rowSpace
             })(
               <InputNumber
+                className='inputArea'
                 min={0}
                 max={30}
                 step={0.1}
@@ -482,7 +485,7 @@ class SetUpPVPanel extends Component {
     const colSpacing = (
       <Form.Item>
         <Row>
-          <Col span={10} offset={4}>
+          <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
               title={
@@ -492,12 +495,13 @@ class SetUpPVPanel extends Component {
               <h4><FormattedMessage id='panel_spacing' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
-          <Col span={6}>
+          <Col span={10}>
             {getFieldDecorator('colSpace', {
               rules: [...this.numberInputRules],
               initialValue: this.state.colSpace
             })(
               <InputNumber
+                className='inputArea'
                 min={0}
                 max={30}
                 step={0.1}
@@ -514,7 +518,7 @@ class SetUpPVPanel extends Component {
     const align = (
       <Form.Item>
         <Row>
-          <Col span={8} offset={4}>
+          <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
               title={this.props.intl.formatMessage({id:'alignment_description'})}
@@ -522,18 +526,18 @@ class SetUpPVPanel extends Component {
               <h4><FormattedMessage id='align_ment' /> <Icon type="question-circle" /></h4>
             </Tooltip>
           </Col>
-          <Col span={12}>
+          <Col span={10}>
             {getFieldDecorator('align', {
               initialValue: this.state.align
             })(
-              <Radio.Group buttonStyle='solid'>
-                <Radio.Button value="left">
+              <Radio.Group className='inputArea' buttonStyle='solid'>
+                <Radio.Button className='oneThridInputArea' value="left">
                   <Icon type="align-left" />
                 </Radio.Button>
-                <Radio.Button value="center">
+                <Radio.Button className='oneThridInputArea' value="center">
                   <Icon type="align-center" />
                 </Radio.Button>
-                <Radio.Button value="right">
+                <Radio.Button className='oneThridInputArea' value="right">
                   <Icon type="align-right" />
                 </Radio.Button>
               </Radio.Group>
@@ -546,7 +550,7 @@ class SetUpPVPanel extends Component {
     const mode = (
       <Form.Item>
         <Row>
-          <Col span={8} offset={4}>
+          <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
               title={this.props.intl.formatMessage({id:'layoutmode_description'})}
@@ -573,7 +577,7 @@ class SetUpPVPanel extends Component {
     const optionalRowPerArray = (
       <Form.Item>
         <Row>
-          <Col span={10} offset={4}>
+          <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
               title={
@@ -586,12 +590,13 @@ class SetUpPVPanel extends Component {
               </h4>
             </Tooltip>
           </Col>
-          <Col span={6}>
+          <Col span={10}>
             {getFieldDecorator('rowPerArray', {
               rules: [...this.numberInputRules],
               initialValue: this.state.rowPerArray
             })(
               <InputNumber
+                className='inputArea'
                 min={0}
                 max={10}
                 step={1}
@@ -605,7 +610,7 @@ class SetUpPVPanel extends Component {
     const optionalPanelPerRow = (
       <Form.Item>
         <Row>
-          <Col span={10} offset={4}>
+          <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
               title={this.props.intl.formatMessage({id:'panel_per_row_description'})}
@@ -616,12 +621,13 @@ class SetUpPVPanel extends Component {
               </h4>
             </Tooltip>
           </Col>
-          <Col span={6}>
+          <Col span={10}>
             {getFieldDecorator('panelPerRow', {
               rules: [...this.integerInputRules],
               initialValue: this.state.panelPerRow
             })(
               <InputNumber
+                className='inputArea'
                 min={0}
                 max={30}
                 step={1}
@@ -633,7 +639,7 @@ class SetUpPVPanel extends Component {
     );
 
     return (
-      <div>
+      <div style={{padding: '10px 10px 20px', overflow: 'auto'}}>
         <Row type="flex" justify="center">
           <h3><FormattedMessage id='setUpPVPanelonRoof' /></h3>
         </Row>
@@ -724,16 +730,19 @@ class SetUpPVPanel extends Component {
           }
 
           {/*The button to validate & process to create a new building*/}
-          <Row type="flex" justify="center">
+          <Row >
             <Col span={20} offset={2}>
-              <ButtonGroup>
-                <Button type='primary' shape='round' size='large'
+              <ButtonGroup className='inputArea'>
+                <Button
+                  style={{width: '40%'}}
+                  shape='round' size='large'
                   htmlType="submit" loading={this.props.backendLoading}
                   disabled={this.state.isFetching}
                 >
                   <FormattedMessage id='preview_layout' />
                 </Button>
                 <Button
+                  style={{width: '60%'}}
                   type='primary'
                   shape='round'
                   size='large'
