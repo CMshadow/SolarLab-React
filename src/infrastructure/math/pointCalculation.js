@@ -2,6 +2,7 @@ import * as Cesium from 'cesium';
 
 import Coordinate from '../point/coordinate';
 import Point from '../point/point';
+import { angleBetweenBrngs } from './math';
 import {
   cartesianToPoint,
   getPlaneEquationForPoint,
@@ -121,12 +122,8 @@ export const calculatePanelShadowLength = (
   const ratio = getRatio(plane_points[0].lon, plane_points[0].lat);
 
   const panel_points = generatePanelPoints(
-    plane_points[0], panel_al, panel_az, panel_length
+    plane_points[0], panel_al, panel_az + 180, panel_length
   );
-
-  const panel_position = [panel_al, panel_az];
-  const p_vec = shadow_vector(panel_position);
-  const p_ratio = [ratio[0] * p_vec[0], ratio[1] * p_vec[1]];
 
   const high_point = panel_points[0];
   const low_point = panel_points[1];
@@ -137,7 +134,6 @@ export const calculatePanelShadowLength = (
   const plane_equation = getPlaneEquationForPoint(
     plane_points[0], plane_points[1], plane_points[2]
   );
-
   const ref_point = new Point(
     high_point.lon + s_ratio[0],
     high_point.lat + s_ratio[1],
@@ -146,18 +142,18 @@ export const calculatePanelShadowLength = (
   const joint = getPlaneLineIntersectPointPosition(
     high_point, ref_point, plane_equation
   );
-  const joint_cartesian = Cesium.Cartesian3.fromDegrees(
-    joint.lon, joint.lat, joint.height
+  const shadowLength = Coordinate.linearDistance(
+    new Coordinate(joint.lon, joint.lat, joint.height),
+    new Coordinate(low_point.lon, low_point.lat, low_point.height),
   );
-  const fix_cartesian = Cesium.Cartesian3.fromDegrees(
-    low_point.lon, low_point.lat, low_point.height
-  );
+  const shadowBrng = Coordinate.bearing(
+    new Coordinate(low_point.lon, low_point.lat, low_point.height),
+    new Coordinate(joint.lon, joint.lat, joint.height)
+  )
+  const brngDiff = angleBetweenBrngs(panel_az + 180, shadowBrng);
+  const trueShadowLength = Math.cos(brngDiff * Math.PI / 180) * shadowLength;
 
-  const delta_x = fix_cartesian.x - joint_cartesian.x;
-  const delta_y = fix_cartesian.y - joint_cartesian.y;
-  const delta_z = fix_cartesian.z - joint_cartesian.z;
-
-  return Math.sqrt(delta_x * delta_x + delta_y * delta_y + delta_z * delta_z);
+  return trueShadowLength - Math.cos(panel_al * Math.PI / 180) * panel_length;
 }
 
 export const getPrependicularFoot = (A, B, P) => {

@@ -149,7 +149,7 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
     dispatch(actions.setBackendLoadingFalse());
     return errorNotification(
       'Backend Error',
-      error
+      error.response.data.errorMessage || error
     )
   });
 }

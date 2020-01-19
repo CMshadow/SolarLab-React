@@ -148,15 +148,13 @@ class SetUpPVPanel extends Component {
         tilt,
         azimuth,
         panelLength,
-        sunPosition(2019, 12, 22, val,
-          this.props.workingBuilding.foundationPolygon[0].hierarchy[0],
-          this.props.workingBuilding.foundationPolygon[0].hierarchy[1],
+        sunPosition(
+          2019, 12, 22, val, roofPoints[0].lon, roofPoints[0].lat,
           this.props.projectInfo.determineTimeZone()
         )
       );
       return shadowLengthStd > max ? shadowLengthStd : max
     }, 0)
-    console.log(shadowLength)
     this.props.form.setFieldsValue({
       rowSpace: parseFloat(shadowLength.toFixed(2))
     });
@@ -415,7 +413,7 @@ class SetUpPVPanel extends Component {
                 className='inputArea'
                 min={0}
                 max={360}
-                step={1}
+                step={2}
                 formatter={value => `${value}\xB0`}
                 parser={value => value.replace('\xB0', '')}
                 onChange = {e => {
@@ -463,7 +461,7 @@ class SetUpPVPanel extends Component {
                   0
                 }
                 max={45}
-                step={5}
+                step={1}
                 formatter={value => `${value}\xB0`}
                 parser={value => value.replace('\xB0', '')}
                 onChange = {e => {
@@ -542,7 +540,7 @@ class SetUpPVPanel extends Component {
                 className='inputArea'
                 min={0}
                 max={30}
-                step={0.1}
+                step={0.05}
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
                 onChange = {e => {
@@ -583,7 +581,7 @@ class SetUpPVPanel extends Component {
                 className='inputArea'
                 min={0}
                 max={30}
-                step={0.1}
+                step={0.05}
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
                 onChange = {e => this.setState({colSpace:e})}
