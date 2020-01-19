@@ -15,7 +15,10 @@ import {
   Spin
 } from 'antd';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRectanglePortrait, faRectangleLandscape } from '@fortawesome/pro-light-svg-icons'
+import {
+  faRectanglePortrait,
+  faRectangleLandscape
+} from '@fortawesome/pro-light-svg-icons'
 import { injectIntl, FormattedMessage } from 'react-intl';
 
 import './FormInputArea.css';
@@ -24,7 +27,12 @@ import axios from '../../../../axios-setup';
 import * as MyMath from '../../../../infrastructure/math/math';
 import BearingCollection from '../../../../infrastructure/math/bearingCollection';
 import errorNotification from '../../../../components/ui/Notification/ErrorNotification';
-import { minPanelTiltAngleOnPitchedRoof } from '../../../../infrastructure/math/pointCalculation';
+import warningNotification from '../../../../components/ui/Notification/WarningNotification';
+import { sunPosition } from '../../../../infrastructure/math/sunPositionCalculation';
+import {
+  minPanelTiltAngleOnPitchedRoof,
+  calculatePanelShadowLength
+} from '../../../../infrastructure/math/pointCalculation';
 
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -36,6 +44,7 @@ class SetUpPVPanel extends Component {
     isFetching: false,
     selectRoofIndex: null,
     selectPanelID: null,
+    minRowSpace: 0,
     ...this.props.parameters
   }
 
@@ -116,7 +125,45 @@ class SetUpPVPanel extends Component {
     }
   }
 
-  determineRowSpace = (shadowFactor, orientation, panelID) => {
+  updateRowSpace = (
+    roofIndex, panelID, tilt, azimuth, orientation, mode, rowPerArray
+  ) => {
+    let roofPoints = null;
+    let panelLength = this.getPanelLength(orientation, panelID);
+    if (mode === 'array') {
+      panelLength = panelLength * rowPerArray;
+    }
+
+    if(this.props.workingBuilding.type === 'FLAT') {
+      roofPoints = this.props.workingBuilding.foundationPolygon[0]
+        .toFoundLine().points;
+    } else {
+      roofPoints = this.props.workingBuilding.pitchedRoofPolygons[roofIndex]
+        .toFoundLine().points;
+    }
+
+    const shadowLength = [10, 11, 12, 13, 14, 15].reduce((max, val) => {
+      const shadowLengthStd = calculatePanelShadowLength(
+        roofPoints,
+        tilt,
+        azimuth,
+        panelLength,
+        sunPosition(
+          2019, 12, 22, val, roofPoints[0].lon, roofPoints[0].lat,
+          this.props.projectInfo.determineTimeZone()
+        )
+      );
+      return shadowLengthStd > max ? shadowLengthStd : max
+    }, 0)
+    this.props.form.setFieldsValue({
+      rowSpace: parseFloat(shadowLength.toFixed(2))
+    });
+    this.setState({
+      minRowSpace: parseFloat(shadowLength.toFixed(2))
+    });
+  }
+
+  getPanelLength = (orientation, panelID) => {
     const panelInd = this.props.userPanels.reduce((findIndex, elem, i) =>
       elem.panelID === panelID ? i : findIndex, -1
     );
@@ -146,13 +193,10 @@ class SetUpPVPanel extends Component {
           panelEdge = 1;
       }
     }
-
-    this.props.form.setFieldsValue({
-      rowSpace: parseFloat((shadowFactor * panelEdge).toFixed(1))
-    });
+    return panelEdge;
   }
 
-  updateEcoFormFields = () => {
+  updateEcoFormFields = (roofIndex) => {
     this.props.form.setFieldsValue({
       azimuth: this.props.projectInfo.globalOptimalAzimuth,
       tilt: this.props.projectInfo.globalOptimalTilt
@@ -161,7 +205,13 @@ class SetUpPVPanel extends Component {
       azimuth: this.props.projectInfo.globalOptimalAzimuth,
       tilt: this.props.projectInfo.globalOptimalTilt
     });
-    this.determineRowSpace(1.3, this.state.orientation, this.state.selectPanelID);
+
+    this.updateRowSpace(
+      roofIndex, this.state.selectPanelID,
+      this.props.projectInfo.globalOptimalTilt,
+      this.props.projectInfo.globalOptimalAzimuth, this.state.orientation,
+      this.state.mode, this.state.rowPerArray
+    );
   }
 
   updateMaxFormFields = (roofIndex) => {
@@ -221,8 +271,11 @@ class SetUpPVPanel extends Component {
             azimuth: azimuth,
             tilt: response.data.optimalTilt
           });
-          this.determineRowSpace(
-            1.3, this.state.orientation, this.state.selectPanelID
+
+          this.updateRowSpace(
+            roofIndex, this.state.selectPanelID, response.data.optimalTilt,
+            azimuth, this.state.orientation, this.state.mode,
+            this.state.rowPerArray
           );
         }).catch(err => {
           this.setIsFetchingFalse();
@@ -251,9 +304,9 @@ class SetUpPVPanel extends Component {
             this.props.workingBuilding.pitchedRoofPolygons[roofIndex].obliquity
           ),
         });
-        this.determineRowSpace(
-          1.3, this.state.orientation, this.state.selectPanelID
-        );
+        this.props.form.setFieldsValue({
+          rowSpace: 0
+        });
         break;
       }
     }
@@ -281,7 +334,7 @@ class SetUpPVPanel extends Component {
                 if (this.state.tab === 'max') {
                   this.updateMaxFormFields(roofInd);
                 } else if (this.state.tab === 'eco') {
-                  this.updateEcoFormFields();
+                  this.updateEcoFormFields(roofInd);
                 }
               }}
             >
@@ -317,9 +370,11 @@ class SetUpPVPanel extends Component {
               placeholder={this.props.intl.formatMessage({id:'select_a_panel'})}
               onChange={(e) => {
                 this.setState({selectPanelID: e});
-                if (this.state.tab !== 'manual') {
-                  this.determineRowSpace(1.3, this.state.orientation, e)
-                }
+                this.updateRowSpace(
+                  this.state.selectRoofIndex, e, this.state.tilt,
+                  this.state.azimuth, this.state.orientation, this.state.mode,
+                  this.state.rowPerArray
+                );
               }}
             >
               {this.props.userPanels.map(d =>
@@ -358,10 +413,17 @@ class SetUpPVPanel extends Component {
                 className='inputArea'
                 min={0}
                 max={360}
-                step={1}
+                step={2}
                 formatter={value => `${value}\xB0`}
                 parser={value => value.replace('\xB0', '')}
-                onChange = {e => this.setState({azimuth:e})}
+                onChange = {e => {
+                  this.setState({azimuth:e});
+                  this.updateRowSpace(
+                    this.state.selectRoofIndex, this.state.selectPanelID,
+                    this.state.tilt, e, this.state.orientation, this.state.mode,
+                    this.state.rowPerArray
+                  );
+                }}
                 disabled = {this.state.tab !== 'manual'}
               />
             )}
@@ -399,10 +461,17 @@ class SetUpPVPanel extends Component {
                   0
                 }
                 max={45}
-                step={5}
+                step={1}
                 formatter={value => `${value}\xB0`}
                 parser={value => value.replace('\xB0', '')}
-                onChange = {e => this.setState({tilt:e})}
+                onChange = {e => {
+                  this.setState({tilt:e});
+                  if (e !== 0) this.updateRowSpace(
+                    this.state.selectRoofIndex, this.state.selectPanelID, e,
+                    this.state.azimuth, this.state.orientation, this.state.mode,
+                    this.state.rowPerArray
+                  );
+                }}
                 disabled = {this.state.tab === 'eco'}
               />
             )}
@@ -431,11 +500,11 @@ class SetUpPVPanel extends Component {
                 buttonStyle='solid'
                 onChange={(e) => {
                   this.setState({orientation: e.target.value})
-                  if (this.state.tab !== 'manual') {
-                    this.determineRowSpace(
-                      1.3, e.target.value, this.state.selectPanelID
-                    );
-                  }
+                  this.updateRowSpace(
+                    this.state.selectRoofIndex, this.state.selectPanelID,
+                    this.state.tilt, this.state.azimuth, e.target.value,
+                    this.state.mode, this.state.rowPerArray
+                  );
                 }}
               >
                 <Radio.Button className='halfInputArea' value="portrait">
@@ -471,10 +540,18 @@ class SetUpPVPanel extends Component {
                 className='inputArea'
                 min={0}
                 max={30}
-                step={0.1}
+                step={0.05}
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
-                onChange = {e => this.setState({rowSpace:e})}
+                onChange = {e => {
+                  this.setState({rowSpace: e});
+                  if (e < this.state.minRowSpace) {
+                    warningNotification(
+                      this.props.intl.formatMessage({id:'warning'}),
+                      this.props.intl.formatMessage({id:'minRowSpace'})
+                    )
+                  }
+                }}
               />
             )}
           </Col>
@@ -504,7 +581,7 @@ class SetUpPVPanel extends Component {
                 className='inputArea'
                 min={0}
                 max={30}
-                step={0.1}
+                step={0.05}
                 formatter={value => `${value}m`}
                 parser={value => value.replace('m', '')}
                 onChange = {e => this.setState({colSpace:e})}
@@ -563,7 +640,14 @@ class SetUpPVPanel extends Component {
               initialValue: this.state.mode
             })(
               <Select
-                onChange={e => this.setState({mode:e})}
+                onChange={e => {
+                  this.setState({mode:e});
+                  this.updateRowSpace(
+                    this.state.selectRoofIndex, this.state.selectPanelID,
+                    this.state.tilt, this.state.azimuth, this.state.orientation,
+                    e, this.state.rowPerArray
+                  );
+                }}
               >
                 <Option value='individual'><FormattedMessage id='single_row_panel_layout' /></Option>
                 <Option value='array'><FormattedMessage id='multi_row_panel_layout' /></Option>
@@ -600,6 +684,14 @@ class SetUpPVPanel extends Component {
                 min={0}
                 max={10}
                 step={1}
+                onChange = {e => {
+                  this.setState({rowPerArray: e})
+                  this.updateRowSpace(
+                    this.state.selectRoofIndex, this.state.selectPanelID,
+                    this.state.tilt, this.state.azimuth,
+                    this.state.orientation, this.state.mode, e
+                  );
+                }}
               />
             )}
           </Col>
@@ -631,6 +723,7 @@ class SetUpPVPanel extends Component {
                 min={0}
                 max={30}
                 step={1}
+                onChange={e => this.setState({panelPerRow: e})}
               />
             )}
           </Col>
@@ -657,7 +750,7 @@ class SetUpPVPanel extends Component {
             onChange = {e => {
               this.setState({tab:e});
               if (e === 'eco') {
-                this.updateEcoFormFields()
+                this.updateEcoFormFields(this.state.selectRoofIndex)
               } else if (e === 'max') {
                 this.updateMaxFormFields(this.state.selectRoofIndex);
               }

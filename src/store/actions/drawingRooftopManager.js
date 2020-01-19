@@ -65,7 +65,7 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
     }
     const newRoofPlane = new Polygon(
       null,
-      `pitchedRoof ${i + 1}`,
+      `${i + 1}`,
       null,
       roofPlane.roofPlaneCoordinateArray,
       null,
@@ -149,7 +149,7 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
     dispatch(actions.setBackendLoadingFalse());
     return errorNotification(
       'Backend Error',
-      error
+      error.response.data.errorMessage || error
     )
   });
 }
