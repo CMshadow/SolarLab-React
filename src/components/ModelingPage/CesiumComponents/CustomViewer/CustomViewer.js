@@ -43,9 +43,9 @@ const CustomViewer = (props) => {
       homeButton={false}
       navigationHelpButton={false}
       baseLayerPicker={false}
-      animation={true}
-      timeline={true}
-      shadows={true}
+      animation={false}
+      timeline={false}
+      shadows={false}
       sceneMode={Cesium.SceneMode.SCENE3D}
     >
       {
