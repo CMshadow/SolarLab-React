@@ -59,13 +59,13 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
   ).pathCollection;
 
   let newRooftopCollection = new RoofTop();
-  pathInformationCollection.forEach(roofPlane => {
+  pathInformationCollection.forEach((roofPlane, i) => {
     for(let ind = 0; ind < roofPlane.roofPlaneCoordinateArray.length; ind+=3) {
       roofPlane.roofPlaneCoordinateArray[ind+2] -= 0.005
     }
     const newRoofPlane = new Polygon(
       null,
-      'roofPlane',
+      `pitchedRoof ${i + 1}`,
       null,
       roofPlane.roofPlaneCoordinateArray,
       null,

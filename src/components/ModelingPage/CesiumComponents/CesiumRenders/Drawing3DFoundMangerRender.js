@@ -1,11 +1,13 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PolygonVisualize from '../Polygon/Polygon';
+import PolygonLabel from '../Polygon/polygonLabel';
 import CustomWall from '../wall/wall';
 import * as actions from '../../../../store/actions/index';
 
 const drawing3DFoundManagerRender = (props) => {
 	let drawingBuildingFoundation = null;
+	let drawingBuildingFoundationLabel = null;
 	if (props.DrawingBuidingFoundation !== []) {
 		drawingBuildingFoundation =
 			props.DrawingBuidingFoundation.map(individual => (
@@ -14,6 +16,13 @@ const drawing3DFoundManagerRender = (props) => {
 				{...individual}
 			/>
 		));
+		drawingBuildingFoundationLabel =
+			props.DrawingBuidingFoundation.map(individual => (
+				<PolygonLabel
+					key={individual.entityId}
+					{...individual}
+				/>
+			));
 	}
 
 	let drawingBuildingFoundationExcludeStb = null;
@@ -40,6 +49,7 @@ const drawing3DFoundManagerRender = (props) => {
 		<div>
 			{drawingBuildingFoundation}
 			{drawingBuildingFoundationExcludeStb}
+			{drawingBuildingFoundationLabel}
 			{drawingBuildingParapet}
 		</div>
 	);

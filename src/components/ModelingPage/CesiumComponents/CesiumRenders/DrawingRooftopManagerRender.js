@@ -1,14 +1,15 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PolygonVisualize from '../Polygon/Polygon';
+import PolygonLabel from '../Polygon/polygonLabel';
 import CustomPoint from '../point/point';
 import Node from '../../../../infrastructure/edgesMap/node/node';
 import * as actions from '../../../../store/actions/index';
-import Polygon from '../../../../infrastructure/Polygon/Polygon';
 
 
 const drawingRooftopManagerRender = (props) => {
   const drawingBuildingRooftop = [];
+  const drawingBuildingRooftopLabel = [];
   const drawingBuildingRoofTopExcludeStb = [];
   const editingInnerPlanePoints = [];
   if (props.PitchedBuildingRoofTop.EnableToBuild && props.CurrentBuilding.type === 'PITCHED') {
@@ -21,6 +22,12 @@ const drawingRooftopManagerRender = (props) => {
             {...RoofPlane}
           />
         );
+        drawingBuildingRooftopLabel.push(
+          <PolygonLabel
+            key={RoofPlane.entityId}
+            {...RoofPlane}
+          />
+        )
       }
     })
     props.PitchedBuildingRoofTop.RooftopCollection.rooftopExcludeStb.forEach(
@@ -48,6 +55,7 @@ const drawingRooftopManagerRender = (props) => {
   return (
     <div>
       {drawingBuildingRooftop}
+      {drawingBuildingRooftopLabel}
       {drawingBuildingRoofTopExcludeStb}
       {editingInnerPlanePoints}
     </div>

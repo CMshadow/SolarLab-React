@@ -16,7 +16,7 @@ const initialState = {
  */
 const createBuildingFoundationPolygon = (state, action) => {
 	let newFoundation =
-		new Polygon(null, null, action.height, action.coordinatesArray, null, null,
+		new Polygon(null, 'FlatRoof 1', action.height, action.coordinatesArray, null, null,
 			Cesium.Color.ORANGE
 		);
 	return{
@@ -26,8 +26,8 @@ const createBuildingFoundationPolygon = (state, action) => {
 };
 
 const createBuildingFoundationExcludeStbPolygon = (state, action) => {
-	const polygonsExcludeStb = action.coordinatesArrays.map(hierarchy =>
-		new Polygon(null, null, action.height, hierarchy)
+	const polygonsExcludeStb = action.coordinatesArrays.map((hierarchy, i) =>
+		new Polygon(null, `FlatRoofExcludeStb ${i+1}`, action.height, hierarchy)
 	);
 	return {
 		...state,
