@@ -64,11 +64,18 @@ export const initStage = (layer) => (dispatch, getState) => {
 
     };
     stageSize[1] = nextStartPosition[1];
-    let inverterConnecterComponent = InterConnecter(layer, inverterDist, inverterConnectList);
-    let AC_Disconnectc_Component = ACDisconnect(layer, inverterConnecterComponent.distance, inverterConnecterComponent.connectPoint);
-    let ServerPanelComponent = ServerPanel(layer, AC_Disconnectc_Component.distance, AC_Disconnectc_Component.connectPoint);
-    let MeterComponent = Meter(layer, ServerPanelComponent.distance, ServerPanelComponent.connectPoint);
-    stageSize[0] = MeterComponent.maxWidth;
+    
+    
+
+    if (inverterDist != null) {
+      let inverterConnecterComponent = InterConnecter(layer, inverterDist, inverterConnectList);
+      let AC_Disconnectc_Component = ACDisconnect(layer, inverterConnecterComponent.distance, inverterConnecterComponent.connectPoint);
+      let ServerPanelComponent = ServerPanel(layer, AC_Disconnectc_Component.distance, AC_Disconnectc_Component.connectPoint);
+      let MeterComponent = Meter(layer, ServerPanelComponent.distance, ServerPanelComponent.connectPoint);
+      let GridComponent = Grid(layer, MeterComponent.distance, MeterComponent.connectPoint);
+      stageSize[0] = MeterComponent.maxWidth;
+    }
+    
 
 
   }
@@ -1590,11 +1597,11 @@ export const Meter = (layer, distance, connectPoint) => {
     x: startX + w_min * 0.5, 
     y: startY + h_min * 0.5,
     radius: w_min * 0.35,
-    fill: 'white',
     stroke: 'white',
     strokeWidth: stroke_Width
   });
   layer.add(meterCicle);  
+
 
   if (connectPoint[1] !== startY + h_min * 0.5) {
     // let breakPoint = [connectPoint[0], startY + (h_min / 2)]
@@ -1629,7 +1636,161 @@ export const Meter = (layer, distance, connectPoint) => {
   layer.add(bottomValue);
   return({
     type: actionTypes.METER,
-    connectPoint: [startX + 0.25 * w_min, startY + h_min * 0.75],
+    connectPoint: [startX + w_min, startY + h_min * 0.5],
+    distance: nextDistance,
+    maxWidth: finalPosition,
+    layer: layer
+  });
+}
+
+export const Grid = (layer, distance, connectPoint) => {
+  let w_min = 30;
+  let h_min = 30;
+  let stroke_Width = 2;
+  let font_size = Math.floor(h_min / 7);
+  let nextDistance = 0;
+  let finalPosition = null;
+  if (font_size < 8) {
+    font_size = 8;
+  }
+
+  if (window.innerWidth * 0.02 > w_min) {
+      w_min = window.innerWidth * 0.02;
+      h_min = window.innerWidth * 0.02;
+      font_size = Math.floor(h_min / 7);
+  }
+  if (font_size < 12) {
+    font_size = 12;
+  }
+
+  let startX = window.innerWidth * 0.02 + distance;
+  let startY = (window.innerHeight * 0.15);
+  nextDistance = startX + w_min;
+  finalPosition = nextDistance + w_min * 2;
+  let GridBounary = new Konva.Rect({
+    x: startX,
+    y: startY,
+    width:  w_min,
+    height: h_min,
+    stroke: 'white',
+    strokeWidth: stroke_Width
+  })
+  layer.add(GridBounary);
+
+  let connectLineToMeter = new Konva.Line({
+    points: [startX, startY + (h_min / 2), connectPoint[0], connectPoint[1] ],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  });
+  layer.add(connectLineToMeter);
+
+
+  let GridIconLeft = new Konva.Line({
+    points: [startX + 0.4 * w_min, startY + 0.1 * h_min, 
+      startX + 0.6 * w_min, startY + 0.1 * h_min,
+      startX + 0.7 * w_min, startY + 0.9 * h_min,
+      startX + 0.35 * w_min, startY + 0.55 * h_min ],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round',
+    closed: true
+  })
+  layer.add(GridIconLeft);
+
+  let GridIconRight = new Konva.Line({
+    points: [startX + 0.6 * w_min, startY + 0.1 * h_min,
+      startX + 0.4 * w_min, startY + 0.1 * h_min, 
+      startX + 0.3 * w_min, startY + 0.9 * h_min,
+      startX + 0.65 * w_min, startY + 0.55 * h_min ],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round',
+    closed: true
+  })
+  layer.add(GridIconRight);
+
+  let GridIconTop = new Konva.Line({
+    points: [startX + 0.4 * w_min, startY + 0.1 * h_min, 
+      startX + 0.6 * w_min, startY + 0.1 * h_min,
+      startX + 0.8 * w_min, startY + 0.2 * h_min,
+      startX + 0.2 * w_min, startY + 0.2 * h_min ],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round',
+    closed: true
+  })
+  layer.add(GridIconTop);
+
+  let GridIconTopLeft = new Konva.Line({
+    points: [startX + 0.2 * w_min, startY + 0.2 * h_min,
+      startX + 0.2 * w_min, startY + 0.3 * h_min],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  })
+  layer.add(GridIconTopLeft);
+
+  let GridIconTopRight = new Konva.Line({
+    points: [startX + 0.8 * w_min, startY + 0.2 * h_min,
+      startX + 0.8 * w_min, startY + 0.3 * h_min],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  })
+  layer.add(GridIconTopRight);
+
+  let GridIconMiddle = new Konva.Line({
+    points: [startX + 0.4 * w_min, startY + 0.35 * h_min, 
+      startX + 0.6 * w_min, startY + 0.35 * h_min,
+      startX + 0.8 * w_min, startY + 0.45 * h_min,
+      startX + 0.2 * w_min, startY + 0.45 * h_min ],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round',
+    closed: true
+  })
+  layer.add(GridIconMiddle);
+
+  let GridIconMiddleLeft = new Konva.Line({
+    points: [startX + 0.2 * w_min, startY + 0.45 * h_min,
+      startX + 0.2 * w_min, startY + 0.55 * h_min],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  })
+  layer.add(GridIconMiddleLeft);
+
+  let GridIconMiddleRight = new Konva.Line({
+    points: [startX + 0.8 * w_min, startY + 0.45 * h_min,
+      startX + 0.8 * w_min, startY + 0.55 * h_min],
+    stroke: 'white',
+    strokeWidth: stroke_Width,
+    lineCap: 'round',
+    lineJoin: 'round'
+  })
+  layer.add(GridIconMiddleRight);
+  // bottom value
+  let bottomValue = new Konva.Text({
+    x: startX + w_min * 0.05,
+    y: startY + h_min * 1.05,
+    text: 'Grid',
+    fontSize: font_size,
+    fontFamily: 'Calibri',
+    fill: 'white'
+  });
+  layer.add(bottomValue);
+  return({
+    type: actionTypes.GRID,
+    connectPoint: [startX + w_min, startY + h_min * 0.5],
     distance: nextDistance,
     maxWidth: finalPosition,
     layer: layer

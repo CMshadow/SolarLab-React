@@ -225,7 +225,8 @@ export {
   InterConnecter,
   ACDisconnect,
   ServerPanel,
-  Meter
+  Meter,
+  Grid
 } from './drawingSingleLineDiagram';
 
 export {
