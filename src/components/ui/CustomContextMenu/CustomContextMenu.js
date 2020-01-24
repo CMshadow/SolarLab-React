@@ -73,30 +73,28 @@ const CustomContextMenu = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
 
     hoverPolyline:
-      state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
+      state.undoable.present.drawingManager.hoverPolyline,
     hoverPointIndex:
-      state.undoableReducer.present.drawingManagerReducer.hoverPointIndex,
+      state.undoable.present.drawingManager.hoverPointIndex,
 
     hoverInnerLineIndex:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .hoverInnerLineIndex,
+      state.undoable.present.drawingInnerManager.hoverInnerLineIndex,
     hoverInnerPointId:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .hoverInnerPointId,
+      state.undoable.present.drawingInnerManager.hoverInnerPointId,
 
     hoverKeepoutPolyline:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .hoverPolyline,
+      state.undoable.present.drawingKeepoutManager.hoverPolyline,
     hoverKeepoutPointIndex:
-      state.undoableReducer.present.drawingKeepoutManagerReducer.hoverPointIndex,
+      state.undoable.present.drawingKeepoutManager.hoverPointIndex,
     linkedKeepoutType:
-      state.undoableReducer.present.drawingKeepoutManagerReducer.linkedKeepoutType,
+      state.undoable.present.drawingKeepoutManager.linkedKeepoutType,
 
     editingBridgingMainPolylineIndex:
-      state.undoableReducer.present.editingWiringManager
+      state.undoable.present.editingWiringManager
       .editingBridgingMainPolylineIndex
   };
 };

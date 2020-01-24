@@ -19,7 +19,7 @@ class  SingleLineDiagramStage extends Component {
     // console.log(this.refs.stage);
     // log Konva.Stage instance
     // console.log(this.refs.stage.getStage());
-    
+
     this.initState();
   }
 
@@ -48,20 +48,19 @@ class  SingleLineDiagramStage extends Component {
         <Stage ref="stage" height={this.props.buildingDiagramStageHeight} width={this.props.buildingDiagramStageWidth}/>
       </Aux>
     );
-  } 
-  
+  }
+
 };
 
 
 const mapStateToProps = state => {
   return {
     buildingDiagramStageWidth:
-      state.drawingSingleLineDiagramReducer.stageWidth,
+      state.undoable.present.drawingSingleLineDiagram.stageWidth,
     buildingDiagramStageHeight:
-      state.drawingSingleLineDiagramReducer.stageHeight,
+      state.undoable.present.drawingSingleLineDiagram.stageHeight,
     buildingDiagramLayer:
-    state.drawingSingleLineDiagramReducer.layer
-    
+      state.undoable.present.drawingSingleLineDiagram.layer
   };
 };
 
@@ -73,4 +72,3 @@ const mapDispatchToProps = dispatch => {
 };
 
 export default connect(mapStateToProps,mapDispatchToProps)(SingleLineDiagramStage);
-

@@ -63,7 +63,7 @@ const CustomViewer = (props) => {
 
 const mapStateToProps = state => {
   return{
-    selectedMap: state.cesiumReducer.selectedMap
+    selectedMap: state.undoable.present.cesiumManager.selectedMap
   }
 }
 

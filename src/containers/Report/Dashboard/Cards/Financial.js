@@ -58,12 +58,12 @@ class Financial extends Component {
 function mapStateToProps(state) {
     return {
         cashFlow: {
-            loaded: state.undoableReducer.present.reportManager.cashFlow.loaded,
-            option: state.undoableReducer.present.reportManager.cashFlow.option,
+            loaded: state.undoable.present.reportManager.cashFlow.loaded,
+            option: state.undoable.present.reportManager.cashFlow.option,
         },
         electricityBill: {
-            loaded: state.undoableReducer.present.reportManager.electricityBill.loaded,
-            option: state.undoableReducer.present.reportManager.electricityBill.option,
+            loaded: state.undoable.present.reportManager.electricityBill.loaded,
+            option: state.undoable.present.reportManager.electricityBill.option,
         },
     }
 }

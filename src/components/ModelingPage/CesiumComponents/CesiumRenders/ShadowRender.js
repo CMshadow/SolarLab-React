@@ -19,7 +19,7 @@ const ShadowRender = (props) => {
 const mapStateToProps = state => {
   return {
     shadows:
-      state.undoableReducer.present.editingShadowManager.shadows,
+      state.undoable.present.editingShadowManager.shadows,
   };
 }
 

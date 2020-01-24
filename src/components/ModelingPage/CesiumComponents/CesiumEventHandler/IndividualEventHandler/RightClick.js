@@ -37,9 +37,12 @@ const RightClickHandler = (props) => {
 
 const mapStateToProps = state => {
   return {
-    viewer: state.cesiumReducer.viewer,
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    drawingFoundPolyline: state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+    viewer:
+      state.undoable.present.cesiumManager.viewer,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
+    drawingFoundPolyline:
+      state.undoable.present.drawingManager.drawingPolyline,
   };
 };
 
@@ -49,7 +52,9 @@ const mapDispatchToProps = dispatch => {
     terminateDrawing: () => dispatch(actions.terminateDrawing()),
     terminateKeepoutDrawing: () => dispatch(actions.terminateKeepoutDrawing()),
     setUIStateFoundDrew: () => dispatch(actions.setUIStateFoundDrew()),
-    setUIStateEditingKeepout: () => dispatch(actions.setUIStateEditingKeepout()),
+    setUIStateEditingKeepout: () => dispatch(
+      actions.setUIStateEditingKeepout()
+    ),
     setPreviousUIState: () => dispatch(actions.setPreviousUIState()),
     setRightClickCartesian3: (cartesian, viewer) => dispatch(
       actions.setRightClickCartesian3(cartesian, viewer)

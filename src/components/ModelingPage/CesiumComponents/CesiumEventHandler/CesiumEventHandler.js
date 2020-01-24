@@ -1,6 +1,5 @@
 import React from 'react';
 import { ScreenSpaceEventHandler } from 'resium';
-import * as Cesium from 'cesium';
 
 import LeftClickHandler from './IndividualEventHandler/LeftClick';
 import LeftClickShiftHandler from './IndividualEventHandler/LeftClickShift';

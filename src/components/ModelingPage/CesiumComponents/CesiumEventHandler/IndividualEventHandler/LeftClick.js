@@ -16,7 +16,9 @@ const LeftClickHandler = (props) => {
 
       case 'DRAWING_FOUND':
         if (
-          pickedObjectIdArray.includes(props.drawingFoundPolyline.points[0].entityId)
+          pickedObjectIdArray.includes(
+            props.drawingFoundPolyline.points[0].entityId
+          )
         ) {
           props.terminateDrawing();
           props.setUIStateFoundDrew();
@@ -107,21 +109,21 @@ const LeftClickHandler = (props) => {
 
 const mapStateToProps = state => {
   return {
-    viewer: state.cesiumReducer.viewer,
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    viewer:
+      state.undoable.present.cesiumManager.viewer,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
     drawingFoundPolyline:
-      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+      state.undoable.present.drawingManager.drawingPolyline,
     hoverPolyline:
-      state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
+      state.undoable.present.drawingManager.hoverPolyline,
 
     drawingKeepoutPolyline:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .drawingKeepoutPolyline,
+      state.undoable.present.drawingKeepoutManager.drawingKeepoutPolyline,
     linkedKeepoutType:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .linkedKeepoutType,
+      state.undoable.present.drawingKeepoutManager.linkedKeepoutType,
     rooftopHoverPoint:
-      state.undoableReducer.present.drawingRooftopManagerReducer.hoverPoint
+      state.undoable.present.drawingRooftopManager.hoverPoint
   };
 };
 
@@ -130,7 +132,9 @@ const mapDispatchToProps = dispatch => {
     disableRotate: () => dispatch(actions.disableRotate()),
     enableRotate: () => dispatch(actions.enableRotate()),
     setUIStateFoundDrew: () => dispatch(actions.setUIStateFoundDrew()),
-    setUIStateEditingKeepout: () => dispatch(actions.setUIStateEditingKeepout()),
+    setUIStateEditingKeepout: () => dispatch(
+      actions.setUIStateEditingKeepout()
+    ),
     terminateDrawing: () => dispatch(actions.terminateDrawing()),
     terminateKeepoutDrawing: () => dispatch(actions.terminateKeepoutDrawing()),
     releaseHoverPolyline: () => dispatch(actions.releaseHoverPolyline()),

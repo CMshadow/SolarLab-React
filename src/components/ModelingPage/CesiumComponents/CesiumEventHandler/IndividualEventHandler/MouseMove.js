@@ -104,7 +104,8 @@ const MouseMoveHandler = (props) => {
           props.moveKeepoutPickedPoint(event.endPosition, props.viewer);
         } else {
           if(anyPickedObject) {
-            if (anyPickedObject.id.id === props.drawingKeepoutPolyline.entityId) {
+            if (anyPickedObject.id.id === props.drawingKeepoutPolyline.entityId)
+            {
               // Set hover polyline if available
               props.setKeepoutHoverPolyline();
               // Release hover point if it exists
@@ -113,14 +114,17 @@ const MouseMoveHandler = (props) => {
             }
 
             // Find out hover on which point
-            const onTopPoint = props.drawingKeepoutPolyline.points.find(element => {
+            const onTopPoint = props.drawingKeepoutPolyline.points.find(
+              element => {
               return element.entityId === anyPickedObject.id.id
             })
             // Set hover point if available
             if (onTopPoint) {
               props.setKeepoutHoverPointIndex(onTopPoint);
               // Release hover polyline if it exists
-              if (props.hoverKeepoutPolyline) props.releaseKeepoutHoverPolyline();
+              if (props.hoverKeepoutPolyline) {
+                props.releaseKeepoutHoverPolyline();
+              }
             }
             // If hover on tree's center point
             else if (
@@ -131,13 +135,19 @@ const MouseMoveHandler = (props) => {
               props.setKeepoutHoverPointIndex(
                 props.drawingKeepoutPolyline.centerPoint
               );
-              if (props.hoverKeepoutPolyline) props.releaseKeepoutHoverPolyline();
+              if (props.hoverKeepoutPolyline) {
+                props.releaseKeepoutHoverPolyline();
+              }
             }
           } else {
             // Release hover polyline if it exists
-            if (props.hoverKeepoutPolyline) props.releaseKeepoutHoverPolyline();
+            if (props.hoverKeepoutPolyline) {
+              props.releaseKeepoutHoverPolyline();
+            }
             // Release hover point if it exists
-            if (props.hoverKeepoutPointIndex !== null) props.releaseKeepoutHoverPointIndex();
+            if (props.hoverKeepoutPointIndex !== null) {
+              props.releaseKeepoutHoverPointIndex();
+            }
           }
         }
         break;
@@ -155,11 +165,15 @@ const MouseMoveHandler = (props) => {
           if (onTopPointPosition) {
             props.setHoverWiringPoint(onTopPointPosition);
           } else {
-            if (props.hoverWiringPointPosition !== null) props.releaseHoverWiringPoint();
+            if (props.hoverWiringPointPosition !== null) {
+              props.releaseHoverWiringPoint();
+            }
           }
         } else {
           // Release hover point if it exists
-          if (props.hoverWiringPointPosition !== null) props.releaseHoverWiringPoint();
+          if (props.hoverWiringPointPosition !== null) {
+            props.releaseHoverWiringPoint();
+          }
         }
         break;
 
@@ -205,7 +219,8 @@ const MouseMoveHandler = (props) => {
                 props.threePointsInfo[props.editingInnerPlaneIndex]
               ).map(k =>
                 props.editingInnerPlanePoints[
-                  props.threePointsInfo[props.editingInnerPlaneIndex][k].pointIndex
+                  props.threePointsInfo[props.editingInnerPlaneIndex][k]
+                  .pointIndex
                 ].entityId
               );
               if (!fixedPointsId.includes(onTopPoint.entityId))
@@ -223,8 +238,8 @@ const MouseMoveHandler = (props) => {
         if(
           anyPickedObject &&
           anyPickedObject.id.id ===
-          props.roofSpecInverters[props.editingRoofIndex][props.editingInverterIndex]
-          .polygonCenter.entityId
+          props.roofSpecInverters[props.editingRoofIndex]
+          [props.editingInverterIndex].polygonCenter.entityId
         ) {
           if (props.hoverInverterCenter) {
             props.releaseHoverInverterCenter();
@@ -256,7 +271,8 @@ const MouseMoveHandler = (props) => {
             props.setHoverBridgingPoint(anyPickedObject.id.id);
             if (props.editingBridgingMainPolylineIndex !== null)
               props.releaseHoverBridgingMainPolyline();
-          } else if (allBridgingMainPolylineIds.includes(anyPickedObject.id.id)){
+          } else if (allBridgingMainPolylineIds.includes(anyPickedObject.id.id))
+          {
             props.setHoverBridgingMainPolyline(anyPickedObject.id.id);
             if (props.editingBridgingPointIndex !== null)
               props.releaseHoverBridgingPoint();
@@ -295,80 +311,71 @@ const MouseMoveHandler = (props) => {
 
 const mapStateToProps = state => {
   return {
-    viewer: state.cesiumReducer.viewer,
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    viewer:
+      state.undoable.present.cesiumManager.viewer,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
 
     drawingPolyline:
-      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+      state.undoable.present.drawingManager.drawingPolyline,
     hoverPolyline:
-      state.undoableReducer.present.drawingManagerReducer.hoverPolyline,
+      state.undoable.present.drawingManager.hoverPolyline,
     hoverPointIndex:
-      state.undoableReducer.present.drawingManagerReducer.hoverPointIndex,
+      state.undoable.present.drawingManager.hoverPointIndex,
     pickedPointIndex:
-      state.undoableReducer.present.drawingManagerReducer.pickedPointIndex,
+      state.undoable.present.drawingManager.pickedPointIndex,
 
     pointsRelation:
-      state.undoableReducer.present.drawingInnerManagerReducer.pointsRelation,
+      state.undoable.present.drawingInnerManager.pointsRelation,
     drawingInnerPolyline:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .drawingInnerPolyline,
+      state.undoable.present.drawingInnerManager.drawingInnerPolyline,
     fixedInnerPolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .fixedInnerPolylines,
+      state.undoable.present.drawingInnerManager.fixedInnerPolylines,
     hoverInnerLineIndex:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .hoverInnerLineIndex,
+      state.undoable.present.drawingInnerManager.hoverInnerLineIndex,
     hoverInnerPointId:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .hoverInnerPointId,
+      state.undoable.present.drawingInnerManager.hoverInnerPointId,
 
     drawingKeepoutPolyline:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .drawingKeepoutPolyline,
+      state.undoable.present.drawingKeepoutManager.drawingKeepoutPolyline,
     hoverKeepoutPointIndex:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .hoverPointIndex,
+      state.undoable.present.drawingKeepoutManager.hoverPointIndex,
     hoverKeepoutPolyline:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .hoverPolyline,
+      state.undoable.present.drawingKeepoutManager.hoverPolyline,
     pickedKeepoutPointIndex:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .pickedPointIndex,
+      state.undoable.present.drawingKeepoutManager.pickedPointIndex,
 
     editingInnerPlaneIndex:
-      state.undoableReducer.present.drawingRooftopManagerReducer
-      .editingInnerPlaneIndex,
+      state.undoable.present.drawingRooftopManager.editingInnerPlaneIndex,
     rooftopHoverPoint:
-      state.undoableReducer.present.drawingRooftopManagerReducer.hoverPoint,
+      state.undoable.present.drawingRooftopManager.hoverPoint,
     editingInnerPlanePoints:
-      state.undoableReducer.present.drawingRooftopManagerReducer
-      .editingInnerPlanePoints,
+      state.undoable.present.drawingRooftopManager.editingInnerPlanePoints,
     threePointsInfo:
-      state.undoableReducer.present.drawingRooftopManagerReducer
-      .threePointsInfo,
+      state.undoable.present.drawingRooftopManager.threePointsInfo,
 
     disconnectedPanelId:
-      state.undoableReducer.present.editingPVPanelManagerReducer.disconnectedPanelId,
+      state.undoable.present.editingPVPanelManager.disconnectedPanelId,
     connectedPanelId:
-      state.undoableReducer.present.editingPVPanelManagerReducer.connectedPanelId,
+      state.undoable.present.editingPVPanelManager.connectedPanelId,
     editingStartPoint:
-      state.undoableReducer.present.editingWiringManager.editingStartPoint,
+      state.undoable.present.editingWiringManager.editingStartPoint,
     editingEndPoint:
-      state.undoableReducer.present.editingWiringManager.editingEndPoint,
+      state.undoable.present.editingWiringManager.editingEndPoint,
     editingRoofIndex:
-      state.undoableReducer.present.editingWiringManager.editingRoofIndex,
+      state.undoable.present.editingWiringManager.editingRoofIndex,
     editingInverterIndex:
-      state.undoableReducer.present.editingWiringManager.editingInverterIndex,
+      state.undoable.present.editingWiringManager.editingInverterIndex,
     hoverWiringPointPosition:
-      state.undoableReducer.present.editingWiringManager.hoverWiringPointPosition,
+      state.undoable.present.editingWiringManager.hoverWiringPointPosition,
     roofSpecInverters:
-      state.undoableReducer.present.editingWiringManager.roofSpecInverters,
+      state.undoable.present.editingWiringManager.roofSpecInverters,
     hoverInverterCenter:
-      state.undoableReducer.present.editingWiringManager.hoverInverterCenter,
+      state.undoable.present.editingWiringManager.hoverInverterCenter,
     editingBridgingPointIndex:
-      state.undoableReducer.present.editingWiringManager.editingBridgingPointIndex,
+      state.undoable.present.editingWiringManager.editingBridgingPointIndex,
     editingBridgingMainPolylineIndex:
-      state.undoableReducer.present.editingWiringManager
+      state.undoable.present.editingWiringManager
       .editingBridgingMainPolylineIndex
   };
 };

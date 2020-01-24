@@ -35,35 +35,35 @@ class IconSummary extends Component {
 
 // pass data to props
 function mapStateToProps(state) {
-    if (state.undoableReducer.present.reportManager.metadata.loaded) {
+    if (state.undoable.present.reportManager.metadata.loaded) {
         return {
-            metadata: state.undoableReducer.present.reportManager.metadata,
+            metadata: state.undoable.present.reportManager.metadata,
             icon: {
                 panel: {
                     image: panel,
                     title: 'PV Installed Capacity',
-                    value: state.undoableReducer.present.reportManager.metadata.option.data.PV_Installed_Capacity,
+                    value: state.undoable.present.reportManager.metadata.option.data.PV_Installed_Capacity,
                     suffix: 'W',
                     precision: 1,
                 },
                 dollar: {
                     image: dollar,
                     title: 'Project Cost',
-                    value: state.undoableReducer.present.reportManager.metadata.option.data.Project_Cost,
+                    value: state.undoable.present.reportManager.metadata.option.data.Project_Cost,
                     suffix: ' USD',
                     precision: 1,
                 },
                 factory: {
                     image: factory,
                     title: <div>CO<sub>2</sub> Emission Reduced</div>,
-                    value: state.undoableReducer.present.reportManager.metadata.option.data.CO2_Reduced,
+                    value: state.undoable.present.reportManager.metadata.option.data.CO2_Reduced,
                     suffix: 'tons/year',
                     precision: 1,
                 },
                 house: {
                     image: house,
                     title: 'Annual PV Production',
-                    value: state.undoableReducer.present.reportManager.metadata.option.data.Annual_PV_Production,
+                    value: state.undoable.present.reportManager.metadata.option.data.Annual_PV_Production,
                     suffix: 'Wh',
                     precision: 1,
                 },
@@ -71,8 +71,7 @@ function mapStateToProps(state) {
         }
     }
 
-    return { metadata: state.undoableReducer.present.reportManager.metadata }
+    return { metadata: state.undoable.present.reportManager.metadata }
 }
 
 export default connect(mapStateToProps)(IconSummary);
-

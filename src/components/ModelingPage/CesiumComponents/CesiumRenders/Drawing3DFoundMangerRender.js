@@ -1,9 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import PolygonVisualize from '../Polygon/Polygon';
-import PolygonLabel from '../Polygon/polygonLabel';
 import CustomWall from '../wall/wall';
-import * as actions from '../../../../store/actions/index';
 
 const drawing3DFoundManagerRender = (props) => {
 	let drawingBuildingFoundation = null;
@@ -49,15 +47,13 @@ const drawing3DFoundManagerRender = (props) => {
 const mapStateToProps = state => {
 	return{
 		DrawingBuidingFoundation:
-			state.undoableReducer.present.drawingPolygonManagerReducer
-			.BuildingFoundation,
+			state.undoable.present.drawingPolygonManager.BuildingFoundation,
 		DrawingBuildingFoundationExcludeStb:
-			state.undoableReducer.present.drawingPolygonManagerReducer
-			.BuildingFoundationExcludeStb,
+			state.undoable.present.drawingPolygonManager.BuildingFoundationExcludeStb,
 		DrawingBuildingParapet:
-			state.undoableReducer.present.drawingPolygonManagerReducer
-			.BuildingParapet,
-		CurrentBuilding: state.buildingManagerReducer.workingBuilding
+			state.undoable.present.drawingPolygonManager.BuildingParapet,
+		CurrentBuilding:
+			state.undoable.present.buildingManager.workingBuilding
 	};
 };
 

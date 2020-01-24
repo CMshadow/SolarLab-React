@@ -87,20 +87,15 @@ const DrawingKeepoutPolygonManagerRender = (props) => {
 const mapStateToProps = state => {
 	return{
 		normalKeepout:
-			state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
-			.normalKeepout,
+			state.undoable.present.drawingKeepoutPolygonManager.normalKeepout,
 		passageKeepout:
-			state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
-			.passageKeepout,
+			state.undoable.present.drawingKeepoutPolygonManager.passageKeepout,
 		ventKeepout:
-			state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
-			.ventKeepout,
+			state.undoable.present.drawingKeepoutPolygonManager.ventKeepout,
 		treeKeepout:
-			state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
-			.treeKeepout,
+			state.undoable.present.drawingKeepoutPolygonManager.treeKeepout,
 		envKeepout:
-			state.undoableReducer.present.drawingKeepoutPolygonManagerReducer
-			.envKeepout,
+			state.undoable.present.drawingKeepoutPolygonManager.envKeepout,
 	};
 };
 

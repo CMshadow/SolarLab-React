@@ -51,18 +51,18 @@ const EditingWiringRender = (props) => {
 
 const mapStateToProps = state => {
 	return{
-    roofSpecInverters: state.undoableReducer.present.editingWiringManager
-      .roofSpecInverters,
-    editingRoofIndex: state.undoableReducer.present.editingWiringManager
-      .editingRoofIndex,
-    editingInverterIndex: state.undoableReducer.present.editingWiringManager
-      .editingInverterIndex,
-    editingWiringIndex: state.undoableReducer.present.editingWiringManager
-      .editingInverterIndex,
-    editingStartPoint: state.undoableReducer.present.editingWiringManager
-      .editingStartPoint,
-    editingEndPoint: state.undoableReducer.present.editingWiringManager
-      .editingEndPoint,
+    roofSpecInverters:
+      state.undoable.present.editingWiringManager.roofSpecInverters,
+    editingRoofIndex:
+      state.undoable.present.editingWiringManager.editingRoofIndex,
+    editingInverterIndex:
+      state.undoable.present.editingWiringManager.editingInverterIndex,
+    editingWiringIndex:
+      state.undoable.present.editingWiringManager.editingInverterIndex,
+    editingStartPoint:
+      state.undoable.present.editingWiringManager.editingStartPoint,
+    editingEndPoint:
+      state.undoable.present.editingWiringManager.editingEndPoint,
 	};
 };
 

@@ -103,33 +103,35 @@ const LeftDownHandler = (props) => {
 
 const mapStateToProps = state => {
   return {
-    viewer: state.cesiumReducer.viewer,
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    viewer:
+      state.undoable.present.cesiumManager.viewer,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
 
     drawingPolyline:
-      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+      state.undoable.present.drawingManager.drawingPolyline,
     drawingKeepoutPolyline:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .drawingKeepoutPolyline,
+      state.undoable.present.drawingKeepoutManager.drawingKeepoutPolyline,
 
     editingStartPoint:
-      state.undoableReducer.present.editingWiringManager.editingStartPoint,
+      state.undoable.present.editingWiringManager.editingStartPoint,
     editingEndPoint:
-      state.undoableReducer.present.editingWiringManager.editingEndPoint,
+      state.undoable.present.editingWiringManager.editingEndPoint,
     disconnectedPanelId:
-      state.undoableReducer.present.editingPVPanelManagerReducer
-      .disconnectedPanelId,
+      state.undoable.present.editingPVPanelManager.disconnectedPanelId,
     editingRoofIndex:
-      state.undoableReducer.present.editingWiringManager.editingRoofIndex,
+      state.undoable.present.editingWiringManager.editingRoofIndex,
     hoverInverterCenter:
-      state.undoableReducer.present.editingWiringManager.hoverInverterCenter
+      state.undoable.present.editingWiringManager.hoverInverterCenter
   };
 };
 
 const mapDispatchToProps = dispatch => {
   return {
     disableRotate: (point) => dispatch(actions.disableRotate(point)),
-    setPickedPointIndex: (point) => dispatch(actions.setPickedPointIndex(point)),
+    setPickedPointIndex: (point) => dispatch(
+      actions.setPickedPointIndex(point)
+    ),
     setKeepoutPickedPointIndex: (point) => dispatch(
       actions.setKeepoutPickedPointIndex(point)
     ),
@@ -137,7 +139,9 @@ const mapDispatchToProps = dispatch => {
       actions.setPickedWiringPoint()
     ),
     setUIStateEditingWiring: () => dispatch(actions.setUIStateEditingWiring()),
-    setUIStateDraggingWiring: () => dispatch(actions.setUIStateDraggingWiring()),
+    setUIStateDraggingWiring: () => dispatch(
+      actions.setUIStateDraggingWiring()
+    ),
     setUIStateDragInverter: () => dispatch(actions.setUIStateDragInverter()),
     setUIStateDragBridging: () => dispatch(actions.setUIStateDragBridging()),
     setManualWiringStart: (panelId) => dispatch(

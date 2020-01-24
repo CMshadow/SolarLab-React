@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Layout, Menu, Icon } from 'antd';
 import 'antd/dist/antd.css';
 
-const { Header, Content, Footer, Sider } = Layout;
+const { Content, Sider } = Layout;
 
 
 
@@ -44,7 +44,7 @@ const ModelingPage = (props) => {
 
 const mapStateToProps = state => {
   return {
-    initialCor: state.cesiumReducer.initialCor,
+    initialCor: state.undoable.present.cesiumManager.initialCor,
   };
 }
 

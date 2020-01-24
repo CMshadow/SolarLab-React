@@ -44,11 +44,12 @@ const MouseMoveShiftHandler = (props) => {
 
 const mapStateToProps = state => {
   return {
-    viewer: state.cesiumReducer.viewer,
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    viewer:
+      state.undoable.present.cesiumManager.viewer,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
     drawingInnerPolyline:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .drawingInnerPolyline,
+      state.undoable.present.drawingInnerManager.drawingInnerPolyline,
   };
 };
 
