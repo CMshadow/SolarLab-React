@@ -4,7 +4,6 @@ import { Layout } from 'antd';
 import 'antd/dist/antd.css';
 
 import * as classes from './RightSider.module.css';
-import * as actions from '../../../store/actions/index';
 import LockMap from './individualButtons/lockMap';
 import SelectMap from './individualButtons/selectMap';
 import Auxiliary from '../../../hoc/Auxiliary/Auxiliary';

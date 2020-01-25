@@ -14,22 +14,21 @@ import Passage from '../../infrastructure/keepout/passage';
 import Vent from '../../infrastructure/keepout/vent';
 import Tree from '../../infrastructure/keepout/tree';
 import Env from '../../infrastructure/keepout/env';
-import Polyline from '../../infrastructure/line/polyline';
-import InnerLine from '../../infrastructure/line/innerLine';
-import MathLine from '../../infrastructure/math/mathLine';
 import MathLineCollection from '../../infrastructure/math/mathLineCollection';
 import Coordinate from '../../infrastructure/point/coordinate';
 import { corWithinLineCollectionPolygon } from '../../infrastructure/math/polygonMath'
 
 export const createAllKeepoutPolygon = () => (dispatch, getState) => {
   const allKeepout =
-    getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+    getState().undoable.present.drawingKeepoutManager.keepoutList;
   const normalKeepout = allKeepout.filter(kpt => kpt.type === 'KEEPOUT');
   const passageKeepout = allKeepout.filter(kpt => kpt.type === 'PASSAGE');
   const ventKeepout = allKeepout.filter(kpt => kpt.type === 'VENT');
   const treeKeepout = allKeepout.filter(kpt => kpt.type === 'TREE');
   const envKeepout = allKeepout.filter(kpt => kpt.type === 'ENV');
-  if (getState().buildingManagerReducer.workingBuilding.type === 'FLAT') {
+  if (
+    getState().undoable.present.buildingManager.workingBuilding.type === 'FLAT'
+  ) {
     dispatch(createNormalKeepoutPolygon(normalKeepout));
     dispatch(createPassageKeepoutPolygon(passageKeepout));
     dispatch(createVentKeepoutPolygon(ventKeepout));
@@ -46,11 +45,12 @@ export const createAllKeepoutPolygon = () => (dispatch, getState) => {
 
 export const createNormalKeepoutPolygon = (normalKeepout) =>
 (dispatch, getState) => {
-  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
+  const buildingId =
+    getState().undoable.present.buildingManager.workingBuilding.entityId;
   const foundPolyline =
-    getState().undoableReducer.present.drawingManagerReducer.drawingPolyline;
+    getState().undoable.present.drawingManager.drawingPolyline;
   const foundHeight =
-    getState().buildingManagerReducer.workingBuilding.foundationHeight;
+    getState().undoable.present.buildingManager.workingBuilding.foundationHeight;
   const keepoutPolylines = normalKeepout.map(kpt => kpt.outlinePolyline);
   const keepoutStb = normalKeepout.map(kpt => kpt.setback);
 
@@ -112,9 +112,11 @@ export const createNormalKeepoutPolygon = (normalKeepout) =>
 
 export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
 (dispatch, getState) => {
-  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
-  const pitchedRoofPolygons = getState().undoableReducer.present
-    .drawingRooftopManagerReducer.RooftopCollection.rooftopCollection;
+  const buildingId =
+    getState().undoable.present.buildingManager.workingBuilding.entityId;
+  const pitchedRoofPolygons =
+    getState().undoable.present.drawingRooftopManager.RooftopCollection
+    .rooftopCollection;
   const pitchedRoofsFoundLine = pitchedRoofPolygons.map(polygon =>
     polygon.toFoundLine()
   );
@@ -122,7 +124,8 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
     MathLineCollection.fromPolyline(l)
   );
   const foundHeight =
-    getState().buildingManagerReducer.workingBuilding.foundationHeight;
+    getState().undoable.present.buildingManager.workingBuilding
+    .foundationHeight;
   const keepoutFoundLines = normalKeepout.map(kpt => kpt.outlinePolyline);
   const keepoutStb = normalKeepout.map(kpt => kpt.setback);
 
@@ -224,11 +227,13 @@ export const createNormalKeepoutPolygonPitched = (normalKeepout) =>
 
 export const createPassageKeepoutPolygon = (passageKeepout) =>
 (dispatch, getState) => {
-  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
+  const buildingId =
+    getState().undoable.present.buildingManager.workingBuilding.entityId;
   const foundPolyline =
-    getState().undoableReducer.present.drawingManagerReducer.drawingPolyline;
+    getState().undoable.present.drawingManager.drawingPolyline;
   const foundHeight =
-    getState().buildingManagerReducer.workingBuilding.foundationHeight;
+    getState().undoable.present.buildingManager.workingBuilding
+    .foundationHeight;
   const keepoutPolylines = passageKeepout.map(kpt => kpt.outlinePolyline);
   const keepoutWidth = passageKeepout.map(kpt => kpt.width/2);
 
@@ -283,9 +288,11 @@ export const createPassageKeepoutPolygon = (passageKeepout) =>
 
 export const createPassageKeepoutPolygonPitched = (passageKeepout) =>
 (dispatch, getState) => {
-  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
-  const pitchedRoofPolygons = getState().undoableReducer.present
-    .drawingRooftopManagerReducer.RooftopCollection.rooftopCollection;
+  const buildingId =
+    getState().undoable.present.buildingManager.workingBuilding.entityId;
+  const pitchedRoofPolygons =
+    getState().undoable.present.drawingRooftopManager.RooftopCollection
+    .rooftopCollection;
   const pitchedRoofsFoundLine = pitchedRoofPolygons.map(polygon =>
     polygon.toFoundLine()
   );
@@ -293,7 +300,8 @@ export const createPassageKeepoutPolygonPitched = (passageKeepout) =>
     MathLineCollection.fromPolyline(l)
   );
   const foundHeight =
-    getState().buildingManagerReducer.workingBuilding.foundationHeight;
+    getState().undoable.present.buildingManager.workingBuilding
+    .foundationHeight;
   const keepoutPolylines = passageKeepout.map(kpt => kpt.outlinePolyline);
   const keepoutWidth = passageKeepout.map(kpt => kpt.width/2);
 
@@ -368,11 +376,13 @@ export const createPassageKeepoutPolygonPitched = (passageKeepout) =>
 
 export const createVentKeepoutPolygon = (ventKeepout) =>
 (dispatch, getState) => {
-  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
+  const buildingId =
+    getState().undoable.present.buildingManager.workingBuilding.entityId;
   const foundPolyline =
-    getState().undoableReducer.present.drawingManagerReducer.drawingPolyline;
+    getState().undoable.present.drawingManager.drawingPolyline;
   const foundHeight =
-    getState().buildingManagerReducer.workingBuilding.foundationHeight;
+    getState().undoable.present.buildingManager.workingBuilding
+    .foundationHeight;
   const newVentKeepout = ventKeepout.map((kpt, index) => {
     const trimedStbTurfPolygon = {
       type: 'Feature',
@@ -405,9 +415,11 @@ export const createVentKeepoutPolygon = (ventKeepout) =>
 
 export const createVentKeepoutPolygonPitched = (ventKeepout) =>
 (dispatch, getState) => {
-  const buildingId = getState().buildingManagerReducer.workingBuilding.entityId;
-  const pitchedRoofPolygons = getState().undoableReducer.present
-    .drawingRooftopManagerReducer.RooftopCollection.rooftopCollection;
+  const buildingId =
+    getState().undoable.present.buildingManager.workingBuilding.entityId;
+  const pitchedRoofPolygons =
+    getState().undoable.present.undoable.present.drawingRooftopManager
+    .RooftopCollection.rooftopCollection;
   const pitchedRoofsFoundLine = pitchedRoofPolygons.map(polygon =>
     polygon.toFoundLine()
   );
@@ -415,7 +427,7 @@ export const createVentKeepoutPolygonPitched = (ventKeepout) =>
     MathLineCollection.fromPolyline(l)
   );
   const foundHeight =
-    getState().buildingManagerReducer.workingBuilding.foundationHeight;
+    getState().undoable.present.buildingManager.workingBuilding.foundationHeight;
   const newVentKeepout = ventKeepout.map((kpt, index) => {
     let roofIndex = 0;
     pitchedRoofsMathLineCollection.forEach((roof, ind) => {
@@ -505,9 +517,9 @@ export const reRenderKeepoutPolygon = (type, id, values) =>
     default:
     case 'KEEPOUT': {
       const allKeepout =
-        getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+        getState().undoable.present.drawingKeepoutManager.keepoutList;
       const normalKeepout = allKeepout.filter(kpt => kpt.type === 'KEEPOUT');
-      getState().buildingManagerReducer.workingBuilding.type === 'FLAT' ?
+      getState().undoable.present.buildingManager.workingBuilding.type === 'FLAT' ?
       dispatch(createNormalKeepoutPolygon(normalKeepout)) :
       dispatch(createNormalKeepoutPolygonPitched(normalKeepout))
       break;
@@ -515,9 +527,9 @@ export const reRenderKeepoutPolygon = (type, id, values) =>
 
     case 'PASSAGE': {
       const allKeepout =
-        getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+        getState().undoable.present.drawingKeepoutManager.keepoutList;
       const passageKeepout = allKeepout.filter(kpt => kpt.type === 'PASSAGE');
-      getState().buildingManagerReducer.workingBuilding.type === 'FLAT' ?
+      getState().undoable.present.buildingManager.workingBuilding.type === 'FLAT' ?
       dispatch(createPassageKeepoutPolygon(passageKeepout)) :
       dispatch(createPassageKeepoutPolygonPitched(passageKeepout))
       break;
@@ -525,9 +537,9 @@ export const reRenderKeepoutPolygon = (type, id, values) =>
 
     case 'VENT': {
       const allKeepout =
-        getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+        getState().undoable.present.drawingKeepoutManager.keepoutList;
       const ventKeepout = allKeepout.filter(kpt => kpt.type === 'VENT');
-      getState().buildingManagerReducer.workingBuilding.type === 'FLAT' ?
+      getState().undoable.present.buildingManager.workingBuilding.type === 'FLAT' ?
       dispatch(createVentKeepoutPolygon(ventKeepout)) :
       dispatch(createVentKeepoutPolygonPitched(ventKeepout))
       break;
@@ -535,7 +547,7 @@ export const reRenderKeepoutPolygon = (type, id, values) =>
 
     case 'TREE': {
       const allKeepout =
-        getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+        getState().undoable.present.drawingKeepoutManager.keepoutList;
       const treeKeepout = allKeepout.filter(kpt => kpt.type === 'TREE');
       dispatch(createTreeKeepoutPolygon(treeKeepout));
       break;
@@ -543,7 +555,7 @@ export const reRenderKeepoutPolygon = (type, id, values) =>
 
     case 'ENV': {
       const allKeepout =
-        getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+        getState().undoable.present.drawingKeepoutManager.keepoutList;
       const envKeepout = allKeepout.filter(kpt => kpt.type === 'ENV');
       dispatch(createEnvKeepoutPolygon(envKeepout));
       break;
@@ -552,21 +564,23 @@ export const reRenderKeepoutPolygon = (type, id, values) =>
 };
 
 export const updateKeepoutOnRoof = (roofIndex) => (dispatch, getState) => {
-  if (getState().buildingManagerReducer.workingBuilding.type === 'PITCHED') {
+  if (
+    getState().undoable.present.buildingManager.workingBuilding.type === 'PITCHED'
+  ) {
     dispatch(updateKeepoutOnPitchedRoof(roofIndex))
   }
 }
 
 export const updateKeepoutOnPitchedRoof = (roofIndex) => (dispatch, getState) => {
-  const roofPolygon = getState().undoableReducer.present
-    .drawingRooftopManagerReducer.RooftopCollection.rooftopCollection[roofIndex];
+  const roofPolygon = getState().undoable.present.drawingRooftopManager
+    .RooftopCollection.rooftopCollection[roofIndex];
   const roofLowestHeight = roofPolygon.lowestNode[2];
-  const normalKeepout = getState().undoableReducer.present
-    .drawingKeepoutPolygonManagerReducer.normalKeepout;
-  const passageKeepout = getState().undoableReducer.present
-    .drawingKeepoutPolygonManagerReducer.passageKeepout;
-  const ventKeepout = getState().undoableReducer.present
-    .drawingKeepoutPolygonManagerReducer.ventKeepout;
+  const normalKeepout = getState().undoable.present.drawingKeepoutPolygonManager
+    .normalKeepout;
+  const passageKeepout = getState().undoable.present
+    .drawingKeepoutPolygonManager.passageKeepout;
+  const ventKeepout = getState().undoable.present.drawingKeepoutPolygonManager
+    .ventKeepout;
   const newNormalKeepout = normalKeepout.map(kpt => {
     if (kpt.roofIndexBelong !== roofIndex) {
       return kpt;

@@ -7,10 +7,7 @@ import * as actions from './index'
 import * as MyMath from '../../infrastructure/math/math';
 import Node from '../../infrastructure/edgesMap/node/node';
 import Edge from '../../infrastructure/edgesMap/edge/edge';
-import EdgesMap from '../../infrastructure/edgesMap/edgesMap';
 import * as MathHelper from '../../infrastructure/math/RoofTop_MathHelper';
-import * as SunInfomation from '../../infrastructure/math/sunPositionCalculation';
-import * as MathCoordHelp from '../../infrastructure/math/math';
 import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
 import FoundLine from '../../infrastructure/line/foundLine';
@@ -25,31 +22,33 @@ export const initEdgesMap = () => {
 
 
 export const build3DRoofTopModeling = () => (dispatch, getState) => {
-  let buildingOutline = getState().undoableReducer.present.drawingManagerReducer
+  let buildingOutline = getState().undoable.present.drawingManager
     .drawingPolyline.getPointsCoordinatesArray();
   let buildingCoordinatesSize = buildingOutline.length;
   buildingOutline.splice(buildingCoordinatesSize - 3,3);
-  const polylinesRelation = getState().undoableReducer.present
-    .drawingInnerManagerReducer.pointsRelation;
-  const foundPolylines = getState().undoableReducer.present
-    .drawingInnerManagerReducer.foundPolylines;
-  const hipPolylines = getState().undoableReducer.present
-    .drawingInnerManagerReducer.hipPolylines;
-  const ridgePolylines = getState().undoableReducer.present
-    .drawingInnerManagerReducer.ridgePolylines;
+  const polylinesRelation = getState().undoable.present.drawingInnerManager
+    .pointsRelation;
+  const foundPolylines = getState().undoable.present.drawingInnerManager
+    .foundPolylines;
+  const hipPolylines = getState().undoable.present.drawingInnerManager
+    .hipPolylines;
+  const ridgePolylines = getState().undoable.present.drawingInnerManager
+    .ridgePolylines;
   const eaveStb =
-    getState().buildingManagerReducer.workingBuilding.eaveSetback;
+    getState().undoable.present.buildingManager.workingBuilding.eaveSetback;
   const hipStb =
-    getState().buildingManagerReducer.workingBuilding.hipSetback;
+    getState().undoable.present.buildingManager.workingBuilding.hipSetback;
   const ridgeStb =
-    getState().buildingManagerReducer.workingBuilding.ridgeSetback;
+    getState().undoable.present.buildingManager.workingBuilding.ridgeSetback;
 
   let newNodeCollection = [];
   let newInnerEdgeCollection = [];
   let newOuterEdgeCollection = [];
   let pathInformationCollection = [];
 
-  initNodesCollection(buildingOutline, newNodeCollection, newOuterEdgeCollection);
+  initNodesCollection(
+    buildingOutline, newNodeCollection, newOuterEdgeCollection
+  );
   newInnerEdgeCollection = initEdgeMap(
     polylinesRelation, newNodeCollection, foundPolylines, hipPolylines,
     ridgePolylines
@@ -197,8 +196,6 @@ export const initEdgeMap = (
   polylinesRelation, newNodeCollection, foundPolylines, hipPolylines,
   ridgePolylines
 ) => {
-  let hipCollecton = [];
-  let ridgeCollection = [];
   let newInnerEdgeCollection = [];
   // Build inner edges-points relations
   Object.keys(polylinesRelation).forEach(function(key) {
@@ -252,12 +249,25 @@ export const initEdgeMap = (
 
   Object.keys(ridgePolylines).forEach(function(key) {
 
-    let startNode = new Node(null, ridgePolylines[key]['points'][0]['lon'], ridgePolylines[key]['points'][0]['lat'], 7, 1 );
-    let endNode = new Node(null, ridgePolylines[key]['points'][1]['lon'], ridgePolylines[key]['points'][1]['lat'], 7, 1 );
+    let startNode = new Node(
+      null, ridgePolylines[key]['points'][0]['lon'],
+      ridgePolylines[key]['points'][0]['lat'], 7, 1
+    );
+    let endNode = new Node(
+      null, ridgePolylines[key]['points'][1]['lon'],
+      ridgePolylines[key]['points'][1]['lat'], 7, 1
+    );
     if (startNode !== null && endNode !== null ) {
-      let indexStart = MathHelper.findNodeIndex(newNodeCollection, startNode.lon, startNode.lat);
-      let indexEnd = MathHelper.findNodeIndex(newNodeCollection, endNode.lon, endNode.lat);
-      newInnerEdgeCollection.push(new Edge(indexStart, indexEnd, null, null, "Ridge" ,newNodeCollection[indexStart], newNodeCollection[indexEnd]));
+      let indexStart = MathHelper.findNodeIndex(
+        newNodeCollection, startNode.lon, startNode.lat
+      );
+      let indexEnd = MathHelper.findNodeIndex(
+        newNodeCollection, endNode.lon, endNode.lat
+      );
+      newInnerEdgeCollection.push(new Edge(
+        indexStart, indexEnd, null, null, "Ridge",
+        newNodeCollection[indexStart], newNodeCollection[indexEnd]
+      ));
       newNodeCollection[indexStart].addChild(indexEnd);
       newNodeCollection[indexEnd].addChild(indexStart);
     }
@@ -271,10 +281,14 @@ export const initEdgeMap = (
 }
 
 
-export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, NodesCollection) => {
+export const searchAllRoofPlanes = (
+  InnerEdgeCollection, OuterEdgesCollection, NodesCollection
+) => {
 
   let pathInformationCollection = [];
-  let path = MathHelper.searchAllPossibleRoofTops([InnerEdgeCollection,OuterEdgesCollection],NodesCollection);
+  let path = MathHelper.searchAllPossibleRoofTops(
+    [InnerEdgeCollection,OuterEdgesCollection], NodesCollection
+  );
   for (let i = 0; i < path.length; ++i) {
     let pathParameters = {
       roofPlaneCoordinateArray: [],
@@ -283,8 +297,16 @@ export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, N
       roofEdgesTypeList: null,
       roofPlaneNodeIdsList:[]
     };
-    pathParameters.roofPlaneParameters = [...calculateObliquityAndObliquity(NodesCollection, path[i]).roofPlaneParameters];
-    pathParameters.roofEdgesTypeList = [...checkEdgeTypeOfPath(path[i], NodesCollection, OuterEdgesCollection, InnerEdgeCollection).edgeTypeList];
+    pathParameters.roofPlaneParameters = [
+      ...calculateObliquityAndObliquity(
+        NodesCollection, path[i]
+      ).roofPlaneParameters
+    ];
+    pathParameters.roofEdgesTypeList = [
+      ...checkEdgeTypeOfPath(
+        path[i], NodesCollection, OuterEdgesCollection, InnerEdgeCollection
+      ).edgeTypeList
+    ];
     // console.log("Roof Edge Type: "+ pathParameters.roofEdgesTypeList )
     let check = 0;
     for (let edge of pathParameters.roofEdgesTypeList) {
@@ -297,13 +319,23 @@ export const searchAllRoofPlanes = (InnerEdgeCollection, OuterEdgesCollection, N
       console.log(pathParameters.roofPlaneCoordinateArray)
     }
     for (let nodeIndex of path[i]) {
-      pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lon);
-      pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].lat);
-      pathParameters.roofPlaneCoordinateArray.push(NodesCollection[nodeIndex].height);
-      pathParameters.roofPlaneNodeIdsList.push(NodesCollection[nodeIndex].id);
+      pathParameters.roofPlaneCoordinateArray.push(
+        NodesCollection[nodeIndex].lon
+      );
+      pathParameters.roofPlaneCoordinateArray.push(
+        NodesCollection[nodeIndex].lat
+      );
+      pathParameters.roofPlaneCoordinateArray.push(
+        NodesCollection[nodeIndex].height
+      );
+      pathParameters.roofPlaneNodeIdsList.push(
+        NodesCollection[nodeIndex].id
+      );
     }
 
-    pathParameters.roofHighestLowestNodes = calculateHighestandLowestNodes(pathParameters.roofPlaneCoordinateArray).highestAndLowestNodes;
+    pathParameters.roofHighestLowestNodes = calculateHighestandLowestNodes(
+      pathParameters.roofPlaneCoordinateArray
+    ).highestAndLowestNodes;
     pathInformationCollection.push(pathParameters);
   }
 
@@ -368,7 +400,6 @@ export const calculateObliquityAndObliquity = (NodesCollection, path) => {
     let startCoord = new Coordinate(startNode.lon, startNode.lat, startNode.height);
     let endOuterCoord= new Coordinate(endOuterNode.lon, endOuterNode.lat, endOuterNode.height);
     let brng = null;
-    let dist = null;
     let shortestDist = null;
     let possibleInter1 = null;
     let possibleInter2 = null;
@@ -378,7 +409,6 @@ export const calculateObliquityAndObliquity = (NodesCollection, path) => {
 
     // if (direction === "startToEnd") {
     brng = Coordinate.bearing(startCoord, endOuterCoord);
-    dist = Coordinate.surfaceDistance(startCoord, endOuterCoord);
     possibleBrng1 = brng + 90;
     possibleBrng2 = brng - 90;
     possibleInter1 = Coordinate.intersection(startCoord, brng, endInnerNode, possibleBrng1 );
@@ -454,17 +484,19 @@ export const checkEdgeTypeOfPath = (path, NodesCollection ,OuterEdgesCollection,
     if (NodesCollection[startNode].bound + NodesCollection[endNode].bound === 0) {
 
       for (let edge of OuterEdgesCollection) {
-        // console.log('compare out: ' + startNode + " - " + edge.startNode + ', and ' + endNode + ' - ' + edge.endNode)
-        if ( (startNode === edge.startNode && endNode === edge.endNode)
-            || (startNode === edge.endNode && endNode === edge.startNode) ) {
+        if (
+          (startNode === edge.startNode && endNode === edge.endNode) ||
+          (startNode === edge.endNode && endNode === edge.startNode)
+        ) {
           edgeTypeList.push(edge);
         }
       }
     } else {
         for (let edge of InnerEdgeCollection) {
-          // console.log('compare in: ' + startNode + " - " + edge.startNode + ', and ' + endNode + ' - ' + edge.endNode)
-          if ( (startNode === edge.startNode && endNode === edge.endNode)
-          || (startNode === edge.endNode && endNode === edge.startNode) ) {
+          if (
+            (startNode === edge.startNode && endNode === edge.endNode) ||
+            (startNode === edge.endNode && endNode === edge.startNode)
+          ) {
             edgeTypeList.push(edge);
           }
         }
@@ -485,10 +517,12 @@ export const checkEdgeTypeOfPath = (path, NodesCollection ,OuterEdgesCollection,
    */
 // 非完美版： 无法适用于纯内点面
 
-export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispatch, getState) => {
-  let workingRoofTopCollection = getState().undoableReducer.present.drawingRooftopManagerReducer.RooftopCollection;
-  let workingRoofTopAllParameter = getState().undoableReducer.present.drawingRooftopManagerReducer.RoofPlaneCoordinatesCollection;
-  // console.log("original hierarchy: " + workingRoofTopCollection.rooftopCollection[roofIndex].hierarchy);
+export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) =>
+(dispatch, getState) => {
+  let workingRoofTopCollection = getState().undoable.present
+    .drawingRooftopManager.RooftopCollection;
+  let workingRoofTopAllParameter = getState().undoable.present
+    .drawingRooftopManager.RoofPlaneCoordinatesCollection;
   let outerEdgeSNode = null;
   let outerEdgeENode = null;
   let outerEdgeBrng = null;
@@ -634,17 +668,17 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
     以下为CMshadow修改的代码
    */
   const newRooftop = Polygon.copyPolygon(
-    getState().undoableReducer.present.drawingRooftopManagerReducer
-    .RooftopCollection.rooftopCollection[roofIndex]
+    getState().undoable.present.drawingRooftopManager.RooftopCollection
+    .rooftopCollection[roofIndex]
  	);
  	newRooftop.setHierarchy(newHierarchy);
  	newRooftop.obliquity = newObliquity;
  	newRooftop.lowestNode[2] = newLowest;
  	newRooftop.highestNode[2] = newHighest;
 
- 	const newRooftopExcludeStb = getState().undoableReducer.present
-  .drawingRooftopManagerReducer.RooftopCollection
- 	.rooftopExcludeStb[roofIndex].map(stbPolyogn => {
+ 	const newRooftopExcludeStb = getState().undoable.present
+  .drawingRooftopManager.RooftopCollection.rooftopExcludeStb[roofIndex]
+  .map(stbPolyogn => {
   	const newStbFoundLine = stbPolyogn.toFoundLine();
  		newStbFoundLine.points.forEach(p => {
  			p.setCoordinate(
@@ -660,8 +694,7 @@ export const updateSingleRoofTop = (roofIndex, newLowest, newHighest) => (dispat
  	})
 
   const newRooftopCollection = RoofTop.CopyPolygon(
-    getState().undoableReducer.present.drawingRooftopManagerReducer
-    .RooftopCollection
+    getState().undoable.present.drawingRooftopManager.RooftopCollection
   );
  	newRooftopCollection.rooftopCollection[roofIndex] = newRooftop;
  	newRooftopCollection.rooftopExcludeStb[roofIndex] = newRooftopExcludeStb;
@@ -701,10 +734,10 @@ export const releaseHoverRoofTopPointIndex = () => {
 
 export const setPickedRoofTopPointIndex = (threePointInd) => (dispatch, getState) => {
 	const editingInnerPlanePoints =
-    getState().undoableReducer.present.drawingRooftopManagerReducer
+    getState().undoable.present.drawingRooftopManager
     .editingInnerPlanePoints;
   const hoverPoint =
-    getState().undoableReducer.present.drawingRooftopManagerReducer.hoverPoint;
+    getState().undoable.present.drawingRooftopManager.hoverPoint;
   const pointIndex = editingInnerPlanePoints.reduce((matchInd, p, i) =>
     p.entityId === hoverPoint.entityId ? i : matchInd
   , 0);

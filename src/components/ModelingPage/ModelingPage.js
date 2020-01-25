@@ -44,7 +44,8 @@ const ModelingPage = (props) => {
 
 const mapStateToProps = state => {
   return {
-    projectInfo: state.projectManagerReducer.projectInfo,
+    projectInfo:
+      state.undoable.present.projectManager.projectInfo,
   };
 }
 

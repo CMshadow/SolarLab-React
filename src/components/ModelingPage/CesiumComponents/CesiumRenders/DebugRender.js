@@ -52,13 +52,13 @@ const DebugRender = (props) => {
 const mapStateToProps = state => {
   return {
     debugPolylines:
-      state.debugRenderReducer.debugPolylines,
+      state.undoable.present.debugRender.debugPolylines,
     debugPoints:
-      state.debugRenderReducer.debugPoints,
+      state.undoable.present.debugRender.debugPoints,
     debugPolygons:
-      state.debugRenderReducer.debugPolygons,
+      state.undoable.present.debugRender.debugPolygons,
     debugShadowPolygons:
-      state.debugRenderReducer.debugShadowPolygons
+      state.undoable.present.debugRender.debugShadowPolygons
   };
 }
 

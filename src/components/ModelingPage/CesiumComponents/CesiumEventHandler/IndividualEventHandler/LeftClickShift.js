@@ -15,7 +15,9 @@ const LeftClickShiftHandler = (props) => {
     switch (props.uiState) {
       case 'DRAWING_FOUND':
         if (
-          pickedObjectIdArray.includes(props.drawingFoundPolyline.points[0].entityId)
+          pickedObjectIdArray.includes(
+            props.drawingFoundPolyline.points[0].entityId
+          )
         ) {
           props.terminateDrawing();
           props.setUIStateFoundDrew();
@@ -63,7 +65,9 @@ const LeftClickShiftHandler = (props) => {
               break;
             } else {
               props.disableRotate();
-              props.addPointOnKeepoutPolyline(event.position, props.viewer, true);
+              props.addPointOnKeepoutPolyline(
+                event.position, props.viewer, true
+              );
             }
             break;
         }
@@ -85,13 +89,14 @@ const LeftClickShiftHandler = (props) => {
 
 const mapStateToProps = state => {
   return {
-    viewer: state.cesiumReducer.viewer,
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    viewer:
+      state.undoable.present.cesiumManager.viewer,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
     drawingFoundPolyline:
-      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+      state.undoable.present.drawingManager.drawingPolyline,
     drawingKeepoutPolyline:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .drawingKeepoutPolyline,
+      state.undoable.present.drawingKeepoutManager.drawingKeepoutPolyline,
   };
 };
 
@@ -100,7 +105,9 @@ const mapDispatchToProps = dispatch => {
     disableRotate: () => dispatch(actions.disableRotate()),
     enableRotate: () => dispatch(actions.enableRotate()),
     setUIStateFoundDrew: () => dispatch(actions.setUIStateFoundDrew()),
-    setUIStateEditingKeepout: () => dispatch(actions.setUIStateEditingKeepout()),
+    setUIStateEditingKeepout: () => dispatch(
+      actions.setUIStateEditingKeepout()
+    ),
     addPointOnPolyline: (cartesian, viewer, fixedMode) => dispatch(
       actions.addPointOnPolyline(cartesian, viewer, fixedMode)
     ),

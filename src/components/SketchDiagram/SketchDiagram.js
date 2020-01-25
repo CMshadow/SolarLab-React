@@ -1,11 +1,9 @@
 import React from 'react';
-import { Layout, Button } from 'antd';
 // import Konva from 'konva';
 // import { Stage, Layer, Rect, Text } from 'react-konva';
 import SketchStage from '../../containers/SketchDiagram/SketchDiagram';
 import LeftSider from '../../containers/SketchDiagram/SketchDiagramUI/LeftSider/LeftSider';
 import Aux from '../../hoc/Auxiliary/Auxiliary'
-const { Content } = Layout;
 
 const SketchDiagram = () => {
     return(
@@ -13,7 +11,7 @@ const SketchDiagram = () => {
         <SketchStage />
         <LeftSider />
       </Aux>
-        
+
     );
 }
 

@@ -1,8 +1,4 @@
-import React from 'react';
 import uuid from 'uuid/v1';
-import  * as Cesium from 'cesium';
-import Math from '../math/math';
-import Coordinate from '../point/coordinate';
 
 
 /* Polygons: Complex 3D RoofTop of Only Pitched Building */

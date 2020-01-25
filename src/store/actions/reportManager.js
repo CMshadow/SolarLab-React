@@ -71,11 +71,11 @@ export const postBuildingData = (json) => (dispatch, getState) => {
 }
 
 export const request_weather = () => (dispatch, getState) => {
-  let displayMode = getState().undoableReducer.present.reportManager.displayMode;
+  let displayMode = getState().undoable.present.reportManager.displayMode;
   axios.get(
     'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report', {
       params: {
-        id: getState().undoableReducer.present.reportManager.reportId,
+        id: getState().undoable.present.reportManager.reportId,
         'plot-name':
           displayMode.mode === 'year' || displayMode.mode === 'month' ?
           'poa_month_year' :
@@ -284,7 +284,7 @@ export const request_pv_production = () => (dispatch, getState) => {
   axios.get(
     'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report', {
       params: {
-        id: getState().undoableReducer.present.reportManager.reportId,
+        id: getState().undoable.present.reportManager.reportId,
         'plot-name': 'pv_production'
       }
     }
@@ -350,7 +350,7 @@ export const request_metadata = () => (dispatch, getState) => {
   axios.get(
     'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report', {
       params: {
-        id: getState().undoableReducer.present.reportManager.reportId,
+        id: getState().undoable.present.reportManager.reportId,
         'plot-name': 'meta_data'
       }
     }
@@ -375,7 +375,7 @@ export const request_loss = () => (dispatch, getState) => {
   axios.get(
     'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report', {
       params: {
-        id: getState().undoableReducer.present.reportManager.reportId,
+        id: getState().undoable.present.reportManager.reportId,
         'plot-name': 'loss'
       }
     }
@@ -477,11 +477,11 @@ export const request_loss = () => (dispatch, getState) => {
 };
 
 export const request_energy = () => (dispatch, getState) => {
-  let displayMode = getState().undoableReducer.present.reportManager.displayMode;
+  let displayMode = getState().undoable.present.reportManager.displayMode;
   axios.get(
     'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report', {
       params: {
-        id: getState().undoableReducer.present.reportManager.reportId,
+        id: getState().undoable.present.reportManager.reportId,
         'plot-name':
           displayMode.mode === 'year' || displayMode.mode === 'month' ?
           'dc_ac_month_year' :
@@ -684,7 +684,7 @@ export const request_electricity_bill = () => (dispatch, getState) => {
   axios.get(
     'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report', {
       params: {
-        id: getState().undoableReducer.present.reportManager.reportId,
+        id: getState().undoable.present.reportManager.reportId,
         'plot-name': 'ele_bill'
       }
     }
@@ -768,7 +768,7 @@ export const request_cash_flow = () => (dispatch, getState) => {
   axios.get(
     'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report', {
       params: {
-        id: getState().undoableReducer.present.reportManager.reportId,
+        id: getState().undoable.present.reportManager.reportId,
         'plot-name': 'financial'
       }
     }
@@ -831,12 +831,12 @@ export const request_cash_flow = () => (dispatch, getState) => {
 };
 
 export const request_board_working_condition_right = () => (dispatch, getState) => {
-  let displayMode = getState().undoableReducer.present.reportManager.displayMode;
+  let displayMode = getState().undoable.present.reportManager.displayMode;
 
   axios.get(
     'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report', {
       params: {
-        id: getState().undoableReducer.present.reportManager.reportId,
+        id: getState().undoable.present.reportManager.reportId,
         'plot-name': 'sample_array_vmp',
         date: mapMonthDayToAbb(displayMode.month, displayMode.day),
         inverter: mapInverterToAbb(displayMode.inverter)
@@ -917,12 +917,12 @@ export const reload_board_working_condition_right = (displayMode) => (dispatch, 
 };
 
 export const request_board_working_condition_left = () => (dispatch, getState) => {
-  let displayMode = getState().undoableReducer.present.reportManager.displayMode;
+  let displayMode = getState().undoable.present.reportManager.displayMode;
 
   axios.get(
     'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report', {
       params: {
-        id: getState().undoableReducer.present.reportManager.reportId,
+        id: getState().undoable.present.reportManager.reportId,
         'plot-name': 'sample_array_imp',
         date: mapMonthDayToAbb(displayMode.month, displayMode.day),
         inverter: mapInverterToAbb(displayMode.inverter)
@@ -1003,12 +1003,12 @@ export const reload_board_working_condition_left = (displayMode) => (dispatch, g
 };
 
 export const request_board_working_condition_center = () => (dispatch, getState) => {
-  let displayMode = getState().undoableReducer.present.reportManager.displayMode;
+  let displayMode = getState().undoable.present.reportManager.displayMode;
 
   axios.get(
     'http://ec2-18-220-161-68.us-east-2.compute.amazonaws.com:5000/report', {
       params: {
-        id: getState().undoableReducer.present.reportManager.reportId,
+        id: getState().undoable.present.reportManager.reportId,
         'plot-name': 'sample_array_pmp',
         date: mapMonthDayToAbb(displayMode.month, displayMode.day),
         inverter: mapInverterToAbb(displayMode.inverter)

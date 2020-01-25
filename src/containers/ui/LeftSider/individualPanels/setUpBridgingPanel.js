@@ -2,23 +2,15 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
   Form,
-  Input,
-  InputNumber,
-  Divider,
-  Tooltip,
   Icon,
   Select,
   Row,
   Col,
   Button,
-  Radio,
-  Tabs,
-  Spin
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../store/actions/index';
-import axios from '../../../../axios-setup';
 import BridgingTable from './wiringAndBridging/bridgingTable';
 const { Option } = Select;
 
@@ -115,7 +107,8 @@ class SetUpBridgingPanel extends Component {
           pv_panel_parameters: {
             tilt_angle: building.pvParams[roofIndex].tilt,
             azimuth: building.pvParams[roofIndex].azimuth,
-            mode: building.pvParams[roofIndex].mode === 'individual' ? 'single' : 'multi',
+            mode: building.pvParams[roofIndex].mode === 'individual' ?
+              'single' : 'multi',
             model_full_info: {
               ...matchPanelInfo,
               id: matchPanelInfo.panelID,
@@ -215,21 +208,31 @@ class SetUpBridgingPanel extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    backendLoading: state.projectManagerReducer.backendLoading,
-    workingBuilding: state.buildingManagerReducer.workingBuilding,
-    userInverters: state.undoableReducer.present.editingWiringManager.userInverters,
-    panels: state.undoableReducer.present.editingPVPanelManagerReducer.panels,
-    roofSpecParams: state.undoableReducer.present.editingPVPanelManagerReducer
-      .roofSpecParams,
-    roofSpecInverters: state.undoableReducer.present.editingWiringManager
-      .roofSpecInverters,
-    projectInfo: state.projectManagerReducer.projectInfo,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
+    backendLoading:
+      state.undoable.present.projectManager.backendLoading,
+    workingBuilding:
+      state.undoable.present.buildingManager.workingBuilding,
+    userInverters:
+      state.undoable.present.editingWiringManager.userInverters,
+    panels:
+      state.undoable.present.editingPVPanelManager.panels,
+    roofSpecParams:
+      state.undoable.present.editingPVPanelManager.roofSpecParams,
+    roofSpecInverters:
+      state.undoable.present.editingWiringManager.roofSpecInverters,
+    projectInfo:
+      state.undoable.present.projectManager.projectInfo,
 
-    normalKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.normalKeepout,
-    passageKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.passageKeepout,
-    treeKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.treeKeepout,
-    userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
+    normalKeepout:
+      state.undoable.present.drawingKeepoutPolygonManager.normalKeepout,
+    passageKeepout:
+      state.undoable.present.drawingKeepoutPolygonManager.passageKeepout,
+    treeKeepout:
+      state.undoable.present.drawingKeepoutPolygonManager.treeKeepout,
+    userPanels:
+      state.undoable.present.editingPVPanelManager.userPanels,
   };
 };
 

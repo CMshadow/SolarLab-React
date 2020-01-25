@@ -1,5 +1,3 @@
-import * as actionTypes from '../actions/actionTypes';
-
 const initialStat = {
   token: null,
   userID: '0000-0000-0000-0000',

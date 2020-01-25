@@ -1,7 +1,3 @@
-import React from 'react';
-import uuid from 'uuid/v1';
-import  * as Cesium from 'cesium';
-
 class Edge {
 
   /**

@@ -5,9 +5,8 @@ import {
   InputNumber,
   Row,
   Col,
-  Button,
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 
@@ -51,7 +50,9 @@ class EditKeepoutForm extends PureComponent {
       <Form.Item>
         <Row>
           <Col span={12} offset={1}>
-            <h4>{this.generateTypeText()}<FormattedMessage id='Keepout_height' /></h4>
+            <h4>
+              {this.generateTypeText()}<FormattedMessage id='Keepout_height' />
+            </h4>
           </Col>
           <Col span={10}>
             {getFieldDecorator('height', {

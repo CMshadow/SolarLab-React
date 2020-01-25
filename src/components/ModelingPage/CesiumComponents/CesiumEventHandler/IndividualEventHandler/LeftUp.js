@@ -34,8 +34,8 @@ const LeftUpHandler = (props) => {
         props.enableRotate();
         props.setUIStateReadyDragInverter();
         if (
-          props.roofSpecInverters[props.editingRoofIndex][props.editingInverterIndex]
-          .bridging.length !== 0
+          props.roofSpecInverters[props.editingRoofIndex]
+          [props.editingInverterIndex].bridging.length !== 0
         ) props.bridging(props.editingRoofIndex, props.editingInverterIndex);
         break;
 
@@ -59,20 +59,20 @@ const LeftUpHandler = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
     pickedPointIndex:
-      state.undoableReducer.present.drawingManagerReducer.pickedPointIndex,
+      state.undoable.present.drawingManager.pickedPointIndex,
     pickedKeepoutPointIndex:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .pickedPointIndex,
+      state.undoable.present.drawingKeepoutManager.pickedPointIndex,
     pickedWiringPointPosition:
-      state.undoableReducer.present.editingWiringManager.pickedWiringPointPosition,
+      state.undoable.present.editingWiringManager.pickedWiringPointPosition,
     editingRoofIndex:
-      state.undoableReducer.present.editingWiringManager.editingRoofIndex,
+      state.undoable.present.editingWiringManager.editingRoofIndex,
     editingInverterIndex:
-      state.undoableReducer.present.editingWiringManager.editingInverterIndex,
+      state.undoable.present.editingWiringManager.editingInverterIndex,
     roofSpecInverters:
-      state.undoableReducer.present.editingWiringManager.roofSpecInverters,
+      state.undoable.present.editingWiringManager.roofSpecInverters,
   };
 };
 

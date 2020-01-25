@@ -8,10 +8,9 @@ import {
   Col,
   Button,
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 
-import * as actions from '../../../../../store/actions/index';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import {
   emptyListTemplate
@@ -87,9 +86,10 @@ class DrawKeepoutList extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
     keepoutList:
-      state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
+      state.undoable.present.drawingKeepoutManager.keepoutList,
   };
 };
 

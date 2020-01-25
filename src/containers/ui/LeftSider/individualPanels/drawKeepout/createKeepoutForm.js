@@ -2,16 +2,13 @@ import React, { PureComponent } from 'react';
 import { connect } from 'react-redux';
 import {
   Form,
-  Input,
   InputNumber,
-  Divider,
-  Tooltip,
   Select,
   Row,
   Col,
   Button,
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 

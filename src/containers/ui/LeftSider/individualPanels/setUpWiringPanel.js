@@ -2,23 +2,17 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
   Form,
-  Input,
-  InputNumber,
-  Divider,
-  Tooltip,
   Icon,
   Select,
   Row,
   Col,
   Button,
-  Radio,
   Tabs,
   Spin
 } from 'antd';
 import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../store/actions/index';
-import axios from '../../../../axios-setup';
 import InverterTable from './wiringAndBridging/inverterTable';
 const { Option } = Select;
 const { TabPane } = Tabs;
@@ -169,22 +163,29 @@ class SetUpWiringPanel extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    backendLoading: state.projectManagerReducer.backendLoading,
-    workingBuilding: state.buildingManagerReducer.workingBuilding,
-    userInverters: state.undoableReducer.present.editingWiringManager.userInverters,
-    panels: state.undoableReducer.present.editingPVPanelManagerReducer.panels,
-    roofSpecParams: state.undoableReducer.present.editingPVPanelManagerReducer
-      .roofSpecParams,
-    roofSpecInverters: state.undoableReducer.present.editingWiringManager
-      .roofSpecInverters,
-    projectInfo: state.projectManagerReducer.projectInfo,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
+    projectInfo:
+      state.undoable.present.projectManager.projectInfo,
+    backendLoading:
+      state.undoable.present.projectManager.backendLoading,
+    workingBuilding:
+      state.undoable.present.buildingManager.workingBuilding,
+    userInverters:
+      state.undoable.present.editingWiringManager.userInverters,
+    panels:
+      state.undoable.present.editingPVPanelManager.panels,
+    roofSpecParams:
+      state.undoable.present.editingPVPanelManager.roofSpecParams,
+    roofSpecInverters:
+      state.undoable.present.editingWiringManager.roofSpecInverters,
 
-    normalKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.normalKeepout,
-    treeKeepout: state.undoableReducer.present.drawingKeepoutPolygonManagerReducer.treeKeepout,
-    roofSpecInverters: state.undoableReducer.present.editingWiringManager.roofSpecInverters,
-    userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
-    userInverters: state.undoableReducer.present.editingWiringManager.userInverters
+    normalKeepout:
+      state.undoable.present.drawingKeepoutPolygonManager.normalKeepout,
+    treeKeepout:
+      state.undoable.present.drawingKeepoutPolygonManager.treeKeepout,
+    userPanels:
+      state.undoable.present.editingPVPanelManager.userPanels,
   };
 };
 

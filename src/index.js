@@ -16,24 +16,24 @@ import * as actionTypes from './store/actions/actionTypes';
 /*
   import Redux reducers
  */
-import authReducer from './store/reducers/auth';
-import cesiumReducer from './store/reducers/cesium';
-import drawingManagerReducer from './store/reducers/drawingManager';
-import drawingInnerManagerReducer from './store/reducers/drawingInnerManager';
-import drawingKeepoutManagerReducer from './store/reducers/drawingKeepoutManager';
-import uiStateManagerReducer from './store/reducers/uiStateManager';
-import buildingManagerReducer from './store/reducers/buildingManager';
-import keepoutManagerReducer from './store/reducers/keepoutManager';
-import projectManagerReducer from './store/reducers/projectManager';
-import drawingPolygonManagerReducer from './store/reducers/drawingPolygonManager';
-import drawingKeepoutPolygonManagerReducer from './store/reducers/drawingKeepoutPolygonManager';
-import editingPVPanelManagerReducer from './store/reducers/editingPVPanelManager';
+import authManager from './store/reducers/auth';
+import cesiumManager from './store/reducers/cesium';
+import drawingManager from './store/reducers/drawingManager';
+import drawingInnerManager from './store/reducers/drawingInnerManager';
+import drawingKeepoutManager from './store/reducers/drawingKeepoutManager';
+import uiStateManager from './store/reducers/uiStateManager';
+import buildingManager from './store/reducers/buildingManager';
+import keepoutManager from './store/reducers/keepoutManager';
+import projectManager from './store/reducers/projectManager';
+import drawingPolygonManager from './store/reducers/drawingPolygonManager';
+import drawingKeepoutPolygonManager from './store/reducers/drawingKeepoutPolygonManager';
+import editingPVPanelManager from './store/reducers/editingPVPanelManager';
 import editingWiringManager from './store/reducers/editingWiringManager';
-import debugRenderReducer from './store/reducers/debugRender';
-import drawingRooftopManagerReducer from './store/reducers/drawingRooftopManager';
+import debugRender from './store/reducers/debugRender';
+import drawingRooftopManager from './store/reducers/drawingRooftopManager';
 import editingShadowManager from './store/reducers/editingShadowManager';
-import drawingSketchDiagramManagerReducer from './store/reducers/drawingSketchDiagramManager';
-import drawingSingleLineDiagramReducer from './store/reducers/drawingSingleLineDiagramManager';
+import drawingSketchDiagramManager from './store/reducers/drawingSketchDiagramManager';
+import drawingSingleLineDiagram from './store/reducers/drawingSingleLineDiagramManager';
 import reportManager from './store/reducers/reportManager';
 // IMPORT MORE REDBUX REDUCERS OVER HERE
 
@@ -46,24 +46,24 @@ const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
   rootReducer: the combiner of all Redux reducers
  */
 const rootReducer = combineReducers({
-  authReducer: authReducer,
-  projectManagerReducer: projectManagerReducer,
-  cesiumReducer: cesiumReducer,
-  buildingManagerReducer: buildingManagerReducer,
-  keepoutManagerReducer: keepoutManagerReducer,
-  debugRenderReducer:debugRenderReducer,
-  drawingSketchDiagramManagerReducer,
-  drawingSingleLineDiagramReducer,
-  undoableReducer: undoable(combineReducers({
-    drawingManagerReducer: drawingManagerReducer,
-    drawingInnerManagerReducer: drawingInnerManagerReducer,
-    uiStateManagerReducer: uiStateManagerReducer,
-    drawingKeepoutManagerReducer: drawingKeepoutManagerReducer,
-    drawingPolygonManagerReducer: drawingPolygonManagerReducer,
-    drawingKeepoutPolygonManagerReducer: drawingKeepoutPolygonManagerReducer,
-    drawingRooftopManagerReducer: drawingRooftopManagerReducer,
+  undoable: undoable(combineReducers({
+    authManager: authManager,
+    cesiumManager: cesiumManager,
+    projectManager: projectManager,
+    buildingManager: buildingManager,
+    keepoutManager: keepoutManager,
+    debugRender:debugRender,
+    drawingSketchDiagramManager: drawingSketchDiagramManager,
+    drawingSingleLineDiagram: drawingSingleLineDiagram,
+    drawingManager: drawingManager,
+    drawingInnerManager: drawingInnerManager,
+    uiStateManager: uiStateManager,
+    drawingKeepoutManager: drawingKeepoutManager,
+    drawingPolygonManager: drawingPolygonManager,
+    drawingKeepoutPolygonManager: drawingKeepoutPolygonManager,
+    drawingRooftopManager: drawingRooftopManager,
     editingShadowManager: editingShadowManager,
-    editingPVPanelManagerReducer: editingPVPanelManagerReducer,
+    editingPVPanelManager: editingPVPanelManager,
     editingWiringManager: editingWiringManager,
     reportManager: reportManager
   }), {

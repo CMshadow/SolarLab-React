@@ -98,8 +98,8 @@ export const releaseHoverPolyline = () => {
 };
 
 export const setHoverPointIndex = (point) => (dispatch, getState) => {
-  const hoverIndex = getState().undoableReducer.present
-  .drawingManagerReducer.drawingPolyline.findPointIndex(point);
+  const hoverIndex = getState().undoable.present.drawingManager
+    .drawingPolyline.findPointIndex(point);
   return dispatch({
     type: actionTypes.SET_HOVERPOINT,
     hoverPointIndex: hoverIndex
@@ -113,8 +113,8 @@ export const releaseHoverPointIndex = () => (dispatch, getState) => {
 };
 
 export const setPickedPointIndex = (point) => (dispatch, getState) => {
-  const pickedIndex = getState().undoableReducer.present
-  .drawingManagerReducer.drawingPolyline.findPointIndex(point);
+  const pickedIndex = getState().undoable.present.drawingManager
+    .drawingPolyline.findPointIndex(point);
   return dispatch({
     type: actionTypes.SET_PICKEDPOINT,
     pickedPointIndex: pickedIndex

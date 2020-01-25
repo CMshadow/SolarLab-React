@@ -48,11 +48,11 @@ const DrawingManagerRender = (props) => {
 const mapStateToProps = state => {
   return {
     drawingPolyline:
-      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+      state.undoable.present.drawingManager.drawingPolyline,
     auxPolyline:
-      state.undoableReducer.present.drawingManagerReducer.auxPolyline,
+      state.undoable.present.drawingManager.auxPolyline,
     startPointAuxPolyline:
-      state.undoableReducer.present.drawingManagerReducer.startPointAuxPolyline,
+      state.undoable.present.drawingManager.startPointAuxPolyline,
   };
 }
 

@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import {
   ConfigProvider,
   Table,
-  Card,
   Row,
   Col,
   Button,
@@ -12,7 +11,7 @@ import {
   Menu,
   Icon
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import {
   emptyListTemplate
@@ -60,7 +59,9 @@ class InverterTable extends Component {
                 key='1'
                 onClick = {() => {
                   this.props.setUIStateManualWiring();
-                  this.props.manualWiring(this.props.roofIndex, inverterInd, wiringInd);
+                  this.props.manualWiring(
+                    this.props.roofIndex, inverterInd, wiringInd
+                  );
                 }}
               >
                 <FormattedMessage id='wiring_manual' />
@@ -83,7 +84,9 @@ class InverterTable extends Component {
                     inverterInd !== this.props.editingInverterIndex)
                   }
                   onClick = {() => {
-                    this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd);
+                    this.props.autoWiring(
+                      this.props.roofIndex, inverterInd, wiringInd
+                    );
                   }}
                 >
                   <FormattedMessage id='wiring_auto' />
@@ -99,7 +102,9 @@ class InverterTable extends Component {
                     inverterInd !== this.props.editingInverterIndex)
                   }
                   onClick = {() => {
-                    this.props.autoWiring(this.props.roofIndex, inverterInd, wiringInd);
+                    this.props.autoWiring(
+                      this.props.roofIndex, inverterInd, wiringInd
+                    );
                   }}
                 >
                   Wiring
@@ -118,7 +123,9 @@ class InverterTable extends Component {
                 onClick = {() => {
                   if (this.props.uiState === 'SETUP_WIRING') {
                     this.props.setUIStateEditingWiring();
-                    this.props.editWiring(this.props.roofIndex, inverterInd, wiringInd);
+                    this.props.editWiring(
+                      this.props.roofIndex, inverterInd, wiringInd
+                    );
                   } else {
                     this.props.setUIStateSetUpWiring();
                     this.props.stopEditWiring();
@@ -182,7 +189,9 @@ class InverterTable extends Component {
     return (
       <Row>
         <Col span={24}>
-          <ConfigProvider renderEmpty={() => emptyListTemplate({type: 'Inverters'})}>
+          <ConfigProvider renderEmpty={() =>
+            emptyListTemplate({type: 'Inverters'})
+          }>
             <Table
               size='middle'
               pagination={false}
@@ -204,15 +213,15 @@ class InverterTable extends Component {
 const mapStateToProps = state => {
   return {
     roofSpecInverters:
-      state.undoableReducer.present.editingWiringManager.roofSpecInverters,
+      state.undoable.present.editingWiringManager.roofSpecInverters,
     roofSpecParams:
-      state.undoableReducer.present.editingPVPanelManagerReducer.roofSpecParams,
+      state.undoable.present.editingPVPanelManager.roofSpecParams,
     uiState:
-      state.undoableReducer.present.uiStateManagerReducer.uiState,
+      state.undoable.present.uiStateManager.uiState,
     editingWiringIndex:
-      state.undoableReducer.present.editingWiringManager.editingWiringIndex,
+      state.undoable.present.editingWiringManager.editingWiringIndex,
     editingInverterIndex:
-      state.undoableReducer.present.editingWiringManager.editingInverterIndex,
+      state.undoable.present.editingWiringManager.editingInverterIndex,
   };
 };
 

@@ -29,22 +29,22 @@ class Equipment extends Component {
 
 // pass data to props
 function mapStateToProps(state) {
-  const workingBuilding = state.buildingManagerReducer.workingBuilding;
-  if (state.undoableReducer.present.reportManager.metadata.loaded) {
+  const workingBuilding = state.undoable.present.buildingManager.workingBuilding;
+  if (state.undoable.present.reportManager.metadata.loaded) {
     return {
-      metadata: state.undoableReducer.present.reportManager.metadata,
+      metadata: state.undoable.present.reportManager.metadata,
       table: [
         {
           key: '1',
           device: 'Panel',
-          model: state.undoableReducer.present.editingPVPanelManagerReducer
+          model: state.undoable.present.editingPVPanelManager
             .userPanels[workingBuilding.pvParams[0].selectPanelIndex].panelName,
           quantity: Object.keys(workingBuilding.pv).reduce((acc, key) =>
             acc + workingBuilding.pv[key].reduce((acc2, item) =>
               acc2 + item.length
             , 0)
           , 0),
-          capital: state.undoableReducer.present.editingPVPanelManagerReducer
+          capital: state.undoable.present.editingPVPanelManager
             .userPanels[workingBuilding.pvParams[0].selectPanelIndex].cost *
             Object.keys(workingBuilding.pv).reduce((acc, key) =>
               acc + workingBuilding.pv[key].reduce((acc2, item) =>
@@ -55,12 +55,12 @@ function mapStateToProps(state) {
         {
           key: '2',
           device: 'Inverter',
-          model: state.undoableReducer.present.editingWiringManager
+          model: state.undoable.present.editingWiringManager
             .userInverters.find(inverter =>
               inverter.inverterID = workingBuilding.inverters[0][0].inverterId
             ).inverterName,
           quantity: workingBuilding.inverters[0].length,
-          capital: state.undoableReducer.present.editingWiringManager
+          capital: state.undoable.present.editingWiringManager
             .userInverters.find(inverter =>
               inverter.inverterID = workingBuilding.inverters[0][0].inverterId
             ).cost * workingBuilding.inverters[0].length
@@ -87,7 +87,7 @@ function mapStateToProps(state) {
       ],
     }
   }
-  return { metadata: state.undoableReducer.present.reportManager.metadata }
+  return { metadata: state.undoable.present.reportManager.metadata }
 }
 
 export default connect(mapStateToProps)(Equipment);

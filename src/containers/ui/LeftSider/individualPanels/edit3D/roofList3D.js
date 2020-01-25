@@ -3,15 +3,11 @@ import { connect } from 'react-redux';
 import {
   ConfigProvider,
   List,
-  Card,
   Row,
   Col,
-  Button,
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
-import * as actions from '../../../../../store/actions/index';
-import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import {
   emptyListTemplate
 } from '../../../../../components/ui/EmptyTemplate/emptyListTemplate';
@@ -76,13 +72,11 @@ class RoofList3D extends Component {
 const mapStateToProps = state => {
   return {
     workingBuilding:
-      state.buildingManagerReducer.workingBuilding,
+      state.undoable.present.buildingManager.workingBuilding,
     buildingFoundation:
-      state.undoableReducer.present.drawingPolygonManagerReducer
-      .BuildingFoundation,
+      state.undoable.present.drawingPolygonManager.BuildingFoundation,
     rooftopCollection:
-      state.undoableReducer.present.drawingRooftopManagerReducer
-      .RooftopCollection
+      state.undoable.present.drawingRooftopManager.RooftopCollection
   };
 };
 

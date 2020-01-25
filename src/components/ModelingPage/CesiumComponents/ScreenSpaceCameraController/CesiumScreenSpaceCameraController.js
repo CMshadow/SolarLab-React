@@ -13,7 +13,8 @@ const CesiumScreenSpaceCameraController = (props) => {
 
 const mapStateToProps = state => {
   return {
-    enableRotate: state.cesiumReducer.enableRotate,
+    enableRotate:
+      state.undoable.present.cesiumManager.enableRotate,
   };
 };
 

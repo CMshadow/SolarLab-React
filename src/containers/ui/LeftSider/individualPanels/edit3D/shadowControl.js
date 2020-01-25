@@ -13,7 +13,6 @@ import moment from 'moment';
 import { injectIntl, FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
-import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import { sunPosition } from '../../../../../infrastructure/math/sunPositionCalculation';
 
 const { Option } = Select;
@@ -180,8 +179,10 @@ class ShadowControl extends Component {
 
 const mapStateToProps = state => {
   return {
-    projectInfo: state.projectManagerReducer.projectInfo,
-    backendLoading: state.projectManagerReducer.backendLoading,
+    projectInfo:
+      state.undoable.present.projectManager.projectInfo,
+    backendLoading:
+      state.undoable.present.projectManager.backendLoading,
   };
 };
 

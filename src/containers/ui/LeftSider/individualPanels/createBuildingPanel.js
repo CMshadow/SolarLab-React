@@ -62,7 +62,10 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title= {intl.formatMessage({id:'hint_foundationHeight'})}
             >
-              <h4><FormattedMessage id='buildingHeight' /> <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='buildingHeight' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -91,7 +94,10 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title= {intl.formatMessage({id:'hint_parpet'})}
             >
-              <h4><FormattedMessage id='parapetHeight' /> <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='parapetHeight' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -120,7 +126,10 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title= {intl.formatMessage({id:'hint_hip'})}
             >
-              <h4><FormattedMessage id='hipSetback' /> <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='hipSetback' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -149,7 +158,10 @@ class CreateBuildingPanel extends PureComponent {
               placement="topLeft"
               title= {intl.formatMessage({id:'hint_ridge'})}
             >
-              <h4><FormattedMessage id='ridgeSetback' /> <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='ridgeSetback' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col {...this.rowLayout.field}>
@@ -223,8 +235,12 @@ class CreateBuildingPanel extends PureComponent {
                     onChange={(value,option) => {
                       this.setState({type:value});
                     }}>
-                    <Option value='FLAT'><FormattedMessage id='flatRoof' /></Option>
-                    <Option value='PITCHED'><FormattedMessage id='pitchedRoof' /></Option>
+                    <Option value='FLAT'>
+                      <FormattedMessage id='flatRoof' />
+                    </Option>
+                    <Option value='PITCHED'>
+                      <FormattedMessage id='pitchedRoof' />
+                    </Option>
                   </Select>
                 )}
               </Col>
@@ -250,8 +266,12 @@ class CreateBuildingPanel extends PureComponent {
                     }}
                     buttonStyle='solid'
                   >
-                    <Radio.Button value="2D"><FormattedMessage id='satelliteMap' /></Radio.Button>
-                    <Radio.Button value="3D"><FormattedMessage id='drone3DMap' /></Radio.Button>
+                    <Radio.Button value="2D">
+                      <FormattedMessage id='satelliteMap' />
+                    </Radio.Button>
+                    <Radio.Button value="3D">
+                      <FormattedMessage id='drone3DMap' />
+                    </Radio.Button>
                   </Radio.Group>
                 )}
               </Col>
@@ -273,7 +293,10 @@ class CreateBuildingPanel extends PureComponent {
                   placement="topLeft"
                   title= {intl.formatMessage({id:'hint_eave'})}
                 >
-                  <h4><FormattedMessage id='eaveSetback' /> <Icon type="question-circle" /></h4>
+                  <h4>
+                    <FormattedMessage id='eaveSetback' />
+                    <Icon type="question-circle" />
+                  </h4>
                 </Tooltip>
               </Col>
               <Col {...this.rowLayout.field}>
@@ -320,7 +343,8 @@ class CreateBuildingPanel extends PureComponent {
 
 const mapStateToProps = state => {
   return {
-    buildingInfoFields: state.buildingManagerReducer.buildingInfoFields
+    buildingInfoFields:
+      state.undoable.present.buildingManager.buildingInfoFields
   };
 };
 

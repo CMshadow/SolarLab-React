@@ -3,15 +3,11 @@ import { connect } from 'react-redux';
 import {
   ConfigProvider,
   List,
-  Card,
   Row,
   Col,
-  Button,
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
-import * as actions from '../../../../../store/actions/index';
-import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import {
   emptyListTemplate
 } from '../../../../../components/ui/EmptyTemplate/emptyListTemplate';
@@ -50,7 +46,7 @@ class KeepoutList3D extends Component {
 const mapStateToProps = state => {
   return {
     keepoutList:
-      state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
+      state.undoable.present.drawingKeepoutManager.keepoutList,
   };
 };
 

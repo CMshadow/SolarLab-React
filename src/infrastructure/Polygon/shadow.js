@@ -1,6 +1,3 @@
-import uuid from 'uuid/v1';
-import  * as Cesium from 'cesium';
-
 import Polygon from './Polygon';
 
 class Shadow extends Polygon{

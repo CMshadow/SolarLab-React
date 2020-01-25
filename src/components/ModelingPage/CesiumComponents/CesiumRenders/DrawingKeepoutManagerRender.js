@@ -111,20 +111,20 @@ const DrawingKeepoutManagerRender = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
     drawingKeepoutPolyline:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .drawingKeepoutPolyline,
+      state.undoable.present.drawingKeepoutManager.drawingKeepoutPolyline,
     drawingKeepoutObject:
-      state.undoableReducer.present.drawingKeepoutManagerReducer
-      .keepoutList[state.undoableReducer.present.drawingKeepoutManagerReducer
-      .linkedKeepoutIndex],
+      state.undoable.present.drawingKeepoutManager.keepoutList[
+        state.undoable.present.drawingKeepoutManager.linkedKeepoutIndex
+      ],
     auxPolyline:
-      state.undoableReducer.present.drawingKeepoutManagerReducer.auxPolyline,
+      state.undoable.present.drawingKeepoutManager.auxPolyline,
     startPointAuxPolyline:
-      state.undoableReducer.present.drawingKeepoutManagerReducer.startPointAuxPolyline,
+      state.undoable.present.drawingKeepoutManager.startPointAuxPolyline,
     keepoutList:
-      state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList
+      state.undoable.present.drawingKeepoutManager.keepoutList
   };
 }
 

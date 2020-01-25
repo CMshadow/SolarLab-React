@@ -9,13 +9,12 @@ import { setBackendLoadingTrue, setBackendLoadingFalse} from './projectManager';
 
 export const createPolygonFoundationWrapper = () => (dispatch, getState) => {
   const foundPolyline =
-    getState().undoableReducer.present.drawingManagerReducer.drawingPolyline;
+    getState().undoable.present.drawingManager.drawingPolyline;
   const foundHeight =
-    getState().buildingManagerReducer.workingBuilding.foundationHeight;
+    getState().undoable.present.buildingManager.workingBuilding
+    .foundationHeight;
   const stbDist =
-    getState().buildingManagerReducer.workingBuilding.eaveSetback;
-  const parapetHt =
-    getState().buildingManagerReducer.workingBuilding.parapetHeight;
+    getState().undoable.present.buildingManager.workingBuilding.eaveSetback;
 
   dispatch(setBackendLoadingTrue());
   axios.post('/calculate-setback-coordinate', {
@@ -59,24 +58,27 @@ export const createPolygonFoundationWrapper = () => (dispatch, getState) => {
 export const createPolygonFoundationIncludeStb = () => (dispatch, getState) => {
   const foundationHierarchy =
     Polygon.makeHierarchyFromPolyline(
-      getState().undoableReducer.present.drawingManagerReducer.drawingPolyline,
-      getState().buildingManagerReducer.workingBuilding.foundationHeight,
+      getState().undoable.present.drawingManager.drawingPolyline,
+      getState().undoable.present.buildingManager.workingBuilding
+      .foundationHeight,
       -0.005
     );
   return dispatch({
     type: actionTypes.CREATE_POLYGON_FOUNDATION,
-    height: getState().buildingManagerReducer.workingBuilding.foundationHeight,
+    height: getState().undoable.present.buildingManager.workingBuilding
+      .foundationHeight,
     coordinatesArray: foundationHierarchy
   })
 };
 
 export const createWall = () => (dispatch, getState) =>{
   const foundHeight =
-    getState().buildingManagerReducer.workingBuilding.foundationHeight;
+    getState().undoable.present.buildingManager.workingBuilding
+    .foundationHeight;
   const parapetHeight =
-    getState().buildingManagerReducer.workingBuilding.parapetHeight;
+    getState().undoable.present.buildingManager.workingBuilding.parapetHeight;
   const positions = Wall.makePositionsFromPolyline(
-      getState().undoableReducer.present.drawingManagerReducer.drawingPolyline,
+      getState().undoable.present.drawingManager.drawingPolyline,
     );
   dispatch({
     type: actionTypes.CREATE_WALL,

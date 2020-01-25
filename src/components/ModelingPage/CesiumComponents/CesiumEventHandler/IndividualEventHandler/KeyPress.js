@@ -18,7 +18,8 @@ class KeyPressHandler extends Component {
   moveCamera = () => {
     const ellipsoid = this.props.viewer.scene.globe.ellipsoid;
     const camera = this.props.viewer.camera;
-    const cameraHeight = ellipsoid.cartesianToCartographic(camera.position).height;
+    const cameraHeight =
+      ellipsoid.cartesianToCartographic(camera.position).height;
     const moveRate = cameraHeight / 10000.0;
     if (this.state.moveUp) camera.moveUp(moveRate);
     if (this.state.moveDown) camera.moveDown(moveRate);
@@ -105,9 +106,12 @@ class KeyPressHandler extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    drawingInnerPolyline: state.undoableReducer.present.drawingInnerManagerReducer.drawingInnerPolyline,
-    viewer: state.cesiumReducer.viewer,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
+    drawingInnerPolyline:
+      state.undoable.present.drawingInnerManager.drawingInnerPolyline,
+    viewer:
+      state.undoable.present.cesiumManager.viewer,
   };
 };
 

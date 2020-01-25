@@ -19,7 +19,7 @@ const CesiumNavigator = (props) => {
 
 const mapStateToProps = state => {
   return{
-    viewer: state.cesiumReducer.viewer,
+    viewer: state.undoable.present.cesiumManager.viewer,
   }
 }
 

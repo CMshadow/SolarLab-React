@@ -1,8 +1,5 @@
 import React from 'react';
-import {
-  Row,
-  Col,
-  Button } from 'antd';
+import { Button } from 'antd';
 import { ActionCreators } from 'redux-undo';
 import { connect } from 'react-redux';
 import { FormattedMessage } from 'react-intl';
@@ -35,8 +32,10 @@ const UndoRedo = (props) => {
 
 const mapStateToProps = state => {
   return {
-    canUndo: state.undoableReducer.past && state.undoableReducer.past.length > 0,
-    canRedo: state.undoableReducer.future && state.undoableReducer.future.length > 0
+    canUndo:
+      state.undoable.past && state.undoable.past.length > 0,
+    canRedo:
+      state.undoable.future && state.undoable.future.length > 0
   };
 };
 

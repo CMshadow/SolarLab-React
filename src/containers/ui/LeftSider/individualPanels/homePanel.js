@@ -50,8 +50,10 @@ const HomePanel = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    workingBuilding: state.buildingManagerReducer.workingBuilding
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
+    workingBuilding:
+      state.undoable.present.buildingManager.workingBuilding
   };
 };
 

@@ -5,7 +5,7 @@ import {
   Col,
   Button,
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
@@ -48,11 +48,14 @@ const draw3DBuildingButton = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    currentBuilding: state.buildingManagerReducer.workingBuilding,
-    backendLoading: state.projectManagerReducer.backendLoading,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
+    currentBuilding:
+      state.undoable.present.buildingManager.workingBuilding,
+    backendLoading:
+      state.undoable.present.projectManager.backendLoading,
     keepoutList:
-      state.undoableReducer.present.drawingKeepoutManagerReducer.keepoutList,
+      state.undoable.present.drawingKeepoutManager.keepoutList,
   };
 };
 

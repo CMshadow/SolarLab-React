@@ -1,9 +1,5 @@
 import { Color } from 'cesium';
-import uuid from 'uuid/v1';
-import errorNotification from '../../components/ui/Notification/ErrorNotification';
-
 import Point from '../point/point';
-import Coordinate from '../point/coordinate';
 import Polyline from './polyline';
 
 class InnerLine extends Polyline {

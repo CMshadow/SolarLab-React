@@ -3,9 +3,6 @@ import { connect } from 'react-redux';
 import PolygonVisualize from '../Polygon/Polygon';
 import PolygonLabel from '../Polygon/polygonLabel';
 import CustomPoint from '../point/point';
-import Node from '../../../../infrastructure/edgesMap/node/node';
-import * as actions from '../../../../store/actions/index';
-
 
 const drawingRooftopManagerRender = (props) => {
   const drawingBuildingRooftop = [];
@@ -65,15 +62,13 @@ const drawingRooftopManagerRender = (props) => {
 const mapStateToProps = state => {
   return{
     CurrentBuilding:
-      state.buildingManagerReducer.workingBuilding,
+      state.undoable.present.buildingManager.workingBuilding,
     PitchedBuildingRoofTop:
-      state.undoableReducer.present.drawingRooftopManagerReducer,
+      state.undoable.present.drawingRooftopManager,
     editingInnerPlaneIndex:
-      state.undoableReducer.present.drawingRooftopManagerReducer
-      .editingInnerPlaneIndex,
+      state.undoable.present.drawingRooftopManager.editingInnerPlaneIndex,
     editingInnerPlanePoints:
-      state.undoableReducer.present.drawingRooftopManagerReducer
-      .editingInnerPlanePoints,
+      state.undoable.present.drawingRooftopManager.editingInnerPlanePoints,
   }
 };
 

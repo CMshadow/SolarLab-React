@@ -11,8 +11,8 @@ export const initStage = (layer) => (dispatch, getState) => {
   let stageSize = [window.innerWidth, window.innerHeight];
   let backgroundGrid = backgroundGrids(layer, size_times);
 
-  let currentBuilding = getState().buildingManagerReducer
-  .workingBuilding;
+  let currentBuilding = getState().undoable.present.buildingManager
+    .workingBuilding;
   // console.log("CHECK SLD")
   if (currentBuilding !== null) {
     const allInverters = Object.keys(currentBuilding.inverters)
@@ -28,7 +28,7 @@ export const initStage = (layer) => (dispatch, getState) => {
     for (let i = 0; i < allInverters.length; i++) {
       let currentInverter = allInverters[i];
       let numOfPancels = 0;
-      
+
       // currentInverter.mpptSetup.forEach(element => {
       //   element.forEach(item => {
       //     if
@@ -59,13 +59,13 @@ export const initStage = (layer) => (dispatch, getState) => {
         nextStartPosition = pancelCollection.startPosition;
         inverterConnectList.push(InvertersCollection.connectPoint)
       }
-      
+
 
 
     };
     stageSize[1] = nextStartPosition[1];
-    
-    
+
+
 
     if (inverterDist != null) {
       let inverterConnecterComponent = InterConnecter(layer, inverterDist, inverterConnectList);
@@ -75,7 +75,7 @@ export const initStage = (layer) => (dispatch, getState) => {
       let GridComponent = Grid(layer, MeterComponent.distance, MeterComponent.connectPoint);
       stageSize[0] = MeterComponent.maxWidth;
     }
-    
+
 
 
   }
@@ -160,7 +160,7 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
   let startY = startPosition[1];
   let numOfArray = PancelsOfInverter.length;
   for (let i = 0; i < numOfArray; ++i) {
-   
+
     // startPoint
     if (window.innerWidth * 0.12 > w_min) {
       w_min = window.innerWidth * 0.12
@@ -197,14 +197,14 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
       height: firstPanelHeight,
       stroke: 'white',
       strokeWidth: stroke_Width,
-      
+
     })
     layer.add(firstPanelOfFirtRow);
 
     let leftTriangle = new Konva.Line({
-      points: [startPanelPointX, startPanelPointY, 
-        startPanelPointX + firstPanelWidth * 0.3, 
-        startPanelPointY + firstPanelHeight* 0.5, 
+      points: [startPanelPointX, startPanelPointY,
+        startPanelPointX + firstPanelWidth * 0.3,
+        startPanelPointY + firstPanelHeight* 0.5,
         startPanelPointX, startPanelPointY + firstPanelHeight],
       stroke: 'white',
       strokeWidth: stroke_Width,
@@ -224,9 +224,9 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
     layer.add(panelIndex);
 
     let connectLine1 = new Konva.Line({
-      points: [startPanelPointX + firstPanelWidth, 
-        startPanelPointY + firstPanelHeight* 0.5, 
-        startPanelPointX + firstPanelWidth * 1.3, 
+      points: [startPanelPointX + firstPanelWidth,
+        startPanelPointY + firstPanelHeight* 0.5,
+        startPanelPointX + firstPanelWidth * 1.3,
         startPanelPointY + firstPanelHeight* 0.5],
       stroke: 'white',
       strokeWidth: stroke_Width,
@@ -249,13 +249,13 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
       height: secondPanelHeight,
       stroke: 'white',
       strokeWidth: stroke_Width,
-      
+
     })
     layer.add(secondPanelOfFirtRow);
 
     let leftTriangleTwo = new Konva.Line({
-      points: [secondPanelStartPointX, secondPanelStartPointY, 
-        secondPanelStartPointX + secondPanelWidth * 0.3, secondPanelStartPointY + secondPanelHeight* 0.5, 
+      points: [secondPanelStartPointX, secondPanelStartPointY,
+        secondPanelStartPointX + secondPanelWidth * 0.3, secondPanelStartPointY + secondPanelHeight* 0.5,
         secondPanelStartPointX, secondPanelStartPointY + secondPanelHeight],
       stroke: 'white',
       strokeWidth: stroke_Width,
@@ -275,9 +275,9 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
     layer.add(panelIndex2);
 
     let connectLine2 = new Konva.Line({
-      points: [secondPanelStartPointX + secondPanelWidth, 
-        secondPanelStartPointY + secondPanelHeight* 0.5, 
-        secondPanelStartPointX + secondPanelWidth * 1.8, 
+      points: [secondPanelStartPointX + secondPanelWidth,
+        secondPanelStartPointY + secondPanelHeight* 0.5,
+        secondPanelStartPointX + secondPanelWidth * 1.8,
         secondPanelStartPointY + secondPanelHeight* 0.5],
       stroke: 'white',
       strokeWidth: stroke_Width,
@@ -289,7 +289,7 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
 
     // Copper
     let circle = new Konva.Circle({
-      x: secondPanelStartPointX + secondPanelWidth * 1.4, 
+      x: secondPanelStartPointX + secondPanelWidth * 1.4,
       y: secondPanelStartPointY + secondPanelHeight* 0.5,
       radius: secondPanelHeight * 0.25,
       fill: 'white',
@@ -301,7 +301,7 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
     // Copper Line
     let CopperLine = new Konva.Line({
       points: [secondPanelStartPointX + secondPanelWidth * 1.4, secondPanelStartPointY + secondPanelHeight* 0.5,
-        secondPanelStartPointX + secondPanelWidth * 1.4, secondPanelStartPointY - secondPanelHeight* 0.25, 
+        secondPanelStartPointX + secondPanelWidth * 1.4, secondPanelStartPointY - secondPanelHeight* 0.25,
         secondPanelStartPointX + secondPanelWidth * 0.7, secondPanelStartPointY - secondPanelHeight],
       stroke: 'white',
       strokeWidth: stroke_Width,
@@ -321,7 +321,7 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
     });
     layer.add(CopperValue);
 
-    //last panel of the first row 
+    //last panel of the first row
     let lastPanelWidth = w_min* 0.2;
     let lastPanelHeight = h_min * 0.15;
     let lastPanelStartPointX = secondPanelStartPointX + secondPanelWidth * 1.8;
@@ -334,13 +334,13 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
       height: lastPanelHeight,
       stroke: 'white',
       strokeWidth: stroke_Width,
-      
+
     })
     layer.add(lastPanelOfFirtRow);
 
     let leftTriangleThree = new Konva.Line({
-      points: [lastPanelStartPointX, lastPanelStartPointY, 
-        lastPanelStartPointX + lastPanelWidth * 0.3, lastPanelStartPointY + lastPanelHeight* 0.5, 
+      points: [lastPanelStartPointX, lastPanelStartPointY,
+        lastPanelStartPointX + lastPanelWidth * 0.3, lastPanelStartPointY + lastPanelHeight* 0.5,
         lastPanelStartPointX, lastPanelStartPointY + lastPanelHeight],
       stroke: 'white',
       strokeWidth: stroke_Width,
@@ -348,7 +348,7 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
       lineJoin: 'round'
     });
     connectAccess1.push([lastPanelStartPointX + lastPanelWidth, lastPanelStartPointY + lastPanelHeight* 0.5]);
-    
+
     layer.add(leftTriangleThree);
 
     // dynamic value
@@ -391,9 +391,9 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
         lineJoin: 'round',
         dash: [1,10]
       });
-      layer.add(suspensionLine); 
+      layer.add(suspensionLine);
     }
-    
+
 
     // =====================SECOND ROW =====================
     // draw first panel of second row
@@ -410,14 +410,14 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
         height: firstPanelSecondRow_Height,
         stroke: 'white',
         strokeWidth: stroke_Width,
-        
+
       })
       layer.add(firstPanelOfSecondRow);
 
 
       let leftTriangleSecondRow = new Konva.Line({
-        points: [firstPanelSecondRow_StartPointX, firstPanelSecondRow_StartPointY, 
-          firstPanelSecondRow_StartPointX + firstPanelSecondRow_Width * 0.3, firstPanelSecondRow_StartPointY + firstPanelSecondRow_Height* 0.5, 
+        points: [firstPanelSecondRow_StartPointX, firstPanelSecondRow_StartPointY,
+          firstPanelSecondRow_StartPointX + firstPanelSecondRow_Width * 0.3, firstPanelSecondRow_StartPointY + firstPanelSecondRow_Height* 0.5,
           firstPanelSecondRow_StartPointX, firstPanelSecondRow_StartPointY + firstPanelSecondRow_Height],
         stroke: 'white',
         strokeWidth: stroke_Width,
@@ -437,9 +437,9 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
       layer.add(panelIndexSecondRow);
 
       let connectLine1SecondRow = new Konva.Line({
-        points: [firstPanelSecondRow_StartPointX + firstPanelSecondRow_Width, 
-          firstPanelSecondRow_StartPointY + firstPanelSecondRow_Height* 0.5, 
-          firstPanelSecondRow_StartPointX + firstPanelSecondRow_Width * 1.3, 
+        points: [firstPanelSecondRow_StartPointX + firstPanelSecondRow_Width,
+          firstPanelSecondRow_StartPointY + firstPanelSecondRow_Height* 0.5,
+          firstPanelSecondRow_StartPointX + firstPanelSecondRow_Width * 1.3,
           firstPanelSecondRow_StartPointY + firstPanelSecondRow_Height* 0.5],
         stroke: 'white',
         strokeWidth: stroke_Width,
@@ -462,13 +462,13 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
         height: secondPanelHeightSecondRow,
         stroke: 'white',
         strokeWidth: stroke_Width,
-        
+
       })
       layer.add(secondPanelOfSecondRow);
 
       let leftTriangleTwoSecondRow = new Konva.Line({
-        points: [secondPanelStartPointXSecondRow, secondPanelStartPointYSecondRow, 
-          secondPanelStartPointXSecondRow + secondPanelWidthSecondRow * 0.3, secondPanelStartPointYSecondRow + secondPanelHeightSecondRow* 0.5, 
+        points: [secondPanelStartPointXSecondRow, secondPanelStartPointYSecondRow,
+          secondPanelStartPointXSecondRow + secondPanelWidthSecondRow * 0.3, secondPanelStartPointYSecondRow + secondPanelHeightSecondRow* 0.5,
           secondPanelStartPointXSecondRow, secondPanelStartPointYSecondRow + secondPanelHeightSecondRow],
         stroke: 'white',
         strokeWidth: stroke_Width,
@@ -488,9 +488,9 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
       layer.add(panelIndex2SecondRow);
 
       let connectLine2SecondRow = new Konva.Line({
-        points: [secondPanelStartPointXSecondRow + secondPanelWidthSecondRow, 
-          secondPanelStartPointYSecondRow + secondPanelHeightSecondRow* 0.5, 
-          secondPanelStartPointXSecondRow + secondPanelWidthSecondRow * 1.8, 
+        points: [secondPanelStartPointXSecondRow + secondPanelWidthSecondRow,
+          secondPanelStartPointYSecondRow + secondPanelHeightSecondRow* 0.5,
+          secondPanelStartPointXSecondRow + secondPanelWidthSecondRow * 1.8,
           secondPanelStartPointYSecondRow + secondPanelHeightSecondRow* 0.5],
         stroke: 'white',
         strokeWidth: stroke_Width,
@@ -513,22 +513,22 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
         height: lastPanelRow3Height,
         stroke: 'white',
         strokeWidth: stroke_Width,
-        
+
       })
       layer.add(lastPanelOfRow3);
 
       let leftTriangleThreeRow3 = new Konva.Line({
-        points: [lastPanelRow3StartPointX, lastPanelRow3StartPointY, 
-          lastPanelRow3StartPointX + lastPanelRow3Width * 0.3, lastPanelRow3StartPointY + lastPanelRow3Height* 0.5, 
+        points: [lastPanelRow3StartPointX, lastPanelRow3StartPointY,
+          lastPanelRow3StartPointX + lastPanelRow3Width * 0.3, lastPanelRow3StartPointY + lastPanelRow3Height* 0.5,
           lastPanelRow3StartPointX, lastPanelRow3StartPointY + lastPanelRow3Height],
         stroke: 'white',
         strokeWidth: stroke_Width,
         lineCap: 'round',
         lineJoin: 'round'
       });
-      
+
       connectAccess2.push([lastPanelRow3StartPointX + lastPanelRow3Width, lastPanelRow3StartPointY + lastPanelRow3Height* 0.5]);
-      
+
       layer.add(leftTriangleThreeRow3);
 
       // dynamic value
@@ -557,7 +557,7 @@ export const panelArrayCollection = (layer, startPosition ,PancelsOfInverter, Pa
     });
     layer.add(bottomValue);
   }
-  
+
   return({
     type: actionTypes.PANEL_ARRAY_COLLECTION,
     layer: layer,
@@ -627,7 +627,7 @@ export const CombinerBoxCollections = (layer, startPosition ,distance, connectPo
       layer.add(connectLineFirstRow);
 
       let circle1Row1 = new Konva.Circle({
-        x: connectPoint1X, 
+        x: connectPoint1X,
         y: connectPoint1Y,
         radius: 3,
         fill: 'white',
@@ -639,9 +639,9 @@ export const CombinerBoxCollections = (layer, startPosition ,distance, connectPo
       let connectSplinePoint1X = connectPoint1X + w_min * 0.25;
       let connectSplinePoint1Y = connectPoint1Y;
       let splineRow1 = new Konva.Line({
-        points: [connectPoint1X, connectPoint1Y, 
-          connectPoint1X + w_min * 0.25 * 0.3 , connectPoint1Y - h_min * 0.05, 
-          connectPoint1X + w_min * 0.25 * 0.6 , connectPoint1Y + h_min * 0.05, 
+        points: [connectPoint1X, connectPoint1Y,
+          connectPoint1X + w_min * 0.25 * 0.3 , connectPoint1Y - h_min * 0.05,
+          connectPoint1X + w_min * 0.25 * 0.6 , connectPoint1Y + h_min * 0.05,
           connectSplinePoint1X, connectSplinePoint1Y],
         stroke: 'white',
         strokeWidth: 2,
@@ -656,7 +656,7 @@ export const CombinerBoxCollections = (layer, startPosition ,distance, connectPo
       layer.add(splineRow1);
 
       let circle2Row1 = new Konva.Circle({
-        x: connectSplinePoint1X, 
+        x: connectSplinePoint1X,
         y: connectSplinePoint1Y,
         radius: 3,
         fill: 'white',
@@ -676,7 +676,7 @@ export const CombinerBoxCollections = (layer, startPosition ,distance, connectPo
       });
       layer.add(shortConnectLineRow1);
 
-      // second row  
+      // second row
       let connectPoint2X = startX + w_min * 0.25;
       let connectPoint2Y = connectPoint2[i][1];
       let connectLineSecondRow = new Konva.Line({
@@ -689,7 +689,7 @@ export const CombinerBoxCollections = (layer, startPosition ,distance, connectPo
       layer.add(connectLineSecondRow);
 
       let circle2 = new Konva.Circle({
-        x: connectPoint2X, 
+        x: connectPoint2X,
         y: connectPoint2Y,
         radius: 3,
         fill: 'white',
@@ -700,9 +700,9 @@ export const CombinerBoxCollections = (layer, startPosition ,distance, connectPo
       let connectSplinePoint1XRow2 = connectPoint2X + w_min * 0.25;
       let connectSplinePoint1YRow2 = connectPoint2Y;
       let splineRow2 = new Konva.Line({
-        points: [connectPoint2X, connectPoint2Y, 
-          connectPoint2X + w_min * 0.25 * 0.3 , connectPoint2Y - h_min * 0.05, 
-          connectPoint2X + w_min * 0.25 * 0.6 , connectPoint2Y + h_min * 0.05, 
+        points: [connectPoint2X, connectPoint2Y,
+          connectPoint2X + w_min * 0.25 * 0.3 , connectPoint2Y - h_min * 0.05,
+          connectPoint2X + w_min * 0.25 * 0.6 , connectPoint2Y + h_min * 0.05,
           connectSplinePoint1XRow2, connectSplinePoint1YRow2],
         stroke: 'white',
         strokeWidth: 2,
@@ -717,7 +717,7 @@ export const CombinerBoxCollections = (layer, startPosition ,distance, connectPo
       layer.add(splineRow2);
 
       let circle2Row2 = new Konva.Circle({
-        x: connectSplinePoint1XRow2, 
+        x: connectSplinePoint1XRow2,
         y: connectSplinePoint1YRow2,
         radius: 3,
         fill: 'white',
@@ -750,7 +750,7 @@ export const CombinerBoxCollections = (layer, startPosition ,distance, connectPo
       layer.add(jointLine);
       connectPointsList.push([jointPointX, (shortConnectLineRow1_pointY + shortConnectLineRow2_pointY) /2 ]);
       // Copper
-      // add lineCircle 
+      // add lineCircle
       let topPointX = 0.5 * (connectPoint2X - connectPoint2[i][0]) + connectPoint2[i][0];
       let topPointY = -(connectPoint2Y - connectPoint1Y) * 0.1 + connectPoint1Y;
       let lineCircle = new Konva.Ellipse({
@@ -763,7 +763,7 @@ export const CombinerBoxCollections = (layer, startPosition ,distance, connectPo
       });
       layer.add(lineCircle);
 
-      
+
       let circleCopperLine = new Konva.Line({
         points: [topPointX, topPointY, topPointX, topPointY - h_min * 0.1, startX, startY - h_min * 0.1],
         stroke: 'white',
@@ -794,9 +794,9 @@ export const CombinerBoxCollections = (layer, startPosition ,distance, connectPo
       });
       layer.add(bottomValue);
     }
-    
+
   }
-  
+
 
 
   return({
@@ -827,7 +827,7 @@ export const ConnectConbinerToDisconnect = (layer, CombinerAccessList, Disconnec
 
 export const DisconnectCollection = (layer, startPosition, distance, numOfDisconnect ,PancelsOfInverter) => {
   let inverterAccess = PancelsOfInverter.length;
-  
+
   let w_min = 50;
   let h_min = 65 + (inverterAccess - 2) * 15;
   let stroke_Width = 2;
@@ -843,7 +843,7 @@ export const DisconnectCollection = (layer, startPosition, distance, numOfDiscon
     if (window.innerWidth * 0.05 > w_min) {
       w_min = window.innerWidth * 0.05;
     }
-  
+
     let startX = startPosition[0] + distance[0];
     let startY = startPosition[1] + (distance[1] * 1.8) * i;
     nextDistance = startX + 2 * w_min;
@@ -858,10 +858,10 @@ export const DisconnectCollection = (layer, startPosition, distance, numOfDiscon
     layer.add(panelArrayBounary);
 
     // add switch
-    
+
     for (let i = 1; i <= inverterAccess; ++i) {
       let circle1 = new Konva.Circle({
-        x: startX + 0.25 * w_min, 
+        x: startX + 0.25 * w_min,
         y: startY + (h_min / (inverterAccess + 1)) * i,
         radius: 5,
         fill: 'white',
@@ -872,14 +872,14 @@ export const DisconnectCollection = (layer, startPosition, distance, numOfDiscon
       layer.add(circle1);
 
       let circle2 = new Konva.Circle({
-        x: startX + 0.8 * w_min, 
+        x: startX + 0.8 * w_min,
         y: startY + (h_min / (inverterAccess + 1)) * i,
         radius: 5,
         fill: 'white',
         // stroke: 'black',
         // strokeWidth: 4
       });
-      
+
       layer.add(circle2);
 
       let switchOffsetY = h_min / (inverterAccess + 1);
@@ -917,7 +917,7 @@ export const DisconnectCollection = (layer, startPosition, distance, numOfDiscon
       layer.add(bottomValue);
     }
   }
-  
+
   return({
     type: actionTypes.DISCONNECT_CELLECTION,
     connectPoint: circleAccessInList,
@@ -959,7 +959,7 @@ export const InverterCollection = (layer, startPosition ,distance, numOfInverter
 
     for (let j = 1; j <= accessNum; ++j) {
       let circle1 = new Konva.Circle({
-        x: startX, 
+        x: startX,
         y: startY + ((h_min / (accessNum + 1)) * j),
         radius: 5,
         fill: 'white',
@@ -971,8 +971,8 @@ export const InverterCollection = (layer, startPosition ,distance, numOfInverter
       if (connectPoints[index][1] !== startY + (h_min / (accessNum + 1)) * j ) {
         // let breakPoint = [connectPoint[0], startY + (h_min / 2)]
         let connectLineToInterConnecter = new Konva.Line({
-          points: [startX, startY + (h_min / (accessNum + 1)) * j, 
-            connectPoints[index][0], startY + (h_min / (accessNum + 1)) * j, 
+          points: [startX, startY + (h_min / (accessNum + 1)) * j,
+            connectPoints[index][0], startY + (h_min / (accessNum + 1)) * j,
             connectPoints[index][0], connectPoints[index][1] ],
           stroke: 'white',
           strokeWidth: stroke_Width,
@@ -994,7 +994,7 @@ export const InverterCollection = (layer, startPosition ,distance, numOfInverter
     }
 
     let circle2 = new Konva.Circle({
-      x: startX + w_min, 
+      x: startX + w_min,
       y: startY + h_min * 0.5,
       radius: 5,
       fill: 'white',
@@ -1013,7 +1013,7 @@ export const InverterCollection = (layer, startPosition ,distance, numOfInverter
     });
     layer.add(connectOutLine);
     connectPointList.push([startX + w_min * 1.5, startY + h_min * 0.5]);
-    
+
     let inverterDiagonalLine = new Konva.Line({
       points: [startX + w_min, startY, startX, startY + h_min],
       stroke: 'white',
@@ -1022,7 +1022,7 @@ export const InverterCollection = (layer, startPosition ,distance, numOfInverter
       lineJoin: 'round'
     });
     layer.add(inverterDiagonalLine);
-    
+
     let inverterDashLine = new Konva.Line({
       points: [startX + w_min * 0.1, startY + h_min * 0.1, startX + w_min * 0.5, startY + h_min * 0.1],
       stroke: 'white',
@@ -1052,7 +1052,7 @@ export const InverterCollection = (layer, startPosition ,distance, numOfInverter
     });
     layer.add(inverterCurveLine);
 
-    
+
 
     // bottom value
     let bottomValue = new Konva.Text({
@@ -1066,7 +1066,7 @@ export const InverterCollection = (layer, startPosition ,distance, numOfInverter
     layer.add(bottomValue);
 
   }
-  
+
   return({
     type: actionTypes.INVERTER_COLLECTION,
     connectPoint: connectPointList[0],
@@ -1084,7 +1084,7 @@ export const InterConnecter = (layer, distance, connectPoints) => {
   let connectPointList = [];
   let nextDistance = 0;
 
-  
+
   if (window.innerWidth * 0.05 > w_min) {
       w_min = window.innerWidth * 0.05;
   }
@@ -1105,7 +1105,7 @@ export const InterConnecter = (layer, distance, connectPoints) => {
 
   for (let i = 1; i <= numOfInverter; ++i) {
     let circle = new Konva.Circle({
-      x: startX, 
+      x: startX,
       y: startY + (h_min / (numOfInverter + 1)) * i,
       radius: 5,
       fill: 'white',
@@ -1113,14 +1113,14 @@ export const InterConnecter = (layer, distance, connectPoints) => {
       // strokeWidth: 4
     });
     layer.add(circle);
-    
+
     // connect to Inverter
     console.log(connectPoints[i])
     if (connectPoints[i - 1][1] !== startY + (h_min / (numOfInverter + 1)) * i ) {
       // let breakPoint = [connectPoint[0], startY + (h_min / 2)]
       let connectLineToInterConnecter = new Konva.Line({
-        points: [startX, startY + (h_min / (numOfInverter + 1)) * i, 
-          connectPoints[i - 1][0], startY + (h_min / (numOfInverter + 1)) * i, 
+        points: [startX, startY + (h_min / (numOfInverter + 1)) * i,
+          connectPoints[i - 1][0], startY + (h_min / (numOfInverter + 1)) * i,
           connectPoints[i - 1][0], connectPoints[i - 1][1] ],
         stroke: 'white',
         strokeWidth: stroke_Width,
@@ -1152,20 +1152,20 @@ export const InterConnecter = (layer, distance, connectPoints) => {
     });
     layer.add(connectLine);
 
-    // 
+    //
     let busLineCircle1Row1 = new Konva.Circle({
-      x: startX + w_min * 0.2, 
+      x: startX + w_min * 0.2,
       y: startY + (h_min / (numOfInverter + 1)) * i,
       radius: 3,
       fill: 'white',
       // stroke: 'black',
       // strokeWidth: 4
     });
-    layer.add(busLineCircle1Row1); 
+    layer.add(busLineCircle1Row1);
 
     let busCurveLineRow1 =  new Konva.Line({
       points: [startX + w_min * 0.2, startY + (h_min / (numOfInverter + 1)) * i,
-         startX + w_min * 0.275, startY + (h_min / (numOfInverter + 1)) * i - 10, 
+         startX + w_min * 0.275, startY + (h_min / (numOfInverter + 1)) * i - 10,
          startX + w_min * 0.35, startY + (h_min / (numOfInverter + 1)) * i],
       stroke: 'white',
       strokeWidth: stroke_Width,
@@ -1176,14 +1176,14 @@ export const InterConnecter = (layer, distance, connectPoints) => {
     layer.add(busCurveLineRow1);
 
     let busLineCircle2Row1 = new Konva.Circle({
-      x: startX + w_min * 0.35, 
+      x: startX + w_min * 0.35,
       y: startY + (h_min / (numOfInverter + 1)) * i,
       radius: 3,
       fill: 'white',
       // stroke: 'black',
       // strokeWidth: 4
     });
-    layer.add(busLineCircle2Row1); 
+    layer.add(busLineCircle2Row1);
 
     let connectToBusLine = new Konva.Line({
       points: [startX + w_min * 0.35, startY + (h_min / (numOfInverter + 1)) * i,
@@ -1206,14 +1206,14 @@ export const InterConnecter = (layer, distance, connectPoints) => {
     layer.add(busLine);
 
     let busLineCircle1 = new Konva.Circle({
-      x: startX + w_min * 0.65, 
+      x: startX + w_min * 0.65,
       y: startY + h_min * 0.15,
       radius: 3,
       fill: 'white',
       // stroke: 'black',
       // strokeWidth: 4
     });
-    layer.add(busLineCircle1); 
+    layer.add(busLineCircle1);
 
     let busCurveLine =  new Konva.Line({
       points: [startX + w_min * 0.65, startY + h_min * 0.15, startX + w_min * 0.75, startY + h_min * 0.1, startX + w_min * 0.85, startY + h_min * 0.15],
@@ -1226,14 +1226,14 @@ export const InterConnecter = (layer, distance, connectPoints) => {
     layer.add(busCurveLine);
 
     let busLineCircle2 = new Konva.Circle({
-      x: startX + w_min * 0.85, 
+      x: startX + w_min * 0.85,
       y: startY + h_min * 0.15,
       radius: 3,
       fill: 'white',
       // stroke: 'black',
       // strokeWidth: 4
     });
-    layer.add(busLineCircle2); 
+    layer.add(busLineCircle2);
   }
 
   let busConnectLine =  new Konva.Line({
@@ -1270,7 +1270,7 @@ export const ACDisconnect = (layer, distance, connectPoint) => {
   let h_min = 40;
   let stroke_Width = 2;
   let font_size = Math.floor(h_min / 7);
-  
+
   let nextDistance = 0;
 
 
@@ -1297,18 +1297,18 @@ export const ACDisconnect = (layer, distance, connectPoint) => {
   layer.add(ACDisconnecterBounary);
 
   let circle1 = new Konva.Circle({
-    x: startX + 0.25 * w_min, 
+    x: startX + 0.25 * w_min,
     y: startY + (h_min / 2),
     radius: 5,
     fill: 'white',
     // stroke: 'black',
     // strokeWidth: 4
   });
-  
+
   layer.add(circle1);
 
   let circle2 = new Konva.Circle({
-    x: startX + 0.8 * w_min, 
+    x: startX + 0.8 * w_min,
     y: startY + (h_min / 2),
     radius: 5,
     fill: 'white',
@@ -1317,7 +1317,7 @@ export const ACDisconnect = (layer, distance, connectPoint) => {
   });
 
   layer.add(circle2);
-  
+
   let switchOffsetX = startX + 0.75 * w_min;
   let switchOffsetY = startY + h_min * 0.25;
   let switchLine = new Konva.Line({
@@ -1394,7 +1394,7 @@ export const ServerPanel = (layer, distance, connectPoint) => {
       h_min = window.innerWidth * 0.05;
       font_size = Math.floor(h_min / 7);
   }
-  
+
   let startX = window.innerWidth * 0.05 + distance;
   let startY = (window.innerHeight * 0.15);
   nextDistance = startX + w_min;
@@ -1411,14 +1411,14 @@ export const ServerPanel = (layer, distance, connectPoint) => {
 
 
   let busLineCircle1Row1 = new Konva.Circle({
-      x: startX + w_min * 0.25, 
+      x: startX + w_min * 0.25,
       y: startY + h_min * 0.35,
       radius: 3,
       fill: 'white',
       // stroke: 'black',
       // strokeWidth: 4
     });
-    layer.add(busLineCircle1Row1); 
+    layer.add(busLineCircle1Row1);
 
   let busCurveLineRow1 =  new Konva.Line({
     points: [startX + w_min * 0.25, startY + h_min * 0.35, startX + w_min * 0.375, startY + h_min * 0.25, startX + w_min * 0.5, startY + h_min * 0.35],
@@ -1431,14 +1431,14 @@ export const ServerPanel = (layer, distance, connectPoint) => {
   layer.add(busCurveLineRow1);
 
   let busLineCircle2Row1 = new Konva.Circle({
-    x: startX + w_min * 0.5, 
+    x: startX + w_min * 0.5,
     y: startY + h_min * 0.35,
     radius: 3,
     fill: 'white',
     // stroke: 'black',
     // strokeWidth: 4
   });
-  layer.add(busLineCircle2Row1);  
+  layer.add(busLineCircle2Row1);
 
   let busConnectLine1 =  new Konva.Line({
     points: [startX + w_min * 0.5, startY + h_min * 0.35, startX + w_min * 0.65, startY + h_min * 0.35 ],
@@ -1458,17 +1458,17 @@ export const ServerPanel = (layer, distance, connectPoint) => {
     lineJoin: 'round',
     dash: [1, 10]
   });
-  layer.add(suspensionLine); 
+  layer.add(suspensionLine);
 
   let busLineCircle1Row2 = new Konva.Circle({
-    x: startX + w_min * 0.25, 
+    x: startX + w_min * 0.25,
     y: startY + h_min * 0.75,
     radius: 3,
     fill: 'white',
     // stroke: 'black',
     // strokeWidth: 4
   });
-  layer.add(busLineCircle1Row2); 
+  layer.add(busLineCircle1Row2);
 
   let busCurveLineRow2 =  new Konva.Line({
     points: [startX + w_min * 0.25, startY + h_min * 0.75, startX + w_min * 0.375, startY + h_min * 0.65, startX + w_min * 0.5, startY + h_min * 0.75],
@@ -1481,14 +1481,14 @@ export const ServerPanel = (layer, distance, connectPoint) => {
   layer.add(busCurveLineRow2);
 
   let busLineCircle2Row2 = new Konva.Circle({
-    x: startX + w_min * 0.5, 
+    x: startX + w_min * 0.5,
     y: startY + h_min * 0.75,
     radius: 3,
     fill: 'white',
     // stroke: 'black',
     // strokeWidth: 4
   });
-  layer.add(busLineCircle2Row2);  
+  layer.add(busLineCircle2Row2);
 
 
   let busConnectLine2 =  new Konva.Line({
@@ -1538,7 +1538,7 @@ export const ServerPanel = (layer, distance, connectPoint) => {
       lineJoin: 'round'
     });
     layer.add(connectLineToInterConnecter);
-  } 
+  }
 
   // bottom value
   let bottomValue = new Konva.Text({
@@ -1594,13 +1594,13 @@ export const Meter = (layer, distance, connectPoint) => {
   layer.add(MeterBounary);
 
   let meterCicle = new Konva.Circle({
-    x: startX + w_min * 0.5, 
+    x: startX + w_min * 0.5,
     y: startY + h_min * 0.5,
     radius: w_min * 0.35,
     stroke: 'white',
     strokeWidth: stroke_Width
   });
-  layer.add(meterCicle);  
+  layer.add(meterCicle);
 
 
   if (connectPoint[1] !== startY + h_min * 0.5) {
@@ -1622,7 +1622,7 @@ export const Meter = (layer, distance, connectPoint) => {
       lineJoin: 'round'
     });
     layer.add(connectLineToInterConnecter);
-  } 
+  }
 
   // bottom value
   let bottomValue = new Konva.Text({
@@ -1688,7 +1688,7 @@ export const Grid = (layer, distance, connectPoint) => {
 
 
   let GridIconLeft = new Konva.Line({
-    points: [startX + 0.4 * w_min, startY + 0.1 * h_min, 
+    points: [startX + 0.4 * w_min, startY + 0.1 * h_min,
       startX + 0.6 * w_min, startY + 0.1 * h_min,
       startX + 0.7 * w_min, startY + 0.9 * h_min,
       startX + 0.35 * w_min, startY + 0.55 * h_min ],
@@ -1702,7 +1702,7 @@ export const Grid = (layer, distance, connectPoint) => {
 
   let GridIconRight = new Konva.Line({
     points: [startX + 0.6 * w_min, startY + 0.1 * h_min,
-      startX + 0.4 * w_min, startY + 0.1 * h_min, 
+      startX + 0.4 * w_min, startY + 0.1 * h_min,
       startX + 0.3 * w_min, startY + 0.9 * h_min,
       startX + 0.65 * w_min, startY + 0.55 * h_min ],
     stroke: 'white',
@@ -1714,7 +1714,7 @@ export const Grid = (layer, distance, connectPoint) => {
   layer.add(GridIconRight);
 
   let GridIconTop = new Konva.Line({
-    points: [startX + 0.4 * w_min, startY + 0.1 * h_min, 
+    points: [startX + 0.4 * w_min, startY + 0.1 * h_min,
       startX + 0.6 * w_min, startY + 0.1 * h_min,
       startX + 0.8 * w_min, startY + 0.2 * h_min,
       startX + 0.2 * w_min, startY + 0.2 * h_min ],
@@ -1747,7 +1747,7 @@ export const Grid = (layer, distance, connectPoint) => {
   layer.add(GridIconTopRight);
 
   let GridIconMiddle = new Konva.Line({
-    points: [startX + 0.4 * w_min, startY + 0.35 * h_min, 
+    points: [startX + 0.4 * w_min, startY + 0.35 * h_min,
       startX + 0.6 * w_min, startY + 0.35 * h_min,
       startX + 0.8 * w_min, startY + 0.45 * h_min,
       startX + 0.2 * w_min, startY + 0.45 * h_min ],

@@ -52,7 +52,8 @@ class EditInnerRoofForm extends PureComponent {
                 rules: [...this.numberInputRules],
                 initialValue: this.props.editingInnerPlanePoints ?
                   this.props.editingInnerPlanePoints[
-                    this.props.threePointsInfo[this.props.roofIndex][ind].pointIndex
+                    this.props.threePointsInfo[this.props.roofIndex][ind]
+                    .pointIndex
                   ].height :
                   0
               })(
@@ -74,9 +75,9 @@ class EditInnerRoofForm extends PureComponent {
         <Popover
           content={
             this.props.threePointsInfo[this.props.roofIndex] &&
-            Object.keys(this.props.threePointsInfo[this.props.roofIndex]).includes(ind.toString()) ?
-            giveHeight(ind) :
-            clickPoint
+            Object.keys(this.props.threePointsInfo[this.props.roofIndex])
+            .includes(ind.toString()) ?
+            giveHeight(ind) : clickPoint
           }
           trigger='click'
           arrowPointAtCenter={true}
@@ -144,10 +145,9 @@ class EditInnerRoofForm extends PureComponent {
 const mapStateToProps = state => {
   return {
     editingInnerPlanePoints:
-      state.undoableReducer.present.drawingRooftopManagerReducer
-      .editingInnerPlanePoints,
+      state.undoable.present.drawingRooftopManager.editingInnerPlanePoints,
     threePointsInfo:
-      state.undoableReducer.present.drawingRooftopManagerReducer.threePointsInfo
+      state.undoable.present.drawingRooftopManager.threePointsInfo
   };
 };
 
@@ -180,7 +180,7 @@ const formOptions = {
           allValues['height0'],
         [props.threePointsInfo[props.roofIndex][1].pointIndex]:
           allValues['height1'],
-        [props.threePointsInfo[props.roofIndex][2].pointIndex]: 
+        [props.threePointsInfo[props.roofIndex][2].pointIndex]:
           allValues['height2'],
       };
       console.log(requestData)

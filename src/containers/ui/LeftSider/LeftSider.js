@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Layout, Button, BackTop } from 'antd';
+import { Layout, Button } from 'antd';
 import { connect } from 'react-redux';
 
 import 'antd/dist/antd.css';
@@ -93,7 +93,7 @@ class LeftSider extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState
+    uiState: state.undoable.present.uiStateManager.uiState
   };
 };
 

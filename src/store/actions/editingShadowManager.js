@@ -55,31 +55,27 @@ const convertParapetToNormalKeepout = (buildingParapet) => {
 
 export const projectAllShadow = (sunPositionCollection) =>
 (dispatch, getState) => {
-  const buildingType = getState().buildingManagerReducer.workingBuilding.type
+  const buildingType = getState().undoable.present.buildingManager
+    .workingBuilding.type
   const normalKeepout =
-    getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer
-    .normalKeepout;
+    getState().undoable.present.drawingKeepoutPolygonManager.normalKeepout;
   const treeKeepout =
-    getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer
-    .treeKeepout;
+    getState().undoable.present.drawingKeepoutPolygonManager.treeKeepout;
   const envKeepout =
-    getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer
-    .envKeepout;
+    getState().undoable.present.drawingKeepoutPolygonManager.envKeepout;
   const buildingParapet =
-    getState().undoableReducer.present.drawingPolygonManagerReducer
-    .BuildingParapet;
+    getState().undoable.present.drawingPolygonManager.BuildingParapet;
   let foundationPolygons = null;
   if (buildingType === 'FLAT') {
     foundationPolygons =
-      getState().undoableReducer.present.drawingPolygonManagerReducer
-      .BuildingFoundation;
+      getState().undoable.present.drawingPolygonManager.BuildingFoundation;
   } else {
     foundationPolygons =
-      getState().undoableReducer.present.drawingRooftopManagerReducer
-      .RooftopCollection.rooftopCollection;
+      getState().undoable.present.drawingRooftopManager.RooftopCollection
+      .rooftopCollection;
   }
-  const foundationHeight = getState().buildingManagerReducer.workingBuilding
-    .foundationHeight;
+  const foundationHeight = getState().undoable.present.buildingManager
+    .workingBuilding.foundationHeight;
 
   dispatch(actions.setBackendLoadingTrue());
   // 女儿墙转换为普通障碍物

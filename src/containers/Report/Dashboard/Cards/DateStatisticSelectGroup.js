@@ -164,21 +164,21 @@ class DateStatisticSelectGroup extends Component {
 function mapStateToProps(state) {
     let props = {
         displayMode: {
-            mode: state.undoableReducer.present.reportManager.displayMode.mode,
-            month: state.undoableReducer.present.reportManager.displayMode.month,
-            day: state.undoableReducer.present.reportManager.displayMode.day,
-            inverter: state.undoableReducer.present.reportManager.displayMode.inverter,
+            mode: state.undoable.present.reportManager.displayMode.mode,
+            month: state.undoable.present.reportManager.displayMode.month,
+            day: state.undoable.present.reportManager.displayMode.day,
+            inverter: state.undoable.present.reportManager.displayMode.inverter,
         },
     };
 
-    if (state.undoableReducer.present.reportManager.metadata.loaded)
+    if (state.undoable.present.reportManager.metadata.loaded)
         props.metadata = {
-            loaded: state.undoableReducer.present.reportManager.metadata.loaded,
-            inverter_count: state.undoableReducer.present.reportManager.metadata.option.data.Inverter.Quantity,
+            loaded: state.undoable.present.reportManager.metadata.loaded,
+            inverter_count: state.undoable.present.reportManager.metadata.option.data.Inverter.Quantity,
         };
     else
         props.metadata = {
-            loaded: state.undoableReducer.present.reportManager.metadata.loaded,
+            loaded: state.undoable.present.reportManager.metadata.loaded,
         };
 
     return props;

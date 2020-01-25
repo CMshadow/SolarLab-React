@@ -1,9 +1,4 @@
-import React from 'react';
 import uuid from 'uuid/v1';
-import  * as Cesium from 'cesium';
-
-import Coordinate from '../point/coordinate';
-
 
 class EdgesMap {
 
@@ -11,7 +6,7 @@ class EdgesMap {
    *Creates an instance of EdgesMap.
    * @param {string} [id=null] unique id of the EdgesMap, automatic generate one if not provided
 
-   * @param {[Node, Node, ...]} [nodesCollection=null] An array that contains both inner and outer Nodes users created sorted by creation order. 
+   * @param {[Node, Node, ...]} [nodesCollection=null] An array that contains both inner and outer Nodes users created sorted by creation order.
    * @param {[Edge, Edge, ...]} [outerEdgeCollection=null] An array that contains only outer edges tagged by users
    * @param {[Edge, Edge, ...]} [innerEdgeCollection=null] An array that contains only inner edges tagged by users
    * @memberof EdgesMap  An array that contains innerEdgeCollection and outerEdgeCollection
@@ -29,7 +24,7 @@ class EdgesMap {
   this.edgeList = [this.innerEdgeCollection,this.outerEdgeCollection];
   }
 
-  
+
   /**
    * Add a new Node into NodesCollections, the node could only be either inner or outer
    * @param {Node}  Node An Node that will be added into nodeCollection
@@ -56,7 +51,7 @@ class EdgesMap {
 
   /**
    * return the current Edge List that contains both InnerEdgeCollections and OuterEdgeCollections
-   * @return {EdgeList}  EEdgeList = [InnerEdgeCollections, OuterEdgeCollections] 
+   * @return {EdgeList}  EEdgeList = [InnerEdgeCollections, OuterEdgeCollections]
    */
   getEdgeList = () => {
     return this.edgeList;

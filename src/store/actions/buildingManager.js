@@ -2,7 +2,6 @@ import * as actionTypes from './actionTypes';
 import FoundLine from '../../infrastructure/line/foundLine';
 import Polygon from '../../infrastructure/Polygon/Polygon';
 import Wall from '../../infrastructure/Polygon/wall';
-import Sphere from '../../infrastructure/Polygon/sphere';
 import FlatBuilding from '../../infrastructure/building/flatBuilding';
 import PitchedBuilding from '../../infrastructure/building/pitchedBuilding';
 import Shadow from '../../infrastructure/Polygon/shadow';
@@ -20,7 +19,7 @@ export const initBuilding = (values) => (dispatch, getState) => {
   /*
     Generate building serial
    */
-  const buildingNum = getState().projectManagerReducer.projectInfo
+  const buildingNum = getState().undoable.present.projectManager.projectInfo
     .buildingGroupCollection.length;
   let buildingSerial = null;
   if (buildingNum < 9) {
@@ -85,7 +84,7 @@ export const saveBuildingInfoFields = (values) => {
 
 export const bindFoundPolyline = () => (dispatch, getState) => {
   const foundPolyline = FoundLine.fromPolyline(
-    getState().undoableReducer.present.drawingManagerReducer.drawingPolyline
+    getState().undoable.present.drawingManager.drawingPolyline
   );
   return dispatch({
     type: actionTypes.BIND_FOUNDATION_POLYLINE,
@@ -95,14 +94,14 @@ export const bindFoundPolyline = () => (dispatch, getState) => {
 
 export const bindFoundPolygons = () => (dispatch, getState) => {
   const buildingFoundation =
-    getState().undoableReducer.present.drawingPolygonManagerReducer
-    .BuildingFoundation.map(polygon => Polygon.copyPolygon(polygon));
+    getState().undoable.present.drawingPolygonManager.BuildingFoundation.map(
+      polygon => Polygon.copyPolygon(polygon)
+    );
   const buildingFoundationExcludeStb =
-    getState().undoableReducer.present.drawingPolygonManagerReducer
+    getState().undoable.present.drawingPolygonManager
     .BuildingFoundationExcludeStb.map(polygon => Polygon.copyPolygon(polygon));
   const buildingParapet = Wall.copyWall(
-    getState().undoableReducer.present.drawingPolygonManagerReducer
-    .BuildingParapet
+    getState().undoable.present.drawingPolygonManager.BuildingParapet
   );
   return dispatch({
     type: actionTypes.BIND_FOUNDATION_POLYGONS,
@@ -114,13 +113,13 @@ export const bindFoundPolygons = () => (dispatch, getState) => {
 
 export const bindPitchedPolygons = () => (dispatch, getState) => {
   const pitchedRoofPolygons =
-    getState().undoableReducer.present.drawingRooftopManagerReducer
-    .RooftopCollection.rooftopCollection.map(polygon =>
+    getState().undoable.present.drawingRooftopManager.RooftopCollection
+    .rooftopCollection.map(polygon =>
       Polygon.copyPolygon(polygon)
     );
   const pitchedRoofPolygonsExcludeStb =
-    getState().undoableReducer.present.drawingRooftopManagerReducer
-    .RooftopCollection.rooftopExcludeStb.map(array =>
+    getState().undoable.present.drawingRooftopManager.RooftopCollection
+    .rooftopExcludeStb.map(array =>
       array.map(polygon =>
         Polygon.copyPolygon(polygon)
       )
@@ -133,8 +132,7 @@ export const bindPitchedPolygons = () => (dispatch, getState) => {
 }
 
 export const bindShadow = () => (dispatch, getState) => {
-  const shadows = getState().undoableReducer.present.editingShadowManager
-    .shadows;
+  const shadows = getState().undoable.present.editingShadowManager.shadows;
   const newShadows = {};
   Object.keys(shadows).forEach(key => {
     newShadows[key] = {
@@ -149,7 +147,7 @@ export const bindShadow = () => (dispatch, getState) => {
 }
 
 export const bindParapetShadow = () => (dispatch, getState) => {
-  const parapetShadows = getState().undoableReducer.present.editingShadowManager
+  const parapetShadows = getState().undoable.present.editingShadowManager
     .specialParapetShadows;
   console.log(parapetShadows)
   const newShadows = {};
@@ -166,9 +164,8 @@ export const bindParapetShadow = () => (dispatch, getState) => {
 }
 
 export const bindPVPanels = () => (dispatch, getState) => {
-  const pv = getState().undoableReducer.present.editingPVPanelManagerReducer
-    .panels;
-  const pvRoofSpecParams = getState().undoableReducer.present.editingPVPanelManagerReducer
+  const pv = getState().undoable.present.editingPVPanelManager.panels;
+  const pvRoofSpecParams = getState().undoable.present.editingPVPanelManager
     .roofSpecParams
   const newPV = {};
   Object.keys(pv).forEach(key => {
@@ -184,7 +181,7 @@ export const bindPVPanels = () => (dispatch, getState) => {
 }
 
 export const bindInverters = () => (dispatch, getState) => {
-  const inverters = getState().undoableReducer.present.editingWiringManager
+  const inverters = getState().undoable.present.editingWiringManager
     .roofSpecInverters;
   const newInverters = {};
   Object.keys(inverters).forEach(key => {

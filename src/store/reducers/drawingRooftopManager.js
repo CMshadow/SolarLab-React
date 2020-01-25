@@ -1,9 +1,7 @@
 import * as Cesium from 'cesium';
 import * as actionTypes from '../actions/actionTypes';
 import Point from '../../infrastructure/point/point';
-import Coordinate from '../../infrastructure/point/coordinate';
 import RoofTop from '../../infrastructure/rooftop/rooftop';
-import Polygon from '../../infrastructure/Polygon/Polygon';
 
 const initState = {
 	NodesCollection: null,

@@ -55,18 +55,15 @@ const DrawingInnerManagerRender = (props) => {
 const mapStateToProps = state => {
   return {
     drawingPolyline:
-      state.undoableReducer.present.drawingManagerReducer.drawingPolyline,
+      state.undoable.present.drawingManager.drawingPolyline,
     drawingInnerPolyline:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .drawingInnerPolyline,
+      state.undoable.present.drawingInnerManager.drawingInnerPolyline,
     auxPolyline:
-      state.undoableReducer.present.drawingInnerManagerReducer.auxPolyline,
+      state.undoable.present.drawingInnerManager.auxPolyline,
     fixedInnerPolylines:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .fixedInnerPolylines,
+      state.undoable.present.drawingInnerManager.fixedInnerPolylines,
     pointsRelation:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .pointsRelation,
+      state.undoable.present.drawingInnerManager.pointsRelation,
   };
 }
 

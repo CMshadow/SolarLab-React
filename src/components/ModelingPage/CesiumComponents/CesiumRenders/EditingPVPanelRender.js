@@ -29,8 +29,8 @@ const EditingPVPanelRender = (props) => {
 
 const mapStateToProps = state => {
 	return{
-    panels: state.undoableReducer.present.editingPVPanelManagerReducer
-      .panels
+    panels:
+      state.undoable.present.editingPVPanelManager.panels
 	};
 };
 

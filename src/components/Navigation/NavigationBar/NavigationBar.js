@@ -2,7 +2,7 @@ import { Menu, Avatar } from 'antd';
 import React, { Component } from 'react';
 import 'antd/dist/antd.css';
 import { connect } from 'react-redux';
-import { Route, Switch, withRouter } from 'react-router-dom';
+import { withRouter } from 'react-router-dom';
 import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../store/actions/index';
@@ -217,13 +217,16 @@ class NavigationBar extends Component{
 
 const mapStateToProps = state => {
   return {
-    workingBuilding: state.buildingManagerReducer.workingBuilding,
-    userInverters: state.undoableReducer.present.editingWiringManager.userInverters,
-    userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
-    roofSpecInverters: state.undoableReducer.present.editingWiringManager
-      .roofSpecInverters,
-    roofSpecParams: state.undoableReducer.present.editingPVPanelManagerReducer
-      .roofSpecParams,
+    workingBuilding:
+      state.undoable.present.buildingManager.workingBuilding,
+    userInverters:
+      state.undoable.present.editingWiringManager.userInverters,
+    userPanels:
+      state.undoable.present.editingPVPanelManager.userPanels,
+    roofSpecInverters:
+      state.undoable.present.editingWiringManager.roofSpecInverters,
+    roofSpecParams:
+      state.undoable.present.editingPVPanelManager.roofSpecParams,
   };
 }
 

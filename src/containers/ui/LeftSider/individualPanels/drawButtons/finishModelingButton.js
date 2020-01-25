@@ -5,7 +5,7 @@ import {
   Col,
   Button,
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 
@@ -43,9 +43,12 @@ const FinishModelingButton = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    workingBuilding: state.buildingManagerReducer.workingBuilding,
-    backendLoading:  state.projectManagerReducer.backendLoading
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
+    workingBuilding:
+      state.undoable.present.buildingManager.workingBuilding,
+    backendLoading:
+      state.undoable.present.projectManager.backendLoading
   };
 };
 

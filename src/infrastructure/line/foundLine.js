@@ -1,9 +1,6 @@
-import * as Cesium from 'cesium';
-
 import errorNotification from '../../components/ui/Notification/ErrorNotification';
 import Point from '../point/point';
 import Polyline from './polyline';
-import Coordinate from '../point/coordinate';
 
 class FoundLine extends Polyline {
 

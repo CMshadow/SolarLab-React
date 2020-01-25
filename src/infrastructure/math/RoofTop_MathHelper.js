@@ -1,5 +1,3 @@
-import * as Cesium from 'cesium';
-
 import { getAltitudeAzimuth } from './pointCalculation'
 import Coordinate from '../point/coordinate';
 import Point from '../point/point';
@@ -38,7 +36,7 @@ export const searchAllPossibleRoofTops = (edgeList, nodesCollection) => {
 /**
  * Check the Clock Wise starting from the given start edge
  * @param  {Edge} [start_edge] A Edge that represents the edge where we start to search
- * @param {Number}  [start_point] An number that represents the index of the start node in the         
+ * @param {Number}  [start_point] An number that represents the index of the start node in the
  *                                NodeCollection, this node is the start node of the start_edge
  * @param {Number}  [flag] An number that represents the direction we are searching.
  *                         If flag equals to 1, we are doing the clockwise searching.
@@ -95,7 +93,7 @@ export const checkClockWise = (start_edge, start_point, flag, edges, node_list, 
 /**
  * Find the index of a specific inner edge located in the innerEdgeCollection
  * @param {Number} [startNode] An number that represents the index of the start node of the edge
- * @param {Number} [endNode] An number that represents the index of the start node of the edge        
+ * @param {Number} [endNode] An number that represents the index of the start node of the edge
  * @param  {Edge} [inner_edges] A inner edge
  * @return {Number}   An number that represents the index of a specific inner edge located in the innerEdgeCollection
  */
@@ -127,9 +125,9 @@ export const findNodeIndex = (NodeCollection, lon, lat) => {
 }
 
 /**
- * dot cross function 
- * @param  {} [] 
- * @param {}  [] 
+ * dot cross function
+ * @param  {} []
+ * @param {}  []
  * @return {Vector}   return a vector
  */
 export const dot_cross = (e1v1, e1v2, e2v1, e2v2) => {
@@ -143,7 +141,7 @@ export const dot_cross = (e1v1, e1v2, e2v1, e2v2) => {
 /**
  * clockwise comparater function
  * @param  {} []
- * @param {}  [] 
+ * @param {}  []
  * @return {Number}   return either 1 or -1
  */
 export const clockwise_comparator = (v1, v2, b, joint, node_list, flag) => {
@@ -179,7 +177,7 @@ export const clockwise_comparator = (v1, v2, b, joint, node_list, flag) => {
       length1 = Math.sqrt(x2 * x2 + y2 * y2);
   }
 
-  //choose bigger value of cos() if all sin()s are positive 
+  //choose bigger value of cos() if all sin()s are positive
   if (dc1[1] > 0 && dc2[1] > 0) {
     if (dc1[0] / length1 < dc2[0] / length2) {
         return 1;
@@ -194,7 +192,7 @@ export const clockwise_comparator = (v1, v2, b, joint, node_list, flag) => {
     } else {
         return -1;
     }
-  } 
+  }
 }
 
 

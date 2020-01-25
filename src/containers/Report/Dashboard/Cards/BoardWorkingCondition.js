@@ -75,22 +75,22 @@ class BoardWorkingCondition extends Component {
 function mapStateToProps(state) {
     return {
         displayMode: {
-            mode: state.undoableReducer.present.reportManager.displayMode.mode,
-            month: state.undoableReducer.present.reportManager.displayMode.month,
-            day: state.undoableReducer.present.reportManager.displayMode.day,
-            inverter: state.undoableReducer.present.reportManager.displayMode.inverter,
+            mode: state.undoable.present.reportManager.displayMode.mode,
+            month: state.undoable.present.reportManager.displayMode.month,
+            day: state.undoable.present.reportManager.displayMode.day,
+            inverter: state.undoable.present.reportManager.displayMode.inverter,
         },
         boardWorkingConditionLeft: {
-            loaded: state.undoableReducer.present.reportManager.boardWorkingConditionLeft.loaded,
-            option: state.undoableReducer.present.reportManager.boardWorkingConditionLeft.option,
+            loaded: state.undoable.present.reportManager.boardWorkingConditionLeft.loaded,
+            option: state.undoable.present.reportManager.boardWorkingConditionLeft.option,
         },
         boardWorkingConditionCenter: {
-            loaded: state.undoableReducer.present.reportManager.boardWorkingConditionCenter.loaded,
-            option: state.undoableReducer.present.reportManager.boardWorkingConditionCenter.option,
+            loaded: state.undoable.present.reportManager.boardWorkingConditionCenter.loaded,
+            option: state.undoable.present.reportManager.boardWorkingConditionCenter.option,
         },
         boardWorkingConditionRight: {
-            loaded: state.undoableReducer.present.reportManager.boardWorkingConditionRight.loaded,
-            option: state.undoableReducer.present.reportManager.boardWorkingConditionRight.option,
+            loaded: state.undoable.present.reportManager.boardWorkingConditionRight.loaded,
+            option: state.undoable.present.reportManager.boardWorkingConditionRight.option,
         },
     }
 }

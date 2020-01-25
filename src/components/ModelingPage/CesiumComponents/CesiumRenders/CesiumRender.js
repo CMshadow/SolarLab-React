@@ -43,7 +43,7 @@ const CesiumRender = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    uiState: state.undoable.present.uiStateManager.uiState,
   };
 };
 
