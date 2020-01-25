@@ -1,5 +1,3 @@
-import * as Cesium from 'cesium';
-
 import * as actionTypes from '../actions/actionTypes';
 
 const initialState = {
