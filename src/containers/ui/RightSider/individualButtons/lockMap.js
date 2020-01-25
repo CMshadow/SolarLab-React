@@ -5,7 +5,7 @@ import {
   Row,
   Button,
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../store/actions/index';
 
@@ -54,7 +54,8 @@ class LockMap extends PureComponent {
 
 const mapStateToProps = state => {
   return {
-    enableRotateStatus: state.cesiumReducer.enableRotate
+    enableRotateStatus:
+      state.undoable.present.cesiumManager.enableRotate
   };
 };
 

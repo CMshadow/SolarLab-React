@@ -163,22 +163,29 @@ class SetUpWiringPanel extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoable.present.uiStateManager.uiState,
-    backendLoading: state.projectManager.backendLoading,
-    workingBuilding: state.buildingManager.workingBuilding,
-    userInverters: state.undoable.present.editingWiringManager.userInverters,
-    panels: state.undoable.present.editingPVPanelManager.panels,
-    roofSpecParams: state.undoable.present.editingPVPanelManager
-      .roofSpecParams,
-    roofSpecInverters: state.undoable.present.editingWiringManager
-      .roofSpecInverters,
-    projectInfo: state.projectManager.projectInfo,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
+    projectInfo:
+      state.undoable.present.projectManager.projectInfo,
+    backendLoading:
+      state.undoable.present.projectManager.backendLoading,
+    workingBuilding:
+      state.undoable.present.buildingManager.workingBuilding,
+    userInverters:
+      state.undoable.present.editingWiringManager.userInverters,
+    panels:
+      state.undoable.present.editingPVPanelManager.panels,
+    roofSpecParams:
+      state.undoable.present.editingPVPanelManager.roofSpecParams,
+    roofSpecInverters:
+      state.undoable.present.editingWiringManager.roofSpecInverters,
 
-    normalKeepout: state.undoable.present.drawingKeepoutPolygonManager.normalKeepout,
-    treeKeepout: state.undoable.present.drawingKeepoutPolygonManager.treeKeepout,
-    roofSpecInverters: state.undoable.present.editingWiringManager.roofSpecInverters,
-    userPanels: state.undoable.present.editingPVPanelManager.userPanels,
-    userInverters: state.undoable.present.editingWiringManager.userInverters
+    normalKeepout:
+      state.undoable.present.drawingKeepoutPolygonManager.normalKeepout,
+    treeKeepout:
+      state.undoable.present.drawingKeepoutPolygonManager.treeKeepout,
+    userPanels:
+      state.undoable.present.editingPVPanelManager.userPanels,
   };
 };
 

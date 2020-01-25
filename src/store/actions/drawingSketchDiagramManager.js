@@ -8,19 +8,20 @@ import * as actionTypes from './actionTypes';
 
 
 export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) => (dispatch, getState) => {
-    let currentBuilding = getState().buildingManagerReducer
+    let currentBuilding = getState().undoable.present.buildingManager
     .workingBuilding;
 
-    let currentBuildingPara = getState().buildingManagerReducer
+    let currentBuildingPara = getState().undoable.present.buildingManager
     .buildingInfoFields;
 
-    let keekoutCollections = getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer;
+    let keekoutCollections = getState().undoable.present
+    .drawingKeepoutPolygonManager;
 
     let size_times = 5;
     let gradient = 50;
 
-    backgroundGrids(layer, size_times); 
-    
+    backgroundGrids(layer, size_times);
+
     if (currentBuilding != null) {
       let AutoScale = null;
       let startPosition = null;
@@ -75,7 +76,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
             let inverter = mathHelp.convertInverterto2D(startPosition, element.polygonCenter.getCoordinate());
             let buildingInvertersCollection = drawInventer(group, inverter[0], inverter[1], AutoScale, buildingOutline.startNodePosition);
           }
-          
+
         })
 
       }
@@ -119,13 +120,13 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         //   }
         //   if (element !== null && element.bridging !== null) {
         //     console.log(element.bridging)
-            
+
         //     // console.log(element.polygonCenter.getCoordinate())
         //     // let inverter = mathHelp.covnertSubPolylineto2D(startPosition, element.bridging);
         //     // console.log(inverter);
         //     // let buildingInvertersCollection = drawInventer(group, inverter[0], inverter[1], AutoScale, startPosition_stage);
         //   }
-          
+
         // })
       }
 
@@ -177,7 +178,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
             }
           }
           let centerNodeOfShadow = [closestIndex1, closestIndex2];
-          
+
           let keepOutShadowSketch = drawTreeShadow(group, keepoutShadow[0], keepoutShadow[1], AutoScale, startPosition_stage, centerNodeOfShadow ,gradient);
         }
       })
@@ -229,9 +230,10 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         });
       }
 
-      
 
-      const workingBuilding = getState().buildingManagerReducer.workingBuilding;
+
+      const workingBuilding = getState().undoable.present.buildingManager
+      .workingBuilding;
       let tilts = null;
       let azimuths = null;
       if (workingBuilding.type === 'FLAT') {
@@ -250,8 +252,10 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         params: {
           tilts: JSON.stringify(tilts),
           azimuths: JSON.stringify(azimuths),
-          longitude: getState().projectManagerReducer.projectInfo.projectLon,
-          latitude: getState().projectManagerReducer.projectInfo.projectLat,
+          longitude: getState().undoable.present.projectManager.projectInfo
+            .projectLon,
+          latitude: getState().undoable.present.projectManager.projectInfo
+            .projectLat,
         }
       })
       .then(response => response.data)
@@ -265,7 +269,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
       HistogramDispaly(layer, window.innerWidth, window.innerHeight - 64, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
       // layer.add(group);
     }
-     
+
 
 
   return({
@@ -502,7 +506,7 @@ export const drawInlineBridge = (layer, Inline_Bridge_Angle, Inline_Bridge_Dist,
     lineJoin: 'round'
   });
   layer.add(poly);
-    
+
 }
 
 export const drawBridgeLine = (layer, Inline_Bridge_Angle, Inline_Bridge_Dist, scale, start) => {
@@ -519,7 +523,7 @@ export const drawBridgeLine = (layer, Inline_Bridge_Angle, Inline_Bridge_Dist, s
     lineJoin: 'round'
   });
   layer.add(poly);
-    
+
 }
 
 
@@ -790,7 +794,7 @@ export const drawColorBar = (layer, Xwidth, Yheight, gradient, range) => {
   let Irradiance_max = range[1].toFixed(1);
   let colorBar = mathHelp.calculateGradientColor(gradient);
   let rect = [Xwidth,Yheight, Xwidth+width_bar, Yheight, Xwidth+width_bar, Yheight+height_bar, Xwidth,Yheight+height_bar];
-  
+
   let poly = new Konva.Line({
         points: rect,
         fill: colorBar[0],
@@ -799,7 +803,7 @@ export const drawColorBar = (layer, Xwidth, Yheight, gradient, range) => {
         closed : true,
         opacity: 1
     });
-    
+
     layer.add(poly);
     let newCoordXY = [];
     for (let i = 0; i < rect.length; i+=2) {
@@ -830,7 +834,7 @@ export const drawColorBar = (layer, Xwidth, Yheight, gradient, range) => {
           strokeWidth: 0,
           closed : true,
           opacity: 0.1
-          
+
       });
       layer.add(poly1);
       //console.log(level);
@@ -843,8 +847,8 @@ export const drawColorBar = (layer, Xwidth, Yheight, gradient, range) => {
     let frame = [Xwidth+width_bar*1.1,Yheight, Xwidth+width_bar*1.5,Yheight,
           Xwidth+width_bar*1.1, Yheight+frameDifference*1, Xwidth+width_bar*1.5, Yheight+frameDifference*1,
         Xwidth+width_bar*1.1, Yheight+frameDifference*2, Xwidth+width_bar*1.5, Yheight+frameDifference*2,
-        Xwidth+width_bar*1.1, Yheight+frameDifference*3, Xwidth+width_bar*1.5, Yheight+frameDifference*3, 
-        Xwidth+width_bar*1.1, Yheight+frameDifference*4, Xwidth+width_bar*1.5, Yheight+frameDifference*4, 
+        Xwidth+width_bar*1.1, Yheight+frameDifference*3, Xwidth+width_bar*1.5, Yheight+frameDifference*3,
+        Xwidth+width_bar*1.1, Yheight+frameDifference*4, Xwidth+width_bar*1.5, Yheight+frameDifference*4,
         Xwidth+width_bar*1.1, Yheight+frameDifference*5, Xwidth+width_bar*1.5, Yheight+frameDifference*5];
 
  let frotSize = 15;

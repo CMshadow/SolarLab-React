@@ -5,10 +5,10 @@ import * as actionTypes from './actionTypes';
 import Coordinate from '../../infrastructure/point/coordinate';
 
 export const passFoundPolyline = () => (dispatch, getState) => {
-  const foundPolyline = getState().undoableReducer.present
-    .drawingManagerReducer.drawingPolyline;
-  const brngCollection = getState().undoableReducer.present
-    .drawingManagerReducer.brngCollection;
+  const foundPolyline = getState().undoable.present.drawingManager
+    .drawingPolyline;
+  const brngCollection = getState().undoable.present.drawingManager
+    .brngCollection;
   return dispatch({
     type: actionTypes.PASS_FOUND_POLYLINE,
     foundPolyline: foundPolyline,
@@ -17,8 +17,8 @@ export const passFoundPolyline = () => (dispatch, getState) => {
 };
 
 export const updatePointsRelation = () => (dispatch, getState) => {
-  const foundPolyline = getState().undoableReducer.present
-    .drawingManagerReducer.drawingPolyline;
+  const foundPolyline = getState().undoable.present.drawingManager
+    .drawingPolyline;
   return dispatch({
     type: actionTypes.UPDATE_POINTS_RELATION,
     foundPolyline: foundPolyline,
@@ -30,12 +30,12 @@ export const addOrClickPoint =
 
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
   const pickedObjectIdArray = pickedObjectArray.map(elem => elem.id.id);
-  const foundPolyline = getState().undoableReducer.present
-  .drawingManagerReducer.drawingPolyline;
-  const pointsRelation = getState().undoableReducer.present
-  .drawingInnerManagerReducer.pointsRelation;
-  const drawingInnerPolyline = getState().undoableReducer.present
-  .drawingInnerManagerReducer.drawingInnerPolyline;
+  const foundPolyline = getState().undoable.present.drawingManager
+    .drawingPolyline;
+  const pointsRelation = getState().undoable.present.drawingInnerManager
+    .pointsRelation;
+  const drawingInnerPolyline = getState().undoable.present.drawingInnerManager
+    .drawingInnerPolyline;
 
   if (pickedObjectIdArray.length !== 0) {
     const onTopPointId = Object.keys(pointsRelation).filter(
@@ -155,8 +155,7 @@ const findInnerLineIndex = (fixedInnerLine, findInnerLine) => {
 
 export const setHoverInnerLine = (innerLine) => (dispatch, getState) => {
   const index = findInnerLineIndex(
-    getState().undoableReducer.present.drawingInnerManagerReducer
-    .fixedInnerPolylines,
+    getState().undoable.present.drawingInnerManager.fixedInnerPolylines,
     innerLine
   );
   return dispatch({
@@ -185,8 +184,8 @@ export const releaseHoverInnerPoint = () => {
 };
 
 export const checkInnerTypesProvided = () => (dispatch,getState) => {
-  const fixedInnerPolylines = getState().undoableReducer.present
-    .drawingInnerManagerReducer.fixedInnerPolylines;
+  const fixedInnerPolylines = getState().undoable.present.drawingInnerManager
+    .fixedInnerPolylines;
 
   let emptyExist = false;
   fixedInnerPolylines.forEach(p => {

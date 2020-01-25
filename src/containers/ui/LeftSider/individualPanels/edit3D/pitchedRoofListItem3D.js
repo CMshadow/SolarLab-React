@@ -1,5 +1,4 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/pro-light-svg-icons'
 import {
@@ -9,9 +8,7 @@ import {
 } from 'antd';
 import { FormattedMessage } from 'react-intl';
 
-import * as actions from '../../../../../store/actions/index';
 import * as classes from './roofListItem3D.module.css';
-import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import EditPitchedRoofForm from './editPitchedRoofForm3D';
 import EditInnerRoofForm from './editInnerRoofForm3D';
 

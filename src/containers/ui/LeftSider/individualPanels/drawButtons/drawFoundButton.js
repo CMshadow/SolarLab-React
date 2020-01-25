@@ -1,9 +1,6 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/pro-light-svg-icons'
 import {
-  Divider,
   Row,
   Col,
   Button,
@@ -91,7 +88,8 @@ const DrawFoundButton = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState
+    uiState:
+      state.undoable.present.uiStateManager.uiState
   };
 };
 

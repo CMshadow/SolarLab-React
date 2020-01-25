@@ -7,7 +7,7 @@ import {
   Col,
   Button,
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 

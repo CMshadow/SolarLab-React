@@ -3,17 +3,12 @@ import { connect } from 'react-redux';
 import {
   ConfigProvider,
   Table,
-  Card,
   Row,
   Col,
   Button,
-  Progress,
-  Dropdown,
-  Menu,
-  Icon,
   Divider
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import {
   emptyListTemplate
@@ -198,7 +193,7 @@ class ManageBuildingPanel extends Component {
 const mapStateToProps = state => {
   return {
     buildingCollection:
-      state.projectManagerReducer.projectInfo.buildingCollection
+      state.undoable.present.projectManager.projectInfo.buildingCollection
   };
 };
 

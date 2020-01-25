@@ -51,7 +51,7 @@ class SelectMap extends PureComponent {
 
 const mapStateToProps = state => {
   return {
-    selectedMap: state.cesiumReducer.selectedMap
+    selectedMap: state.undoable.present.cesiumManager.selectedMap
   };
 };
 

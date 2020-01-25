@@ -1,12 +1,6 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import {
-  faPen,
-  faCog,
-  faTrash,
-  faCheck
-} from '@fortawesome/pro-light-svg-icons'
+import { faCog } from '@fortawesome/pro-light-svg-icons'
 import {
   List,
   Button,
@@ -14,9 +8,7 @@ import {
 } from 'antd';
 import { injectIntl } from 'react-intl';
 
-import * as actions from '../../../../../store/actions/index';
 import * as classes from './keepoutListItem3D.module.css';
-import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import EditKeepoutForm3D from './editKeepoutForm3D';
 
 class KeepoutListItem extends Component {

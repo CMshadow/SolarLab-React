@@ -7,12 +7,8 @@ import {
   Row,
   Col,
   Button,
-  Progress,
-  Dropdown,
-  Menu,
-  Icon
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
@@ -138,7 +134,9 @@ class BridgingTable extends Component {
     return (
       <Row>
         <Col span={24}>
-          <ConfigProvider renderEmpty={() => emptyListTemplate({type: 'Inverters'})}>
+          <ConfigProvider renderEmpty={() =>
+            emptyListTemplate({type: 'Inverters'})
+          }>
             <Table
               size='middle'
               pagination={false}
@@ -156,15 +154,15 @@ class BridgingTable extends Component {
 const mapStateToProps = state => {
   return {
     roofSpecInverters:
-      state.undoableReducer.present.editingWiringManager.roofSpecInverters,
+      state.undoable.present.editingWiringManager.roofSpecInverters,
     roofSpecParams:
-      state.undoableReducer.present.editingPVPanelManagerReducer.roofSpecParams,
+      state.undoable.present.editingPVPanelManager.roofSpecParams,
     uiState:
-      state.undoableReducer.present.uiStateManagerReducer.uiState,
+      state.undoable.present.uiStateManager.uiState,
     editingWiringIndex:
-      state.undoableReducer.present.editingWiringManager.editingWiringIndex,
+      state.undoable.present.editingWiringManager.editingWiringIndex,
     editingInverterIndex:
-      state.undoableReducer.present.editingWiringManager.editingInverterIndex,
+      state.undoable.present.editingWiringManager.editingInverterIndex,
   };
 };
 

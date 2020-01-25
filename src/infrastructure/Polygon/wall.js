@@ -1,10 +1,6 @@
 import uuid from 'uuid/v1';
 import  * as Cesium from 'cesium';
 
-import Coordinate from '../point/coordinate';
-import Point from '../point/point';
-import FoundLine from '../line/foundLine';
-
 class Wall {
 
   constructor(

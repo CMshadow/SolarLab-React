@@ -141,7 +141,7 @@ const makeRequestData = (props) => {
 }
 
 export const fetchUserPanels = () => (dispatch, getState) => {
-  const userID = getState().authReducer.userID;
+  const userID = getState().undoable.present.authManager.userID;
   dispatch(setBackendLoadingTrue());
   axios.get(`/${userID}/panel`)
   .then(response => {
@@ -162,25 +162,26 @@ export const fetchUserPanels = () => (dispatch, getState) => {
 }
 
 export const generatePanels = (roofIndex) => (dispatch, getState) => {
-  const workingBuilding = getState().buildingManagerReducer.workingBuilding;
+  const workingBuilding = getState().undoable.present.buildingManager
+    .workingBuilding;
   const props = {
     workingRoof:
       workingBuilding.type === 'FLAT' ?
       workingBuilding.foundationPolygonExcludeStb :
       workingBuilding.pitchedRoofPolygonsExcludeStb[roofIndex],
-    allNormalKeepout: getState().keepoutManagerReducer.normalKeepout,
-    allPassageKeepout: getState().keepoutManagerReducer.passageKeepout,
-    allVentKeepout: getState().keepoutManagerReducer.ventKeepout,
+    allNormalKeepout: getState().undoable.present.keepoutManager.normalKeepout,
+    allPassageKeepout: getState().undoable.present.keepoutManager.passageKeepout,
+    allVentKeepout: getState().undoable.present.keepoutManager.ventKeepout,
     allShadow: workingBuilding.shadow
   }
   console.log(props)
   const data = makeRequestData(props);
-  const params = getState().undoableReducer.present.editingPVPanelManagerReducer
+  const params = getState().undoable.present.editingPVPanelManager
     .roofSpecParams[roofIndex];
   const selectPanelIndex = params.selectPanelIndex;
-  const panelX = +getState().undoableReducer.present.editingPVPanelManagerReducer
+  const panelX = +getState().undoable.present.editingPVPanelManager
     .userPanels[selectPanelIndex].panelWidth;
-  const panelY = +getState().undoableReducer.present.editingPVPanelManagerReducer
+  const panelY = +getState().undoable.present.editingPVPanelManager
     .userPanels[selectPanelIndex].panelLength;
   const panelWidth = panelX > panelY ? panelX : panelY;
   const panelLength = panelX < panelY ? panelX : panelY;

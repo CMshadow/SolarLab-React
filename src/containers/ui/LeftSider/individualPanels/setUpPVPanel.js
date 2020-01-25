@@ -401,7 +401,10 @@ class SetUpPVPanel extends Component {
               placement="topLeft"
               title={this.props.intl.formatMessage({id:'Azimuth_description'})}
             >
-              <h4><FormattedMessage id='panel_azimuth' /> <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='panel_azimuth' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col span={10}>
@@ -440,7 +443,10 @@ class SetUpPVPanel extends Component {
               placement="topLeft"
               title={this.props.intl.formatMessage({id:'Tilt_description'})}
             >
-              <h4><FormattedMessage id='panel_tilt' /> <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='panel_tilt' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col span={10}>
@@ -486,9 +492,14 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
-              title={this.props.intl.formatMessage({id:'orientation_description'})}
+              title={this.props.intl.formatMessage({
+                id:'orientation_description'
+              })}
             >
-              <h4><FormattedMessage id='panel_orientation' /> <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='panel_orientation' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col span={10}>
@@ -526,9 +537,14 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
-              title={this.props.intl.formatMessage({id:'row_spacing_description'})}
+              title={this.props.intl.formatMessage({
+                id:'row_spacing_description'
+              })}
             >
-              <h4><FormattedMessage id='row_spacing' /> <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='row_spacing' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col span={10}>
@@ -569,7 +585,10 @@ class SetUpPVPanel extends Component {
                 this.props.intl.formatMessage({id:'panel_spacing_description'})
               }
             >
-              <h4><FormattedMessage id='panel_spacing' /> <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='panel_spacing' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col span={10}>
@@ -598,9 +617,14 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
-              title={this.props.intl.formatMessage({id:'alignment_description'})}
+              title={this.props.intl.formatMessage({
+                id:'alignment_description'
+              })}
             >
-              <h4><FormattedMessage id='align_ment' /> <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='align_ment' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col span={10}>
@@ -630,9 +654,14 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
-              title={this.props.intl.formatMessage({id:'layoutmode_description'})}
+              title={this.props.intl.formatMessage({
+                id:'layoutmode_description'
+              })}
             >
-              <h4><FormattedMessage id='layoutMode' /> <Icon type="question-circle" /></h4>
+              <h4>
+                <FormattedMessage id='layoutMode' />
+                <Icon type="question-circle" />
+              </h4>
             </Tooltip>
           </Col>
           <Col span={10}>
@@ -649,8 +678,12 @@ class SetUpPVPanel extends Component {
                   );
                 }}
               >
-                <Option value='individual'><FormattedMessage id='single_row_panel_layout' /></Option>
-                <Option value='array'><FormattedMessage id='multi_row_panel_layout' /></Option>
+                <Option value='individual'>
+                  <FormattedMessage id='single_row_panel_layout' />
+                </Option>
+                <Option value='array'>
+                  <FormattedMessage id='multi_row_panel_layout' />
+                </Option>
               </Select>
             )}
           </Col>
@@ -705,7 +738,9 @@ class SetUpPVPanel extends Component {
           <Col span={10} offset={2}>
             <Tooltip
               placement="topLeft"
-              title={this.props.intl.formatMessage({id:'panel_per_row_description'})}
+              title={this.props.intl.formatMessage({
+                id:'panel_per_row_description'
+              })}
             >
               <h4>
                 < FormattedMessage id='panel_per_row' />
@@ -846,7 +881,8 @@ class SetUpPVPanel extends Component {
                   }
                   onClick = {this.props.fetchUserInverters}
                 >
-                  <FormattedMessage id='continue_layout' /> <Icon type='right' />
+                  <FormattedMessage id='continue_layout' />
+                  <Icon type='right' />
                 </Button>
               </ButtonGroup>
             </Col>
@@ -859,16 +895,22 @@ class SetUpPVPanel extends Component {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    parameters: state.undoableReducer.present.editingPVPanelManagerReducer
-      .parameters,
-    backendLoading: state.projectManagerReducer.backendLoading,
-    workingBuilding: state.buildingManagerReducer.workingBuilding,
-    userPanels: state.undoableReducer.present.editingPVPanelManagerReducer.userPanels,
-    roofSpecParams: state.undoableReducer.present.editingPVPanelManagerReducer
-      .roofSpecParams,
-    projectInfo: state.projectManagerReducer.projectInfo,
-    panels: state.undoableReducer.present.editingPVPanelManagerReducer.panels
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
+    parameters:
+      state.undoable.present.editingPVPanelManager.parameters,
+    backendLoading:
+      state.undoable.present.projectManager.backendLoading,
+    workingBuilding:
+      state.undoable.present.buildingManager.workingBuilding,
+    userPanels:
+      state.undoable.present.editingPVPanelManager.userPanels,
+    roofSpecParams:
+      state.undoable.present.editingPVPanelManager.roofSpecParams,
+    projectInfo:
+      state.undoable.present.projectManager.projectInfo,
+    panels:
+      state.undoable.present.editingPVPanelManager.panels
   };
 };
 

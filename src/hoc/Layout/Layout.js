@@ -2,8 +2,7 @@ import React, { Component } from 'react';
 import { Layout } from 'antd';
 
 import logo from '../../assets/images/logo.png';
-import { Route, Switch, withRouter } from 'react-router-dom';
-import SolarlabLogo from '../../logolabw.png';
+import { withRouter } from 'react-router-dom';
 import NavigationBar from '../../components/Navigation/NavigationBar/NavigationBar';
 import './Layout.css';
 
@@ -25,7 +24,6 @@ class CustomLayout extends Component {
     )
   }
 }
-
 
 
 export default withRouter(CustomLayout);

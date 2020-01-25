@@ -5,8 +5,10 @@ import errorNotification from '../../components/ui/Notification/ErrorNotificatio
 export const calculateOrFetchGlobalOptimal = () => (dispatch, getState) => {
   axios.get('/optimal-calculation/fetch-global-optimal', {
     params: {
-      longitude: getState().projectManagerReducer.projectInfo.projectLon,
-      latitude: getState().projectManagerReducer.projectInfo.projectLat
+      longitude:
+        getState().undoable.present.projectManager.projectInfo.projectLon,
+      latitude:
+        getState().undoable.present.projectManager.projectInfo.projectLat
     }
   }).then(response => {
     console.log(response)

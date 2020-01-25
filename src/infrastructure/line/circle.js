@@ -1,5 +1,3 @@
-import * as Cesium from 'cesium';
-
 import Polyline from './polyline';
 import Point from '../point/point';
 

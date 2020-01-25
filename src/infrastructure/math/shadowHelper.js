@@ -4,7 +4,6 @@ import * as Cesium from 'cesium';
 import Coordinate from '../point/coordinate';
 import Point from '../point/point';
 import Polyline from '../../infrastructure/line/polyline';
-import Polygon from '../../infrastructure/Polygon/Polygon';
 import * as martinez from 'martinez-polygon-clipping';
 
 

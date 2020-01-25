@@ -1,7 +1,6 @@
 import { Color } from 'cesium';
 import Polygon from './Polygon';
 import Point from '../point/point';
-import Polyline from '../line/polyline';
 
 class PV extends Polygon {
   constructor(

@@ -1,11 +1,9 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/pro-light-svg-icons'
 import {
   Divider,
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 
 import * as uiStateJudge from '../../../../infrastructure/ui/uiStateJudge';
@@ -77,8 +75,10 @@ const DrawBuildingPanel = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
-    workingBuilding: state.buildingManagerReducer.workingBuilding
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
+    workingBuilding:
+      state.undoable.present.buildingManager.workingBuilding
   };
 };
 

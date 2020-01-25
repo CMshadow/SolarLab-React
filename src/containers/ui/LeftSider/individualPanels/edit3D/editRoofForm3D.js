@@ -5,10 +5,8 @@ import {
   InputNumber,
   Row,
   Col,
-  Button,
-  Popover
 } from 'antd';
-import { injectIntl, FormattedMessage } from 'react-intl';
+import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../../store/actions/index';
 
@@ -111,7 +109,8 @@ class EditRoofForm extends PureComponent {
 
 const mapStateToProps = state => {
   return {
-    workingBuilding: state.buildingManagerReducer.workingBuilding
+    workingBuilding:
+      state.undoable.present.buildingManager.workingBuilding
   };
 };
 

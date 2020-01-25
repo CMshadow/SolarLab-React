@@ -29,7 +29,7 @@ class Equipment extends Component {
 
 // pass data to props
 function mapStateToProps(state) {
-  const workingBuilding = state.buildingManager.workingBuilding;
+  const workingBuilding = state.undoable.present.buildingManager.workingBuilding;
   if (state.undoable.present.reportManager.metadata.loaded) {
     return {
       metadata: state.undoable.present.reportManager.metadata,

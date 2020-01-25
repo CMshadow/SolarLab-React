@@ -1,18 +1,14 @@
 import React, { Component } from 'react';
-import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCog } from '@fortawesome/pro-light-svg-icons'
 import {
   List,
   Button,
   Card,
-  Row
 } from 'antd';
 import { injectIntl } from 'react-intl';
 
-import * as actions from '../../../../../store/actions/index';
 import * as classes from './roofListItem3D.module.css';
-import * as uiStateJudge from '../../../../../infrastructure/ui/uiStateJudge';
 import EditRoofForm from './editRoofForm3D';
 
 class RoofListItem extends Component {

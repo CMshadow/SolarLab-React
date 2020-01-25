@@ -17,7 +17,7 @@ import { setBackendLoadingTrue, setBackendLoadingFalse} from './projectManager';
 import { setUIStateSetUpWiring } from './uiStateManager';
 
 export const fetchUserInverters = () => (dispatch, getState) => {
-  const userID = getState().authReducer.userID;
+  const userID = getState().undoable.present.authManager.userID;
   dispatch(setBackendLoadingTrue());
   axios.get(`/${userID}/inverter`)
   .then(response => {
@@ -39,10 +39,9 @@ export const fetchUserInverters = () => (dispatch, getState) => {
 
 export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
   const allPanels =
-    getState().undoableReducer.present.editingPVPanelManagerReducer.panels[roofIndex];
+    getState().undoable.present.editingPVPanelManager.panels[roofIndex];
   const roofSpecParams =
-    getState().undoableReducer.present.editingPVPanelManagerReducer
-    .roofSpecParams;
+    getState().undoable.present.editingPVPanelManager.roofSpecParams;
   const totalPanels = allPanels.reduce((acc2, partial) => {
     const totalPanelOnPartial = partial.reduce((acc3, array) => {
       return acc3 + array.length;
@@ -53,15 +52,15 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
   axios.get('/calculate-inverter-solution/auto', {
     params: {
       totalPanels: totalPanels,
-      userID: getState().authReducer.userID,
+      userID: getState().undoable.present.authManager.userID,
       panelID: roofSpecParams[roofIndex].panelID,
       PVParams: JSON.stringify(roofSpecParams[roofIndex])
     }
   })
   .then(response => {
     const result = response.data.data;
-    const inverterName = getState().undoableReducer.present
-      .editingWiringManager.userInverters.reduce((name, val) =>
+    const inverterName = getState().undoable.present.editingWiringManager
+      .userInverters.reduce((name, val) =>
         val.inverterID === result.inverterID ? val.inverterName : name
       , '');
     const inverterSolutions = result.inverterSetUp.map((inverter, i) =>
@@ -95,10 +94,9 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
 export const calculateManualInverter = (roofIndex, inverterID) =>
 (dispatch, getState) => {
   const allPanels =
-    getState().undoableReducer.present.editingPVPanelManagerReducer.panels[roofIndex];
+    getState().undoable.present.editingPVPanelManager.panels[roofIndex];
   const roofSpecParams =
-    getState().undoableReducer.present.editingPVPanelManagerReducer
-    .roofSpecParams;
+    getState().undoable.present.editingPVPanelManager.roofSpecParams;
   const totalPanels = allPanels.reduce((acc2, partial) => {
     const totalPanelOnPartial = partial.reduce((acc3, array) => {
       return acc3 + array.length;
@@ -109,7 +107,7 @@ export const calculateManualInverter = (roofIndex, inverterID) =>
   axios.get('/calculate-inverter-solution/manual', {
     params: {
       totalPanels: totalPanels,
-      userID: getState().authReducer.userID,
+      userID: getState().undoable.present.authManager.userID,
       panelID: roofSpecParams[roofIndex].panelID,
       inverterID: inverterID,
       PVParams: JSON.stringify(roofSpecParams[roofIndex])
@@ -117,8 +115,8 @@ export const calculateManualInverter = (roofIndex, inverterID) =>
   })
   .then(response => {
     const result = response.data.data;
-    const inverterName = getState().undoableReducer.present
-      .editingWiringManager.userInverters.reduce((name, val) =>
+    const inverterName = getState().undoable.present.editingWiringManager
+      .userInverters.reduce((name, val) =>
         val.inverterID === result.inverterID ? val.inverterName : name
       , 0);
     const inverterSolutions = result.inverterSetUp.map((inverter, i) =>
@@ -151,8 +149,8 @@ export const calculateManualInverter = (roofIndex, inverterID) =>
 
 export const autoWiring = (roofInd, inverterInd, wiringInd) =>
 (dispatch, getState) => {
-  const roofSpecParams = getState().undoableReducer.present
-    .editingPVPanelManagerReducer.roofSpecParams[roofInd];
+  const roofSpecParams =
+    getState().undoable.present.editingPVPanelManager.roofSpecParams[roofInd];
   if (roofSpecParams.mode === 'individual') {
     dispatch(individualAutoWiring(roofInd, inverterInd, wiringInd));
   } else {
@@ -162,8 +160,8 @@ export const autoWiring = (roofInd, inverterInd, wiringInd) =>
 
 const individualAutoWiring = (roofInd, inverterInd, wiringInd) =>
 (dispatch, getState) => {
-  const allPanels = getState().undoableReducer.present
-    .editingPVPanelManagerReducer.panels[roofInd];
+  const allPanels =
+    getState().undoable.present.editingPVPanelManager.panels[roofInd];
   const availablePanels = allPanels.flatMap(partial => {
     const partialRoofPanels = partial.map(originPanelArray => {
       const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
@@ -177,7 +175,7 @@ const individualAutoWiring = (roofInd, inverterInd, wiringInd) =>
     })
     return partialRoofPanels.filter(panelArray => panelArray.length > 0);
   });
-  const inverterConfig = getState().undoableReducer.present.editingWiringManager
+  const inverterConfig = getState().undoable.present.editingWiringManager
     .roofSpecInverters[roofInd][inverterInd];
 
   const string = findAWiringString(availablePanels, inverterConfig, 0);
@@ -206,10 +204,10 @@ const individualAutoWiring = (roofInd, inverterInd, wiringInd) =>
 
 const arrayAutoWiring = (roofInd, inverterInd, wiringInd) =>
 (dispatch, getState) => {
-  const roofSpecParams = getState().undoableReducer.present
-    .editingPVPanelManagerReducer.roofSpecParams[roofInd];
-  const allPanels = getState().undoableReducer.present
-    .editingPVPanelManagerReducer.panels[roofInd];
+  const roofSpecParams =
+    getState().undoable.present.editingPVPanelManager.roofSpecParams[roofInd];
+  const allPanels =
+    getState().undoable.present.editingPVPanelManager.panels[roofInd];
   const availablePanelArrays = allPanels.flatMap(partial => {
     return partial.map(originPanelArray => {
       return originPanelArray.filter(panel => !panel.pv.connected);
@@ -277,10 +275,10 @@ export const manualWiring = (roofInd, inverterInd, wiringInd) =>{
 }
 
 export const setManualWiringStart = (panelId) => (dispatch, getState) => {
-  const editingRoofIndex = getState().undoableReducer.present
-    .editingWiringManager.editingRoofIndex;
-  const allPanels = getState().undoableReducer.present
-    .editingPVPanelManagerReducer.panels[editingRoofIndex];
+  const editingRoofIndex =
+    getState().undoable.present.editingWiringManager.editingRoofIndex;
+  const allPanels =
+    getState().undoable.present.editingPVPanelManager.panels[editingRoofIndex];
   const availablePanels = allPanels.flatMap(partial => {
     const partialRoofPanels = partial.map(originPanelArray => {
       const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
@@ -390,18 +388,18 @@ export const releasePickedWiringPoint = () => {
 
 export const releasePVPanel = (hoverPanelId) => (dispatch, getState) => {
   const currentMouseDrag =
-    getState().undoableReducer.present.editingWiringManager.currentMouseDrag;
+    getState().undoable.present.editingWiringManager.currentMouseDrag;
   const lastMouseDrag =
-    getState().undoableReducer.present.editingWiringManager.lastMouseDrag;
+    getState().undoable.present.editingWiringManager.lastMouseDrag;
   const editingRoofIndex =
-    getState().undoableReducer.present.editingWiringManager.editingRoofIndex;
+    getState().undoable.present.editingWiringManager.editingRoofIndex;
   const editingInverterIndex =
-    getState().undoableReducer.present.editingWiringManager.editingInverterIndex;
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
   const editingWiringIndex =
-    getState().undoableReducer.present.editingWiringManager.editingWiringIndex;
+    getState().undoable.present.editingWiringManager.editingWiringIndex;
   const pickedWiringPointPosition =
-    getState().undoableReducer.present.editingWiringManager.pickedWiringPointPosition;
-  const currentWiring = getState().undoableReducer.present.editingWiringManager
+    getState().undoable.present.editingWiringManager.pickedWiringPointPosition;
+  const currentWiring = getState().undoable.present.editingWiringManager
     .roofSpecInverters[editingRoofIndex][editingInverterIndex]
     .wiring[editingWiringIndex];
 
@@ -424,24 +422,24 @@ export const releasePVPanel = (hoverPanelId) => (dispatch, getState) => {
 
 export const attachPVPanel = (hoverPanelId) => (dispatch, getState) => {
   const currentMouseDrag =
-    getState().undoableReducer.present.editingWiringManager.currentMouseDrag;
+    getState().undoable.present.editingWiringManager.currentMouseDrag;
   const lastMouseDrag =
-    getState().undoableReducer.present.editingWiringManager.lastMouseDrag;
+    getState().undoable.present.editingWiringManager.lastMouseDrag;
   const editingRoofIndex =
-    getState().undoableReducer.present.editingWiringManager.editingRoofIndex;
+    getState().undoable.present.editingWiringManager.editingRoofIndex;
   const editingInverterIndex =
-    getState().undoableReducer.present.editingWiringManager.editingInverterIndex;
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
   const editingWiringIndex =
-    getState().undoableReducer.present.editingWiringManager.editingWiringIndex;
-  const currentWiring = getState().undoableReducer.present.editingWiringManager
+    getState().undoable.present.editingWiringManager.editingWiringIndex;
+  const currentWiring = getState().undoable.present.editingWiringManager
     .roofSpecInverters[editingRoofIndex][editingInverterIndex]
     .wiring[editingWiringIndex];
-  const currentInverter = getState().undoableReducer.present.editingWiringManager
+  const currentInverter = getState().undoable.present.editingWiringManager
     .roofSpecInverters[editingRoofIndex][editingInverterIndex];
 
   const flatMapPanels =
-    getState().undoableReducer.present.editingPVPanelManagerReducer
-    .panels[editingRoofIndex].flatMap(partial =>
+    getState().undoable.present.editingPVPanelManager.panels[editingRoofIndex]
+    .flatMap(partial =>
       partial.flatMap(originPanelArray =>
         originPanelArray
       )
@@ -461,8 +459,8 @@ export const attachPVPanel = (hoverPanelId) => (dispatch, getState) => {
 }
 
 export const dynamicWiringLine = () => (dispatch, getState) => {
-  const mouseCartesian3 = getState().undoableReducer.present
-    .drawingManagerReducer.mouseCartesian3;
+  const mouseCartesian3 =
+    getState().undoable.present.drawingManager.mouseCartesian3;
   if (Cesium.defined(mouseCartesian3)) {
     return dispatch({
       type: actionTypes.DYNAMIC_WIRING_LINE,
@@ -491,12 +489,13 @@ export const setBridgingRoofAndInverter = (roofIndex, inverterIndex) => {
 }
 
 export const placeInverter = (heightOffset=0.2) => (dispatch, getState) => {
-  const workingBuilding = getState().buildingManagerReducer.workingBuilding;
+  const workingBuilding =
+    getState().undoable.present.buildingManager.workingBuilding;
   const inverterLength = 0.25;
-  const mouseCartesian3 = getState().undoableReducer.present
-    .drawingManagerReducer.mouseCartesian3;
-  const editingRoofIndex = getState().undoableReducer.present
-    .editingWiringManager.editingRoofIndex;
+  const mouseCartesian3 =
+    getState().undoable.present.drawingManager.mouseCartesian3;
+  const editingRoofIndex =
+    getState().undoable.present.editingWiringManager.editingRoofIndex;
   const result = makeInverterPolygonAndCenter(
     mouseCartesian3, workingBuilding, editingRoofIndex, heightOffset, inverterLength
   );
@@ -512,16 +511,17 @@ export const placeInverter = (heightOffset=0.2) => (dispatch, getState) => {
 
 export const bridging = (roofIndex, inverterIndex, heightOffset=0.2) =>
 (dispatch, getState) => {
-  const workingBuilding = getState().buildingManagerReducer.workingBuilding;
+  const workingBuilding =
+    getState().undoable.present.buildingManager.workingBuilding;
   const inverterCenterPoint =
-    getState().undoableReducer.present.editingWiringManager
+    getState().undoable.present.editingWiringManager
     .roofSpecInverters[roofIndex][inverterIndex].polygonCenter;
-  const wirings = getState().undoableReducer.present.editingWiringManager
+  const wirings = getState().undoable.present.editingWiringManager
     .roofSpecInverters[roofIndex][inverterIndex].wiring;
-  const roofSpecParams = getState().undoableReducer.present
-    .editingPVPanelManagerReducer.roofSpecParams[roofIndex];
-  const pvPanelParams = getState().undoableReducer.present
-    .editingPVPanelManagerReducer.userPanels[roofSpecParams.selectPanelIndex];
+  const roofSpecParams = getState().undoable.present.editingPVPanelManager
+    .roofSpecParams[roofIndex];
+  const pvPanelParams = getState().undoable.present.editingPVPanelManager
+    .userPanels[roofSpecParams.selectPanelIndex];
   const rooftopLineCollection = workingBuilding.type === 'FLAT' ?
     MathLineCollection.fromPolyline(
       workingBuilding.foundationPolygon[roofIndex]
@@ -742,11 +742,12 @@ export const releaseHoverInverterCenter = () => {
 
 export const dragInverter = (heightOffset=0.2) => (dispatch, getState) => {
   const inverterLength = 0.25;
-  const workingBuilding = getState().buildingManagerReducer.workingBuilding;
-  const mouseCartesian3 = getState().undoableReducer.present
-    .drawingManagerReducer.mouseCartesian3;
-  const editingRoofIndex = getState().undoableReducer.present
-    .editingWiringManager.editingRoofIndex;
+  const workingBuilding =
+    getState().undoable.present.buildingManager.workingBuilding;
+  const mouseCartesian3 =
+    getState().undoable.present.drawingManager.mouseCartesian3;
+  const editingRoofIndex =
+    getState().undoable.present.editingWiringManager.editingRoofIndex;
 
   const result = makeInverterPolygonAndCenter(
     mouseCartesian3, workingBuilding, editingRoofIndex, heightOffset, inverterLength
@@ -762,12 +763,12 @@ export const dragInverter = (heightOffset=0.2) => (dispatch, getState) => {
 }
 
 export const setHoverBridgingPoint = (pointId) => (dispatch, getState) => {
-  const roofSpecInverters = getState().undoableReducer.present
-    .editingWiringManager.roofSpecInverters;
-  const editingRoofIndex = getState().undoableReducer.present
-    .editingWiringManager.editingRoofIndex;
-  const editingInverterIndex = getState().undoableReducer.present
-    .editingWiringManager.editingInverterIndex;
+  const roofSpecInverters =
+    getState().undoable.present.editingWiringManager.roofSpecInverters;
+  const editingRoofIndex =
+    getState().undoable.present.editingWiringManager.editingRoofIndex;
+  const editingInverterIndex =
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
   let bridgingIndex = null;
   let bridgingPointIndex = null;
   roofSpecInverters[editingRoofIndex][editingInverterIndex]
@@ -796,11 +797,12 @@ export const releaseHoverBridgingPoint = () => {
 }
 
 export const dragBridgingPoint = (heightOffset=0.2) => (dispatch, getState) => {
-  const workingBuilding = getState().buildingManagerReducer.workingBuilding;
-  const mouseCartesian3 = getState().undoableReducer.present
-    .drawingManagerReducer.mouseCartesian3;
-  const editingRoofIndex = getState().undoableReducer.present
-    .editingWiringManager.editingRoofIndex;
+  const workingBuilding =
+    getState().undoable.present.buildingManager.workingBuilding;
+  const mouseCartesian3 =
+    getState().undoable.present.drawingManager.mouseCartesian3;
+  const editingRoofIndex =
+    getState().undoable.present.editingWiringManager.editingRoofIndex;
 
   let newPoint = null;
   if (workingBuilding.type === 'FLAT') {
@@ -828,12 +830,12 @@ export const dragBridgingPoint = (heightOffset=0.2) => (dispatch, getState) => {
 
 export const setHoverBridgingMainPolyline = (polylineId) =>
 (dispatch, getState) => {
-  const roofSpecInverters = getState().undoableReducer.present
-    .editingWiringManager.roofSpecInverters;
-  const editingRoofIndex = getState().undoableReducer.present
-    .editingWiringManager.editingRoofIndex;
-  const editingInverterIndex = getState().undoableReducer.present
-    .editingWiringManager.editingInverterIndex;
+  const roofSpecInverters =
+    getState().undoable.present.editingWiringManager.roofSpecInverters;
+  const editingRoofIndex =
+    getState().undoable.present.editingWiringManager.editingRoofIndex;
+  const editingInverterIndex =
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
   const bridgingMainPolylineIndex =
     roofSpecInverters[editingRoofIndex][editingInverterIndex].bridging
     .findIndex(bridging => bridging.mainPolyline.entityId === polylineId);
@@ -853,19 +855,21 @@ export const releaseHoverBridgingMainPolyline = () => {
 
 export const complementPointOnBridging = (heightOffset=0.2) =>
 (dispatch, getState) => {
-  const workingBuilding = getState().buildingManagerReducer.workingBuilding;
-  const roofSpecInverters = getState().undoableReducer.present
-    .editingWiringManager.roofSpecInverters;
-  const editingRoofIndex = getState().undoableReducer.present
-    .editingWiringManager.editingRoofIndex;
-  const editingInverterIndex = getState().undoableReducer.present
-    .editingWiringManager.editingInverterIndex;
-  const editingBridgingMainPolylineIndex = getState().undoableReducer.present
-    .editingWiringManager.editingBridgingMainPolylineIndex;
+  const workingBuilding =
+    getState().undoable.present.buildingManager.workingBuilding;
+  const roofSpecInverters =
+    getState().undoable.present.editingWiringManager.roofSpecInverters;
+  const editingRoofIndex =
+    getState().undoable.present.editingWiringManager.editingRoofIndex;
+  const editingInverterIndex =
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
+  const editingBridgingMainPolylineIndex = 
+    getState().undoable.present.editingWiringManager
+    .editingBridgingMainPolylineIndex;
   const mainPolyline = roofSpecInverters[editingRoofIndex][editingInverterIndex]
     .bridging[editingBridgingMainPolylineIndex].mainPolyline;
-  const rightClickCartesian3 = getState().undoableReducer.present
-    .drawingManagerReducer.rightClickCartesian3;
+  const rightClickCartesian3 =
+    getState().undoable.present.drawingManager.rightClickCartesian3;
   const indexToAdd = mainPolyline.determineAddPointPosition(rightClickCartesian3);
 
   let newPoint = null;

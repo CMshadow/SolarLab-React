@@ -7,22 +7,23 @@ import Env from '../../infrastructure/keepout/env';
 
 export const bindAllKeepout = () => (dispatch, getState) => {
   const buildingIndex =
-    getState().projectManagerReducer.projectInfo.buildingGroupCollection.length;
+    getState().undoable.present.projectManager.projectInfo
+    .buildingGroupCollection.length;
   const normalKeepout =
-    getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer
-    .normalKeepout.map(kpt => NormalKeepout.fromKeepout(kpt));
+    getState().undoable.present.drawingKeepoutPolygonManager.normalKeepout
+    .map(kpt => NormalKeepout.fromKeepout(kpt));
   const passageKeepout =
-    getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer
-    .passageKeepout.map(kpt => Passage.fromKeepout(kpt));
+    getState().undoable.present.drawingKeepoutPolygonManager.passageKeepout
+    .map(kpt => Passage.fromKeepout(kpt));
   const ventKeepout =
-    getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer
-    .ventKeepout.map(kpt => Vent.fromKeepout(kpt));
+    getState().undoable.present.drawingKeepoutPolygonManager.ventKeepout
+    .map(kpt => Vent.fromKeepout(kpt));
   const treeKeepout =
-    getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer
-    .treeKeepout.map(kpt => Tree.fromKeepout(kpt))
+    getState().undoable.present.drawingKeepoutPolygonManager.treeKeepout
+    .map(kpt => Tree.fromKeepout(kpt))
   const envKeepout =
-    getState().undoableReducer.present.drawingKeepoutPolygonManagerReducer
-    .envKeepout.map(kpt => Env.fromKeepout(kpt))
+    getState().undoable.present.drawingKeepoutPolygonManager.envKeepout
+    .map(kpt => Env.fromKeepout(kpt))
 
   return dispatch({
     type: actionTypes.BIND_ALL_KEEPOUT,

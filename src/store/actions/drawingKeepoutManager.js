@@ -46,7 +46,7 @@ export const createKeepout = (values) => {
 
 export const updateKeepout = (id, values) => (dispatch, getState) => {
   const keepoutList =
-    getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+    getState().undoable.present.drawingKeepoutManager.keepoutList;
   const updateIndex = keepoutList.findIndex(elem => elem.id === id);
   let updateKeepout = null;
   switch (keepoutList[updateIndex].type) {
@@ -116,7 +116,7 @@ export const updateKeepout = (id, values) => (dispatch, getState) => {
 
 export const deleteKeepout = (id) => (dispatch, getState) => {
   const keepoutList =
-    getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList;
+    getState().undoable.present.drawingKeepoutManager.keepoutList;
   const deleteIndex = keepoutList.findIndex(elem => elem.id === id);
   return dispatch({
     type: actionTypes.DELETE_KEEPOUT,
@@ -126,10 +126,10 @@ export const deleteKeepout = (id) => (dispatch, getState) => {
 
 export const initLinkedKeepoutIndex = (keepoutId) => (dispatch, getState) => {
   const keepoutIndex =
-    getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList
+    getState().undoable.present.drawingKeepoutManager.keepoutList
     .findIndex(elem => elem.id === keepoutId);
   const keepoutType =
-    getState().undoableReducer.present.drawingKeepoutManagerReducer.keepoutList[
+    getState().undoable.present.drawingKeepoutManager.keepoutList[
       keepoutIndex
     ].type;
   return dispatch({
@@ -148,12 +148,12 @@ export const releaseLinkedKeepoutIndex = () => {
 export const addPointOnKeepoutPolyline =
 (mousePosition, viewer, fixedMode=false) => (dispatch, getState) =>
 {
-  const drawingKptPolyline = getState().undoableReducer.present
-    .drawingKeepoutManagerReducer.drawingKeepoutPolyline;
-  const hipPolylines = getState().undoableReducer.present
-    .drawingInnerManagerReducer.hipPolylines;
-  const ridgePolylines = getState().undoableReducer.present
-    .drawingInnerManagerReducer.ridgePolylines;
+  const drawingKptPolyline = getState().undoable.present.drawingKeepoutManager
+    .drawingKeepoutPolyline;
+  const hipPolylines = getState().undoable.present.drawingInnerManager
+    .hipPolylines;
+  const ridgePolylines = getState().undoable.present.drawingInnerManager
+    .ridgePolylines;
   let intersect = false;
   hipPolylines.forEach(ply => {
     if (ply.intersectPolyline(drawingKptPolyline)) intersect = true;
@@ -252,16 +252,16 @@ export const releaseKeepoutHoverPolyline = () => {
 };
 
 export const setKeepoutHoverPointIndex = (point) => (dispatch, getState) => {
-  const hoverIndex = getState().undoableReducer.present
-  .drawingKeepoutManagerReducer.drawingKeepoutPolyline.findPointIndex(point);
+  const hoverIndex = getState().undoable.present.drawingKeepoutManager
+    .drawingKeepoutPolyline.findPointIndex(point);
   if (hoverIndex >= 0) {
     return dispatch({
       type: actionTypes.SET_KEEPOUT_HOVERPOINT,
       hoverPointIndex: hoverIndex
     });
   } else if (
-    getState().undoableReducer.present.drawingKeepoutManagerReducer
-    .drawingKeepoutPolyline.centerPoint.entityId === point.entityId
+    getState().undoable.present.drawingKeepoutManager.drawingKeepoutPolyline
+    .centerPoint.entityId === point.entityId
   ) {
     return dispatch({
       type: actionTypes.SET_KEEPOUT_HOVERPOINT,
@@ -278,7 +278,7 @@ export const releaseKeepoutHoverPointIndex = () => (dispatch, getState) => {
 
 export const complementPointOnKeepoutPolyline = () => (dispatch, getState) => {
   const rightClickCartesian3 =
-    getState().undoableReducer.present.drawingManagerReducer.rightClickCartesian3;
+    getState().undoable.present.drawingManager.rightClickCartesian3;
   return dispatch({
     type: actionTypes.CLICK_COMPLEMENT_POINT_ON_KEEPOUT_POLYLINE,
     rightClickCartesian3: rightClickCartesian3
@@ -292,16 +292,16 @@ export const deletePointOnKeepoutPolyline = () => {
 };
 
 export const setKeepoutPickedPointIndex = (point) => (dispatch, getState) => {
-  const pickedIndex = getState().undoableReducer.present
-  .drawingKeepoutManagerReducer.drawingKeepoutPolyline.findPointIndex(point);
+  const pickedIndex = getState().undoable.present.drawingKeepoutManager
+    .drawingKeepoutPolyline.findPointIndex(point);
   if (pickedIndex >= 0) {
     return dispatch({
       type: actionTypes.SET_KEEPOUT_PICKEDPOINT,
       pickedPointIndex: pickedIndex
     });
   } else if (
-    getState().undoableReducer.present.drawingKeepoutManagerReducer
-    .drawingKeepoutPolyline.centerPoint.entityId === point.entityId
+    getState().undoable.present.drawingKeepoutManager.drawingKeepoutPolyline
+      .centerPoint.entityId === point.entityId
   ) {
     return dispatch({
       type: actionTypes.SET_KEEPOUT_PICKEDPOINT,

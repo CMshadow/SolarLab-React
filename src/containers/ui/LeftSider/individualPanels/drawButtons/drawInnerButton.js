@@ -1,7 +1,5 @@
 import React from 'react';
 import { connect } from 'react-redux';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPen } from '@fortawesome/pro-light-svg-icons'
 import {
   Row,
   Col,
@@ -83,10 +81,10 @@ const DrawInnerButton = (props) => {
 
 const mapStateToProps = state => {
   return {
-    uiState: state.undoableReducer.present.uiStateManagerReducer.uiState,
+    uiState:
+      state.undoable.present.uiStateManager.uiState,
     drawingInnerPolyline:
-      state.undoableReducer.present.drawingInnerManagerReducer
-      .drawingInnerPolyline,
+      state.undoable.present.drawingInnerManager.drawingInnerPolyline,
   };
 };
 
