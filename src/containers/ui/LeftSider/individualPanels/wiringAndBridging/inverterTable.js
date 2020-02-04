@@ -20,7 +20,6 @@ import * as actions from '../../../../../store/actions/index';
 
 class InverterTable extends Component {
 
-
   expandedRowRender = (inverter, inverterInd) => {
     const columns = [
       {
@@ -155,6 +154,20 @@ class InverterTable extends Component {
         dataSource={data}
         pagination={false}
         rowKey={record => record.entityId}
+        onRow={(record, index) => {
+          return {
+            onMouseEnter: event => {
+              if (record.polyline) {
+                this.props.highLightWiring(this.props.roofIndex, inverterInd, index)
+              }
+            },
+            onMouseLeave: event => {
+              if (record.polyline) {
+                this.props.deHighLightWiring(this.props.roofIndex, inverterInd, index)
+              }
+            },
+          }
+        }}
       />
     );
   };
@@ -245,6 +258,12 @@ const mapDispatchToProps = dispatch => {
     ),
     setUIStateManualWiring: () => dispatch(
       actions.setUIStateManualWiring()
+    ),
+    highLightWiring: (roofInd, inverterInd, wiringInd) => dispatch(
+      actions.highLightWiring(roofInd, inverterInd, wiringInd)
+    ),
+    deHighLightWiring: (roofInd, inverterInd, wiringInd) => dispatch(
+      actions.deHighLightWiring(roofInd, inverterInd, wiringInd)
     )
   }
 }
