@@ -656,6 +656,42 @@ const complementPointOnBridging = (state, action) => {
   };
 }
 
+const highLightWiring = (state, action) => {
+  const newInverter = Inverter.fromInverter(
+    state.roofSpecInverters[action.roofIndex][action.inverterIndex]
+  );
+  const newWiring = Wiring.fromWiring(newInverter.wiring[action.wiringIndex]);
+  newWiring.polyline.setColor(Cesium.Color.RED);
+  newInverter.setWiring(action.wiringIndex, newWiring);
+  const roofInverters = [...state.roofSpecInverters[action.roofIndex]];
+  roofInverters.splice(action.inverterIndex, 1, newInverter);
+  return {
+    ...state,
+    roofSpecInverters: {
+      ...state.roofSpecInverters,
+      [action.roofIndex]: roofInverters
+    },
+  };
+}
+
+const deHighLightWiring = (state, action) => {
+  const newInverter = Inverter.fromInverter(
+    state.roofSpecInverters[action.roofIndex][action.inverterIndex]
+  );
+  const newWiring = Wiring.fromWiring(newInverter.wiring[action.wiringIndex]);
+  newWiring.polyline.setColor(Cesium.Color.ORANGE);
+  newInverter.setWiring(action.wiringIndex, newWiring);
+  const roofInverters = [...state.roofSpecInverters[action.roofIndex]];
+  roofInverters.splice(action.inverterIndex, 1, newInverter);
+  return {
+    ...state,
+    roofSpecInverters: {
+      ...state.roofSpecInverters,
+      [action.roofIndex]: roofInverters
+    },
+  };
+}
+
 const reducer = (state=initialState, action) => {
   switch (action.type) {
     case actionTypes.FETCH_USER_INVERTERS:
@@ -713,6 +749,12 @@ const reducer = (state=initialState, action) => {
       return releaseHoverBridgingMainPolyline(state, action);
     case actionTypes.COMPLEMENT_POINT_ON_BRIDGING:
       return complementPointOnBridging(state, action);
+
+    case actionTypes.HIGHLIGHT_WIRING:
+      return highLightWiring(state, action);
+    case actionTypes.DE_HIGHLIGHT_WIRING:
+      return deHighLightWiring(state, action);
+
     default:
       return state;
   }

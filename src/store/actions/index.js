@@ -189,7 +189,9 @@ export {
   dragBridgingPoint,
   setHoverBridgingMainPolyline,
   releaseHoverBridgingMainPolyline,
-  complementPointOnBridging
+  complementPointOnBridging,
+  highLightWiring,
+  deHighLightWiring
 } from './editingWiringManager';
 
 export {

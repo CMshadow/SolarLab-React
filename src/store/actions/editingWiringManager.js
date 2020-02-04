@@ -308,14 +308,13 @@ export const setManualWiringStart = (panelId) => (dispatch, getState) => {
   });
 }
 
-export const editWiring = (roofInd, inverterInd, wiringInd) =>
-(dispatch, getState) => {
-  return dispatch({
+export const editWiring = (roofInd, inverterInd, wiringInd) => {
+  return {
     type: actionTypes.EDIT_WIRING,
     roofIndex: roofInd,
     inverterIndex: inverterInd,
     wiringIndex: wiringInd
-  });
+  };
 }
 
 export const stopEditWiring = () => {
@@ -863,7 +862,7 @@ export const complementPointOnBridging = (heightOffset=0.2) =>
     getState().undoable.present.editingWiringManager.editingRoofIndex;
   const editingInverterIndex =
     getState().undoable.present.editingWiringManager.editingInverterIndex;
-  const editingBridgingMainPolylineIndex = 
+  const editingBridgingMainPolylineIndex =
     getState().undoable.present.editingWiringManager
     .editingBridgingMainPolylineIndex;
   const mainPolyline = roofSpecInverters[editingRoofIndex][editingInverterIndex]
@@ -895,6 +894,24 @@ export const complementPointOnBridging = (heightOffset=0.2) =>
     indexToAdd: indexToAdd,
     point: newPoint
   });
+}
+
+export const highLightWiring = (roofInd, inverterInd, wiringInd) => {
+  return {
+    type: actionTypes.HIGHLIGHT_WIRING,
+    roofIndex: roofInd,
+    inverterIndex: inverterInd,
+    wiringIndex: wiringInd
+  }
+}
+
+export const deHighLightWiring = (roofInd, inverterInd, wiringInd) => {
+  return {
+    type: actionTypes.DE_HIGHLIGHT_WIRING,
+    roofIndex: roofInd,
+    inverterIndex: inverterInd,
+    wiringIndex: wiringInd
+  }
 }
 
 const makeInverterPolygonAndCenter = (
