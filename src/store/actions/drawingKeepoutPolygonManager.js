@@ -418,7 +418,7 @@ export const createVentKeepoutPolygonPitched = (ventKeepout) =>
   const buildingId =
     getState().undoable.present.buildingManager.workingBuilding.entityId;
   const pitchedRoofPolygons =
-    getState().undoable.present.undoable.present.drawingRooftopManager
+    getState().undoable.present.drawingRooftopManager
     .RooftopCollection.rooftopCollection;
   const pitchedRoofsFoundLine = pitchedRoofPolygons.map(polygon =>
     polygon.toFoundLine()
