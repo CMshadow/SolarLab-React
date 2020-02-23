@@ -25,44 +25,10 @@ class SetUpWiringPanel extends Component {
   }
 
   render() {
+    console.log(this.props.roofSpecParams)
+    console.log(this.props.panels)
     const { getFieldDecorator } = this.props.form;
-    const pitchedRoofSelect = this.props.workingBuilding.type === 'PITCHED' ?
-    (
-      <Form.Item>
-        <Row>
-          <Col span={20} offset={2}>
-          {getFieldDecorator('roofIndex', {
-            rules: [{
-              required: this.props.workingBuilding.type === 'PITCHED',
-              message: 'Please select one'
-            }]
-          })(
-            <Select
-              placeholder='Select a pitched roof'
-              onChange={(roofInd) => {
-                this.setState({selectRoofIndex: roofInd});
-                if(
-                  !Object.keys(this.props.roofSpecInverters)
-                  .includes(roofInd.toString()) && this.state.tab === 'auto'
-                )
-                  this.props.calculateAutoInverter(roofInd);
-              }}
-            >
-              {Object.keys(this.props.roofSpecParams).map((k,ind) =>
-                <Option
-                  key={k}
-                  value={k}
-                >
-                  {`Pitched Roof ${parseInt(k)+1}`}
-                </Option>
-              )}
-            </Select>
-          )}
-          </Col>
-        </Row>
-      </Form.Item>
-    ) :
-    null;
+
     const InverterSelect = (
       <Form.Item>
         <Row>
@@ -76,12 +42,12 @@ class SetUpWiringPanel extends Component {
             <Select
               showSearch
               optionFilterProp='children'
-              placeholder={this.props.intl.formatMessage({id:'select_a_inverter'})}
+              placeholder={
+                this.props.intl.formatMessage({id:'select_a_inverter'})
+              }
               onChange={(e) => {
                 this.setState({selectInverterID: e});
-                this.props.calculateManualInverter(
-                  this.state.selectRoofIndex, e
-                );
+                this.props.calculateManualInverter(e);
               }}
             >
               {this.props.userInverters.map(i =>
@@ -106,7 +72,6 @@ class SetUpWiringPanel extends Component {
           <h3><FormattedMessage id='setup_wiring' /></h3>
         </Row>
         <Form>
-          {pitchedRoofSelect}
           <Tabs
             defaultActiveKey = {this.state.tab}
             size = 'small'
@@ -115,10 +80,15 @@ class SetUpWiringPanel extends Component {
             onChange = {e => {
               this.setState({tab:e});
               if (e === 'auto')
-                this.props.calculateAutoInverter(this.state.selectRoofIndex)
+                this.props.calculateAutoInverter()
             }}
           >
-            <TabPane tab={this.props.intl.formatMessage({id:'wiring_manual_selection'})} key="manual">
+            <TabPane
+              tab={
+                this.props.intl.formatMessage({id:'wiring_manual_selection'})
+              }
+              key="manual"
+            >
               <Spin
                 spinning={this.props.backendLoading}
                 indicator={<Icon type="loading" spin />}
@@ -141,19 +111,20 @@ class SetUpWiringPanel extends Component {
             </TabPane>
           </Tabs>
         </Form>
-        <InverterTable roofIndex={this.state.selectRoofIndex} />
+        <InverterTable />
         <Row type="flex" justify="center">
           <Button
             type='primary'
             shape='round'
             size='large'
             disabled = {
-              Object.keys(this.props.roofSpecInverters).length === 0 ||
+              this.props.entireSpecInverters.length === 0 ||
               this.props.backendLoading
             }
             onClick = {this.props.setUIStateSetUpBridging}
           >
-            <FormattedMessage id='continue_button_wiring' /> <Icon type='right' />
+            <FormattedMessage id='continue_button_wiring' />
+            <Icon type='right' />
           </Button>
         </Row>
       </div>
@@ -177,8 +148,8 @@ const mapStateToProps = state => {
       state.undoable.present.editingPVPanelManager.panels,
     roofSpecParams:
       state.undoable.present.editingPVPanelManager.roofSpecParams,
-    roofSpecInverters:
-      state.undoable.present.editingWiringManager.roofSpecInverters,
+    entireSpecInverters:
+      state.undoable.present.editingWiringManager.entireSpecInverters,
 
     normalKeepout:
       state.undoable.present.drawingKeepoutPolygonManager.normalKeepout,
@@ -191,11 +162,11 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    calculateAutoInverter: (roofIndex) => dispatch(
-      actions.calculateAutoInverter(roofIndex)
+    calculateAutoInverter: () => dispatch(
+      actions.calculateAutoInverter()
     ),
-    calculateManualInverter: (roofIndex, inverterID) => dispatch(
-      actions.calculateManualInverter(roofIndex, inverterID)
+    calculateManualInverter: (inverterID) => dispatch(
+      actions.calculateManualInverter(inverterID)
     ),
     bindPVPanels: () => dispatch(actions.bindPVPanels()),
     bindInverters: () => dispatch(actions.bindInverters()),

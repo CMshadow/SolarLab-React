@@ -1,5 +1,5 @@
 import React from 'react';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import FloatPolyline from '../polyline/floatingPolyline';
 import PolygonVisualize from '../Polygon/Polygon';
 import CustomPoint from '../point/point';
@@ -7,117 +7,82 @@ import CustomPoint from '../point/point';
 const EditingBridgingRender = (props) => {
 
   let allInverterPolygons = null;
-  if(Object.keys(props.roofSpecInverters).length !== 0) {
-    if (
-      props.uiState !== 'READY_DRAG_INVERTER' &&
-      props.uiState !== 'DRAG_INVERTER'
-    ) {
-      allInverterPolygons = Object.keys(props.roofSpecInverters).map(roofIndex =>
-        props.roofSpecInverters[roofIndex].filter(inverter => inverter.polygon)
-        .map(inverter =>
-          <PolygonVisualize
-            key = {inverter.polygon.entityId}
-    				{...inverter.polygon}
-    			/>
-        )
-      )
-    } else {
-      allInverterPolygons = Object.keys(props.roofSpecInverters).map(roofIndex =>
-        props.roofSpecInverters[roofIndex].filter((inverter, i) =>
-          inverter.polygon && roofIndex !== props.editingRoofIndex &&
-          i !== props.editingInverterIndex
-        )
-        .map(inverter =>
-          <PolygonVisualize
-            key = {inverter.polygon.entityId}
-    				{...inverter.polygon}
-    			/>
-        )
-      )
-    }
-  }
-
-  let mainBridgings = null;
-  if(Object.keys(props.roofSpecInverters).length !== 0) {
-    mainBridgings = Object.keys(props.roofSpecInverters).map(roofIndex =>
-      props.roofSpecInverters[roofIndex].map(inverter =>
-        inverter.bridging.map(bridging =>
-          <FloatPolyline
-            key={bridging.mainPolyline.entityId}
-            {...bridging.mainPolyline}
-          />
-        )
-      )
+  if (
+    props.uiState !== 'READY_DRAG_INVERTER' && props.uiState !== 'DRAG_INVERTER'
+  ) {
+    allInverterPolygons = props.entireSpecInverters
+    .filter(inverter => inverter.polygon)
+    .map(inverter =>
+      <PolygonVisualize key={inverter.polygon.entityId} {...inverter.polygon}/>
+    )
+  } else {
+    allInverterPolygons = props.entireSpecInverters
+    .filter((inverter, i) =>
+      inverter.polygon && i !== props.editingInverterIndex
+    )
+    .map(inverter =>
+      <PolygonVisualize key={inverter.polygon.entityId} {...inverter.polygon}/>
     )
   }
 
-  let subBridgings = null;
-  if(Object.keys(props.roofSpecInverters).length !== 0) {
-    subBridgings = Object.keys(props.roofSpecInverters).map(roofIndex =>
-      props.roofSpecInverters[roofIndex].map(inverter =>
-        inverter.bridging.map(bridging =>
-          bridging.subPolyline.map(subPolyline =>
-            <FloatPolyline
-              key={subPolyline.entityId}
-              {...subPolyline}
-            />
-          )
-        )
+  const mainBridgings = props.entireSpecInverters.map(inverter =>
+    inverter.bridging.map(bridging =>
+      <FloatPolyline
+        key={bridging.mainPolyline.entityId}
+        {...bridging.mainPolyline}
+      />
+    )
+  );
+
+
+  const subBridgings = props.entireSpecInverters.map(inverter =>
+    inverter.bridging.map(bridging =>
+      bridging.subPolyline.map(subPolyline =>
+        <FloatPolyline key={subPolyline.entityId} {...subPolyline}/>
       )
     )
-  }
+  );
+
 
   let inverterCenterPoint = null;
   if (
-    props.uiState === 'READY_DRAG_INVERTER' ||
-    props.uiState === 'DRAG_INVERTER'
+    props.uiState === 'READY_DRAG_INVERTER' || props.uiState === 'DRAG_INVERTER'
   ) {
     const center =
-      props.roofSpecInverters[props.editingRoofIndex][props.editingInverterIndex]
-      .polygonCenter;
-    inverterCenterPoint = <CustomPoint
-      key={center.entityId}
-      {...center}
-    />
+      props.entireSpecInverters[props.editingInverterIndex].polygonCenter;
+    inverterCenterPoint = <CustomPoint key={center.entityId} {...center}/>
   }
 
   let bridgingPoints = null;
-  if (
-    props.uiState === 'EDIT_BRIDGING' ||
-    props.uiState === 'DRAG_BRIDGING'
-  ) {
+  if (props.uiState === 'EDIT_BRIDGING' || props.uiState === 'DRAG_BRIDGING') {
     bridgingPoints =
-      props.roofSpecInverters[props.editingRoofIndex][props.editingInverterIndex]
-      .bridging.flatMap(bridging => {
+      props.entireSpecInverters[props.editingInverterIndex].bridging
+      .flatMap(bridging => {
         const anchorIndex = bridging.anchorPanelMap.map(obj => obj.anchorIndex);
-        return bridging.mainPolyline.points.filter((point, i) =>
-          !anchorIndex.includes(i)
-        ).slice(1,).map(point =>
-          <CustomPoint
-            key={point.entityId}
-            {...point}
-          />
-        )
+        return bridging.mainPolyline.points
+          .filter((point, i) => !anchorIndex.includes(i))
+          .slice(1,)
+          .map(point => <CustomPoint key={point.entityId} {...point}/>)
       });
   }
 
-	return (
-		<div>
+  return (
+    <div>
       {allInverterPolygons}
       {mainBridgings}
       {subBridgings}
       {inverterCenterPoint}
       {bridgingPoints}
     </div>
-	);
+  );
 };
 
 const mapStateToProps = state => {
-	return{
+  return {
     uiState:
       state.undoable.present.uiStateManager.uiState,
-    roofSpecInverters:
-      state.undoable.present.editingWiringManager.roofSpecInverters,
+    entireSpecInverters:
+      state.undoable.present.editingWiringManager.entireSpecInverters,
     editingRoofIndex:
       state.undoable.present.editingWiringManager.editingRoofIndex,
     editingInverterIndex:
@@ -127,9 +92,8 @@ const mapStateToProps = state => {
     editingStartPoint:
       state.undoable.present.editingWiringManager.editingStartPoint,
     editingEndPoint:
-      state.undoable.present.editingWiringManager.editingEndPoint,
-	};
+      state.undoable.present.editingWiringManager.editingEndPoint
+  };
 };
-
 
 export default connect(mapStateToProps)(EditingBridgingRender);

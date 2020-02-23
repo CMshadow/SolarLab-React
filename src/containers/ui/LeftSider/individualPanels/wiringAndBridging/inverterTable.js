@@ -58,9 +58,7 @@ class InverterTable extends Component {
                 key='1'
                 onClick = {() => {
                   this.props.setUIStateManualWiring();
-                  this.props.manualWiring(
-                    this.props.roofIndex, inverterInd, wiringInd
-                  );
+                  this.props.manualWiring(inverterInd, wiringInd);
                 }}
               >
                 <FormattedMessage id='wiring_manual' />
@@ -69,8 +67,9 @@ class InverterTable extends Component {
           );
           if (record.allPanels.length === 0) {
             if (
-              this.props.roofSpecParams[this.props.roofIndex].mode ===
-              'individual'
+              this.props.roofSpecParams[
+                Object.keys(this.props.roofSpecParams)[0]
+              ].mode === 'individual'
             ) {
               return (
                 <Dropdown.Button
@@ -83,9 +82,7 @@ class InverterTable extends Component {
                     inverterInd !== this.props.editingInverterIndex)
                   }
                   onClick = {() => {
-                    this.props.autoWiring(
-                      this.props.roofIndex, inverterInd, wiringInd
-                    );
+                    this.props.autoWiring(inverterInd, wiringInd);
                   }}
                 >
                   <FormattedMessage id='wiring_auto' />
@@ -101,12 +98,10 @@ class InverterTable extends Component {
                     inverterInd !== this.props.editingInverterIndex)
                   }
                   onClick = {() => {
-                    this.props.autoWiring(
-                      this.props.roofIndex, inverterInd, wiringInd
-                    );
+                    this.props.autoWiring(inverterInd, wiringInd);
                   }}
                 >
-                  Wiring
+                  <FormattedMessage id='wiring_auto' />
                 </Button>
               )
             }
@@ -122,9 +117,7 @@ class InverterTable extends Component {
                 onClick = {() => {
                   if (this.props.uiState === 'SETUP_WIRING') {
                     this.props.setUIStateEditingWiring();
-                    this.props.editWiring(
-                      this.props.roofIndex, inverterInd, wiringInd
-                    );
+                    this.props.editWiring(inverterInd, wiringInd);
                   } else {
                     this.props.setUIStateSetUpWiring();
                     this.props.stopEditWiring();
@@ -158,12 +151,12 @@ class InverterTable extends Component {
           return {
             onMouseEnter: event => {
               if (record.polyline) {
-                this.props.highLightWiring(this.props.roofIndex, inverterInd, index)
+                this.props.highLightWiring(inverterInd, index)
               }
             },
             onMouseLeave: event => {
               if (record.polyline) {
-                this.props.deHighLightWiring(this.props.roofIndex, inverterInd, index)
+                this.props.deHighLightWiring(inverterInd, index)
               }
             },
           }
@@ -213,7 +206,7 @@ class InverterTable extends Component {
                 (inverter, inverterInd) =>
                 this.expandedRowRender(inverter, inverterInd)
               }
-              dataSource={this.props.roofSpecInverters[this.props.roofIndex]}
+              dataSource={this.props.entireSpecInverters}
               rowKey={record => record.entityId}
             />,
           </ConfigProvider>
@@ -225,8 +218,8 @@ class InverterTable extends Component {
 
 const mapStateToProps = state => {
   return {
-    roofSpecInverters:
-      state.undoable.present.editingWiringManager.roofSpecInverters,
+    entireSpecInverters:
+      state.undoable.present.editingWiringManager.entireSpecInverters,
     roofSpecParams:
       state.undoable.present.editingPVPanelManager.roofSpecParams,
     uiState:
