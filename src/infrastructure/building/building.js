@@ -16,7 +16,6 @@ class Building {
 
   bindShadow = (shadow) => {
     this.shadow = shadow;
-    console.log(this.shadow)
   }
 
   bindPV = (pv) => {
@@ -65,6 +64,7 @@ class Building {
           .getPointsCoordinatesArray(false),
         keepoutCoordinates: this.shadow[shadowId].keepoutCoordinates,
         keepoutType: this.shadow[shadowId].type,
+        treeCenter: this.shadow[shadowId].treeCenter
       }
     }).filter(obj => obj.keepoutCoordinates.length > 2)
   }
