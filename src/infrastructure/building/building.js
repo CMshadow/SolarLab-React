@@ -16,6 +16,7 @@ class Building {
 
   bindShadow = (shadow) => {
     this.shadow = shadow;
+    console.log(this.shadow)
   }
 
   bindPV = (pv) => {

@@ -171,6 +171,7 @@ export const projectAllShadow = (sunPositionCollection) =>
         to: roofPolygon.entityId,
         keepoutCoordinates: obj.kptOutlineCoordinates,
         type: obj.keepOutType,
+        treeCenter: obj.treeCenter,
         polygon: new Shadow(null, null,
           shadowHier, null, Cesium.Color.DARKGREY.withAlpha(0.75)
         )
@@ -289,6 +290,7 @@ const projectKeepoutShadow = (
             keepoutAllShadows.push({
               geoJSON: new FoundLine(beautifiedPoints).makeGeoJSON(),
               kptOutlineCoordinates: kpt.getOutlineCoordinates(),
+              treeCenter: kpt.outlinePolyline.centerPoint || null,
               kptId: kpt.id,
               keepOutType: keepoutType
             })
