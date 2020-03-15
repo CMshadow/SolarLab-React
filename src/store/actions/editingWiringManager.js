@@ -115,8 +115,8 @@ export const calculateAutoInverter = () => (dispatch, getState) => {
         0 + i + 1,
         inverter.panelPerString,
         inverter.stringPerInverter,
-        null, null, null, null,
         inverter.mpptSetup,
+        null, null, null, null,
         inverter.layout
       )
     )
@@ -168,8 +168,8 @@ export const calculateManualInverter = (inverterID) =>
         0 + i + 1,
         inverter.panelPerString,
         inverter.stringPerInverter,
-        null, null, null, null,
         inverter.mpptSetup,
+        null, null, null, null,
         inverter.layout
       )
     )
@@ -194,16 +194,25 @@ export const autoWiring = (inverterInd, wiringInd) =>
   const roofSpecParams =
     getState().undoable.present.editingPVPanelManager.roofSpecParams[0];
   if (roofSpecParams.mode === 'individual') {
-    dispatch(individualAutoWiring(0, inverterInd, wiringInd));
+    dispatch(individualAutoWiring(inverterInd, wiringInd));
   } else {
-    dispatch(arrayAutoWiring(0, inverterInd, wiringInd));
+    dispatch(arrayAutoWiring(inverterInd, wiringInd));
   }
 }
 
 const individualAutoWiring = (inverterInd, wiringInd) =>
 (dispatch, getState) => {
-  const allPanels =
-    getState().undoable.present.editingPVPanelManager.panels[0];
+  const inverterConfig = getState().undoable.present.editingWiringManager
+    .entireSpecInverters[inverterInd];
+  console.log(inverterConfig)
+  const connectedRoofIndex = inverterConfig.connectRoof;
+
+  const allPanels = []
+  connectedRoofIndex.forEach(roofIndex => {
+    allPanels.push(
+      ...getState().undoable.present.editingPVPanelManager.panels[roofIndex]
+    );
+  })
   const availablePanels = allPanels.flatMap(partial => {
     const partialRoofPanels = partial.map(originPanelArray => {
       const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
@@ -217,15 +226,12 @@ const individualAutoWiring = (inverterInd, wiringInd) =>
     })
     return partialRoofPanels.filter(panelArray => panelArray.length > 0);
   });
-  const inverterConfig = getState().undoable.present.editingWiringManager
-    .entireSpecInverters[0][inverterInd];
 
   const string = findAWiringString(availablePanels, inverterConfig, 0);
   const panelRows = string.map(p => p.row);
   const panelsOnString = string.map(p => p.pv);
   const panelCenterPoints = string.map(p => {
     const center = p.pv.getCenter(0.2);
-    // center.setCoordinate(null, null, center.height + 0.2);
     return center;
   });
   const wiringPolyline = new Polyline(
@@ -238,7 +244,6 @@ const individualAutoWiring = (inverterInd, wiringInd) =>
   return dispatch({
     type: actionTypes.AUTO_WIRING,
     wiring: newWiring,
-    roofIndex: 0,
     inverterIndex: inverterInd,
     wiringIndex: wiringInd
   });

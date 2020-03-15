@@ -55,17 +55,14 @@ const setUpInverter = (state, action) => {
 
 const autoWiring = (state, action) => {
   const newInverter = Inverter.fromInverter(
-    state.entireSpecInverters[action.roofIndex][action.inverterIndex]
+    state.entireSpecInverters[action.inverterIndex]
   );
   newInverter.setWiring(action.wiringIndex, action.wiring);
-  const roofInverters = [...state.entireSpecInverters[action.roofIndex]];
+  const roofInverters = [...state.entireSpecInverters];
   roofInverters.splice(action.inverterIndex, 1, newInverter);
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [action.roofIndex]: roofInverters
-    }
+    entireSpecInverters: roofInverters
   };
 }
 
@@ -654,37 +651,31 @@ const complementPointOnBridging = (state, action) => {
 
 const highLightWiring = (state, action) => {
   const newInverter = Inverter.fromInverter(
-    state.entireSpecInverters[action.roofIndex][action.inverterIndex]
+    state.entireSpecInverters[action.inverterIndex]
   );
   const newWiring = Wiring.fromWiring(newInverter.wiring[action.wiringIndex]);
   newWiring.polyline.setColor(Cesium.Color.RED);
   newInverter.setWiring(action.wiringIndex, newWiring);
-  const roofInverters = [...state.entireSpecInverters[action.roofIndex]];
+  const roofInverters = [...state.entireSpecInverters];
   roofInverters.splice(action.inverterIndex, 1, newInverter);
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [action.roofIndex]: roofInverters
-    },
+    entireSpecInverters: roofInverters
   };
 }
 
 const deHighLightWiring = (state, action) => {
   const newInverter = Inverter.fromInverter(
-    state.entireSpecInverters[action.roofIndex][action.inverterIndex]
+    state.entireSpecInverters[action.inverterIndex]
   );
   const newWiring = Wiring.fromWiring(newInverter.wiring[action.wiringIndex]);
   newWiring.polyline.setColor(Cesium.Color.ORANGE);
   newInverter.setWiring(action.wiringIndex, newWiring);
-  const roofInverters = [...state.entireSpecInverters[action.roofIndex]];
+  const roofInverters = [...state.entireSpecInverters];
   roofInverters.splice(action.inverterIndex, 1, newInverter);
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [action.roofIndex]: roofInverters
-    },
+    entireSpecInverters: roofInverters
   };
 }
 

@@ -35,7 +35,7 @@ class Inverter {
     const newPolygon = inverter.polygon;
     const newPolygonCenter = inverter.polygonCenter;
     const newMpptSetup = inverter.mpptSetup;
-    const newConnectRoof = inverter.roofMap;
+    const newConnectRoof = inverter.connectRoof;
     return new Inverter(
       newEntityId, newInverterId, newInverterName, newSerial, newPanelPerString,
       newStringPerInverter, newMpptSetup, newWiring, newBridging, newPolygon,

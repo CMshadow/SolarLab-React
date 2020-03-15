@@ -233,8 +233,8 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = dispatch => {
   return {
-    autoWiring: (roofInd, inverterInd, wiringInd) => dispatch(
-      actions.autoWiring(roofInd, inverterInd, wiringInd)
+    autoWiring: (inverterInd, wiringInd) => dispatch(
+      actions.autoWiring(inverterInd, wiringInd)
     ),
     manualWiring: (roofInd, inverterInd, wiringInd) => dispatch(
       actions.manualWiring(roofInd, inverterInd, wiringInd)

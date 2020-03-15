@@ -49,6 +49,7 @@ class PV extends Polygon {
 
   setConnected = () => {
     this.connected = true;
+    this.setColor(Color.ROYALBLUE.withAlpha(0.75));
   }
 
   releaseConnected = () => {

@@ -74,24 +74,26 @@ const fetchUserPanels = (state, action) => {
 const updatePVConnected = (state, action) => {
   const wiringPanelIds = action.wiring.allPanels.map(pv => pv.entityId);
   const newPanels = {...state.panels};
-  const changes = newPanels[action.roofIndex].map(partial =>
-    partial.map(panelArray =>
-      panelArray.map(panel => {
-        if (wiringPanelIds.includes(panel.pv.entityId)) {
-          const newPV = PV.copyPolygon(panel.pv);
-          newPV.setConnected();
-          newPV.setColor(Cesium.Color.ROYALBLUE.withAlpha(0.75));
-          return {
-            ...panel,
-            pv: newPV
-          };
-        } else {
-          return panel;
-        }
-      })
-    )
-  );
-  newPanels[action.roofIndex] = changes;
+  Object.keys(newPanels).forEach(roofIndex => {
+    const changes = newPanels[roofIndex].map(partial =>
+      partial.map(panelArray =>
+        panelArray.map(panel => {
+          if (wiringPanelIds.includes(panel.pv.entityId)) {
+            const newPV = PV.copyPolygon(panel.pv);
+            newPV.setConnected();
+            return {
+              ...panel,
+              pv: newPV
+            };
+          } else {
+            return panel;
+          }
+        })
+      )
+    );
+    newPanels[roofIndex] = changes;
+  })
+
   const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
     newPanels[roofIndex].flatMap(partial => {
       const partialRoofPanels = partial.flatMap(originPanelArray => {
@@ -128,7 +130,6 @@ const setPVConnected = (state, action) => {
         if (panel.pv.entityId === action.panelId) {
           const newPV = PV.copyPolygon(panel.pv);
           newPV.setConnected();
-          newPV.setColor(Cesium.Color.ROYALBLUE.withAlpha(0.75));
           return {
             ...panel,
             pv: newPV
@@ -176,7 +177,6 @@ const setPVDisConnected = (state, action) => {
         if (panel.pv.entityId === action.panelId) {
           const newPV = PV.copyPolygon(panel.pv);
           newPV.releaseConnected();
-          newPV.setColor(Cesium.Color.RED.withAlpha(0.5));
           return {
             ...panel,
             pv: newPV
