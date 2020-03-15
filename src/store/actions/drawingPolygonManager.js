@@ -17,6 +17,11 @@ export const createPolygonFoundationWrapper = () => (dispatch, getState) => {
     getState().undoable.present.buildingManager.workingBuilding.eaveSetback;
 
   dispatch(setBackendLoadingTrue());
+  console.log({
+    originPolylines: [foundPolyline],
+    stbDists: [stbDist],
+    direction: 'inside'
+  })
   axios.post('/calculate-setback-coordinate', {
     originPolylines: [foundPolyline],
     stbDists: [stbDist],

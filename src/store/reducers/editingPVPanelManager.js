@@ -218,45 +218,26 @@ const setPVDisConnected = (state, action) => {
 
 const setRoofAllPVDisConnected = (state, action) => {
   const newPanels = {...state.panels};
-  const changes = newPanels[action.roofIndex].map(partial =>
-    partial.map(panelArray =>
-      panelArray.map(panel => {
-        const newPV = PV.copyPolygon(panel.pv);
-        newPV.releaseConnected();
-        newPV.setColor(Cesium.Color.RED.withAlpha(0.5));
-        return {
-          ...panel,
-          pv: newPV
-        };
-      })
-    )
-  );
-  newPanels[action.roofIndex] = changes;
-  const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
-    newPanels[roofIndex].flatMap(partial => {
-      const partialRoofPanels = partial.flatMap(originPanelArray => {
-        const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
-        if (panelArray.length === 0) return [];
-        return panelArray.map(panel => panel.pv.entityId);
-      })
-      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-    })
-  )
-  const connectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
-    newPanels[roofIndex].flatMap(partial => {
-      const partialRoofPanels = partial.flatMap(originPanelArray => {
-        const panelArray = originPanelArray.filter(panel => panel.pv.connected);
-        if (panelArray.length === 0) return [];
-        return panelArray.map(panel => panel.pv.entityId);
-      })
-      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-    })
-  )
+  Object.keys(newPanels).forEach(roofIndex => {
+    const changes = newPanels[roofIndex].map(partial =>
+      partial.map(panelArray =>
+        panelArray.map(panel => {
+          const newPV = PV.copyPolygon(panel.pv);
+          newPV.releaseConnected();
+          return {
+            ...panel,
+            pv: newPV
+          };
+        })
+      )
+    );
+    newPanels[roofIndex] = changes;
+  })
   return {
     ...state,
     panels: newPanels,
-    connectedPanelId: connectedPanelIds,
-    disconnectedPanelId: disconnectedPanelIds
+    connectedPanelId: [],
+    disconnectedPanelId: []
   };
 }
 

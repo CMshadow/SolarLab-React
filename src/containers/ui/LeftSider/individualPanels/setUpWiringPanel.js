@@ -25,8 +25,6 @@ class SetUpWiringPanel extends Component {
   }
 
   render() {
-    console.log(this.props.roofSpecParams)
-    console.log(this.props.panels)
     const { getFieldDecorator } = this.props.form;
 
     const InverterSelect = (

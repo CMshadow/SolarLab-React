@@ -343,9 +343,8 @@ export const setPVDisConnected = (roofIndex, panelId) => {
   };
 }
 
-export const setRoofAllPVDisConnected = (roofIndex) => {
+export const setRoofAllPVDisConnected = () => {
   return {
     type: actionTypes.SET_ROOF_ALL_PV_DISCONNECTED,
-    roofIndex: roofIndex
   };
 }

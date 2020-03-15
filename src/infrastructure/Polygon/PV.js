@@ -53,6 +53,7 @@ class PV extends Polygon {
 
   releaseConnected = () => {
     this.connected = false;
+    this.setColor(Color.RED.withAlpha(0.5));
   }
 }
 

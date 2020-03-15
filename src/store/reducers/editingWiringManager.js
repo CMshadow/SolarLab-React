@@ -12,7 +12,6 @@ const initialState = {
   entireSpecInverters: [],
   userInverters: [],
 
-  editingRoofIndex: null,
   editingInverterIndex: null,
   editingWiringIndex: null,
   editingStartPoint: null,
@@ -40,10 +39,7 @@ const fetchUserInverters = (state, action) => {
 const setUpInverter = (state, action) => {
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [action.roofIndex]: [...action.inverterSolutions]
-    },
+    entireSpecInverters: [...action.inverterSolutions],
 
     editingRoofIndex: null,
     editingInverterIndex: null,
