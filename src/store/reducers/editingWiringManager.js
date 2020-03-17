@@ -41,7 +41,6 @@ const setUpInverter = (state, action) => {
     ...state,
     entireSpecInverters: [...action.inverterSolutions],
 
-    editingRoofIndex: null,
     editingInverterIndex: null,
     editingWiringIndex: null,
     editingStartPoint: null,
@@ -69,7 +68,6 @@ const autoWiring = (state, action) => {
 const manualWiring = (state, action) => {
   return {
     ...state,
-    editingRoofIndex: action.roofIndex,
     editingInverterIndex: action.inverterIndex,
     editingWiringIndex: action.wiringIndex,
   };
@@ -77,17 +75,14 @@ const manualWiring = (state, action) => {
 
 const setManualWiringStart = (state, action) => {
   const newInverter = Inverter.fromInverter(
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
   );
   newInverter.setWiring(state.editingWiringIndex, action.wiring);
-  const roofInverters = [...state.entireSpecInverters[state.editingRoofIndex]];
+  const roofInverters = [...state.entireSpecInverters];
   roofInverters.splice(state.editingInverterIndex, 1, newInverter);
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [state.editingRoofIndex]: roofInverters
-    },
+    entireSpecInverters: roofInverters,
 
     editingStartPoint: action.wiring.startPanel.getCenter(),
     editingEndPoint: action.wiring.endPanel.getCenter(),
@@ -98,21 +93,17 @@ const setManualWiringStart = (state, action) => {
 
 const editWiring = (state, action) => {
   const newInverter = Inverter.fromInverter(
-    state.entireSpecInverters[action.roofIndex][action.inverterIndex]
+    state.entireSpecInverters[action.inverterIndex]
   );
   const newWiring = Wiring.fromWiring(newInverter.wiring[action.wiringIndex]);
   newWiring.polyline.setColor(Cesium.Color.RED);
   newInverter.setWiring(action.wiringIndex, newWiring);
-  const roofInverters = [...state.entireSpecInverters[action.roofIndex]];
+  const roofInverters = [...state.entireSpecInverters];
   roofInverters.splice(action.inverterIndex, 1, newInverter);
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [action.roofIndex]: roofInverters
-    },
+    entireSpecInverters: roofInverters,
 
-    editingRoofIndex: action.roofIndex,
     editingInverterIndex: action.inverterIndex,
     editingWiringIndex: action.wiringIndex,
     editingStartPoint: newWiring.startPanel.getCenter(),
@@ -122,21 +113,17 @@ const editWiring = (state, action) => {
 
 const stopEditWiring = (state, action) => {
   const newInverter = Inverter.fromInverter(
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
   );
   const newWiring = Wiring.fromWiring(newInverter.wiring[state.editingWiringIndex]);
   newWiring.polyline.setColor(Cesium.Color.DARKORANGE);
   newInverter.setWiring(state.editingWiringIndex, newWiring);
-  const roofInverters = [...state.entireSpecInverters[state.editingRoofIndex]];
+  const roofInverters = [...state.entireSpecInverters];
   roofInverters.splice(state.editingInverterIndex, 1, newInverter);
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [state.editingRoofIndex]: roofInverters
-    },
+    entireSpecInverters: roofInverters,
 
-    editingRoofIndex: null,
     editingInverterIndex: null,
     editingWiringIndex: null,
     editingStartPoint: null,
@@ -205,7 +192,7 @@ const setPickedWiringPoint = (state, action) => {
 
 const releasePickedWiringPoint = (state, action) => {
   const currentPanels =
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
     .wiring[state.editingWiringIndex].allPanels;
   const PanelPoints = currentPanels.map(panel => panel.getCenter());
 
@@ -214,23 +201,20 @@ const releasePickedWiringPoint = (state, action) => {
   );
 
   const newWiring = Wiring.fromWiring(
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
     .wiring[state.editingWiringIndex]
   );
   newWiring.polyline = newPolyline;
   const newInverter = Inverter.fromInverter(
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
   );
   newInverter.setWiring(state.editingWiringIndex, newWiring);
-  const newRoofInverters = [...state.entireSpecInverters[state.editingRoofIndex]];
+  const newRoofInverters = [...state.entireSpecInverters];
   newRoofInverters.splice(state.editingInverterIndex, 1, newInverter);
 
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [state.editingRoofIndex]: newRoofInverters
-    },
+    entireSpecInverters: newRoofInverters,
     pickedWiringPointPosition: null,
     editingStartPoint: newWiring.startPanel.getCenter(),
     editingEndPoint: newWiring.endPanel.getCenter()
@@ -239,7 +223,7 @@ const releasePickedWiringPoint = (state, action) => {
 
 const releasePVPanel = (state, action) => {
   const currentPanels =
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
     .wiring[state.editingWiringIndex].allPanels;
   const PanelPoints = currentPanels.map(panel => panel.getCenter());
 
@@ -258,7 +242,7 @@ const releasePVPanel = (state, action) => {
   }
 
   const newWiring = Wiring.fromWiring(
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
     .wiring[state.editingWiringIndex]
   );
   newWiring.polyline = newPolyline;
@@ -271,24 +255,21 @@ const releasePVPanel = (state, action) => {
     newWiring.panelRows.splice(-1, 1);
   }
   const newInverter = Inverter.fromInverter(
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
   );
   newInverter.setWiring(state.editingWiringIndex, newWiring);
-  const newRoofInverters = [...state.entireSpecInverters[state.editingRoofIndex]];
+  const newRoofInverters = [...state.entireSpecInverters];
   newRoofInverters.splice(state.editingInverterIndex, 1, newInverter);
 
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [state.editingRoofIndex]: newRoofInverters
-    },
+    entireSpecInverters: newRoofInverters,
   };
 }
 
 const attachPVPanel = (state, action) => {
   const currentPanels =
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
     .wiring[state.editingWiringIndex].allPanels;
   const PanelPoints = currentPanels.map(panel => panel.getCenter());
 
@@ -307,7 +288,7 @@ const attachPVPanel = (state, action) => {
   }
 
   const newWiring = Wiring.fromWiring(
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
     .wiring[state.editingWiringIndex]
   );
   newWiring.polyline = newPolyline;
@@ -320,28 +301,23 @@ const attachPVPanel = (state, action) => {
     newWiring.panelRows.push(action.panelInfo.row)
   }
   const newInverter = Inverter.fromInverter(
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
   );
   newInverter.setWiring(state.editingWiringIndex, newWiring);
-  const newRoofInverters = [...state.entireSpecInverters[state.editingRoofIndex]];
+  const newRoofInverters = [...state.entireSpecInverters];
   newRoofInverters.splice(state.editingInverterIndex, 1, newInverter);
 
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [state.editingRoofIndex]: newRoofInverters
-    },
+    entireSpecInverters: newRoofInverters,
   };
 }
 
 const dynamicWiringLine = (state, action) => {
   const currentWiring =
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
     .wiring[state.editingWiringIndex];
-  const existPoints =
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
-    .wiring[state.editingWiringIndex].polyline.points;
+  const existPoints = currentWiring.polyline.points;
   const newPoint = Point.fromCoordinate(
     Coordinate.fromCartesian(action.cartesian3)
   );
@@ -365,23 +341,20 @@ const dynamicWiringLine = (state, action) => {
   }
 
   const newWiring = Wiring.fromWiring(
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
     .wiring[state.editingWiringIndex]
   );
   newWiring.polyline = newPolyline;
   const newInverter = Inverter.fromInverter(
-    state.entireSpecInverters[state.editingRoofIndex][state.editingInverterIndex]
+    state.entireSpecInverters[state.editingInverterIndex]
   );
   newInverter.setWiring(state.editingWiringIndex, newWiring);
-  const newRoofInverters = [...state.entireSpecInverters[state.editingRoofIndex]];
+  const newRoofInverters = [...state.entireSpecInverters];
   newRoofInverters.splice(state.editingInverterIndex, 1, newInverter);
 
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [state.editingRoofIndex]: newRoofInverters
-    },
+    entireSpecInverters: newRoofInverters,
   };
 }
 

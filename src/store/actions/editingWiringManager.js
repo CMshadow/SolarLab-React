@@ -251,10 +251,18 @@ const individualAutoWiring = (inverterInd, wiringInd) =>
 
 const arrayAutoWiring = (inverterInd, wiringInd) =>
 (dispatch, getState) => {
-  const roofSpecParams =
-    getState().undoable.present.editingPVPanelManager.roofSpecParams[0];
-  const allPanels =
-    getState().undoable.present.editingPVPanelManager.panels[0];
+  const inverterConfig = getState().undoable.present.editingWiringManager
+    .entireSpecInverters[inverterInd];
+  const connectedRoofIndex = inverterConfig.connectRoof;
+  const roofSpecParams = getState().undoable.present.editingPVPanelManager
+    .roofSpecParams[connectedRoofIndex[0]];
+
+  const allPanels = []
+  connectedRoofIndex.forEach(roofIndex => {
+    allPanels.push(
+      ...getState().undoable.present.editingPVPanelManager.panels[roofIndex]
+    );
+  })
   const availablePanelArrays = allPanels.flatMap(partial => {
     return partial.map(originPanelArray => {
       return originPanelArray.filter(panel => !panel.pv.connected);
@@ -306,7 +314,6 @@ const arrayAutoWiring = (inverterInd, wiringInd) =>
   dispatch({
     type: actionTypes.AUTO_WIRING,
     wiring: newWiring,
-    roofIndex: 0,
     inverterIndex: inverterInd,
     wiringIndex: wiringInd
   });
@@ -315,17 +322,23 @@ const arrayAutoWiring = (inverterInd, wiringInd) =>
 export const manualWiring = (inverterInd, wiringInd) =>{
   return {
     type: actionTypes.MANUAL_WIRING,
-    roofIndex: 0,
     inverterIndex: inverterInd,
     wiringIndex: wiringInd
   };
 }
 
 export const setManualWiringStart = (panelId) => (dispatch, getState) => {
-  const editingRoofIndex =
-    getState().undoable.present.editingWiringManager.editingRoofIndex;
-  const allPanels =
-    getState().undoable.present.editingPVPanelManager.panels[editingRoofIndex];
+  const editingInverterIndex =
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
+  const connectedRoofIndex = getState().undoable.present.editingWiringManager
+    .entireSpecInverters[editingInverterIndex].connectRoof;
+
+  const allPanels = []
+  connectedRoofIndex.forEach(roofIndex => {
+    allPanels.push(
+      ...getState().undoable.present.editingPVPanelManager.panels[roofIndex]
+    );
+  })
   const availablePanels = allPanels.flatMap(partial => {
     const partialRoofPanels = partial.map(originPanelArray => {
       const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
@@ -358,7 +371,6 @@ export const setManualWiringStart = (panelId) => (dispatch, getState) => {
 export const editWiring = (inverterInd, wiringInd) => {
   return {
     type: actionTypes.EDIT_WIRING,
-    roofIndex: 0,
     inverterIndex: inverterInd,
     wiringIndex: wiringInd
   };
@@ -437,8 +449,6 @@ export const releasePVPanel = (hoverPanelId) => (dispatch, getState) => {
     getState().undoable.present.editingWiringManager.currentMouseDrag;
   const lastMouseDrag =
     getState().undoable.present.editingWiringManager.lastMouseDrag;
-  const editingRoofIndex =
-    getState().undoable.present.editingWiringManager.editingRoofIndex;
   const editingInverterIndex =
     getState().undoable.present.editingWiringManager.editingInverterIndex;
   const editingWiringIndex =
@@ -446,8 +456,7 @@ export const releasePVPanel = (hoverPanelId) => (dispatch, getState) => {
   const pickedWiringPointPosition =
     getState().undoable.present.editingWiringManager.pickedWiringPointPosition;
   const currentWiring = getState().undoable.present.editingWiringManager
-    .entireSpecInverters[editingRoofIndex][editingInverterIndex]
-    .wiring[editingWiringIndex];
+    .entireSpecInverters[editingInverterIndex].wiring[editingWiringIndex];
 
   let toReleasePanelId = null;
   if (pickedWiringPointPosition === 'START') {
@@ -459,7 +468,7 @@ export const releasePVPanel = (hoverPanelId) => (dispatch, getState) => {
     toReleasePanelId === hoverPanelId && currentWiring.allPanels.length > 1 &&
     currentMouseDrag !== lastMouseDrag
   ) {
-    dispatch(actions.setPVDisConnected(editingRoofIndex, hoverPanelId))
+    dispatch(actions.setPVDisConnected(hoverPanelId))
     return dispatch({
       type: actionTypes.RELEASE_PV_PANEL,
     })
@@ -471,32 +480,33 @@ export const attachPVPanel = (hoverPanelId) => (dispatch, getState) => {
     getState().undoable.present.editingWiringManager.currentMouseDrag;
   const lastMouseDrag =
     getState().undoable.present.editingWiringManager.lastMouseDrag;
-  const editingRoofIndex =
-    getState().undoable.present.editingWiringManager.editingRoofIndex;
   const editingInverterIndex =
     getState().undoable.present.editingWiringManager.editingInverterIndex;
   const editingWiringIndex =
     getState().undoable.present.editingWiringManager.editingWiringIndex;
   const currentWiring = getState().undoable.present.editingWiringManager
-    .entireSpecInverters[editingRoofIndex][editingInverterIndex]
+    .entireSpecInverters[editingInverterIndex]
     .wiring[editingWiringIndex];
   const currentInverter = getState().undoable.present.editingWiringManager
-    .entireSpecInverters[editingRoofIndex][editingInverterIndex];
+    .entireSpecInverters[editingInverterIndex];
 
   const flatMapPanels =
-    getState().undoable.present.editingPVPanelManager.panels[editingRoofIndex]
-    .flatMap(partial =>
-      partial.flatMap(originPanelArray =>
-        originPanelArray
+    Object.keys(getState().undoable.present.editingPVPanelManager.panels)
+    .flatMap(roofIndex =>
+      getState().undoable.present.editingPVPanelManager.panels[roofIndex]
+      .flatMap(partial =>
+        partial.flatMap(originPanelArray =>
+          originPanelArray
+        )
       )
-    );
+    )
   const matchInfo = flatMapPanels.find(elem => elem.pv.entityId === hoverPanelId);
 
   if (
     currentWiring.allPanels.length < currentInverter.panelPerString &&
     currentMouseDrag !== lastMouseDrag
   ) {
-    dispatch(actions.setPVConnected(editingRoofIndex, hoverPanelId))
+    dispatch(actions.setPVConnected(hoverPanelId))
     return dispatch({
       type: actionTypes.ATTACH_PV_PANEL,
       panelInfo: matchInfo

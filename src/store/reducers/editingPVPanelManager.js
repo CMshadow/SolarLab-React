@@ -124,23 +124,25 @@ const updatePVConnected = (state, action) => {
 
 const setPVConnected = (state, action) => {
   const newPanels = {...state.panels};
-  const changes = newPanels[action.roofIndex].map(partial =>
-    partial.map(panelArray =>
-      panelArray.map(panel => {
-        if (panel.pv.entityId === action.panelId) {
-          const newPV = PV.copyPolygon(panel.pv);
-          newPV.setConnected();
-          return {
-            ...panel,
-            pv: newPV
-          };
-        } else {
-          return panel;
-        }
-      })
-    )
-  );
-  newPanels[action.roofIndex] = changes;
+  Object.keys(newPanels).forEach(roofIndex => {
+    const changes = newPanels[roofIndex].map(partial =>
+      partial.map(panelArray =>
+        panelArray.map(panel => {
+          if (panel.pv.entityId === action.panelId) {
+            const newPV = PV.copyPolygon(panel.pv);
+            newPV.setConnected();
+            return {
+              ...panel,
+              pv: newPV
+            };
+          } else {
+            return panel;
+          }
+        })
+      )
+    );
+    newPanels[roofIndex] = changes;
+  })
   const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
     newPanels[roofIndex].flatMap(partial => {
       const partialRoofPanels = partial.flatMap(originPanelArray => {
@@ -171,23 +173,26 @@ const setPVConnected = (state, action) => {
 
 const setPVDisConnected = (state, action) => {
   const newPanels = {...state.panels};
-  const changes = newPanels[action.roofIndex].map(partial =>
-    partial.map(panelArray =>
-      panelArray.map(panel => {
-        if (panel.pv.entityId === action.panelId) {
-          const newPV = PV.copyPolygon(panel.pv);
-          newPV.releaseConnected();
-          return {
-            ...panel,
-            pv: newPV
-          };
-        } else {
-          return panel;
-        }
-      })
-    )
-  );
-  newPanels[action.roofIndex] = changes;
+  Object.keys(newPanels).forEach(roofIndex => {
+    const changes = newPanels[roofIndex].map(partial =>
+      partial.map(panelArray =>
+        panelArray.map(panel => {
+          if (panel.pv.entityId === action.panelId) {
+            const newPV = PV.copyPolygon(panel.pv);
+            newPV.releaseConnected();
+            return {
+              ...panel,
+              pv: newPV
+            };
+          } else {
+            return panel;
+          }
+        })
+      )
+    );
+    newPanels[roofIndex] = changes;
+  })
+
   const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
     newPanels[roofIndex].flatMap(partial => {
       const partialRoofPanels = partial.flatMap(originPanelArray => {
