@@ -32,7 +32,6 @@ class CreateBuildingPanel extends PureComponent {
       if (!err) {
         this.props.initBuilding(values);
         this.props.setUIStateReadyDrawing();
-        console.log('[Create Building Panel] Your are creating a new building')
       }
     });
   };

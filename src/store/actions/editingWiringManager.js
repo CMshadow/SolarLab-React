@@ -39,12 +39,8 @@ export const fetchUserInverters = () => (dispatch, getState) => {
 
 const aggregatePanelCountPerRoof = (allPanels, roofSpecParams) => {
   const totalPanelsPerRoof = Object.keys(allPanels).map(roofIndex => {
-    const panelCount = allPanels[roofIndex].reduce((acc2, partial) => {
-      const totalPanelOnPartial = partial.reduce((acc3, array) => {
-        return acc3 + array.length;
-      }, 0);
-      return acc2 + totalPanelOnPartial;
-    }, 0);
+    const panelCount = Object.keys(allPanels[roofIndex])
+    .reduce((acc, panelId) => acc + 1, 0);
     return {
       panelCount: panelCount,
       azimuth: roofSpecParams[roofIndex].azimuth,
@@ -136,8 +132,7 @@ export const calculateAutoInverter = () => (dispatch, getState) => {
   })
 }
 
-export const calculateManualInverter = (inverterID) =>
-(dispatch, getState) => {
+export const calculateManualInverter = (inverterID) => (dispatch, getState) => {
   const allPanels =
     getState().undoable.present.editingPVPanelManager.panels;
   const roofSpecParams =
@@ -204,28 +199,14 @@ const individualAutoWiring = (inverterInd, wiringInd) =>
 (dispatch, getState) => {
   const inverterConfig = getState().undoable.present.editingWiringManager
     .entireSpecInverters[inverterInd];
-  console.log(inverterConfig)
   const connectedRoofIndex = inverterConfig.connectRoof;
+  const allPanels = getState().undoable.present.editingPVPanelManager.panels;
 
-  const allPanels = []
-  connectedRoofIndex.forEach(roofIndex => {
-    allPanels.push(
-      ...getState().undoable.present.editingPVPanelManager.panels[roofIndex]
-    );
-  })
-  const availablePanels = allPanels.flatMap(partial => {
-    const partialRoofPanels = partial.map(originPanelArray => {
-      const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
-      if (panelArray.length === 0) return [];
-      return panelArray.map(panel => {
-        return {
-          ...panel,
-          pv: PV.copyPolygon(panel.pv)
-        }
-      });
-    })
-    return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-  });
+  let availablePanels = connectedRoofIndex.flatMap(roofIndex =>
+    Object.keys(allPanels[roofIndex]).map(panelId =>
+      allPanels[roofIndex][panelId]
+    ).filter(panelObj => !panelObj.pv.connected)
+  );
 
   const string = findAWiringString(availablePanels, inverterConfig, 0);
   const panelRows = string.map(p => p.row);
@@ -332,40 +313,30 @@ export const setManualWiringStart = (panelId) => (dispatch, getState) => {
     getState().undoable.present.editingWiringManager.editingInverterIndex;
   const connectedRoofIndex = getState().undoable.present.editingWiringManager
     .entireSpecInverters[editingInverterIndex].connectRoof;
+  const allPanels = getState().undoable.present.editingPVPanelManager.panels
 
-  const allPanels = []
   connectedRoofIndex.forEach(roofIndex => {
-    allPanels.push(
-      ...getState().undoable.present.editingPVPanelManager.panels[roofIndex]
-    );
-  })
-  const availablePanels = allPanels.flatMap(partial => {
-    const partialRoofPanels = partial.map(originPanelArray => {
-      const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
-      if (panelArray.length === 0) return [];
-      return panelArray.map(panel => {
-        return {
-          ...panel,
-          pv: PV.copyPolygon(panel.pv)
-        }
-      });
-    })
-    return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-  });
-  const matchPanel = availablePanels.find(elem => elem[0].pv.entityId === panelId)[0];
-  const panelCenterPoints = [Point.fromCoordinate(matchPanel.center)]
-  const wiringPolyline = new Polyline(
-    panelCenterPoints, null, 'wiring', Cesium.Color.RED
-  );
-  const newWiring = new Wiring(
-    null, matchPanel.pv, matchPanel.pv, [matchPanel.pv], wiringPolyline, [matchPanel.row]
-  );
+    if (
+      panelId in allPanels[roofIndex] &&
+      !allPanels[roofIndex][panelId].pv.connected
+    ) {
+      const matchPanel = allPanels[roofIndex][panelId]
+      const panelCenterPoints = [Point.fromCoordinate(matchPanel.center)]
+      const wiringPolyline = new Polyline(
+        panelCenterPoints, null, 'wiring', Cesium.Color.RED
+      );
+      const newWiring = new Wiring(
+        null, matchPanel.pv, matchPanel.pv, [matchPanel.pv], wiringPolyline, [matchPanel.row]
+      );
 
-  return dispatch({
-    type: actionTypes.MANUAL_WIRING_START,
-    wiring: newWiring,
-    position: 'END'
-  });
+      dispatch(actions.setPVConnected(panelId))
+      return dispatch({
+        type: actionTypes.MANUAL_WIRING_START,
+        wiring: newWiring,
+        position: 'END'
+      });
+    }
+  })
 }
 
 export const editWiring = (inverterInd, wiringInd) => {
@@ -385,36 +356,37 @@ export const stopEditWiring = () => {
 const findAWiringString = (availablePanels, inverterConfig, startIndex) => {
   const coefficient = 0.75;
 
-  const string = [availablePanels[startIndex][0]];
-  availablePanels[startIndex][0].pv.setConnected();
+  const string = [availablePanels[startIndex]];
+
+  availablePanels[startIndex].pv.setConnected();
   for (let i = 0; i < inverterConfig.panelPerString - 1; i++) {
     const currentPanel = string.slice(-1)[0];
-    const withDist = availablePanels.map((panelArray, panelArrayInd) => {
+    const withDist = availablePanels.map((panelObj, panelInd) => {
       let dist = null;
       if (
         (currentPanel.rowPos === 'start' ||
         currentPanel.rowPos === 'end' ||
         currentPanel.rowPos === 'single') &&
-        (panelArray[0].rowPos === 'start' ||
-        panelArray[0].rowPos === 'end' ||
-        panelArray[0].rowPos === 'single')
+        (panelObj.rowPos === 'start' ||
+        panelObj.rowPos === 'end' ||
+        panelObj.rowPos === 'single')
       ) {
-        dist = Point.surfaceDistance(currentPanel.center, panelArray[0].center)
+        dist = Point.surfaceDistance(currentPanel.center, panelObj.center)
           * coefficient;
       } else {
-        dist = Point.surfaceDistance(currentPanel.center, panelArray[0].center)
+        dist = Point.surfaceDistance(currentPanel.center, panelObj.center)
       }
 
       return {
         dist: dist,
-        panelArrayInd: panelArrayInd,
-        pvInfo: panelArray[0]
+        panelInd: panelInd,
+        pvInfo: panelObj
       };
     }).filter(elem => !elem.pvInfo.pv.connected);
     withDist.sort((first, second) => first.dist > second.dist ? 1 : -1);
     const nextPanel = withDist[0].pvInfo;
     string.push(nextPanel);
-    availablePanels[withDist[0].panelArrayInd][0].pv.setConnected();
+    availablePanels[withDist[0].panelInd].pv.setConnected();
   }
   return string;
 }
@@ -484,23 +456,23 @@ export const attachPVPanel = (hoverPanelId) => (dispatch, getState) => {
     getState().undoable.present.editingWiringManager.editingInverterIndex;
   const editingWiringIndex =
     getState().undoable.present.editingWiringManager.editingWiringIndex;
+  const allPanels =
+    getState().undoable.present.editingPVPanelManager.panels;
   const currentWiring = getState().undoable.present.editingWiringManager
     .entireSpecInverters[editingInverterIndex]
     .wiring[editingWiringIndex];
   const currentInverter = getState().undoable.present.editingWiringManager
     .entireSpecInverters[editingInverterIndex];
 
-  const flatMapPanels =
-    Object.keys(getState().undoable.present.editingPVPanelManager.panels)
-    .flatMap(roofIndex =>
-      getState().undoable.present.editingPVPanelManager.panels[roofIndex]
-      .flatMap(partial =>
-        partial.flatMap(originPanelArray =>
-          originPanelArray
-        )
-      )
-    )
-  const matchInfo = flatMapPanels.find(elem => elem.pv.entityId === hoverPanelId);
+    let matchPanel;
+    Object.keys(allPanels).forEach(roofIndex => {
+      if (
+        hoverPanelId in allPanels[roofIndex] &&
+        !allPanels[roofIndex][hoverPanelId].pv.connected
+      ) {
+        matchPanel = allPanels[roofIndex][hoverPanelId]
+      }
+    })
 
   if (
     currentWiring.allPanels.length < currentInverter.panelPerString &&
@@ -509,7 +481,7 @@ export const attachPVPanel = (hoverPanelId) => (dispatch, getState) => {
     dispatch(actions.setPVConnected(hoverPanelId))
     return dispatch({
       type: actionTypes.ATTACH_PV_PANEL,
-      panelInfo: matchInfo
+      panelInfo: matchPanel
     })
   }
 }

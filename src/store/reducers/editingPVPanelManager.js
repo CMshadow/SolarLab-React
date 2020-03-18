@@ -59,7 +59,7 @@ const cleanPanels = (state, action) => {
     ...state,
     panels: {
       ...state.panels,
-      [action.roofIndex]: []
+      [action.roofIndex]: {}
     }
   };
 }
@@ -72,48 +72,24 @@ const fetchUserPanels = (state, action) => {
 }
 
 const updatePVConnected = (state, action) => {
+  const disconnectedPanelIds = [...state.disconnectedPanelId];
+  const connectedPanelIds = [...state.connectedPanelId];
   const wiringPanelIds = action.wiring.allPanels.map(pv => pv.entityId);
   const newPanels = {...state.panels};
   Object.keys(newPanels).forEach(roofIndex => {
-    const changes = newPanels[roofIndex].map(partial =>
-      partial.map(panelArray =>
-        panelArray.map(panel => {
-          if (wiringPanelIds.includes(panel.pv.entityId)) {
-            const newPV = PV.copyPolygon(panel.pv);
-            newPV.setConnected();
-            return {
-              ...panel,
-              pv: newPV
-            };
-          } else {
-            return panel;
-          }
-        })
-      )
-    );
-    newPanels[roofIndex] = changes;
+    Object.keys(newPanels[roofIndex]).forEach(panelId => {
+      if (wiringPanelIds.includes(panelId)) {
+        const newPV = PV.copyPolygon(newPanels[roofIndex][panelId].pv);
+        newPV.setConnected();
+        newPanels[roofIndex][panelId].pv = newPV;
+
+        disconnectedPanelIds.splice(disconnectedPanelIds.indexOf(panelId), 1 );
+        connectedPanelIds.push(panelId);
+      }
+    })
   })
 
-  const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
-    newPanels[roofIndex].flatMap(partial => {
-      const partialRoofPanels = partial.flatMap(originPanelArray => {
-        const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
-        if (panelArray.length === 0) return [];
-        return panelArray.map(panel => panel.pv.entityId);
-      })
-      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-    })
-  )
-  const connectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
-    newPanels[roofIndex].flatMap(partial => {
-      const partialRoofPanels = partial.flatMap(originPanelArray => {
-        const panelArray = originPanelArray.filter(panel => panel.pv.connected);
-        if (panelArray.length === 0) return [];
-        return panelArray.map(panel => panel.pv.entityId);
-      })
-      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-    })
-  )
+
   return {
     ...state,
     panels: newPanels,
@@ -123,46 +99,22 @@ const updatePVConnected = (state, action) => {
 }
 
 const setPVConnected = (state, action) => {
+  const disconnectedPanelIds = [...state.disconnectedPanelId];
+  const connectedPanelIds = [...state.connectedPanelId];
   const newPanels = {...state.panels};
   Object.keys(newPanels).forEach(roofIndex => {
-    const changes = newPanels[roofIndex].map(partial =>
-      partial.map(panelArray =>
-        panelArray.map(panel => {
-          if (panel.pv.entityId === action.panelId) {
-            const newPV = PV.copyPolygon(panel.pv);
-            newPV.setConnected();
-            return {
-              ...panel,
-              pv: newPV
-            };
-          } else {
-            return panel;
-          }
-        })
-      )
-    );
-    newPanels[roofIndex] = changes;
+    if (action.panelId in newPanels[roofIndex]) {
+      const newPV = PV.copyPolygon(newPanels[roofIndex][action.panelId].pv);
+      newPV.setConnected();
+      newPanels[roofIndex][action.panelId].pv = newPV;
+
+      disconnectedPanelIds.splice(
+        disconnectedPanelIds.indexOf(action.panelId), 1
+      );
+      connectedPanelIds.push(action.panelId);
+    }
   })
-  const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
-    newPanels[roofIndex].flatMap(partial => {
-      const partialRoofPanels = partial.flatMap(originPanelArray => {
-        const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
-        if (panelArray.length === 0) return [];
-        return panelArray.map(panel => panel.pv.entityId);
-      })
-      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-    })
-  )
-  const connectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
-    newPanels[roofIndex].flatMap(partial => {
-      const partialRoofPanels = partial.flatMap(originPanelArray => {
-        const panelArray = originPanelArray.filter(panel => panel.pv.connected);
-        if (panelArray.length === 0) return [];
-        return panelArray.map(panel => panel.pv.entityId);
-      })
-      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-    })
-  )
+
   return {
     ...state,
     panels: newPanels,
@@ -172,47 +124,20 @@ const setPVConnected = (state, action) => {
 }
 
 const setPVDisConnected = (state, action) => {
+  const disconnectedPanelIds = [...state.disconnectedPanelId];
+  const connectedPanelIds = [...state.connectedPanelId];
   const newPanels = {...state.panels};
   Object.keys(newPanels).forEach(roofIndex => {
-    const changes = newPanels[roofIndex].map(partial =>
-      partial.map(panelArray =>
-        panelArray.map(panel => {
-          if (panel.pv.entityId === action.panelId) {
-            const newPV = PV.copyPolygon(panel.pv);
-            newPV.releaseConnected();
-            return {
-              ...panel,
-              pv: newPV
-            };
-          } else {
-            return panel;
-          }
-        })
-      )
-    );
-    newPanels[roofIndex] = changes;
+    if (action.panelId in newPanels[roofIndex]) {
+      const newPV = PV.copyPolygon(newPanels[roofIndex][action.panelId].pv);
+      newPV.releaseConnected();
+      newPanels[roofIndex][action.panelId].pv = newPV;
+
+      connectedPanelIds.splice(connectedPanelIds.indexOf(action.panelId), 1);
+      disconnectedPanelIds.push(action.panelId);
+    }
   })
 
-  const disconnectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
-    newPanels[roofIndex].flatMap(partial => {
-      const partialRoofPanels = partial.flatMap(originPanelArray => {
-        const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
-        if (panelArray.length === 0) return [];
-        return panelArray.map(panel => panel.pv.entityId);
-      })
-      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-    })
-  )
-  const connectedPanelIds = Object.keys(newPanels).flatMap(roofIndex =>
-    newPanels[roofIndex].flatMap(partial => {
-      const partialRoofPanels = partial.flatMap(originPanelArray => {
-        const panelArray = originPanelArray.filter(panel => panel.pv.connected);
-        if (panelArray.length === 0) return [];
-        return panelArray.map(panel => panel.pv.entityId);
-      })
-      return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-    })
-  )
   return {
     ...state,
     panels: newPanels,
@@ -222,27 +147,22 @@ const setPVDisConnected = (state, action) => {
 }
 
 const setRoofAllPVDisConnected = (state, action) => {
+  const disconnectedPanelIds = []
   const newPanels = {...state.panels};
   Object.keys(newPanels).forEach(roofIndex => {
-    const changes = newPanels[roofIndex].map(partial =>
-      partial.map(panelArray =>
-        panelArray.map(panel => {
-          const newPV = PV.copyPolygon(panel.pv);
-          newPV.releaseConnected();
-          return {
-            ...panel,
-            pv: newPV
-          };
-        })
-      )
-    );
-    newPanels[roofIndex] = changes;
+    Object.keys(newPanels[roofIndex]).forEach(panelId => {
+      const newPV = PV.copyPolygon(newPanels[roofIndex][panelId].pv);
+      newPV.releaseConnected();
+      newPanels[roofIndex][panelId].pv = newPV;
+
+      disconnectedPanelIds.push(panelId);
+    })
   })
   return {
     ...state,
     panels: newPanels,
     connectedPanelId: [],
-    disconnectedPanelId: []
+    disconnectedPanelId: disconnectedPanelIds
   };
 }
 

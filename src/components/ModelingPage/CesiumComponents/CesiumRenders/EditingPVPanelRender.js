@@ -7,15 +7,11 @@ const EditingPVPanelRender = (props) => {
   let allPanels = null
   if(Object.keys(props.panels).length !== 0) {
     allPanels = Object.keys(props.panels).map(roofIndex =>
-      props.panels[roofIndex].map(partial =>
-        partial.map(array =>
-          array.map(panel => {
-            return <PVVisualize
-              key={panel.pv.entityId}
-              {...panel.pv}
-            />
-          })
-        )
+      Object.keys(props.panels[roofIndex]).map(panelId =>
+        <PVVisualize
+          key={props.panels[roofIndex][panelId].pv.entityId}
+          {...props.panels[roofIndex][panelId].pv}
+        />
       )
     );
   }

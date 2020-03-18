@@ -61,7 +61,6 @@ const DrawBuildingPanel = (props) => {
       {uiStateJudge.isInnerDrew(props.uiState) ? generate3D : null}
     </div>
   );
-  console.log(props.uiState)
   return (
     <div style={{padding: '10px 10px 20px', overflow: 'auto'}}>
       {

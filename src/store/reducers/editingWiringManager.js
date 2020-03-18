@@ -74,6 +74,7 @@ const manualWiring = (state, action) => {
 }
 
 const setManualWiringStart = (state, action) => {
+  console.log('set manual wiring')
   const newInverter = Inverter.fromInverter(
     state.entireSpecInverters[state.editingInverterIndex]
   );
@@ -271,6 +272,7 @@ const attachPVPanel = (state, action) => {
   const currentPanels =
     state.entireSpecInverters[state.editingInverterIndex]
     .wiring[state.editingWiringIndex].allPanels;
+    console.log(currentPanels)
   const PanelPoints = currentPanels.map(panel => panel.getCenter());
 
   let newPolyline = null;

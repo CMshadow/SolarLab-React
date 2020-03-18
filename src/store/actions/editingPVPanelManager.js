@@ -174,7 +174,6 @@ export const generatePanels = (roofIndex) => (dispatch, getState) => {
     allVentKeepout: getState().undoable.present.keepoutManager.ventKeepout,
     allShadow: workingBuilding.shadow
   }
-  console.log(props)
   const data = makeRequestData(props);
   const params = getState().undoable.present.editingPVPanelManager
     .roofSpecParams[roofIndex];
@@ -206,14 +205,12 @@ export const generatePanels = (roofIndex) => (dispatch, getState) => {
   }
 
   if (workingBuilding.type === 'FLAT') {
-    console.log(requestData)
     generateFlatRoofPanels(dispatch, requestData);
   } else {
     requestData.pitchedRoofPolygon =
       workingBuilding.pitchedRoofPolygons[roofIndex];
     requestData.height =
       workingBuilding.pitchedRoofPolygons[roofIndex].lowestNode[2];
-    console.log(requestData)
     generatePitchedRoofPanels(dispatch, requestData, roofIndex);
   }
 }
@@ -223,35 +220,41 @@ const generateFlatRoofPanels = (dispatch, requestData) => {
   dispatch(setBackendLoadingTrue());
   axios.post('/calculate-roof-pv-panels/flatroof', requestData)
   .then(response => {
+    const plain_panels = JSON.parse(response.data.body).panelLayout
+    .flatMap(partialRoof =>
+      partialRoof.flatMap(array =>
+        array.flatMap(panel => {
+          const pvPolyline = Polyline.fromPolyline(panel.pvPolyline)
+          const brng = Point.bearing(
+            pvPolyline.points[0], pvPolyline.points[2]
+          );
+          const dist = Point.surfaceDistance(
+            pvPolyline.points[0], pvPolyline.points[2]
+          );
+          const center = Point.destination(
+            pvPolyline.points[0], brng, dist / 2);
+          center.setCoordinate(
+            null, null, pvPolyline.points[0].height +
+            (pvPolyline.points[2].height - pvPolyline.points[0].height) / 2
+          )
+          return {
+            ...panel,
+            center: center,
+            pv: new PV(
+              null, null, Polygon.makeHierarchyFromPolyline(pvPolyline)
+            )
+          };
+        })
+      )
+    )
+    const panels = {}
+    plain_panels.forEach(panel => {
+      panels[panel.pv.entityId] = panel
+    })
     dispatch({
       type: actionTypes.INIT_EDITING_PANELS,
       roofIndex: 0,
-      panels: JSON.parse(response.data.body).panelLayout.map(partialRoof =>
-        partialRoof.map(array =>
-          array.map(panel => {
-            const pvPolyline = Polyline.fromPolyline(panel.pvPolyline)
-            const brng = Point.bearing(
-              pvPolyline.points[0], pvPolyline.points[2]
-            );
-            const dist = Point.surfaceDistance(
-              pvPolyline.points[0], pvPolyline.points[2]
-            );
-            const center = Point.destination(
-              pvPolyline.points[0], brng, dist / 2);
-            center.setCoordinate(
-              null, null, pvPolyline.points[0].height +
-              (pvPolyline.points[2].height - pvPolyline.points[0].height) / 2
-            )
-            return {
-              ...panel,
-              center: center,
-              pv: new PV(
-                null, null, Polygon.makeHierarchyFromPolyline(pvPolyline)
-              )
-            };
-          })
-        )
-      )
+      panels: panels,
     });
     return dispatch(setBackendLoadingFalse());
   })
@@ -270,36 +273,41 @@ const generatePitchedRoofPanels = (dispatch, requestData, pitchedRoofIndex) => {
   dispatch(setBackendLoadingTrue());
   axios.post('/calculate-roof-pv-panels/pitchedroof', requestData)
   .then(response => {
-    console.log(JSON.parse(response.data.body).panelLayout)
+    const plain_panels = JSON.parse(response.data.body).panelLayout
+    .flatMap(partialRoof =>
+      partialRoof.flatMap(array =>
+        array.flatMap(panel => {
+          const pvPolyline = Polyline.fromPolyline(panel.pvPolyline)
+          const brng = Point.bearing(
+            pvPolyline.points[0], pvPolyline.points[2]
+          );
+          const dist = Point.surfaceDistance(
+            pvPolyline.points[0], pvPolyline.points[2]
+          );
+          const center = Point.destination(
+            pvPolyline.points[0], brng, dist / 2);
+          center.setCoordinate(
+            null, null, pvPolyline.points[0].height +
+            (pvPolyline.points[2].height - pvPolyline.points[0].height) / 2
+          )
+          return {
+            ...panel,
+            center: center,
+            pv: new PV(
+              null, null, Polygon.makeHierarchyFromPolyline(pvPolyline)
+            )
+          };
+        })
+      )
+    )
+    const panels = {}
+    plain_panels.forEach(panel => {
+      panels[panel.pv.entityId] = panel
+    })
     dispatch({
       type: actionTypes.INIT_EDITING_PANELS,
       roofIndex: pitchedRoofIndex,
-      panels: JSON.parse(response.data.body).panelLayout.map(partialRoof =>
-        partialRoof.map(array =>
-          array.map(panel => {
-            const pvPolyline = Polyline.fromPolyline(panel.pvPolyline)
-            const brng = Point.bearing(
-              pvPolyline.points[0], pvPolyline.points[2]
-            );
-            const dist = Point.surfaceDistance(
-              pvPolyline.points[0], pvPolyline.points[2]
-            );
-            const center = Point.destination(
-              pvPolyline.points[0], brng, dist);
-            center.setCoordinate(
-              null, null, pvPolyline.points[0].height +
-              (pvPolyline.points[2].height - pvPolyline.points[0].height) / 2
-            )
-            return {
-              ...panel,
-              center: center,
-              pv: new PV(
-                null, null, Polygon.makeHierarchyFromPolyline(pvPolyline)
-              )
-            };
-          })
-        )
-      )
+      panels: panels
     });
     return dispatch(setBackendLoadingFalse());
   })
