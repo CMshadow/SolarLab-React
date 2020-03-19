@@ -255,6 +255,10 @@ const MouseMoveHandler = (props) => {
         props.dragInverter();
         break;
 
+      case 'DRAW_MAIN_BRIDGING':
+        props.dynamicMainBridging();
+        break;
+
       case 'EDIT_BRIDGING':
         if (anyPickedObject) {
           const allBridgingPointIds =
@@ -447,6 +451,7 @@ const mapDispatchToProps = dispatch => {
       actions.setHoverInverterCenter()
     ),
     dragInverter: () => dispatch(actions.dragInverter()),
+    dynamicMainBridging: () => dispatch(actions.dynamicMainBridging()),
     setHoverBridgingPoint: (pointId) => dispatch(
       actions.setHoverBridgingPoint(pointId)
     ),

@@ -25,7 +25,16 @@ const EditingBridgingRender = (props) => {
     )
   }
 
-  const mainBridgings = props.entireSpecInverters.map(inverter =>
+  const mainBridgings = props.entireSpecInverters.filter(inverter =>
+    inverter.mainBridging
+  ).map(inverter =>
+    <FloatPolyline
+      key={inverter.mainBridging.mainPolyline.entityId}
+      {...inverter.mainBridging.mainPolyline}
+    />
+  );
+
+  const bridgings = props.entireSpecInverters.map(inverter =>
     inverter.bridging.map(bridging =>
       <FloatPolyline
         key={bridging.mainPolyline.entityId}
@@ -70,6 +79,7 @@ const EditingBridgingRender = (props) => {
     <div>
       {allInverterPolygons}
       {mainBridgings}
+      {bridgings}
       {subBridgings}
       {inverterCenterPoint}
       {bridgingPoints}

@@ -6,6 +6,7 @@ import {
   Row,
   Col,
   Button,
+  Icon
 } from 'antd';
 import { FormattedMessage } from 'react-intl';
 
@@ -17,7 +18,7 @@ import * as actions from '../../../../../store/actions/index';
 class PlaceInverterTable extends Component {
 
   expandedRowRender = (inverter, inverterInd) => {
-    return (
+    return [
       (
         this.props.entireSpecInverters[inverterInd].polygon ?
         <Button
@@ -26,12 +27,11 @@ class PlaceInverterTable extends Component {
           size='small'
           ghost={this.props.uiState === 'READY_DRAG_INVERTER'? false : true}
           disabled={
-            (this.props.uiState === 'EDIT_BRIDGING' ||
-            this.props.uiState === 'DRAG_BRIDGING') ||
+            this.props.uiState === 'SETUP_BRIDGING' ||
             (this.props.uiState === 'READY_DRAG_INVERTER' &&
-            inverterInd !== this.props.editingInverterIndex) ?
-            true:
-            false
+            inverterInd === this.props.editingInverterIndex) ?
+            false:
+            true
           }
           onClick={() => {
             this.props.setBridgingInverter(inverterInd);
@@ -51,8 +51,28 @@ class PlaceInverterTable extends Component {
             this.props.setUIStatePlaceInverter();
           }}
         ><FormattedMessage id='placeInverter' /></Button>
+      ),
+      (<Icon key='leftarrow1' type="arrow-right" />),
+      (
+        <Button
+          key='readyDrawMainbridge'
+          type="primary"
+          size='small'
+          ghost={this.props.uiState === 'READY_DRAW_MAINBRIDGE'? false : true}
+          disabled={
+            this.props.uiState === 'SETUP_BRIDGING' ?
+            false:
+            true
+          }
+          onClick={() => {
+            this.props.setBridgingInverter(inverterInd);
+            this.props.uiState === 'DRAW_MAIN_BRIDGING' ?
+            this.props.setUIStateSetUpBridging() :
+            this.props.setUIStateDrawMainBridging();
+          }}
+        ><FormattedMessage id='drawMainBridge' /></Button>
       )
-    );
+    ];
   };
 
   columns = [
@@ -137,6 +157,10 @@ const mapDispatchToProps = dispatch => {
     ),
     setUIStateReadyDragInverter: () => dispatch(
       actions.setUIStateReadyDragInverter()
+    ),
+
+    setUIStateDrawMainBridging: () => dispatch(
+      actions.setUIStateDrawMainBridging()
     ),
 
     highLightInverter: (inverterInd) => dispatch(

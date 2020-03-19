@@ -47,6 +47,7 @@ export const showSetUpBridgingPanel = (uiState) => {
     uiState === 'PLACE_INVERTER' ||
     uiState === 'READY_DRAG_INVERTER' ||
     uiState === 'DRAG_INVERTER' ||
+    uiState === 'DRAW_MAIN_BRIDGING' ||
     uiState === 'EDIT_BRIDGING' ||
     uiState === 'DRAG_BRIDGING'
   )

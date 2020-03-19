@@ -125,6 +125,7 @@ export {
   setUIStatePlaceInverter,
   setUIStateReadyDragInverter,
   setUIStateDragInverter,
+  setUIStateDrawMainBridging,
   setUIStateEditBridging,
   setUIStateDragBridging
 } from './uiStateManager';
@@ -184,6 +185,9 @@ export {
   setHoverInverterCenter,
   releaseHoverInverterCenter,
   dragInverter,
+  dynamicMainBridging,
+  addPointOnMainBridging,
+  terminateDrawMainBridging,
   setHoverBridgingPoint,
   releaseHoverBridgingPoint,
   dragBridgingPoint,

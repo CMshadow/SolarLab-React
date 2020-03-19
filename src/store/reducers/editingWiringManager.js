@@ -379,6 +379,9 @@ const placeInverter = (state, action) => {
   );
   newInverter.polygon = action.polygon;
   newInverter.polygonCenter = action.polygonCenter;
+  newInverter.mainBridging = new Bridging(null, new Polyline(
+    [action.polygonCenter], null, null, Cesium.Color.SLATEBLUE
+  ))
   const roofInverters = [...state.entireSpecInverters];
   roofInverters.splice(state.editingInverterIndex, 1, newInverter);
   return {
@@ -457,6 +460,20 @@ const dragInverter = (state, action) => {
   return {
     ...state,
     entireSpecInverters: roofInverters
+  };
+}
+
+const updateMainBridging = (state, action) => {
+  const newInverter = Inverter.fromInverter(
+    state.entireSpecInverters[state.editingInverterIndex]
+  );
+  newInverter.mainBridging = action.mainBridging;
+  const newRoofInverters = [...state.entireSpecInverters];
+  newRoofInverters.splice(state.editingInverterIndex, 1, newInverter);
+
+  return {
+    ...state,
+    entireSpecInverters: newRoofInverters,
   };
 }
 
@@ -716,6 +733,12 @@ const reducer = (state=initialState, action) => {
       return releaseHoverInverterCenter(state, action);
     case actionTypes.DRAG_INVERTER:
       return dragInverter(state, action);
+    case actionTypes.DYNAMIC_MAIN_BRIDGING:
+      return updateMainBridging(state, action);
+    case actionTypes.ADD_POINT_ON_MAIN_BRIDGING:
+      return updateMainBridging(state, action);
+    case actionTypes.TERMINATE_DRAW_MAIN_BRIDGING:
+      return updateMainBridging(state, action);
     case actionTypes.SET_HOVER_BRIDGING_POINT:
       return setHoverBridgingPoint(state, action);
     case actionTypes.RELEASE_HOVER_BRIDGING_POINT:

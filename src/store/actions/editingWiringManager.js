@@ -10,8 +10,8 @@ import Wiring from '../../infrastructure/inverter/wiring';
 import Bridging from '../../infrastructure/inverter/bridging';
 import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
-import PV from '../../infrastructure/Polygon/PV';
 import Polygon from '../../infrastructure/Polygon/Polygon';
+import { corWithinLineCollectionPolygon } from '../../infrastructure/math/polygonMath';
 import MathLineCollection from '../../infrastructure/math/mathLineCollection';
 import { setBackendLoadingTrue, setBackendLoadingFalse} from './projectManager';
 import { setUIStateSetUpWiring } from './uiStateManager';
@@ -533,6 +533,106 @@ export const placeInverter = (heightOffset=0.2) => (dispatch, getState) => {
     polygon: inverterPolygon,
     polygonCenter: inverterCenter
   })
+}
+
+export const dynamicMainBridging = (heightOffset = 0.2) => (dispatch, getState) => {
+  const workingBuilding =
+    getState().undoable.present.buildingManager.workingBuilding;
+  const entireSpecInverters =
+    getState().undoable.present.editingWiringManager.entireSpecInverters;
+  const editingInverterIndex =
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
+  const newMainBridging = Bridging.fromBridging(
+    entireSpecInverters[editingInverterIndex].mainBridging
+  );
+  const newMainPolyline = Polyline.fromPolyline(
+    entireSpecInverters[editingInverterIndex].mainBridging.mainPolyline
+  );
+  const mouseCartesian3 =
+    getState().undoable.present.drawingManager.mouseCartesian3;
+
+  let newPoint = null;
+  if (workingBuilding.type === 'FLAT') {
+    newPoint = Point.fromCoordinate(Coordinate.fromCartesian(
+      mouseCartesian3, workingBuilding.foundationHeight + heightOffset
+    ))
+  } else {
+    newPoint = Point.fromCoordinate(Coordinate.fromCartesian(mouseCartesian3));
+    workingBuilding.pitchedRoofPolygons.forEach(pitchedPolygon => {
+      if (
+        corWithinLineCollectionPolygon(
+          MathLineCollection.fromPolyline(
+            pitchedPolygon.convertHierarchyToFoundLine()
+          ), newPoint
+        )
+      ) {
+        newPoint.setCoordinate(
+          null, null,
+          Coordinate.heightOfArbitraryNode(pitchedPolygon, newPoint) +
+          workingBuilding.foundationHeight + heightOffset
+        );
+      }
+    })
+  }
+
+
+  if (newMainPolyline.points.length === 1) {
+    newMainPolyline.points.push(newPoint);
+  } else{
+    newMainPolyline.points.splice(newMainPolyline.points.length - 1, 1, newPoint);
+  }
+  newMainBridging.mainPolyline = newMainPolyline;
+
+  return dispatch({
+    type: actionTypes.DYNAMIC_MAIN_BRIDGING,
+    mainBridging: newMainBridging
+  });
+}
+
+export const addPointOnMainBridging = (heightOffset = 0.2) =>
+(dispatch, getState) => {
+  const entireSpecInverters =
+    getState().undoable.present.editingWiringManager.entireSpecInverters;
+  const editingInverterIndex =
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
+  const newMainBridging = Bridging.fromBridging(
+    entireSpecInverters[editingInverterIndex].mainBridging
+  );
+  const newMainPolyline = Polyline.fromPolyline(
+    entireSpecInverters[editingInverterIndex].mainBridging.mainPolyline
+  );
+  newMainPolyline.points = [
+    ...newMainPolyline.points, newMainPolyline.points.slice(-1)[0]
+  ]
+  newMainBridging.mainPolyline = newMainPolyline;
+
+  return dispatch({
+    type: actionTypes.ADD_POINT_ON_MAIN_BRIDGING,
+    mainBridging: newMainBridging
+  });
+}
+
+export const terminateDrawMainBridging = () => (dispatch, getState) => {
+  const entireSpecInverters =
+    getState().undoable.present.editingWiringManager.entireSpecInverters;
+  const editingInverterIndex =
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
+  const newMainBridging = Bridging.fromBridging(
+    entireSpecInverters[editingInverterIndex].mainBridging
+  );
+  const newMainPolyline = Polyline.fromPolyline(
+    entireSpecInverters[editingInverterIndex].mainBridging.mainPolyline
+  );
+
+  if (newMainPolyline.points.length !== 1) {
+    newMainPolyline.points.splice(newMainPolyline.points.length - 1, 1);
+  }
+  newMainBridging.mainPolyline = newMainPolyline;
+
+  return dispatch({
+    type: actionTypes.TERMINATE_DRAW_MAIN_BRIDGING,
+    mainBridging: newMainBridging
+  });
 }
 
 export const bridging = (inverterIndex, heightOffset=0.2) =>

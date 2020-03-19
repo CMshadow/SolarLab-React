@@ -94,6 +94,10 @@ const LeftClickHandler = (props) => {
         props.setUIStateSetUpBridging();
         break;
 
+      case 'DRAW_MAIN_BRIDGING':
+        props.addPointOnMainBridging();
+        break;
+
       default:
         break;
     }
@@ -157,7 +161,8 @@ const mapDispatchToProps = dispatch => {
       actions.setPickedRoofTopPointIndex()
     ),
     setUIStateSetUpBridging: () => dispatch(actions.setUIStateSetUpBridging()),
-    placeInverter: () => dispatch(actions.placeInverter())
+    placeInverter: () => dispatch(actions.placeInverter()),
+    addPointOnMainBridging: () => dispatch(actions.addPointOnMainBridging())
   };
 };
 

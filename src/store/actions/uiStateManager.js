@@ -138,6 +138,12 @@ export const setUIStateDragInverter = () => {
   };
 }
 
+export const setUIStateDrawMainBridging = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_DRAW_MAIN_BRIDGING
+  };
+}
+
 export const setUIStateEditBridging = () => {
   return {
     type: actionTypes.SET_UI_STATE_EDIT_BRIDGING

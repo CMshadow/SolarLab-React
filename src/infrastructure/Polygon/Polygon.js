@@ -232,17 +232,7 @@ class Polygon {
   };
 
   toFoundLine = () => {
-    const firstAndLastPoint = new Point(
-      this.hierarchy[0], this.hierarchy[1], this.hierarchy[2]
-    );
-    let points = [firstAndLastPoint];
-    for (let i = 3; i < this.hierarchy.length; i+=3) {
-      points.push(
-        new Point(this.hierarchy[i], this.hierarchy[i+1], this.hierarchy[i+2])
-      );
-    }
-    points.push(firstAndLastPoint);
-    return new FoundLine(points);
+    return this.convertHierarchyToFoundLine();
   }
 
   convertHierarchyToPoints = () => {
