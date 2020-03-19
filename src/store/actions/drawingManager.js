@@ -59,10 +59,11 @@ export const deletePointOnPolyline = () => {
 
 export const setMouseCartesian3 = (mousePosition, viewer) => {
   const cartesian3 = viewer.scene.pickPosition(mousePosition);
+  const cartesian3withHeight = viewer.scene.clampToHeight(cartesian3);
   if (Cesium.defined(cartesian3)) {
     return {
       type: actionTypes.SET_MOUSE_CARTESIAN3,
-      cartesian3: cartesian3
+      cartesian3: cartesian3withHeight
     };
   } else {
     return {

@@ -34,8 +34,8 @@ const LeftUpHandler = (props) => {
         props.enableRotate();
         props.setUIStateReadyDragInverter();
         if (
-          props.roofSpecInverters[props.editingRoofIndex]
-          [props.editingInverterIndex].bridging.length !== 0
+          props.entireSpecInverters[props.editingInverterIndex]
+          .bridging.length !== 0
         ) props.bridging(props.editingRoofIndex, props.editingInverterIndex);
         break;
 
@@ -71,8 +71,8 @@ const mapStateToProps = state => {
       state.undoable.present.editingWiringManager.editingRoofIndex,
     editingInverterIndex:
       state.undoable.present.editingWiringManager.editingInverterIndex,
-    roofSpecInverters:
-      state.undoable.present.editingWiringManager.roofSpecInverters,
+    entireSpecInverters:
+      state.undoable.present.editingWiringManager.entireSpecInverters,
   };
 };
 

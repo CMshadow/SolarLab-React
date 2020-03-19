@@ -238,8 +238,8 @@ const MouseMoveHandler = (props) => {
         if(
           anyPickedObject &&
           anyPickedObject.id.id ===
-          props.roofSpecInverters[props.editingRoofIndex]
-          [props.editingInverterIndex].polygonCenter.entityId
+          props.entireSpecInverters[props.editingInverterIndex]
+          .polygonCenter.entityId
         ) {
           if (props.hoverInverterCenter) {
             props.releaseHoverInverterCenter();
@@ -258,12 +258,12 @@ const MouseMoveHandler = (props) => {
       case 'EDIT_BRIDGING':
         if (anyPickedObject) {
           const allBridgingPointIds =
-            props.roofSpecInverters[props.editingRoofIndex][
+            props.entireSpecInverters[props.editingRoofIndex][
             props.editingInverterIndex].bridging.flatMap(bridging =>
               bridging.mainPolyline.points.slice(1,)
             ).map(p => p.entityId);
           const allBridgingMainPolylineIds =
-            props.roofSpecInverters[props.editingRoofIndex][
+            props.entireSpecInverters[props.editingRoofIndex][
             props.editingInverterIndex].bridging.map(bridging =>
               bridging.mainPolyline.entityId
             );
@@ -368,8 +368,8 @@ const mapStateToProps = state => {
       state.undoable.present.editingWiringManager.editingInverterIndex,
     hoverWiringPointPosition:
       state.undoable.present.editingWiringManager.hoverWiringPointPosition,
-    roofSpecInverters:
-      state.undoable.present.editingWiringManager.roofSpecInverters,
+    entireSpecInverters:
+      state.undoable.present.editingWiringManager.entireSpecInverters,
     hoverInverterCenter:
       state.undoable.present.editingWiringManager.hoverInverterCenter,
     editingBridgingPointIndex:

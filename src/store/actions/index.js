@@ -178,7 +178,7 @@ export {
   attachPVPanel,
   dynamicWiringLine,
   setMouseDragStatus,
-  setBridgingRoofAndInverter,
+  setBridgingInverter,
   placeInverter,
   bridging,
   setHoverInverterCenter,
@@ -191,7 +191,9 @@ export {
   releaseHoverBridgingMainPolyline,
   complementPointOnBridging,
   highLightWiring,
-  deHighLightWiring
+  highLightInverter,
+  deHighLightWiring,
+  deHighLightInverter
 } from './editingWiringManager';
 
 export {

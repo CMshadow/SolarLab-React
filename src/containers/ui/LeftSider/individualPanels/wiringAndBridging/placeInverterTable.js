@@ -16,64 +16,54 @@ import * as actions from '../../../../../store/actions/index';
 
 class PlaceInverterTable extends Component {
 
-  columns = [
-    {
-      title: <FormattedMessage id='inverterName' />,
-      dataIndex: 'inverterName',
-      key: 'name',
-      width: '80%',
-      ellipsis: true
-    },
-    {
-      title: <FormattedMessage id='Action' />,
-      dataIndex: '',
-      key: '',
-      width: '20%',
-      render: (text, record, inverterInd) => ([
-        this.props.roofSpecInverters[this.props.roofIndex][inverterInd]
-        .polygon ?
+  expandedRowRender = (inverter, inverterInd) => {
+    return (
+      (
+        this.props.entireSpecInverters[inverterInd].polygon ?
         <Button
           key='placeInverter'
           type="primary"
-          shape='circle'
           size='small'
           ghost={this.props.uiState === 'READY_DRAG_INVERTER'? false : true}
           disabled={
             (this.props.uiState === 'EDIT_BRIDGING' ||
             this.props.uiState === 'DRAG_BRIDGING') ||
             (this.props.uiState === 'READY_DRAG_INVERTER' &&
-            this.props.roofIndex !== this.props.editingRoofIndex &&
             inverterInd !== this.props.editingInverterIndex) ?
             true:
             false
           }
-          icon='edit'
           onClick={() => {
-            this.props.setBridgingRoofAndInverter(
-              this.props.roofIndex, inverterInd
-            );
+            this.props.setBridgingInverter(inverterInd);
             this.props.uiState === 'READY_DRAG_INVERTER' ?
             this.props.setUIStateSetUpBridging() :
             this.props.setUIStateReadyDragInverter();
           }}
-        /> :
+        ><FormattedMessage id='moveInverter' /></Button> :
         <Button
           key='placeInverter'
           type="primary"
-          shape='circle'
           size='small'
           ghost={this.props.uiState !== 'PLACE_INVERTER'}
           disabled={this.props.uiState !== 'SETUP_BRIDGING'}
-          icon='plus'
           onClick={() => {
-            this.props.setBridgingRoofAndInverter(
-              this.props.roofIndex, inverterInd
-            );
+            this.props.setBridgingInverter(inverterInd);
             this.props.setUIStatePlaceInverter();
           }}
-        />
-      ])
-    },
+        ><FormattedMessage id='placeInverter' /></Button>
+      )
+    );
+  };
+
+  columns = [
+    {
+      title: <FormattedMessage id='inverter_name' />,
+      dataIndex: 'inverterName',
+      key: 'name',
+      width: '100%',
+      ellipsis: true,
+      align: 'center'
+    }
   ];
 
   render () {
@@ -87,12 +77,24 @@ class PlaceInverterTable extends Component {
               size='middle'
               pagination={false}
               columns={this.columns}
-              dataSource={this.props.roofSpecInverters[this.props.roofIndex]}
+              expandedRowRender={
+                (inverter, inverterInd) =>
+                this.expandedRowRender(inverter, inverterInd)
+              }
+              dataSource={this.props.entireSpecInverters}
               rowKey={record => record.entityId}
-              onRow={record => {
+              onRow={(record, inverterInd) => {
                 return {
-                  onMouseEnter: event => {console.log(event); console.log(record)},
-                  onMouseLeave: event => {console.log(event);console.log(record)},
+                  onMouseEnter: event => {
+                    if (record.wiring.every(obj => obj.polyline)) {
+                      this.props.highLightInverter(inverterInd)
+                    }
+                  },
+                  onMouseLeave: event => {
+                    if (record.wiring.every(obj => obj.polyline)) {
+                      this.props.deHighLightInverter(inverterInd)
+                    }
+                  },
                 }
               }}
             />,
@@ -105,8 +107,8 @@ class PlaceInverterTable extends Component {
 
 const mapStateToProps = state => {
   return {
-    roofSpecInverters:
-      state.undoable.present.editingWiringManager.roofSpecInverters,
+    entireSpecInverters:
+      state.undoable.present.editingWiringManager.entireSpecInverters,
     roofSpecParams:
       state.undoable.present.editingPVPanelManager.roofSpecParams,
     uiState:
@@ -124,18 +126,25 @@ const mapDispatchToProps = dispatch => {
       actions.setUIStatePlaceInverter()
     ),
     setUIStateEditBridging: () => dispatch(actions.setUIStateEditBridging()),
-    setBridgingRoofAndInverter: (roofIndex, inverterInd) => dispatch(
-      actions.setBridgingRoofAndInverter(roofIndex, inverterInd)
+    setBridgingInverter: (inverterInd) => dispatch(
+      actions.setBridgingInverter(inverterInd)
     ),
-    bridging: (roofIndex, inverterIndex) => dispatch(
-      actions.bridging(roofIndex, inverterIndex)
+    bridging: (inverterIndex) => dispatch(
+      actions.bridging(inverterIndex)
     ),
     setUIStateSetUpBridging: () => dispatch(
       actions.setUIStateSetUpBridging()
     ),
     setUIStateReadyDragInverter: () => dispatch(
       actions.setUIStateReadyDragInverter()
-    )
+    ),
+
+    highLightInverter: (inverterInd) => dispatch(
+      actions.highLightInverter(inverterInd)
+    ),
+    deHighLightInverter: (inverterInd) => dispatch(
+      actions.deHighLightInverter(inverterInd)
+    ),
   }
 }
 

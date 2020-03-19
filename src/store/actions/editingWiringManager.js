@@ -508,10 +508,9 @@ export const setMouseDragStatus = (hoverObj) => {
   }
 }
 
-export const setBridgingRoofAndInverter = (inverterIndex) => {
+export const setBridgingInverter = (inverterIndex) => {
   return {
     type: actionTypes.SET_BRIDGING_ROOF_AND_INVERTER,
-    roofIndex: 0,
     inverterIndex: inverterIndex
   };
 }
@@ -522,10 +521,9 @@ export const placeInverter = (heightOffset=0.2) => (dispatch, getState) => {
   const inverterLength = 0.25;
   const mouseCartesian3 =
     getState().undoable.present.drawingManager.mouseCartesian3;
-  const editingRoofIndex =
-    getState().undoable.present.editingWiringManager.editingRoofIndex;
+
   const result = makeInverterPolygonAndCenter(
-    mouseCartesian3, workingBuilding, editingRoofIndex, heightOffset, inverterLength
+    mouseCartesian3, workingBuilding, heightOffset, inverterLength
   );
   const inverterPolygon = result.inverterPolygon;
   const inverterCenter = result.inverterCenter;
@@ -774,11 +772,9 @@ export const dragInverter = (heightOffset=0.2) => (dispatch, getState) => {
     getState().undoable.present.buildingManager.workingBuilding;
   const mouseCartesian3 =
     getState().undoable.present.drawingManager.mouseCartesian3;
-  const editingRoofIndex =
-    getState().undoable.present.editingWiringManager.editingRoofIndex;
 
   const result = makeInverterPolygonAndCenter(
-    mouseCartesian3, workingBuilding, editingRoofIndex, heightOffset, inverterLength
+    mouseCartesian3, workingBuilding, heightOffset, inverterLength
   );
   const inverterPolygon = result.inverterPolygon;
   const inverterCenter = result.inverterCenter;
@@ -933,11 +929,25 @@ export const highLightWiring = (inverterInd, wiringInd) => {
   }
 }
 
+export const highLightInverter = (inverterInd) => {
+  return {
+    type: actionTypes.HIGHLIGHT_INVERTER,
+    inverterIndex: inverterInd,
+  }
+}
+
 export const deHighLightWiring = (inverterInd, wiringInd) => {
   return {
     type: actionTypes.DE_HIGHLIGHT_WIRING,
     inverterIndex: inverterInd,
     wiringIndex: wiringInd
+  }
+}
+
+export const deHighLightInverter = (inverterInd) => {
+  return {
+    type: actionTypes.DE_HIGHLIGHT_INVERTER,
+    inverterIndex: inverterInd,
   }
 }
 
@@ -948,19 +958,13 @@ const makeInverterPolygonAndCenter = (
     Coordinate.fromCartesian(mouseCartesian3), null, null, null,
     Cesium.Color.DARKCYAN
   );
-  if (workingBuilding.type === 'FLAT') {
-    inverterCenterPoint.setCoordinate(
-      null, null, workingBuilding.foundationHeight + heightOffset
-    );
-  } else {
-    inverterCenterPoint.setCoordinate(
-      null, null,
-      Coordinate.heightOfArbitraryNode(
-        workingBuilding.pitchedRoofPolygons[0],
-        inverterCenterPoint
-      ) + workingBuilding.foundationHeight + heightOffset
-    );
-  }
+  inverterCenterPoint.setCoordinate(
+    null, null, Math.max(
+      inverterCenterPoint.getCoordinate().height,
+      workingBuilding.foundationHeight
+    ) + heightOffset
+  );
+
   const inverterWNPoint = Point.fromCoordinate(
     Coordinate.destination(
       Coordinate.destination(inverterCenterPoint, 0, inverterLength),
