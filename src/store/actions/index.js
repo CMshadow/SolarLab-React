@@ -125,6 +125,8 @@ export {
   setUIStatePlaceInverter,
   setUIStateReadyDragInverter,
   setUIStateDragInverter,
+  setUIStateDrawMainBridging,
+  setUIStateEditMainBridging,
   setUIStateEditBridging,
   setUIStateDragBridging
 } from './uiStateManager';
@@ -178,12 +180,15 @@ export {
   attachPVPanel,
   dynamicWiringLine,
   setMouseDragStatus,
-  setBridgingRoofAndInverter,
+  setBridgingInverter,
   placeInverter,
   bridging,
   setHoverInverterCenter,
   releaseHoverInverterCenter,
   dragInverter,
+  dynamicMainBridging,
+  addPointOnMainBridging,
+  terminateDrawMainBridging,
   setHoverBridgingPoint,
   releaseHoverBridgingPoint,
   dragBridgingPoint,
@@ -191,7 +196,9 @@ export {
   releaseHoverBridgingMainPolyline,
   complementPointOnBridging,
   highLightWiring,
-  deHighLightWiring
+  highLightInverter,
+  deHighLightWiring,
+  deHighLightInverter
 } from './editingWiringManager';
 
 export {

@@ -22,6 +22,11 @@ const RightClickHandler = (props) => {
         props.setUIStateEditingKeepout();
         break;
 
+      case 'DRAW_MAIN_BRIDGING':
+        props.terminateDrawMainBridging();
+        props.setUIStateSetUpBridging();
+        break;
+
       default:
         break;
     }
@@ -52,13 +57,15 @@ const mapDispatchToProps = dispatch => {
     terminateDrawing: () => dispatch(actions.terminateDrawing()),
     terminateKeepoutDrawing: () => dispatch(actions.terminateKeepoutDrawing()),
     setUIStateFoundDrew: () => dispatch(actions.setUIStateFoundDrew()),
-    setUIStateEditingKeepout: () => dispatch(
-      actions.setUIStateEditingKeepout()
-    ),
+    setUIStateEditingKeepout: () => dispatch(actions.setUIStateEditingKeepout()),
+    setUIStateSetUpBridging: () => dispatch(actions.setUIStateSetUpBridging()),
     setPreviousUIState: () => dispatch(actions.setPreviousUIState()),
     setRightClickCartesian3: (cartesian, viewer) => dispatch(
       actions.setRightClickCartesian3(cartesian, viewer)
     ),
+    terminateDrawMainBridging: () => dispatch(
+      actions.terminateDrawMainBridging()
+    )
   };
 };
 

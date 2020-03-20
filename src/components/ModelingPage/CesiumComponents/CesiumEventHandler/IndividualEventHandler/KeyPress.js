@@ -31,6 +31,7 @@ class KeyPressHandler extends Component {
 
   recordKeyDownEvent = (event) => {
     switch (event.keyCode) {
+      // esc
       case 27:
         switch (this.props.uiState) {
           case 'DRAWING_FOUND':
@@ -42,6 +43,11 @@ class KeyPressHandler extends Component {
             if (this.props.drawingInnerPolyline) {
               this.props.undo();
             }
+            break;
+
+          case 'DRAW_MAIN_BRIDGING':
+            this.props.terminateDrawMainBridging();
+            this.props.setUIStateSetUpBridging();
             break;
 
           default:
@@ -119,7 +125,11 @@ const mapDispatchToProps = dispatch => {
   return {
     undo: () => dispatch(ActionCreators.undo()),
     exitCurrentDrawing: () => dispatch(actions.exitCurrentDrawing()),
-    setUIStateReadyDrawing: () => dispatch(actions.setUIStateReadyDrawing())
+    setUIStateReadyDrawing: () => dispatch(actions.setUIStateReadyDrawing()),
+    setUIStateSetUpBridging: () => dispatch(actions.setUIStateSetUpBridging()),
+    terminateDrawMainBridging: () => dispatch(
+      actions.terminateDrawMainBridging()
+    )
   };
 };
 

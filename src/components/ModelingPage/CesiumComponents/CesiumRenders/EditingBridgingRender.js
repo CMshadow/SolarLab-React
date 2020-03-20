@@ -25,7 +25,28 @@ const EditingBridgingRender = (props) => {
     )
   }
 
-  const mainBridgings = props.entireSpecInverters.map(inverter =>
+  const mainBridgings = props.entireSpecInverters.filter(inverter =>
+    inverter.mainBridging
+  ).map(inverter =>
+    <FloatPolyline
+      key={inverter.mainBridging.mainPolyline.entityId}
+      {...inverter.mainBridging.mainPolyline}
+    />
+  );
+
+  let mainBridgingPoints = null;
+  if (
+    props.uiState === 'EDIT_MAIN_BRIDGING' &&
+    props.editingInverterIndex !== null &&
+    props.entireSpecInverters[props.editingInverterIndex].mainBridging
+  ) {
+    mainBridgingPoints = props.entireSpecInverters[props.editingInverterIndex]
+    .mainBridging.mainPolyline.points.slice(1).map(point =>
+      <CustomPoint key={point.entityId} {...point}/>
+    );
+  }
+
+  const bridgings = props.entireSpecInverters.map(inverter =>
     inverter.bridging.map(bridging =>
       <FloatPolyline
         key={bridging.mainPolyline.entityId}
@@ -70,6 +91,8 @@ const EditingBridgingRender = (props) => {
     <div>
       {allInverterPolygons}
       {mainBridgings}
+      {mainBridgingPoints}
+      {bridgings}
       {subBridgings}
       {inverterCenterPoint}
       {bridgingPoints}

@@ -2,18 +2,12 @@ import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import {
   Form,
-  Icon,
-  Select,
-  Row,
-  Col,
-  Button,
   Divider,
 } from 'antd';
 import { FormattedMessage } from 'react-intl';
 
 import * as actions from '../../../../store/actions/index';
 import PlaceInverterTable from './wiringAndBridging/placeInverterTable';
-const { Option } = Select;
 
 class SetUpBridgingPanel extends Component {
   state = {
@@ -23,8 +17,8 @@ class SetUpBridgingPanel extends Component {
   render() {
     return (
       <div style={{padding: '10px 10px 20px', overflow: 'auto'}}>
-        <Divider><FormattedMessage id='Step_1' /></Divider>
-        <PlaceInverterTable roofIndex={this.state.selectRoofIndex} />
+        <Divider><FormattedMessage id='setup_wiring' /></Divider>
+        <PlaceInverterTable/>
       </div>
     );
   }

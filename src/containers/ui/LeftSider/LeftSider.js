@@ -64,7 +64,7 @@ class LeftSider extends Component {
       <Layout className={classes.outerLayout}>
         <Sider
           className={classes.leftSider}
-          width={325}
+          width={350}
           collapsedWidth={50}
           collapsible
           trigger={null}

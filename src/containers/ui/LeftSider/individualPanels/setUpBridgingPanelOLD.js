@@ -192,7 +192,6 @@ class SetUpBridgingPanel extends Component {
             shape='round'
             size='large'
             onClick = {() => {
-              console.log('finish building')
               this.props.bindPVPanels();
               this.props.bindInverters();
               this.props.setUIStateIdel();

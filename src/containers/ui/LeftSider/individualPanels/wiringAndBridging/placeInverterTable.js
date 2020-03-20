@@ -5,7 +5,7 @@ import {
   Table,
   Row,
   Col,
-  Button,
+  Button
 } from 'antd';
 import { FormattedMessage } from 'react-intl';
 
@@ -16,64 +16,108 @@ import * as actions from '../../../../../store/actions/index';
 
 class PlaceInverterTable extends Component {
 
-  columns = [
-    {
-      title: <FormattedMessage id='inverterName' />,
-      dataIndex: 'inverterName',
-      key: 'name',
-      width: '80%',
-      ellipsis: true
-    },
-    {
-      title: <FormattedMessage id='Action' />,
-      dataIndex: '',
-      key: '',
-      width: '20%',
-      render: (text, record, inverterInd) => ([
-        this.props.roofSpecInverters[this.props.roofIndex][inverterInd]
-        .polygon ?
+  expandedRowRender = (inverter, inverterInd) => {
+    return [
+      (
+        this.props.entireSpecInverters[inverterInd].polygon ?
         <Button
           key='placeInverter'
           type="primary"
-          shape='circle'
           size='small'
           ghost={this.props.uiState === 'READY_DRAG_INVERTER'? false : true}
           disabled={
-            (this.props.uiState === 'EDIT_BRIDGING' ||
-            this.props.uiState === 'DRAG_BRIDGING') ||
+            this.props.uiState === 'SETUP_BRIDGING' ||
             (this.props.uiState === 'READY_DRAG_INVERTER' &&
-            this.props.roofIndex !== this.props.editingRoofIndex &&
-            inverterInd !== this.props.editingInverterIndex) ?
-            true:
-            false
+            inverterInd === this.props.editingInverterIndex) ?
+            false:
+            true
           }
-          icon='edit'
           onClick={() => {
-            this.props.setBridgingRoofAndInverter(
-              this.props.roofIndex, inverterInd
-            );
+            this.props.setBridgingInverter(inverterInd);
             this.props.uiState === 'READY_DRAG_INVERTER' ?
             this.props.setUIStateSetUpBridging() :
             this.props.setUIStateReadyDragInverter();
           }}
-        /> :
+        ><FormattedMessage id='moveInverter' /></Button> :
         <Button
           key='placeInverter'
           type="primary"
-          shape='circle'
           size='small'
           ghost={this.props.uiState !== 'PLACE_INVERTER'}
           disabled={this.props.uiState !== 'SETUP_BRIDGING'}
-          icon='plus'
           onClick={() => {
-            this.props.setBridgingRoofAndInverter(
-              this.props.roofIndex, inverterInd
-            );
+            this.props.setBridgingInverter(inverterInd);
             this.props.setUIStatePlaceInverter();
           }}
-        />
-      ])
-    },
+        ><FormattedMessage id='placeInverter' /></Button>
+      ),
+      (
+        this.props.entireSpecInverters[inverterInd].mainBridging &&
+        this.props.entireSpecInverters[inverterInd].mainBridging.mainPolyline
+        .points.length > 1 ?
+        <Button
+          key='readyDrawMainbridge'
+          type="primary"
+          size='small'
+          ghost={this.props.uiState !== 'EDIT_MAIN_BRIDGING'}
+          disabled={
+            this.props.uiState === 'SETUP_BRIDGING' ||
+            this.props.uiState === 'EDIT_MAIN_BRIDGING' ?
+            false:
+            true
+          }
+          onClick={() => {
+            this.props.setBridgingInverter(inverterInd);
+            this.props.uiState === 'EDIT_MAIN_BRIDGING' ?
+            this.props.setUIStateSetUpBridging() :
+            this.props.setUIStateEditMainBridging();
+          }}
+        ><FormattedMessage id='editMainBridge' /></Button> :
+        <Button
+          key='readyDrawMainbridge'
+          type="primary"
+          size='small'
+          ghost={this.props.uiState === 'READY_DRAW_MAINBRIDGE'? false : true}
+          disabled={
+            this.props.uiState === 'SETUP_BRIDGING' ?
+            false:
+            true
+          }
+          onClick={() => {
+            this.props.setBridgingInverter(inverterInd);
+            this.props.setUIStateDrawMainBridging();
+          }}
+        ><FormattedMessage id='drawMainBridge' /></Button>
+      ),
+      (
+        <Button
+          key='generateBridging'
+          type="primary"
+          size='small'
+          ghost={this.props.uiState === 'READY_DRAW_MAINBRIDGE'? false : true}
+          disabled={
+            this.props.uiState === 'SETUP_BRIDGING' ?
+            false:
+            true
+          }
+          onClick={() => {
+            this.props.setBridgingInverter(inverterInd);
+            this.props.bridging(inverterInd);
+          }}
+        ><FormattedMessage id='createBridge' /></Button>
+      )
+    ];
+  };
+
+  columns = [
+    {
+      title: <FormattedMessage id='inverter_name' />,
+      dataIndex: 'inverterName',
+      key: 'name',
+      width: '100%',
+      ellipsis: true,
+      align: 'center'
+    }
   ];
 
   render () {
@@ -87,12 +131,24 @@ class PlaceInverterTable extends Component {
               size='middle'
               pagination={false}
               columns={this.columns}
-              dataSource={this.props.roofSpecInverters[this.props.roofIndex]}
+              expandedRowRender={
+                (inverter, inverterInd) =>
+                this.expandedRowRender(inverter, inverterInd)
+              }
+              dataSource={this.props.entireSpecInverters}
               rowKey={record => record.entityId}
-              onRow={record => {
+              onRow={(record, inverterInd) => {
                 return {
-                  onMouseEnter: event => {console.log(event); console.log(record)},
-                  onMouseLeave: event => {console.log(event);console.log(record)},
+                  onMouseEnter: event => {
+                    if (record.wiring.every(obj => obj.polyline)) {
+                      this.props.highLightInverter(inverterInd)
+                    }
+                  },
+                  onMouseLeave: event => {
+                    if (record.wiring.every(obj => obj.polyline)) {
+                      this.props.deHighLightInverter(inverterInd)
+                    }
+                  },
                 }
               }}
             />,
@@ -105,8 +161,8 @@ class PlaceInverterTable extends Component {
 
 const mapStateToProps = state => {
   return {
-    roofSpecInverters:
-      state.undoable.present.editingWiringManager.roofSpecInverters,
+    entireSpecInverters:
+      state.undoable.present.editingWiringManager.entireSpecInverters,
     roofSpecParams:
       state.undoable.present.editingPVPanelManager.roofSpecParams,
     uiState:
@@ -124,18 +180,32 @@ const mapDispatchToProps = dispatch => {
       actions.setUIStatePlaceInverter()
     ),
     setUIStateEditBridging: () => dispatch(actions.setUIStateEditBridging()),
-    setBridgingRoofAndInverter: (roofIndex, inverterInd) => dispatch(
-      actions.setBridgingRoofAndInverter(roofIndex, inverterInd)
+    setBridgingInverter: (inverterInd) => dispatch(
+      actions.setBridgingInverter(inverterInd)
     ),
-    bridging: (roofIndex, inverterIndex) => dispatch(
-      actions.bridging(roofIndex, inverterIndex)
+    bridging: (inverterIndex) => dispatch(
+      actions.bridging(inverterIndex)
     ),
     setUIStateSetUpBridging: () => dispatch(
       actions.setUIStateSetUpBridging()
     ),
     setUIStateReadyDragInverter: () => dispatch(
       actions.setUIStateReadyDragInverter()
-    )
+    ),
+
+    setUIStateDrawMainBridging: () => dispatch(
+      actions.setUIStateDrawMainBridging()
+    ),
+    setUIStateEditMainBridging: () => dispatch(
+      actions.setUIStateEditMainBridging()
+    ),
+
+    highLightInverter: (inverterInd) => dispatch(
+      actions.highLightInverter(inverterInd)
+    ),
+    deHighLightInverter: (inverterInd) => dispatch(
+      actions.deHighLightInverter(inverterInd)
+    ),
   }
 }
 

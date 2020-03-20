@@ -17,9 +17,8 @@ class Bridging {
   static fromBridging (bridging) {
     const newEntityId = bridging.entityId;
     const newMainPolyline = Polyline.fromPolyline(bridging.mainPolyline);
-    const newSubPolyline = bridging.subPolyline.map(sub =>
-      Polyline.fromPolyline(sub)
-    );
+    const newSubPolyline = bridging.subPolyline ?
+      bridging.subPolyline.map(sub =>Polyline.fromPolyline(sub)) : null;
     const newAnchorPanelMap = bridging.anchorPanelMap;
     const newConnectedWiringIndex = bridging.connectedWiringIndex;
     return new Bridging(
