@@ -6,7 +6,7 @@ class Inverter {
     entityId = null, inverterId = null, inverterName = null, serialNum = null,
     panelPerString = null, stringPerInverter = null, mpptSetup = null,
     wiring = null, bridging = null, inverterPolygon = null,
-    inverterPolygonCenter = null,
+    inverterPolygonCenter = null, roofMap = null, mainBridging = null
   ) {
     this.entityId = entityId || uuid();
     this.inverterId = inverterId;
@@ -20,6 +20,8 @@ class Inverter {
     this.polygon = inverterPolygon;
     this.polygonCenter = inverterPolygonCenter;
     this.mpptSetup = mpptSetup;
+    this.connectRoof = roofMap;
+    this.mainBridging = mainBridging;
   }
 
   static fromInverter (inverter) {
@@ -33,11 +35,13 @@ class Inverter {
     const newBridging = inverter.bridging;
     const newPolygon = inverter.polygon;
     const newPolygonCenter = inverter.polygonCenter;
-    const newMpptSetup = inverter.mpptSetup
+    const newMpptSetup = inverter.mpptSetup;
+    const newConnectRoof = inverter.connectRoof;
+    const newMainBridging = inverter.mainBridging;
     return new Inverter(
       newEntityId, newInverterId, newInverterName, newSerial, newPanelPerString,
       newStringPerInverter, newMpptSetup, newWiring, newBridging, newPolygon,
-      newPolygonCenter,
+      newPolygonCenter, newConnectRoof, newMainBridging
     )
   }
 

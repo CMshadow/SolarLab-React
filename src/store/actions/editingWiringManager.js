@@ -10,8 +10,8 @@ import Wiring from '../../infrastructure/inverter/wiring';
 import Bridging from '../../infrastructure/inverter/bridging';
 import Coordinate from '../../infrastructure/point/coordinate';
 import Point from '../../infrastructure/point/point';
-import PV from '../../infrastructure/Polygon/PV';
 import Polygon from '../../infrastructure/Polygon/Polygon';
+import { corWithinLineCollectionPolygon } from '../../infrastructure/math/polygonMath';
 import MathLineCollection from '../../infrastructure/math/mathLineCollection';
 import { setBackendLoadingTrue, setBackendLoadingFalse} from './projectManager';
 import { setUIStateSetUpWiring } from './uiStateManager';
@@ -37,28 +37,68 @@ export const fetchUserInverters = () => (dispatch, getState) => {
   })
 }
 
-export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
+const aggregatePanelCountPerRoof = (allPanels, roofSpecParams) => {
+  const totalPanelsPerRoof = Object.keys(allPanels).map(roofIndex => {
+    const panelCount = Object.keys(allPanels[roofIndex])
+    .reduce((acc, panelId) => acc + 1, 0);
+    return {
+      panelCount: panelCount,
+      azimuth: roofSpecParams[roofIndex].azimuth,
+      tilt: roofSpecParams[roofIndex].tilt,
+      panelID: roofSpecParams[roofIndex].panelID,
+      mode: roofSpecParams[roofIndex].mode,
+      rowPerArray: roofSpecParams[roofIndex].rowPerArray,
+      panelPerRow: roofSpecParams[roofIndex].panelPerRow,
+      roofIndex: roofIndex
+    };
+  })
+
+  const aggregateTotalPanels = [];
+  totalPanelsPerRoof.forEach(obj => {
+    const couldAggregate = aggregateTotalPanels.some(elem =>
+      Math.abs(elem.azimuth - obj.azimuth) < 5 &&
+      Math.abs(elem.tilt - obj.tilt) < 5 &&
+      elem.panelID === obj.panelID &&
+      (
+        (elem.mode === 'individual' && obj.mode === 'individual') ||
+        (elem.mode === obj.mode && elem.rowPerArray === obj.rowPerArray &&
+        elem.panelPerRow === obj.panelPerRow)
+      )
+    )
+    if (couldAggregate) {
+      couldAggregate.panelCount += obj.panelCount;
+      couldAggregate.azimuth = (couldAggregate.azimuth + obj.azimuth) / 2;
+      couldAggregate.tilt = (couldAggregate.tilt + obj.tilt) / 2;
+      couldAggregate.roofIndex.push(obj.roofIndex);
+    } else {
+      aggregateTotalPanels.push({
+        ...obj,
+        roofIndex: [obj.roofIndex]
+      })
+    }
+  })
+
+  return aggregateTotalPanels;
+}
+
+export const calculateAutoInverter = () => (dispatch, getState) => {
   const allPanels =
-    getState().undoable.present.editingPVPanelManager.panels[roofIndex];
+    getState().undoable.present.editingPVPanelManager.panels;
   const roofSpecParams =
     getState().undoable.present.editingPVPanelManager.roofSpecParams;
-  const totalPanels = allPanels.reduce((acc2, partial) => {
-    const totalPanelOnPartial = partial.reduce((acc3, array) => {
-      return acc3 + array.length;
-    }, 0);
-    return acc2 + totalPanelOnPartial;
-  }, 0);
+
+  const aggregatePVSpec = aggregatePanelCountPerRoof(allPanels, roofSpecParams);
+
   dispatch(setBackendLoadingTrue());
   axios.get('/calculate-inverter-solution/auto', {
     params: {
-      totalPanels: totalPanels,
+      PVSpec: JSON.stringify(aggregatePVSpec),
+      panelID: roofSpecParams[Object.keys(roofSpecParams)[0]].panelID,
       userID: getState().undoable.present.authManager.userID,
-      panelID: roofSpecParams[roofIndex].panelID,
-      PVParams: JSON.stringify(roofSpecParams[roofIndex])
     }
   })
   .then(response => {
-    const result = response.data.data;
+    const result = response.data;
     const inverterName = getState().undoable.present.editingWiringManager
       .userInverters.reduce((name, val) =>
         val.inverterID === result.inverterID ? val.inverterName : name
@@ -71,13 +111,14 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
         0 + i + 1,
         inverter.panelPerString,
         inverter.stringPerInverter,
-        inverter.mpptSetup
+        inverter.mpptSetup,
+        null, null, null, null,
+        inverter.layout
       )
     )
-    dispatch(actions.setRoofAllPVDisConnected(roofIndex));
+    dispatch(actions.setRoofAllPVDisConnected());
     dispatch({
       type: actionTypes.SET_UP_INVERTER,
-      roofIndex: roofIndex,
       inverterSolutions: inverterSolutions
     })
     return dispatch(setBackendLoadingFalse());
@@ -91,34 +132,29 @@ export const calculateAutoInverter = (roofIndex) => (dispatch, getState) => {
   })
 }
 
-export const calculateManualInverter = (roofIndex, inverterID) =>
-(dispatch, getState) => {
+export const calculateManualInverter = (inverterID) => (dispatch, getState) => {
   const allPanels =
-    getState().undoable.present.editingPVPanelManager.panels[roofIndex];
+    getState().undoable.present.editingPVPanelManager.panels;
   const roofSpecParams =
     getState().undoable.present.editingPVPanelManager.roofSpecParams;
-  const totalPanels = allPanels.reduce((acc2, partial) => {
-    const totalPanelOnPartial = partial.reduce((acc3, array) => {
-      return acc3 + array.length;
-    }, 0);
-    return acc2 + totalPanelOnPartial;
-  }, 0);
+
+  const aggregatePVSpec = aggregatePanelCountPerRoof(allPanels, roofSpecParams);
+
   dispatch(setBackendLoadingTrue());
   axios.get('/calculate-inverter-solution/manual', {
     params: {
-      totalPanels: totalPanels,
       userID: getState().undoable.present.authManager.userID,
-      panelID: roofSpecParams[roofIndex].panelID,
+      panelID: roofSpecParams[Object.keys(roofSpecParams)[0]].panelID,
       inverterID: inverterID,
-      PVParams: JSON.stringify(roofSpecParams[roofIndex])
+      PVSpec: JSON.stringify(aggregatePVSpec),
     }
   })
   .then(response => {
-    const result = response.data.data;
+    const result = response.data;
     const inverterName = getState().undoable.present.editingWiringManager
       .userInverters.reduce((name, val) =>
         val.inverterID === result.inverterID ? val.inverterName : name
-      , 0);
+      , '');
     const inverterSolutions = result.inverterSetUp.map((inverter, i) =>
       new Inverter(
         null,
@@ -127,13 +163,14 @@ export const calculateManualInverter = (roofIndex, inverterID) =>
         0 + i + 1,
         inverter.panelPerString,
         inverter.stringPerInverter,
-        inverter.mpptSetup
+        inverter.mpptSetup,
+        null, null, null, null,
+        inverter.layout
       )
     )
-    dispatch(actions.setRoofAllPVDisConnected(roofIndex));
+    dispatch(actions.setRoofAllPVDisConnected());
     dispatch({
       type: actionTypes.SET_UP_INVERTER,
-      roofIndex: roofIndex,
       inverterSolutions: inverterSolutions
     })
     return dispatch(setBackendLoadingFalse());
@@ -147,43 +184,35 @@ export const calculateManualInverter = (roofIndex, inverterID) =>
   })
 }
 
-export const autoWiring = (roofInd, inverterInd, wiringInd) =>
+export const autoWiring = (inverterInd, wiringInd) =>
 (dispatch, getState) => {
   const roofSpecParams =
-    getState().undoable.present.editingPVPanelManager.roofSpecParams[roofInd];
+    getState().undoable.present.editingPVPanelManager.roofSpecParams[0];
   if (roofSpecParams.mode === 'individual') {
-    dispatch(individualAutoWiring(roofInd, inverterInd, wiringInd));
+    dispatch(individualAutoWiring(inverterInd, wiringInd));
   } else {
-    dispatch(arrayAutoWiring(roofInd, inverterInd, wiringInd));
+    dispatch(arrayAutoWiring(inverterInd, wiringInd));
   }
 }
 
-const individualAutoWiring = (roofInd, inverterInd, wiringInd) =>
+const individualAutoWiring = (inverterInd, wiringInd) =>
 (dispatch, getState) => {
-  const allPanels =
-    getState().undoable.present.editingPVPanelManager.panels[roofInd];
-  const availablePanels = allPanels.flatMap(partial => {
-    const partialRoofPanels = partial.map(originPanelArray => {
-      const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
-      if (panelArray.length === 0) return [];
-      return panelArray.map(panel => {
-        return {
-          ...panel,
-          pv: PV.copyPolygon(panel.pv)
-        }
-      });
-    })
-    return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-  });
   const inverterConfig = getState().undoable.present.editingWiringManager
-    .roofSpecInverters[roofInd][inverterInd];
+    .entireSpecInverters[inverterInd];
+  const connectedRoofIndex = inverterConfig.connectRoof;
+  const allPanels = getState().undoable.present.editingPVPanelManager.panels;
+
+  let availablePanels = connectedRoofIndex.flatMap(roofIndex =>
+    Object.keys(allPanels[roofIndex]).map(panelId =>
+      allPanels[roofIndex][panelId]
+    ).filter(panelObj => !panelObj.pv.connected)
+  );
 
   const string = findAWiringString(availablePanels, inverterConfig, 0);
   const panelRows = string.map(p => p.row);
   const panelsOnString = string.map(p => p.pv);
   const panelCenterPoints = string.map(p => {
     const center = p.pv.getCenter(0.2);
-    // center.setCoordinate(null, null, center.height + 0.2);
     return center;
   });
   const wiringPolyline = new Polyline(
@@ -196,18 +225,25 @@ const individualAutoWiring = (roofInd, inverterInd, wiringInd) =>
   return dispatch({
     type: actionTypes.AUTO_WIRING,
     wiring: newWiring,
-    roofIndex: roofInd,
     inverterIndex: inverterInd,
     wiringIndex: wiringInd
   });
 }
 
-const arrayAutoWiring = (roofInd, inverterInd, wiringInd) =>
+const arrayAutoWiring = (inverterInd, wiringInd) =>
 (dispatch, getState) => {
-  const roofSpecParams =
-    getState().undoable.present.editingPVPanelManager.roofSpecParams[roofInd];
-  const allPanels =
-    getState().undoable.present.editingPVPanelManager.panels[roofInd];
+  const inverterConfig = getState().undoable.present.editingWiringManager
+    .entireSpecInverters[inverterInd];
+  const connectedRoofIndex = inverterConfig.connectRoof;
+  const roofSpecParams = getState().undoable.present.editingPVPanelManager
+    .roofSpecParams[connectedRoofIndex[0]];
+
+  const allPanels = []
+  connectedRoofIndex.forEach(roofIndex => {
+    allPanels.push(
+      ...getState().undoable.present.editingPVPanelManager.panels[roofIndex]
+    );
+  })
   const availablePanelArrays = allPanels.flatMap(partial => {
     return partial.map(originPanelArray => {
       return originPanelArray.filter(panel => !panel.pv.connected);
@@ -259,63 +295,56 @@ const arrayAutoWiring = (roofInd, inverterInd, wiringInd) =>
   dispatch({
     type: actionTypes.AUTO_WIRING,
     wiring: newWiring,
-    roofIndex: roofInd,
     inverterIndex: inverterInd,
     wiringIndex: wiringInd
   });
 }
 
-export const manualWiring = (roofInd, inverterInd, wiringInd) =>{
+export const manualWiring = (inverterInd, wiringInd) =>{
   return {
     type: actionTypes.MANUAL_WIRING,
-    roofIndex: roofInd,
     inverterIndex: inverterInd,
     wiringIndex: wiringInd
   };
 }
 
 export const setManualWiringStart = (panelId) => (dispatch, getState) => {
-  const editingRoofIndex =
-    getState().undoable.present.editingWiringManager.editingRoofIndex;
-  const allPanels =
-    getState().undoable.present.editingPVPanelManager.panels[editingRoofIndex];
-  const availablePanels = allPanels.flatMap(partial => {
-    const partialRoofPanels = partial.map(originPanelArray => {
-      const panelArray = originPanelArray.filter(panel => !panel.pv.connected);
-      if (panelArray.length === 0) return [];
-      return panelArray.map(panel => {
-        return {
-          ...panel,
-          pv: PV.copyPolygon(panel.pv)
-        }
-      });
-    })
-    return partialRoofPanels.filter(panelArray => panelArray.length > 0);
-  });
-  const matchPanel = availablePanels.find(elem => elem[0].pv.entityId === panelId)[0];
-  const panelCenterPoints = [Point.fromCoordinate(matchPanel.center)]
-  const wiringPolyline = new Polyline(
-    panelCenterPoints, null, 'wiring', Cesium.Color.RED
-  );
-  const newWiring = new Wiring(
-    null, matchPanel.pv, matchPanel.pv, [matchPanel.pv], wiringPolyline, [matchPanel.row]
-  );
+  const editingInverterIndex =
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
+  const connectedRoofIndex = getState().undoable.present.editingWiringManager
+    .entireSpecInverters[editingInverterIndex].connectRoof;
+  const allPanels = getState().undoable.present.editingPVPanelManager.panels
 
-  return dispatch({
-    type: actionTypes.MANUAL_WIRING_START,
-    wiring: newWiring,
-    position: 'END'
-  });
+  connectedRoofIndex.forEach(roofIndex => {
+    if (
+      panelId in allPanels[roofIndex] &&
+      !allPanels[roofIndex][panelId].pv.connected
+    ) {
+      const matchPanel = allPanels[roofIndex][panelId]
+      const panelCenterPoints = [Point.fromCoordinate(matchPanel.center)]
+      const wiringPolyline = new Polyline(
+        panelCenterPoints, null, 'wiring', Cesium.Color.RED
+      );
+      const newWiring = new Wiring(
+        null, matchPanel.pv, matchPanel.pv, [matchPanel.pv], wiringPolyline, [matchPanel.row]
+      );
+
+      dispatch(actions.setPVConnected(panelId))
+      return dispatch({
+        type: actionTypes.MANUAL_WIRING_START,
+        wiring: newWiring,
+        position: 'END'
+      });
+    }
+  })
 }
 
-export const editWiring = (roofInd, inverterInd, wiringInd) =>
-(dispatch, getState) => {
-  return dispatch({
+export const editWiring = (inverterInd, wiringInd) => {
+  return {
     type: actionTypes.EDIT_WIRING,
-    roofIndex: roofInd,
     inverterIndex: inverterInd,
     wiringIndex: wiringInd
-  });
+  };
 }
 
 export const stopEditWiring = () => {
@@ -327,36 +356,37 @@ export const stopEditWiring = () => {
 const findAWiringString = (availablePanels, inverterConfig, startIndex) => {
   const coefficient = 0.75;
 
-  const string = [availablePanels[startIndex][0]];
-  availablePanels[startIndex][0].pv.setConnected();
+  const string = [availablePanels[startIndex]];
+
+  availablePanels[startIndex].pv.setConnected();
   for (let i = 0; i < inverterConfig.panelPerString - 1; i++) {
     const currentPanel = string.slice(-1)[0];
-    const withDist = availablePanels.map((panelArray, panelArrayInd) => {
+    const withDist = availablePanels.map((panelObj, panelInd) => {
       let dist = null;
       if (
         (currentPanel.rowPos === 'start' ||
         currentPanel.rowPos === 'end' ||
         currentPanel.rowPos === 'single') &&
-        (panelArray[0].rowPos === 'start' ||
-        panelArray[0].rowPos === 'end' ||
-        panelArray[0].rowPos === 'single')
+        (panelObj.rowPos === 'start' ||
+        panelObj.rowPos === 'end' ||
+        panelObj.rowPos === 'single')
       ) {
-        dist = Point.surfaceDistance(currentPanel.center, panelArray[0].center)
+        dist = Point.surfaceDistance(currentPanel.center, panelObj.center)
           * coefficient;
       } else {
-        dist = Point.surfaceDistance(currentPanel.center, panelArray[0].center)
+        dist = Point.surfaceDistance(currentPanel.center, panelObj.center)
       }
 
       return {
         dist: dist,
-        panelArrayInd: panelArrayInd,
-        pvInfo: panelArray[0]
+        panelInd: panelInd,
+        pvInfo: panelObj
       };
     }).filter(elem => !elem.pvInfo.pv.connected);
     withDist.sort((first, second) => first.dist > second.dist ? 1 : -1);
     const nextPanel = withDist[0].pvInfo;
     string.push(nextPanel);
-    availablePanels[withDist[0].panelArrayInd][0].pv.setConnected();
+    availablePanels[withDist[0].panelInd].pv.setConnected();
   }
   return string;
 }
@@ -391,8 +421,6 @@ export const releasePVPanel = (hoverPanelId) => (dispatch, getState) => {
     getState().undoable.present.editingWiringManager.currentMouseDrag;
   const lastMouseDrag =
     getState().undoable.present.editingWiringManager.lastMouseDrag;
-  const editingRoofIndex =
-    getState().undoable.present.editingWiringManager.editingRoofIndex;
   const editingInverterIndex =
     getState().undoable.present.editingWiringManager.editingInverterIndex;
   const editingWiringIndex =
@@ -400,8 +428,7 @@ export const releasePVPanel = (hoverPanelId) => (dispatch, getState) => {
   const pickedWiringPointPosition =
     getState().undoable.present.editingWiringManager.pickedWiringPointPosition;
   const currentWiring = getState().undoable.present.editingWiringManager
-    .roofSpecInverters[editingRoofIndex][editingInverterIndex]
-    .wiring[editingWiringIndex];
+    .entireSpecInverters[editingInverterIndex].wiring[editingWiringIndex];
 
   let toReleasePanelId = null;
   if (pickedWiringPointPosition === 'START') {
@@ -413,7 +440,7 @@ export const releasePVPanel = (hoverPanelId) => (dispatch, getState) => {
     toReleasePanelId === hoverPanelId && currentWiring.allPanels.length > 1 &&
     currentMouseDrag !== lastMouseDrag
   ) {
-    dispatch(actions.setPVDisConnected(editingRoofIndex, hoverPanelId))
+    dispatch(actions.setPVDisConnected(hoverPanelId))
     return dispatch({
       type: actionTypes.RELEASE_PV_PANEL,
     })
@@ -425,35 +452,36 @@ export const attachPVPanel = (hoverPanelId) => (dispatch, getState) => {
     getState().undoable.present.editingWiringManager.currentMouseDrag;
   const lastMouseDrag =
     getState().undoable.present.editingWiringManager.lastMouseDrag;
-  const editingRoofIndex =
-    getState().undoable.present.editingWiringManager.editingRoofIndex;
   const editingInverterIndex =
     getState().undoable.present.editingWiringManager.editingInverterIndex;
   const editingWiringIndex =
     getState().undoable.present.editingWiringManager.editingWiringIndex;
+  const allPanels =
+    getState().undoable.present.editingPVPanelManager.panels;
   const currentWiring = getState().undoable.present.editingWiringManager
-    .roofSpecInverters[editingRoofIndex][editingInverterIndex]
+    .entireSpecInverters[editingInverterIndex]
     .wiring[editingWiringIndex];
   const currentInverter = getState().undoable.present.editingWiringManager
-    .roofSpecInverters[editingRoofIndex][editingInverterIndex];
+    .entireSpecInverters[editingInverterIndex];
 
-  const flatMapPanels =
-    getState().undoable.present.editingPVPanelManager.panels[editingRoofIndex]
-    .flatMap(partial =>
-      partial.flatMap(originPanelArray =>
-        originPanelArray
-      )
-    );
-  const matchInfo = flatMapPanels.find(elem => elem.pv.entityId === hoverPanelId);
+    let matchPanel;
+    Object.keys(allPanels).forEach(roofIndex => {
+      if (
+        hoverPanelId in allPanels[roofIndex] &&
+        !allPanels[roofIndex][hoverPanelId].pv.connected
+      ) {
+        matchPanel = allPanels[roofIndex][hoverPanelId]
+      }
+    })
 
   if (
     currentWiring.allPanels.length < currentInverter.panelPerString &&
     currentMouseDrag !== lastMouseDrag
   ) {
-    dispatch(actions.setPVConnected(editingRoofIndex, hoverPanelId))
+    dispatch(actions.setPVConnected(hoverPanelId))
     return dispatch({
       type: actionTypes.ATTACH_PV_PANEL,
-      panelInfo: matchInfo
+      panelInfo: matchPanel
     })
   }
 }
@@ -480,10 +508,9 @@ export const setMouseDragStatus = (hoverObj) => {
   }
 }
 
-export const setBridgingRoofAndInverter = (roofIndex, inverterIndex) => {
+export const setBridgingInverter = (inverterIndex) => {
   return {
     type: actionTypes.SET_BRIDGING_ROOF_AND_INVERTER,
-    roofIndex: roofIndex,
     inverterIndex: inverterIndex
   };
 }
@@ -494,10 +521,9 @@ export const placeInverter = (heightOffset=0.2) => (dispatch, getState) => {
   const inverterLength = 0.25;
   const mouseCartesian3 =
     getState().undoable.present.drawingManager.mouseCartesian3;
-  const editingRoofIndex =
-    getState().undoable.present.editingWiringManager.editingRoofIndex;
+
   const result = makeInverterPolygonAndCenter(
-    mouseCartesian3, workingBuilding, editingRoofIndex, heightOffset, inverterLength
+    mouseCartesian3, workingBuilding, heightOffset, inverterLength
   );
   const inverterPolygon = result.inverterPolygon;
   const inverterCenter = result.inverterCenter;
@@ -509,28 +535,129 @@ export const placeInverter = (heightOffset=0.2) => (dispatch, getState) => {
   })
 }
 
-export const bridging = (roofIndex, inverterIndex, heightOffset=0.2) =>
+export const dynamicMainBridging = (heightOffset = 0.2) => (dispatch, getState) => {
+  const workingBuilding =
+    getState().undoable.present.buildingManager.workingBuilding;
+  const entireSpecInverters =
+    getState().undoable.present.editingWiringManager.entireSpecInverters;
+  const editingInverterIndex =
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
+  const newMainBridging = Bridging.fromBridging(
+    entireSpecInverters[editingInverterIndex].mainBridging
+  );
+  const newMainPolyline = Polyline.fromPolyline(
+    entireSpecInverters[editingInverterIndex].mainBridging.mainPolyline
+  );
+  const mouseCartesian3 =
+    getState().undoable.present.drawingManager.mouseCartesian3;
+
+  let newPoint = null;
+  if (workingBuilding.type === 'FLAT') {
+    newPoint = Point.fromCoordinate(Coordinate.fromCartesian(
+      mouseCartesian3, workingBuilding.foundationHeight + heightOffset
+    ))
+  } else {
+    newPoint = Point.fromCoordinate(Coordinate.fromCartesian(mouseCartesian3));
+    workingBuilding.pitchedRoofPolygons.forEach(pitchedPolygon => {
+      if (
+        corWithinLineCollectionPolygon(
+          MathLineCollection.fromPolyline(
+            pitchedPolygon.convertHierarchyToFoundLine()
+          ), newPoint
+        )
+      ) {
+        newPoint.setCoordinate(
+          null, null,
+          Coordinate.heightOfArbitraryNode(pitchedPolygon, newPoint) +
+          workingBuilding.foundationHeight + heightOffset
+        );
+      }
+    })
+  }
+  newPoint.setColor(Cesium.Color.SLATEBLUE);
+
+  if (newMainPolyline.points.length === 1) {
+    newMainPolyline.points.push(newPoint);
+  } else{
+    newMainPolyline.points.splice(newMainPolyline.points.length - 1, 1, newPoint);
+  }
+  newMainBridging.mainPolyline = newMainPolyline;
+
+  return dispatch({
+    type: actionTypes.DYNAMIC_MAIN_BRIDGING,
+    mainBridging: newMainBridging
+  });
+}
+
+export const addPointOnMainBridging = (heightOffset = 0.2) =>
+(dispatch, getState) => {
+  const entireSpecInverters =
+    getState().undoable.present.editingWiringManager.entireSpecInverters;
+  const editingInverterIndex =
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
+  const newMainBridging = Bridging.fromBridging(
+    entireSpecInverters[editingInverterIndex].mainBridging
+  );
+  const newMainPolyline = Polyline.fromPolyline(
+    entireSpecInverters[editingInverterIndex].mainBridging.mainPolyline
+  );
+  newMainPolyline.points = [
+    ...newMainPolyline.points, newMainPolyline.points.slice(-1)[0]
+  ]
+  newMainBridging.mainPolyline = newMainPolyline;
+
+  return dispatch({
+    type: actionTypes.ADD_POINT_ON_MAIN_BRIDGING,
+    mainBridging: newMainBridging
+  });
+}
+
+export const terminateDrawMainBridging = () => (dispatch, getState) => {
+  const entireSpecInverters =
+    getState().undoable.present.editingWiringManager.entireSpecInverters;
+  const editingInverterIndex =
+    getState().undoable.present.editingWiringManager.editingInverterIndex;
+  const newMainBridging = Bridging.fromBridging(
+    entireSpecInverters[editingInverterIndex].mainBridging
+  );
+  const newMainPolyline = Polyline.fromPolyline(
+    entireSpecInverters[editingInverterIndex].mainBridging.mainPolyline
+  );
+
+  if (newMainPolyline.points.length !== 1) {
+    newMainPolyline.points.splice(newMainPolyline.points.length - 1, 1);
+  }
+  newMainBridging.mainPolyline = newMainPolyline;
+
+  return dispatch({
+    type: actionTypes.TERMINATE_DRAW_MAIN_BRIDGING,
+    mainBridging: newMainBridging
+  });
+}
+
+export const bridging = (inverterIndex, heightOffset=0.2) =>
 (dispatch, getState) => {
   const workingBuilding =
     getState().undoable.present.buildingManager.workingBuilding;
   const inverterCenterPoint =
     getState().undoable.present.editingWiringManager
-    .roofSpecInverters[roofIndex][inverterIndex].polygonCenter;
+    .entireSpecInverters[inverterIndex].polygonCenter;
   const wirings = getState().undoable.present.editingWiringManager
-    .roofSpecInverters[roofIndex][inverterIndex].wiring;
+    .entireSpecInverters[inverterIndex].wiring;
   const roofSpecParams = getState().undoable.present.editingPVPanelManager
-    .roofSpecParams[roofIndex];
+    .roofSpecParams[0];
   const pvPanelParams = getState().undoable.present.editingPVPanelManager
     .userPanels[roofSpecParams.selectPanelIndex];
   const rooftopLineCollection = workingBuilding.type === 'FLAT' ?
     MathLineCollection.fromPolyline(
-      workingBuilding.foundationPolygon[roofIndex]
+      workingBuilding.foundationPolygon[0]
       .convertHierarchyToFoundLine()
     ) :
     MathLineCollection.fromPolyline(
-      workingBuilding.pitchedRoofPolygons[roofIndex]
+      workingBuilding.pitchedRoofPolygons[0]
       .convertHierarchyToFoundLine()
     );
+
   const panelCos = Math.cos(roofSpecParams.tilt * Math.PI / 180.0);
   let panelWidth = null;
   if (roofSpecParams.orientation === 'portrait') {
@@ -561,7 +688,7 @@ export const bridging = (roofIndex, inverterIndex, heightOffset=0.2) =>
         firstAnchor.setCoordinate(
           null, null,
           Coordinate.heightOfArbitraryNode(
-            workingBuilding.pitchedRoofPolygons[roofIndex],
+            workingBuilding.pitchedRoofPolygons[0],
             firstAnchor
           ) + workingBuilding.foundationHeight + heightOffset
         );
@@ -581,46 +708,6 @@ export const bridging = (roofIndex, inverterIndex, heightOffset=0.2) =>
           anchor: firstAnchor,
           panelCenter:firstPanelCenter,
           wiringIndex: i
-        }];
-      }
-    }
-  })
-  wirings.forEach(wiring => {
-    if (wiring.allPanels.length > 0) {
-      const endPanelCenter = wiring.endPanel.getCenter(0.2);
-      const endAnchor = wiring.panelRows.slice(-1)[0] % 2 === 0 ?
-        Point.fromCoordinate(Coordinate.destination(
-          endPanelCenter, roofSpecParams.azimuth, anchorDist
-        ), null, null, null, Cesium.Color.DARKCYAN) :
-        Point.fromCoordinate(Coordinate.destination(
-          endPanelCenter, roofSpecParams.azimuth + 180, anchorDist
-        ), null, null, null, Cesium.Color.DARKCYAN)
-      if (workingBuilding.type === 'FLAT') {
-        endAnchor.setCoordinate(
-          null, null, workingBuilding.foundationHeight + heightOffset
-        );
-      } else {
-        endAnchor.setCoordinate(
-          null, null,
-          Coordinate.heightOfArbitraryNode(
-            workingBuilding.pitchedRoofPolygons[roofIndex],
-            endAnchor
-          ) + workingBuilding.foundationHeight + heightOffset
-        );
-      }
-
-      const bridgingIndex = wiring.panelRows.slice(-1)[0] % 2 === 0 ?
-        wiring.panelRows.slice(-1)[0] :
-        wiring.panelRows.slice(-1) - 1;
-      if (bridgingIndex in bridgingDict) {
-        bridgingDict[bridgingIndex].push({
-          anchor: endAnchor,
-          panelCenter:endPanelCenter
-        });
-      } else {
-        bridgingDict[bridgingIndex] = [{
-          anchor: endAnchor,
-          panelCenter:endPanelCenter
         }];
       }
     }
@@ -723,7 +810,6 @@ export const bridging = (roofIndex, inverterIndex, heightOffset=0.2) =>
   return dispatch({
     type: actionTypes.AUTO_BRIDGING,
     bridging: bridgings,
-    roofIndex: roofIndex,
     inverterIndex: inverterIndex
   });
 }
@@ -746,11 +832,9 @@ export const dragInverter = (heightOffset=0.2) => (dispatch, getState) => {
     getState().undoable.present.buildingManager.workingBuilding;
   const mouseCartesian3 =
     getState().undoable.present.drawingManager.mouseCartesian3;
-  const editingRoofIndex =
-    getState().undoable.present.editingWiringManager.editingRoofIndex;
 
   const result = makeInverterPolygonAndCenter(
-    mouseCartesian3, workingBuilding, editingRoofIndex, heightOffset, inverterLength
+    mouseCartesian3, workingBuilding, heightOffset, inverterLength
   );
   const inverterPolygon = result.inverterPolygon;
   const inverterCenter = result.inverterCenter;
@@ -763,15 +847,15 @@ export const dragInverter = (heightOffset=0.2) => (dispatch, getState) => {
 }
 
 export const setHoverBridgingPoint = (pointId) => (dispatch, getState) => {
-  const roofSpecInverters =
-    getState().undoable.present.editingWiringManager.roofSpecInverters;
+  const entireSpecInverters =
+    getState().undoable.present.editingWiringManager.entireSpecInverters;
   const editingRoofIndex =
     getState().undoable.present.editingWiringManager.editingRoofIndex;
   const editingInverterIndex =
     getState().undoable.present.editingWiringManager.editingInverterIndex;
   let bridgingIndex = null;
   let bridgingPointIndex = null;
-  roofSpecInverters[editingRoofIndex][editingInverterIndex]
+  entireSpecInverters[editingRoofIndex][editingInverterIndex]
   .bridging.forEach((bridging, i) => {
     const matchIndex = bridging.mainPolyline.points.findIndex(p =>
       p.entityId === pointId
@@ -830,14 +914,14 @@ export const dragBridgingPoint = (heightOffset=0.2) => (dispatch, getState) => {
 
 export const setHoverBridgingMainPolyline = (polylineId) =>
 (dispatch, getState) => {
-  const roofSpecInverters =
-    getState().undoable.present.editingWiringManager.roofSpecInverters;
+  const entireSpecInverters =
+    getState().undoable.present.editingWiringManager.entireSpecInverters;
   const editingRoofIndex =
     getState().undoable.present.editingWiringManager.editingRoofIndex;
   const editingInverterIndex =
     getState().undoable.present.editingWiringManager.editingInverterIndex;
   const bridgingMainPolylineIndex =
-    roofSpecInverters[editingRoofIndex][editingInverterIndex].bridging
+    entireSpecInverters[editingRoofIndex][editingInverterIndex].bridging
     .findIndex(bridging => bridging.mainPolyline.entityId === polylineId);
   if (bridgingMainPolylineIndex !== null) {
     return dispatch({
@@ -857,16 +941,16 @@ export const complementPointOnBridging = (heightOffset=0.2) =>
 (dispatch, getState) => {
   const workingBuilding =
     getState().undoable.present.buildingManager.workingBuilding;
-  const roofSpecInverters =
-    getState().undoable.present.editingWiringManager.roofSpecInverters;
+  const entireSpecInverters =
+    getState().undoable.present.editingWiringManager.entireSpecInverters;
   const editingRoofIndex =
     getState().undoable.present.editingWiringManager.editingRoofIndex;
   const editingInverterIndex =
     getState().undoable.present.editingWiringManager.editingInverterIndex;
-  const editingBridgingMainPolylineIndex = 
+  const editingBridgingMainPolylineIndex =
     getState().undoable.present.editingWiringManager
     .editingBridgingMainPolylineIndex;
-  const mainPolyline = roofSpecInverters[editingRoofIndex][editingInverterIndex]
+  const mainPolyline = entireSpecInverters[editingRoofIndex][editingInverterIndex]
     .bridging[editingBridgingMainPolylineIndex].mainPolyline;
   const rightClickCartesian3 =
     getState().undoable.present.drawingManager.rightClickCartesian3;
@@ -897,26 +981,65 @@ export const complementPointOnBridging = (heightOffset=0.2) =>
   });
 }
 
-const makeInverterPolygonAndCenter = (
-  mouseCartesian3, workingBuilding, editingRoofIndex, heightOffset, inverterLength
-) => {
-  const inverterCenterPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(mouseCartesian3), null, null, null,
-    Cesium.Color.DARKCYAN
-  );
-  if (workingBuilding.type === 'FLAT') {
-    inverterCenterPoint.setCoordinate(
-      null, null, workingBuilding.foundationHeight + heightOffset
-    );
-  } else {
-    inverterCenterPoint.setCoordinate(
-      null, null,
-      Coordinate.heightOfArbitraryNode(
-        workingBuilding.pitchedRoofPolygons[editingRoofIndex],
-        inverterCenterPoint
-      ) + workingBuilding.foundationHeight + heightOffset
-    );
+export const highLightWiring = (inverterInd, wiringInd) => {
+  return {
+    type: actionTypes.HIGHLIGHT_WIRING,
+    inverterIndex: inverterInd,
+    wiringIndex: wiringInd
   }
+}
+
+export const highLightInverter = (inverterInd) => {
+  return {
+    type: actionTypes.HIGHLIGHT_INVERTER,
+    inverterIndex: inverterInd,
+  }
+}
+
+export const deHighLightWiring = (inverterInd, wiringInd) => {
+  return {
+    type: actionTypes.DE_HIGHLIGHT_WIRING,
+    inverterIndex: inverterInd,
+    wiringIndex: wiringInd
+  }
+}
+
+export const deHighLightInverter = (inverterInd) => {
+  return {
+    type: actionTypes.DE_HIGHLIGHT_INVERTER,
+    inverterIndex: inverterInd,
+  }
+}
+
+const makeInverterPolygonAndCenter = (
+  mouseCartesian3, workingBuilding, heightOffset, inverterLength
+) => {
+  let inverterCenterPoint = null;
+  if (workingBuilding.type === 'FLAT') {
+    inverterCenterPoint = Point.fromCoordinate(Coordinate.fromCartesian(
+      mouseCartesian3, workingBuilding.foundationHeight + heightOffset
+    ))
+  } else {
+    inverterCenterPoint = Point.fromCoordinate(
+      Coordinate.fromCartesian(mouseCartesian3)
+    );
+    workingBuilding.pitchedRoofPolygons.forEach(pitchedPolygon => {
+      if (
+        corWithinLineCollectionPolygon(
+          MathLineCollection.fromPolyline(
+            pitchedPolygon.convertHierarchyToFoundLine()
+          ), inverterCenterPoint
+        )
+      ) {
+        inverterCenterPoint.setCoordinate(
+          null, null,
+          Coordinate.heightOfArbitraryNode(pitchedPolygon, inverterCenterPoint) +
+          workingBuilding.foundationHeight + heightOffset
+        );
+      }
+    })
+  }
+
   const inverterWNPoint = Point.fromCoordinate(
     Coordinate.destination(
       Coordinate.destination(inverterCenterPoint, 0, inverterLength),

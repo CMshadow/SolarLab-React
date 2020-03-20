@@ -177,6 +177,20 @@ const setUIStateDragInverter = (state, action) => {
   };
 }
 
+const setUIStateDrawMainBridging = (state, action) => {
+  return {
+    ...state,
+    uiState: 'DRAW_MAIN_BRIDGING',
+  };
+}
+
+const setUIStateEditMainBridging = (state, action) => {
+  return {
+    ...state,
+    uiState: 'EDIT_MAIN_BRIDGING',
+  };
+}
+
 const setUIStateEditBridging = (state, action) => {
   return {
     ...state,
@@ -239,6 +253,10 @@ const reducer = (state=initialState, action) => {
       return setUIStateReadyDragInverter(state, action);
     case actionTypes.SET_UI_STATE_DRAG_INVERTER:
       return setUIStateDragInverter(state, action);
+    case actionTypes.SET_UI_STATE_DRAW_MAIN_BRIDGING:
+      return setUIStateDrawMainBridging(state, action);
+    case actionTypes.SET_UI_STATE_EDIT_MAIN_BRIDGING:
+      return setUIStateEditMainBridging(state, action);
     case actionTypes.SET_UI_STATE_EDIT_BRIDGING:
       return setUIStateEditBridging(state, action);
     case actionTypes.SET_UI_STATE_DRAG_BRIDGING:

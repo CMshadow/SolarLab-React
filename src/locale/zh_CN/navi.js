@@ -92,7 +92,7 @@ export default {
 
   setUpPVPanelonRoof: ' 屋面光伏板铺设 ',
   manual_panel: ' 手动铺设 ',
-  max_Econ: ' 最大产量 ',
+  max_Econ: ' 最大效率 ',
   max_panels: ' 最大数量 ',
   roofDirection: ' 屋面方向 ',
   select_a_panel: ' 选择光伏板 ',

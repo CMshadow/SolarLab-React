@@ -5,20 +5,15 @@ import CustomPoint from '../point/point';
 
 const EditingWiringRender = (props) => {
 
-  let allWirings = null
-  if(Object.keys(props.roofSpecInverters).length !== 0) {
-    allWirings = Object.keys(props.roofSpecInverters).map(roofIndex =>
-      props.roofSpecInverters[roofIndex].map(inverter =>
-        inverter.wiring.filter(wiring => wiring.polyline !== null)
-        .map(wiring =>
-          <FloatPolyline
-            key={wiring.polyline.entityId}
-            {...wiring.polyline}
-          />
-        )
-      )
+  const allWirings = props.entireSpecInverters.map(inverter =>
+    inverter.wiring.filter(wiring => wiring.polyline !== null)
+    .map(wiring =>
+      <FloatPolyline
+        key={wiring.polyline.entityId}
+        {...wiring.polyline}
+      />
     )
-  }
+  );
 
   let editingWiringStartPoint = null;
   if (props.editingStartPoint) {
@@ -51,8 +46,8 @@ const EditingWiringRender = (props) => {
 
 const mapStateToProps = state => {
 	return{
-    roofSpecInverters:
-      state.undoable.present.editingWiringManager.roofSpecInverters,
+    entireSpecInverters:
+      state.undoable.present.editingWiringManager.entireSpecInverters,
     editingRoofIndex:
       state.undoable.present.editingWiringManager.editingRoofIndex,
     editingInverterIndex:
