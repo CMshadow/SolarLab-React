@@ -446,15 +446,18 @@ const dragInverter = (state, action) => {
   const newInverter = Inverter.fromInverter(
     state.entireSpecInverters[state.editingInverterIndex]
   );
+  const newMainBridging = Bridging.fromBridging(newInverter.mainBridging);
   const newBridging = newInverter.bridging.map(bridging => {
     const newBridge = Bridging.fromBridging(bridging);
     newBridge.mainPolyline = Polyline.fromPolyline(newBridge.mainPolyline);
     newBridge.mainPolyline.points.splice(0, 1, action.polygonCenter);
     return newBridge;
   })
+  newMainBridging.mainPolyline.points.splice(0, 1, action.polygonCenter);
   newInverter.polygon = action.polygon;
   newInverter.polygonCenter = action.polygonCenter;
   newInverter.bridging = newBridging;
+  newInverter.mainBridging = newMainBridging;
   const roofInverters = [...state.entireSpecInverters];
   roofInverters.splice(state.editingInverterIndex, 1, newInverter);
   return {

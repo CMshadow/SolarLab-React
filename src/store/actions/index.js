@@ -126,6 +126,7 @@ export {
   setUIStateReadyDragInverter,
   setUIStateDragInverter,
   setUIStateDrawMainBridging,
+  setUIStateEditMainBridging,
   setUIStateEditBridging,
   setUIStateDragBridging
 } from './uiStateManager';

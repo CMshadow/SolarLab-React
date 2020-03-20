@@ -144,6 +144,12 @@ export const setUIStateDrawMainBridging = () => {
   };
 }
 
+export const setUIStateEditMainBridging = () => {
+  return {
+    type: actionTypes.SET_UI_STATE_EDIT_MAIN_BRIDGING
+  };
+}
+
 export const setUIStateEditBridging = () => {
   return {
     type: actionTypes.SET_UI_STATE_EDIT_BRIDGING

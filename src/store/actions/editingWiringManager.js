@@ -574,7 +574,7 @@ export const dynamicMainBridging = (heightOffset = 0.2) => (dispatch, getState) 
       }
     })
   }
-
+  newPoint.setColor(Cesium.Color.SLATEBLUE);
 
   if (newMainPolyline.points.length === 1) {
     newMainPolyline.points.push(newPoint);
@@ -639,219 +639,21 @@ export const bridging = (inverterIndex, heightOffset=0.2) =>
 (dispatch, getState) => {
   const workingBuilding =
     getState().undoable.present.buildingManager.workingBuilding;
-  const inverterCenterPoint =
-    getState().undoable.present.editingWiringManager
-    .entireSpecInverters[0][inverterIndex].polygonCenter;
+  const mainBridging = getState().undoable.present.editingWiringManager
+    .entireSpecInverters[inverterIndex].mainBridging
   const wirings = getState().undoable.present.editingWiringManager
-    .entireSpecInverters[0][inverterIndex].wiring;
-  const roofSpecParams = getState().undoable.present.editingPVPanelManager
-    .roofSpecParams[0];
-  const pvPanelParams = getState().undoable.present.editingPVPanelManager
-    .userPanels[roofSpecParams.selectPanelIndex];
-  const rooftopLineCollection = workingBuilding.type === 'FLAT' ?
-    MathLineCollection.fromPolyline(
-      workingBuilding.foundationPolygon[0]
-      .convertHierarchyToFoundLine()
-    ) :
-    MathLineCollection.fromPolyline(
-      workingBuilding.pitchedRoofPolygons[0]
-      .convertHierarchyToFoundLine()
-    );
-  const panelCos = Math.cos(roofSpecParams.tilt * Math.PI / 180.0);
-  let panelWidth = null;
-  if (roofSpecParams.orientation === 'portrait') {
-    panelWidth = pvPanelParams.panelWidth > pvPanelParams.panelLength ?
-    panelCos * pvPanelParams.panelWidth : panelCos * pvPanelParams.panelLength
-  } else {
-    panelWidth = pvPanelParams.panelWidth < pvPanelParams.panelLength ?
-    panelCos * pvPanelParams.panelWidth : panelCos * pvPanelParams.panelLength
-  }
-  const anchorDist = panelWidth / 2 + roofSpecParams.rowSpace / 2;
-
-  const bridgingDict = {};
-  wirings.forEach((wiring, i) => {
-    if (wiring.allPanels.length > 0) {
-      const firstPanelCenter = wiring.startPanel.getCenter(0.2);
-      const firstAnchor = wiring.panelRows[0] % 2 === 0 ?
-        Point.fromCoordinate(Coordinate.destination(
-          firstPanelCenter, roofSpecParams.azimuth, anchorDist
-        ), null, null, null, Cesium.Color.DARKCYAN) :
-        Point.fromCoordinate(Coordinate.destination(
-          firstPanelCenter, roofSpecParams.azimuth + 180, anchorDist
-        ), null, null, null, Cesium.Color.DARKCYAN)
-      if (workingBuilding.type === 'FLAT') {
-        firstAnchor.setCoordinate(
-          null, null, workingBuilding.foundationHeight + heightOffset
-        );
-      } else {
-        firstAnchor.setCoordinate(
-          null, null,
-          Coordinate.heightOfArbitraryNode(
-            workingBuilding.pitchedRoofPolygons[0],
-            firstAnchor
-          ) + workingBuilding.foundationHeight + heightOffset
-        );
-      }
-
-      const bridgingIndex = wiring.panelRows[0] % 2 === 0 ?
-        wiring.panelRows[0] :
-        wiring.panelRows[0] - 1;
-      if (bridgingIndex in bridgingDict) {
-        bridgingDict[bridgingIndex].push({
-          anchor: firstAnchor,
-          panelCenter:firstPanelCenter,
-          wiringIndex: i
-        });
-      } else {
-        bridgingDict[bridgingIndex] = [{
-          anchor: firstAnchor,
-          panelCenter:firstPanelCenter,
-          wiringIndex: i
-        }];
-      }
-    }
-  })
-  wirings.forEach(wiring => {
-    if (wiring.allPanels.length > 0) {
-      const endPanelCenter = wiring.endPanel.getCenter(0.2);
-      const endAnchor = wiring.panelRows.slice(-1)[0] % 2 === 0 ?
-        Point.fromCoordinate(Coordinate.destination(
-          endPanelCenter, roofSpecParams.azimuth, anchorDist
-        ), null, null, null, Cesium.Color.DARKCYAN) :
-        Point.fromCoordinate(Coordinate.destination(
-          endPanelCenter, roofSpecParams.azimuth + 180, anchorDist
-        ), null, null, null, Cesium.Color.DARKCYAN)
-      if (workingBuilding.type === 'FLAT') {
-        endAnchor.setCoordinate(
-          null, null, workingBuilding.foundationHeight + heightOffset
-        );
-      } else {
-        endAnchor.setCoordinate(
-          null, null,
-          Coordinate.heightOfArbitraryNode(
-            workingBuilding.pitchedRoofPolygons[0],
-            endAnchor
-          ) + workingBuilding.foundationHeight + heightOffset
-        );
-      }
-
-      const bridgingIndex = wiring.panelRows.slice(-1)[0] % 2 === 0 ?
-        wiring.panelRows.slice(-1)[0] :
-        wiring.panelRows.slice(-1) - 1;
-      if (bridgingIndex in bridgingDict) {
-        bridgingDict[bridgingIndex].push({
-          anchor: endAnchor,
-          panelCenter:endPanelCenter
-        });
-      } else {
-        bridgingDict[bridgingIndex] = [{
-          anchor: endAnchor,
-          panelCenter:endPanelCenter
-        }];
-      }
-    }
-  })
-
-  const bridgings = Object.keys(bridgingDict).map(key => {
-    bridgingDict[key].sort((first, second) =>
-      Coordinate.surfaceDistance(inverterCenterPoint, first.anchor) <
-      Coordinate.surfaceDistance(inverterCenterPoint, second.anchor) ?
-      -1 : 1
-    )
-
-    let leftIntersect = null;
-    rooftopLineCollection.mathLineCollection.forEach(mathLine => {
-      const inter = Coordinate.intersection(
-        bridgingDict[key][0].anchor, roofSpecParams.azimuth + 90,
-        mathLine.originCor, mathLine.brng
-      );
-      if (inter !== undefined) {
-        if (
-          Coordinate.surfaceDistance(inter, mathLine.originCor) <
-          mathLine.dist
-        ) {
-          leftIntersect = inter;
-        }
-      }
-    });
-    let rightIntersect = null;
-    rooftopLineCollection.mathLineCollection.forEach(mathLine => {
-      const inter = Coordinate.intersection(
-        bridgingDict[key][0].anchor, roofSpecParams.azimuth - 90,
-        mathLine.originCor, mathLine.brng
-      );
-      if (inter !== undefined) {
-        if (
-          Coordinate.surfaceDistance(inter, mathLine.originCor) <
-          mathLine.dist
-        ) {
-          rightIntersect = inter;
-        }
-      }
-    });
-    const leftOrRightAnchor =
-      Coordinate.surfaceDistance(leftIntersect, inverterCenterPoint) <
-      Coordinate.surfaceDistance(rightIntersect, inverterCenterPoint) ?
-      Point.fromCoordinate(leftIntersect, null, null, null, Cesium.Color.DARKCYAN) :
-      Point.fromCoordinate(rightIntersect, null, null, null, Cesium.Color.DARKCYAN)
-    const upIntersect = Coordinate.intersection(
-      bridgingDict[key][0].anchor, roofSpecParams.azimuth + 90,
-      inverterCenterPoint, roofSpecParams.azimuth + 180
-    ) || Coordinate.intersection(
-      bridgingDict[key][0].anchor, roofSpecParams.azimuth - 90,
-      inverterCenterPoint, roofSpecParams.azimuth + 180
-    );
-    const downIntersect = Coordinate.intersection(
-      bridgingDict[key][0].anchor, roofSpecParams.azimuth + 90,
-      inverterCenterPoint, roofSpecParams.azimuth
-    ) || Coordinate.intersection(
-      bridgingDict[key][0].anchor, roofSpecParams.azimuth - 90,
-      inverterCenterPoint, roofSpecParams.azimuth
-    );
-    const upOrDownAnchor =
-      upIntersect === undefined ?
-      Point.fromCoordinate(downIntersect, null, null, null, Cesium.Color.DARKCYAN) :
-      downIntersect === undefined ?
-      Point.fromCoordinate(upIntersect, null, null, null, Cesium.Color.DARKCYAN) :
-      Coordinate.surfaceDistance(upIntersect, inverterCenterPoint) <
-      Coordinate.surfaceDistance(downIntersect, inverterCenterPoint) ?
-      Point.fromCoordinate(upIntersect, null, null, null, Cesium.Color.DARKCYAN) :
-      Point.fromCoordinate(downIntersect, null, null, null, Cesium.Color.DARKCYAN)
-
-    const bridgeAnchor =
-      Coordinate.surfaceDistance(upOrDownAnchor, bridgingDict[key][0].anchor) <
-      Coordinate.surfaceDistance(leftOrRightAnchor, bridgingDict[key][0].anchor) ?
-      upOrDownAnchor :
-      leftOrRightAnchor
-
-    const mainPolyline = new Polyline(
-      [inverterCenterPoint, bridgeAnchor, ...bridgingDict[key].map(obj => obj.anchor)],
-      null, 'bridging', Cesium.Color.DARKCYAN
-    );
-    const subPolylines = bridgingDict[key].map(obj =>
-      new Polyline([obj.anchor, obj.panelCenter],
-      null, 'bridging', Cesium.Color.DARKCYAN)
-    );
-    const anchorPanelMap = bridgingDict[key].map((obj, i) => {
-      return {
-        anchorIndex: i + 2,
-        panelCenter: obj.panelCenter
-      }
-    });
-    const connectedWiringIndex =
-      bridgingDict[key].filter(obj => obj.wiringIndex !== undefined)
-      .map((obj, i) => obj.wiringIndex);
-    return new Bridging(
-      null, mainPolyline, subPolylines, anchorPanelMap, connectedWiringIndex
-    );
-  })
-
-  return dispatch({
-    type: actionTypes.AUTO_BRIDGING,
-    bridging: bridgings,
-    roofIndex: 0,
-    inverterIndex: inverterIndex
-  });
+    .entireSpecInverters[inverterIndex].wiring;
+  // const roofSpecParams = getState().undoable.present.editingPVPanelManager
+  //   .roofSpecParams;
+  // const pvPanelParams = getState().undoable.present.editingPVPanelManager
+  //   .userPanels[roofSpecParams.selectPanelIndex];
+  console.log(mainBridging)
+  console.log(wirings)
+  // return dispatch({
+  //   type: actionTypes.AUTO_BRIDGING,
+  //   bridging: bridgings,
+  //   inverterIndex: inverterIndex
+  // });
 }
 
 export const setHoverInverterCenter = () => {
@@ -1054,16 +856,31 @@ export const deHighLightInverter = (inverterInd) => {
 const makeInverterPolygonAndCenter = (
   mouseCartesian3, workingBuilding, heightOffset, inverterLength
 ) => {
-  const inverterCenterPoint = Point.fromCoordinate(
-    Coordinate.fromCartesian(mouseCartesian3), null, null, null,
-    Cesium.Color.DARKCYAN
-  );
-  inverterCenterPoint.setCoordinate(
-    null, null, Math.max(
-      inverterCenterPoint.getCoordinate().height,
-      workingBuilding.foundationHeight
-    ) + heightOffset
-  );
+  let inverterCenterPoint = null;
+  if (workingBuilding.type === 'FLAT') {
+    inverterCenterPoint = Point.fromCoordinate(Coordinate.fromCartesian(
+      mouseCartesian3, workingBuilding.foundationHeight + heightOffset
+    ))
+  } else {
+    inverterCenterPoint = Point.fromCoordinate(
+      Coordinate.fromCartesian(mouseCartesian3)
+    );
+    workingBuilding.pitchedRoofPolygons.forEach(pitchedPolygon => {
+      if (
+        corWithinLineCollectionPolygon(
+          MathLineCollection.fromPolyline(
+            pitchedPolygon.convertHierarchyToFoundLine()
+          ), inverterCenterPoint
+        )
+      ) {
+        inverterCenterPoint.setCoordinate(
+          null, null,
+          Coordinate.heightOfArbitraryNode(pitchedPolygon, inverterCenterPoint) +
+          workingBuilding.foundationHeight + heightOffset
+        );
+      }
+    })
+  }
 
   const inverterWNPoint = Point.fromCoordinate(
     Coordinate.destination(
