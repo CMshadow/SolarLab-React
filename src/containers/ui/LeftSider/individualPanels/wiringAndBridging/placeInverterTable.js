@@ -18,7 +18,39 @@ class PlaceInverterTable extends Component {
 
   expandedRowRender = (inverter, inverterInd) => {
     return [
-
+      (
+        this.props.entireSpecInverters[inverterInd].polygon ?
+        <Button
+          key='placeInverter'
+          type="primary"
+          size='small'
+          ghost={this.props.uiState === 'READY_DRAG_INVERTER'? false : true}
+          disabled={
+            this.props.uiState === 'SETUP_BRIDGING' ||
+            (this.props.uiState === 'READY_DRAG_INVERTER' &&
+            inverterInd === this.props.editingInverterIndex) ?
+            false:
+            true
+          }
+          onClick={() => {
+            this.props.setBridgingInverter(inverterInd);
+            this.props.uiState === 'READY_DRAG_INVERTER' ?
+            this.props.setUIStateSetUpBridging() :
+            this.props.setUIStateReadyDragInverter();
+          }}
+        ><FormattedMessage id='moveInverter' /></Button> :
+        <Button
+          key='placeInverter'
+          type="primary"
+          size='small'
+          ghost={this.props.uiState !== 'PLACE_INVERTER'}
+          disabled={this.props.uiState !== 'SETUP_BRIDGING'}
+          onClick={() => {
+            this.props.setBridgingInverter(inverterInd);
+            this.props.setUIStatePlaceInverter();
+          }}
+        ><FormattedMessage id='placeInverter' /></Button>
+      ),
       (
         this.props.entireSpecInverters[inverterInd].mainBridging &&
         this.props.entireSpecInverters[inverterInd].mainBridging.mainPolyline
@@ -82,50 +114,9 @@ class PlaceInverterTable extends Component {
       title: <FormattedMessage id='inverter_name' />,
       dataIndex: 'inverterName',
       key: 'name',
-      width: '60%',
+      width: '100%',
       ellipsis: true,
       align: 'center'
-    },
-    {
-      title: <FormattedMessage id='Action' />,
-      dataIndex: 'action',
-      key: 'action',
-      width: '40%',
-      ellipsis: true,
-      align: 'center',
-      render: (text, record, inverterInd) => (
-        this.props.entireSpecInverters[inverterInd].polygon ?
-        <Button
-          key='placeInverter'
-          type="primary"
-          size='small'
-          ghost={this.props.uiState === 'READY_DRAG_INVERTER'? false : true}
-          disabled={
-            this.props.uiState === 'SETUP_BRIDGING' ||
-            (this.props.uiState === 'READY_DRAG_INVERTER' &&
-            inverterInd === this.props.editingInverterIndex) ?
-            false:
-            true
-          }
-          onClick={() => {
-            this.props.setBridgingInverter(inverterInd);
-            this.props.uiState === 'READY_DRAG_INVERTER' ?
-            this.props.setUIStateSetUpBridging() :
-            this.props.setUIStateReadyDragInverter();
-          }}
-        ><FormattedMessage id='moveInverter' /></Button> :
-        <Button
-          key='placeInverter'
-          type="primary"
-          size='small'
-          ghost={this.props.uiState !== 'PLACE_INVERTER'}
-          disabled={this.props.uiState !== 'SETUP_BRIDGING'}
-          onClick={() => {
-            this.props.setBridgingInverter(inverterInd);
-            this.props.setUIStatePlaceInverter();
-          }}
-        ><FormattedMessage id='placeInverter' /></Button>
-      )
     }
   ];
 
@@ -140,8 +131,8 @@ class PlaceInverterTable extends Component {
               size='middle'
               pagination={false}
               columns={this.columns}
-              expandRowByClick
-              expandedRowRender={(inverter, inverterInd) =>
+              expandedRowRender={
+                (inverter, inverterInd) =>
                 this.expandedRowRender(inverter, inverterInd)
               }
               dataSource={this.props.entireSpecInverters}
@@ -160,7 +151,7 @@ class PlaceInverterTable extends Component {
                   },
                 }
               }}
-            />
+            />,
           </ConfigProvider>
         </Col>
       </Row>

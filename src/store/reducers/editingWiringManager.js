@@ -392,17 +392,14 @@ const placeInverter = (state, action) => {
 
 const bridging = (state, action) => {
   const newInverter = Inverter.fromInverter(
-    state.entireSpecInverters[action.roofIndex][action.inverterIndex]
+    state.entireSpecInverters[action.inverterIndex]
   );
   newInverter.bridging = action.bridging;
-  const roofInverters = [...state.entireSpecInverters[action.roofIndex]];
+  const roofInverters = [...state.entireSpecInverters];
   roofInverters.splice(action.inverterIndex, 1, newInverter);
   return {
     ...state,
-    entireSpecInverters: {
-      ...state.entireSpecInverters,
-      [action.roofIndex]: roofInverters
-    }
+    entireSpecInverters: roofInverters
   };
 }
 
