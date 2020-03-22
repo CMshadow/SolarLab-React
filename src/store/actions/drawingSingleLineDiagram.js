@@ -15,10 +15,7 @@ export const initStage = (layer) => (dispatch, getState) => {
     .workingBuilding;
   // console.log("CHECK SLD")
   if (currentBuilding !== null) {
-    const allInverters = Object.keys(currentBuilding.inverters)
-    .flatMap(roofIndex =>
-      currentBuilding.inverters[roofIndex].map(inverter => inverter)
-    );
+    const allInverters = currentBuilding.inverters;
 
     // console.log(allInverters)
     let numOfInverter = allInverters.length;
