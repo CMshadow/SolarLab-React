@@ -165,13 +165,12 @@ export const bindParapetShadow = () => (dispatch, getState) => {
 
 export const bindPVPanels = () => (dispatch, getState) => {
   const pv = getState().undoable.present.editingPVPanelManager.panels;
+  console.log(pv)
   const pvRoofSpecParams = getState().undoable.present.editingPVPanelManager
     .roofSpecParams
   const newPV = {};
-  Object.keys(pv).forEach(key => {
-    newPV[key] = [
-      ...pv[key]
-    ]
+  Object.keys(pv).forEach(roofIndex => {
+    newPV[roofIndex] = {...pv[roofIndex]}
   });
   return dispatch({
     type: actionTypes.BIND_PV,
@@ -182,13 +181,8 @@ export const bindPVPanels = () => (dispatch, getState) => {
 
 export const bindInverters = () => (dispatch, getState) => {
   const inverters = getState().undoable.present.editingWiringManager
-    .roofSpecInverters;
-  const newInverters = {};
-  Object.keys(inverters).forEach(key => {
-    newInverters[key] = [
-      ...inverters[key]
-    ]
-  });
+    .entireSpecInverters;
+  const newInverters = [...inverters];
   return dispatch({
     type: actionTypes.BIND_INVERTERS,
     inverters: newInverters

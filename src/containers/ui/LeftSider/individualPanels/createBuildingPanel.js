@@ -237,7 +237,7 @@ class CreateBuildingPanel extends PureComponent {
                     <Option value='FLAT'>
                       <FormattedMessage id='flatRoof' />
                     </Option>
-                    <Option value='PITCHED'>
+                    <Option value='PITCHED' disabled>
                       <FormattedMessage id='pitchedRoof' />
                     </Option>
                   </Select>

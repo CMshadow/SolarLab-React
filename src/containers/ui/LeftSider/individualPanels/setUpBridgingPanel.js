@@ -3,6 +3,9 @@ import { connect } from 'react-redux';
 import {
   Form,
   Divider,
+  Button,
+  Icon,
+  Row
 } from 'antd';
 import { FormattedMessage } from 'react-intl';
 
@@ -19,6 +22,20 @@ class SetUpBridgingPanel extends Component {
       <div style={{padding: '10px 10px 20px', overflow: 'auto'}}>
         <Divider><FormattedMessage id='setup_wiring' /></Divider>
         <PlaceInverterTable/>
+        <Row type="flex" justify="center">
+          <Button
+            type='primary'
+            shape='round'
+            size='large'
+            onClick = {() => {
+              this.props.bindPVPanels();
+              this.props.bindInverters();
+              this.props.setUIStateIdel();
+            }}
+          >
+            <FormattedMessage id='finish_bridging' /> <Icon type='check' />
+          </Button>
+        </Row>
       </div>
     );
   }

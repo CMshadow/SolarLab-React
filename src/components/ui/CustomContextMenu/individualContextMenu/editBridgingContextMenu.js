@@ -6,7 +6,6 @@ class EditBridgingContextMenu extends Component {
     return (
       <ContextMenu
         id="cesium_context_menu"
-        hideOnLeave={false}
       >
         <MenuItem
           onClick={this.props.addPointOnBridging}

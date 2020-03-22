@@ -51,44 +51,44 @@ class PlaceInverterTable extends Component {
           }}
         ><FormattedMessage id='placeInverter' /></Button>
       ),
-      (
-        this.props.entireSpecInverters[inverterInd].mainBridging &&
-        this.props.entireSpecInverters[inverterInd].mainBridging.mainPolyline
-        .points.length > 1 ?
-        <Button
-          key='readyDrawMainbridge'
-          type="primary"
-          size='small'
-          ghost={this.props.uiState !== 'EDIT_MAIN_BRIDGING'}
-          disabled={
-            this.props.uiState === 'SETUP_BRIDGING' ||
-            this.props.uiState === 'EDIT_MAIN_BRIDGING' ?
-            false:
-            true
-          }
-          onClick={() => {
-            this.props.setBridgingInverter(inverterInd);
-            this.props.uiState === 'EDIT_MAIN_BRIDGING' ?
-            this.props.setUIStateSetUpBridging() :
-            this.props.setUIStateEditMainBridging();
-          }}
-        ><FormattedMessage id='editMainBridge' /></Button> :
-        <Button
-          key='readyDrawMainbridge'
-          type="primary"
-          size='small'
-          ghost={this.props.uiState === 'READY_DRAW_MAINBRIDGE'? false : true}
-          disabled={
-            this.props.uiState === 'SETUP_BRIDGING' ?
-            false:
-            true
-          }
-          onClick={() => {
-            this.props.setBridgingInverter(inverterInd);
-            this.props.setUIStateDrawMainBridging();
-          }}
-        ><FormattedMessage id='drawMainBridge' /></Button>
-      ),
+      // (
+      //   this.props.entireSpecInverters[inverterInd].mainBridging &&
+      //   this.props.entireSpecInverters[inverterInd].mainBridging.mainPolyline
+      //   .points.length > 1 ?
+      //   <Button
+      //     key='readyDrawMainbridge'
+      //     type="primary"
+      //     size='small'
+      //     ghost={this.props.uiState !== 'EDIT_MAIN_BRIDGING'}
+      //     disabled={
+      //       this.props.uiState === 'SETUP_BRIDGING' ||
+      //       this.props.uiState === 'EDIT_MAIN_BRIDGING' ?
+      //       false:
+      //       true
+      //     }
+      //     onClick={() => {
+      //       this.props.setBridgingInverter(inverterInd);
+      //       this.props.uiState === 'EDIT_MAIN_BRIDGING' ?
+      //       this.props.setUIStateSetUpBridging() :
+      //       this.props.setUIStateEditMainBridging();
+      //     }}
+      //   ><FormattedMessage id='editMainBridge' /></Button> :
+      //   <Button
+      //     key='readyDrawMainbridge'
+      //     type="primary"
+      //     size='small'
+      //     ghost={this.props.uiState === 'READY_DRAW_MAINBRIDGE'? false : true}
+      //     disabled={
+      //       this.props.uiState === 'SETUP_BRIDGING' ?
+      //       false:
+      //       true
+      //     }
+      //     onClick={() => {
+      //       this.props.setBridgingInverter(inverterInd);
+      //       this.props.setUIStateDrawMainBridging();
+      //     }}
+      //   ><FormattedMessage id='drawMainBridge' /></Button>
+      // ),
       (
         <Button
           key='generateBridging'

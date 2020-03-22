@@ -39,44 +39,40 @@ function mapStateToProps(state) {
           device: 'Panel',
           model: state.undoable.present.editingPVPanelManager
             .userPanels[workingBuilding.pvParams[0].selectPanelIndex].panelName,
-          quantity: Object.keys(workingBuilding.pv).reduce((acc, key) =>
-            acc + workingBuilding.pv[key].reduce((acc2, item) =>
-              acc2 + item.length
-            , 0)
+          quantity: Object.keys(workingBuilding.pv).reduce((acc, index) =>
+            acc + Object.keys(workingBuilding.pv[index]).length
           , 0),
           capital: state.undoable.present.editingPVPanelManager
             .userPanels[workingBuilding.pvParams[0].selectPanelIndex].cost *
-            Object.keys(workingBuilding.pv).reduce((acc, key) =>
-              acc + workingBuilding.pv[key].reduce((acc2, item) =>
-                acc2 + item.length
-              , 0)
-            , 0)
+            Object.keys(workingBuilding.pv).reduce((acc, index) =>
+              acc + Object.keys(workingBuilding.pv[index]).length
+            , 0),
         },
         {
           key: '2',
           device: 'Inverter',
           model: state.undoable.present.editingWiringManager
             .userInverters.find(inverter =>
-              inverter.inverterID = workingBuilding.inverters[0][0].inverterId
+              inverter.inverterID = workingBuilding.inverters[0].inverterId
             ).inverterName,
-          quantity: workingBuilding.inverters[0].length,
+          quantity: workingBuilding.inverters.length,
           capital: state.undoable.present.editingWiringManager
             .userInverters.find(inverter =>
-              inverter.inverterID = workingBuilding.inverters[0][0].inverterId
-            ).cost * workingBuilding.inverters[0].length
+              inverter.inverterID = workingBuilding.inverters[0].inverterId
+            ).cost * workingBuilding.inverters.length
         },
         {
           key: '3',
           device: 'Wire',
           model: 'GoldBull (10 AWG)',
-          quantity: `${workingBuilding.inverters[0].reduce((acc, inverter) =>
+          quantity: `${workingBuilding.inverters.reduce((acc, inverter) =>
             acc + inverter.bridging.reduce((acc2, bridging) =>
               acc2 + bridging.mainPolyline.polylineLength()
             , 0) + inverter.wiring.reduce((acc3, wiring) =>
               acc3 + wiring.polyline.polylineLength()
             , 0)
           , 0).toFixed(2)} M`,
-          capital: 1.13 * workingBuilding.inverters[0].reduce((acc, inverter) =>
+          capital: 1.13 * workingBuilding.inverters.reduce((acc, inverter) =>
             acc + inverter.bridging.reduce((acc2, bridging) =>
               acc2 + bridging.mainPolyline.polylineLength()
             , 0) + inverter.wiring.reduce((acc3, wiring) =>

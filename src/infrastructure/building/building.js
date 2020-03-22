@@ -10,7 +10,7 @@ class Building {
     this.eaveSetback = eaveStb;
     this.shadow = shadow;
     this.pv = pv || {};
-    this.inverters = inverters || {};
+    this.inverters = inverters || [];
     this.pvParams = pvParams || {};
   }
 

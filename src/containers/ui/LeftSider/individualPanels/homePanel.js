@@ -38,7 +38,7 @@ const HomePanel = (props) => {
       <Divider />
       <Row>
         <Col span={18} offset={3}>
-        <Button type='primary' shape='round' size='large' block ghost>
+        <Button type='primary' shape='round' size='large' block ghost disabled>
           <FontAwesomeIcon icon={faDrone} />
           <FormattedMessage id='manageDroneModel' />
         </Button>
