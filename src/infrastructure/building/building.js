@@ -36,23 +36,17 @@ class Building {
 
   getPVCoordinates = () => {
     return Object.keys(this.pv).flatMap(roofIndex =>
-      this.pv[roofIndex].flatMap(partial =>
-        partial.flatMap(panelArray =>
-          panelArray.map(panelInfo =>
-            panelInfo.pv.convertHierarchyToFoundLine()
-            .getPointsCoordinatesArray(false)
-          )
-        )
+      Object.keys(this.pv[roofIndex]).map(panelId =>
+        this.pv[roofIndex][panelId].pv.convertHierarchyToFoundLine()
+        .getPointsCoordinatesArray(false)
       )
     )
   }
 
   getWiringCoordinates = () => {
-    return Object.keys(this.inverters).flatMap(roofIndex =>
-      this.inverters[roofIndex].flatMap(inverter =>
-        inverter.wiring.filter(wiring => wiring.polyline).map(wiring =>
-          wiring.polyline.getPointsCoordinatesArray(false)
-        )
+    return this.inverters.flatMap(inverter =>
+      inverter.wiring.filter(wiring => wiring.polyline).map(wiring =>
+        wiring.polyline.getPointsCoordinatesArray(false)
       )
     )
   }

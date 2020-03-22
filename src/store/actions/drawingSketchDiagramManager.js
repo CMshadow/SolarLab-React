@@ -44,10 +44,8 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         let WiringCollection = mathHelp.convertWiringto2D(startPosition, currentBuilding.getWiringCoordinates());
         let buildingWiringCollection = drawWiring(group, WiringCollection[0], WiringCollection[1], AutoScale, buildingOutline.startNodePosition);
         //Inverter
-        const allInverters = Object.keys(currentBuilding.inverters)
-        .flatMap(roofIndex =>
-          currentBuilding.inverters[roofIndex].map(inverter => inverter)
-        );
+        const allInverters = currentBuilding.inverters;
+
         allInverters.forEach(element => {
 
           if (element !== null && element.bridging !== null) {
