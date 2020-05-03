@@ -26,6 +26,7 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
     .drawingPolyline.getPointsCoordinatesArray();
   let buildingCoordinatesSize = buildingOutline.length;
   buildingOutline.splice(buildingCoordinatesSize - 3,3);
+  let foundHeight = getState().undoable.present.buildingManager.workingBuilding.foundationHeight;
   const polylinesRelation = getState().undoable.present.drawingInnerManager
     .pointsRelation;
   const foundPolylines = getState().undoable.present.drawingInnerManager
@@ -47,11 +48,11 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
   let pathInformationCollection = [];
 
   initNodesCollection(
-    buildingOutline, newNodeCollection, newOuterEdgeCollection
+    buildingOutline, newNodeCollection, newOuterEdgeCollection, foundHeight
   );
   newInnerEdgeCollection = initEdgeMap(
     polylinesRelation, newNodeCollection, foundPolylines, hipPolylines,
-    ridgePolylines
+    ridgePolylines, foundHeight
   ).newInnerEdgeCollection;
   pathInformationCollection = searchAllRoofPlanes(
     newInnerEdgeCollection,newOuterEdgeCollection,newNodeCollection
@@ -154,12 +155,12 @@ export const build3DRoofTopModeling = () => (dispatch, getState) => {
 }
 
 export const initNodesCollection = (
-  buildingOutline, newNodeCollection, newOuterEdgeCollection
+  buildingOutline, newNodeCollection, newOuterEdgeCollection, foundHeight
 ) => {
   // Build outer edges-points relations
   for (let i = 0; i < buildingOutline.length; i+=3) {
     newNodeCollection.push(
-      new Node(null, buildingOutline[i], buildingOutline[i + 1], 5, 0 )
+      new Node(null, buildingOutline[i], buildingOutline[i + 1], foundHeight, 0)
     );
   }
 
@@ -194,7 +195,7 @@ export const initNodesCollection = (
 
 export const initEdgeMap = (
   polylinesRelation, newNodeCollection, foundPolylines, hipPolylines,
-  ridgePolylines
+  ridgePolylines, foundHeight
 ) => {
   let newInnerEdgeCollection = [];
   // Build inner edges-points relations
@@ -202,60 +203,37 @@ export const initEdgeMap = (
     if (polylinesRelation[key]['type'] === "IN") {
       newNodeCollection.push(
         new Node(null, polylinesRelation[key]['object']['lon'],
-        polylinesRelation[key]['object']['lat'], 7, 1 )
+        polylinesRelation[key]['object']['lat'], foundHeight + 2, 1 )
       );
     }
   });
-  Object.keys(polylinesRelation).forEach(function(key) {
-    let startNode = null;
-    let endNode = null;
-    let indexStart = null;
-    let indexEnd = null;
-    if (polylinesRelation[key]['type'] === "OUT") {
-      startNode = new Node(
-        null, polylinesRelation[key]['object']['lon'],
-        polylinesRelation[key]['object']['lat'], 5, 0
-      );
-      for (let i = 0; i < polylinesRelation[key]['connectPolyline'].length; ++i) {
-        if (polylinesRelation[key]['connectPolyline'][i]['type'] === 'HIP') {
-          endNode = (
-            polylinesRelation[key]['connectPolyline'][i]['points'][0]['lon'] ===
-            startNode.lon &&
-            polylinesRelation[key]['connectPolyline'][i]['points'][0]['lat'] ===
-            startNode.lat
-          ) ?
-          polylinesRelation[key]['connectPolyline'][i]['points'][1] :
-          polylinesRelation[key]['connectPolyline'][i]['points'][0];
-        }
-        if (startNode !== null && endNode !== null ) {
-          indexStart = MathHelper.findNodeIndex(
-            newNodeCollection, startNode.lon, startNode.lat
-          );
-          indexEnd = MathHelper.findNodeIndex(
-            newNodeCollection, endNode['lon'], endNode['lat']
-          );
-          newInnerEdgeCollection.push(
-            new Edge(
-              indexStart, indexEnd, null, null, "Hip",
-              newNodeCollection[indexStart], newNodeCollection[indexEnd]
-            )
-          );
-          newNodeCollection[indexStart].addChild(indexEnd);
-          newNodeCollection[indexEnd].addChild(indexStart);
-        }
-      }
-    }
+
+  Object.keys(hipPolylines).forEach(function(key) {
+    // console.log("边点关系检查：");
+    // console.log(hipPolylines[key]);
+    let indexStart = MathHelper.findNodeIndex(
+      newNodeCollection, hipPolylines[key]['points'][0]['lon'], hipPolylines[key]['points'][0]['lat']);
+    
+    let indexEnd = MathHelper.findNodeIndex(
+      newNodeCollection, hipPolylines[key]['points'][1]['lon'], hipPolylines[key]['points'][1]['lat']);
+    
+    newInnerEdgeCollection.push(new Edge(
+      indexStart, indexEnd, null, null, "Ridge",
+      newNodeCollection[indexStart], newNodeCollection[indexEnd]
+    ));
+    newNodeCollection[indexStart].addChild(indexEnd);
+    newNodeCollection[indexEnd].addChild(indexStart);
   });
 
   Object.keys(ridgePolylines).forEach(function(key) {
-
+    
     let startNode = new Node(
       null, ridgePolylines[key]['points'][0]['lon'],
-      ridgePolylines[key]['points'][0]['lat'], 7, 1
+      ridgePolylines[key]['points'][0]['lat'], foundHeight + 2, 1
     );
     let endNode = new Node(
       null, ridgePolylines[key]['points'][1]['lon'],
-      ridgePolylines[key]['points'][1]['lat'], 7, 1
+      ridgePolylines[key]['points'][1]['lat'], foundHeight + 2, 1
     );
     if (startNode !== null && endNode !== null ) {
       let indexStart = MathHelper.findNodeIndex(
