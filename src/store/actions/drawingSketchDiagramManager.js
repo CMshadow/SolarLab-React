@@ -138,7 +138,8 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
       console.log("阴影")
       // console.log(currentBuilding.getShadowCoordinates())
       currentBuilding.getShadowCoordinates().forEach(element => {
-        console.log(' - ' + element)
+        console.log(' - ' + element.keepoutType);
+        console.log(' + ' + element.type);
         if (element.keepoutType === 'normal') {
           let keepoutShadow = mathHelp.convertNormalShadowto2D(startPosition, element.shadowCoordinates);
           let keepout = mathHelp.convertKeepoutTo2D(startPosition,element.keepoutCoordinates )
@@ -150,6 +151,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
           let centerNode = mathHelp.calculateCenterofPolygon(keepout[0], keepout[1], AutoScale, startPosition_stage)
           let keepOutShadowSketch = drawNormalShadow(group, keepoutShadow[0], keepoutShadow[1], AutoScale, startPosition_stage, centerNode ,gradient);
         }  else if (element.keepoutType === 'tree') {
+          console.log("draw tree shadow");
           let keepoutShadow = mathHelp.convertNormalShadowto2D(startPosition, element.shadowCoordinates);
           let keepout = mathHelp.convertKeepoutTo2D(startPosition,element.keepoutCoordinates)
           let centerNodeOfTree = mathHelp.calculateCenterofPolygon(keepout[0], keepout[1], AutoScale, startPosition_stage);
@@ -609,71 +611,69 @@ export const drawParapetShadow = (layer,AngleList, DistanceList, scale, start, c
           start[0], start[1] );
       verticesList.push(nextPosition[0], nextPosition[1]);
   }
+
   // let colorFull = mathHelp.calculateGradientColor(gradient);
   // console.log("color: "+colorFull)
-  // let poly = new Konva.Line({
-  //     points: verticesList,
-  //     fill: '#636363',
-  //     stroke: '#84848a',
-  //     strokeWidth: 0,
-  //     closed : true,
-  //     opacity: 0.5
-  // });
-  // layer.add(poly);
+  let poly = new Konva.Line({
+      points: verticesList,
+      fill: '#939393',
+      stroke: '#84848a',
+      strokeWidth: 0,
+      closed : true,
+      opacity: 0.5
+  });
+  layer.add(poly);
 
-  let centerNodesList = [];
-  for(let i = 0; i < centerNodesAngles.length; i++){
-    let nextPosition = mathHelp.calculateNextPosition(centerNodesAngles[i],centerNodesDist[i]*scale,
-        start[0], start[1] );
-    centerNodesList.push(nextPosition[0], nextPosition[1]);
-    // var circle = new Konva.Circle({
-    //   x: nextPosition[0],
-    //   y: nextPosition[1],
-    //   radius: 5,
-    //   fill: 'red',
-    //   stroke: 'black',
-    //   strokeWidth: 4
-    // });
+  // let centerNodesList = [];
+  // for(let i = 0; i < centerNodesAngles.length; i++){
+  //   let nextPosition = mathHelp.calculateNextPosition(centerNodesAngles[i],centerNodesDist[i]*scale,
+  //       start[0], start[1] );
+  //   centerNodesList.push(nextPosition[0], nextPosition[1]);
+  //   // var circle = new Konva.Circle({
+  //   //   x: nextPosition[0],
+  //   //   y: nextPosition[1],
+  //   //   radius: 5,
+  //   //   fill: 'red',
+  //   //   stroke: 'black',
+  //   //   strokeWidth: 4
+  //   // });
 
-    // // add the shape to the layer
-    // layer.add(circle);
-    let newCoordXY = [];
-    for (let k = 0; k < verticesList.length; k+=2) {
-      let newCoordX = null;
-      let newCoordY = null;
-      // if(k <= (verticesList.length / 2)) {
-      //   newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],centerNodesList[0], gradient);
-      //   newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],centerNodesList[1], gradient);
-      // } else {
-        newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],nextPosition[0], gradient);
-        newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],nextPosition[1], gradient);
-      // }
+  //   // // add the shape to the layer
+  //   // layer.add(circle);
+  //   let newCoordXY = [];
+  //   for (let k = 0; k < verticesList.length; k+=2) {
+  //     let newCoordX = null;
+  //     let newCoordY = null;
+  //     // if(k <= (verticesList.length / 2)) {
+  //     //   newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],centerNodesList[0], gradient);
+  //     //   newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],centerNodesList[1], gradient);
+  //     // } else {
+  //       newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],nextPosition[0], gradient);
+  //       newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],nextPosition[1], gradient);
+  //     // }
 
-      newCoordXY.push(newCoordX);
-      newCoordXY.push(newCoordY);
-    }
-    for (let level = 0; level < gradient; level++) {
-      let newShadow = [];
-      for (let x = 0; x < newCoordXY.length; ++x) {
-        newShadow.push(newCoordXY[x][level]);
-      }
-      // newShadow.push(centerNodesAngles[0]);
-      // newShadow.push(centerNodesDist[0]);
-      //console.log(colorList[gradient-level-1]);
-      let poly1 = new Konva.Line({
-          points: newShadow,
-          fill: '#ff0000',
-          stroke: '#84848a',
-          strokeWidth: 0,
-          closed : true,
-          opacity: 0 + level * (0.1 / gradient)
+  //     newCoordXY.push(newCoordX);
+  //     newCoordXY.push(newCoordY);
+  //   }
+  //   for (let level = 0; level < gradient; level++) {
+  //     let newShadow = [];
+  //     for (let x = 0; x < newCoordXY.length; ++x) {
+  //       newShadow.push(newCoordXY[x][level]);
+  //     }
+  //     // newShadow.push(centerNodesAngles[0]);
+  //     // newShadow.push(centerNodesDist[0]);
+  //     //console.log(colorList[gradient-level-1]);
+  //     let poly1 = new Konva.Line({
+  //         points: newShadow,
+  //         fill: '#ff0000',
+  //         stroke: '#84848a',
+  //         strokeWidth: 0,
+  //         closed : true,
+  //         opacity: 0 + level * (0.1 / gradient)
 
-      });
-      layer.add(poly1);
-    }
-
-  }
-
+  //     });
+  //     layer.add(poly1);
+  //   }
 
 }
 
@@ -739,49 +739,49 @@ export const drawTreeShadow = (layer,AngleList, DistanceList, scale, start, cent
           start[0], start[1] );
       verticesList.push([nextPosition[0], nextPosition[1]]);
   }
-  let colorFull = mathHelp.calculateGradientColor(gradient);
+  // let colorFull = mathHelp.calculateGradientColor(gradient);
   // console.log("color: "+colorFull)
-  // let poly = new Konva.Line({
-  //     points: verticesList,
-  //     fill: colorFull[0],
-  //     stroke: '#84848a',
-  //     strokeWidth: 0,
-  //     closed : true,
-  //     opacity: 0.5
-  // });
-  // // layer.add(poly);
-  let closestPoint1 = verticesList[centerNode[0]];
-  let closestPoint2 = verticesList[centerNode[1]];
-  let centerPoint = [(closestPoint1[0] + closestPoint2[0]) / 2, (closestPoint1[1] + closestPoint2[1]) / 2]
   verticesList = verticesList.flatMap(element => element);
-  let newCoordXY = [];
-  for (let k = 0; k < verticesList.length; k+=2) {
-    let newCoordX = null;
-    let newCoordY = null;
-    newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],centerPoint[0], gradient);
-    newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],centerPoint[1], gradient);
-    newCoordXY.push(newCoordX);
-    newCoordXY.push(newCoordY);
-  }
-  for (let level = 0; level < gradient; level++) {
-    let newShadow = [];
-    for (let x = 0; x < newCoordXY.length; ++x) {
-      newShadow.push(newCoordXY[x][level]);
-    }
-    // newShadow.push(centerNodesAngles[0]);
-    // newShadow.push(centerNodesDist[0]);
-    //console.log(colorList[gradient-level-1]);
-    let poly1 = new Konva.Line({
-        points: newShadow,
-        fill: '#ff0000',
-        stroke: '#84848a',
-        strokeWidth: 0,
-        closed : true,
-        opacity: 0 + level * (0.2 / gradient)
-
-    });
-    layer.add(poly1);
-  }
+  let poly = new Konva.Line({
+    points: verticesList,
+    fill: '#939393',
+    stroke: '#84848a',
+    strokeWidth: 0,
+    closed : true,
+    opacity: 0.5
+  });
+  layer.add(poly);
+  // let closestPoint1 = verticesList[centerNode[0]];
+  // let closestPoint2 = verticesList[centerNode[1]];
+  // let centerPoint = [(closestPoint1[0] + closestPoint2[0]) / 2, (closestPoint1[1] + closestPoint2[1]) / 2]
+  // verticesList = verticesList.flatMap(element => element);
+  // let newCoordXY = [];
+  // for (let k = 0; k < verticesList.length; k+=2) {
+  //   let newCoordX = null;
+  //   let newCoordY = null;
+  //   newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],centerPoint[0], gradient);
+  //   newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],centerPoint[1], gradient);
+  //   newCoordXY.push(newCoordX);
+  //   newCoordXY.push(newCoordY);
+  // }
+  // for (let level = 0; level < gradient; level++) {
+  //   let newShadow = [];
+  //   for (let x = 0; x < newCoordXY.length; ++x) {
+  //     newShadow.push(newCoordXY[x][level]);
+  //   }
+  //   // newShadow.push(centerNodesAngles[0]);
+  //   // newShadow.push(centerNodesDist[0]);
+  //   //console.log(colorList[gradient-level-1]);
+  //   let poly1 = new Konva.Line({
+  //       points: newShadow,
+  //       fill: '#ff0000',
+  //       stroke: '#84848a',
+  //       strokeWidth: 0,
+  //       closed : true,
+  //       opacity: 0 + level * (0.2 / gradient)
+  //   });
+  //   //layer.add(poly1);
+  // }
 
 }
 
