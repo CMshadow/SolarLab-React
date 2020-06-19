@@ -1,5 +1,5 @@
 import * as Cesium from 'cesium';
-
+import intersect from '@turf/turf';
 
 export const radians_to_degrees = (radians) => {
   const pi = Math.PI;
@@ -343,3 +343,17 @@ export const covnertBridgeMainPolylineto2D = (startPos, inline_polyline_nodes_co
   }
   return[bridging_inline_angleList, bridging_inline_distList];
 }
+
+export const flatTurfShadow = (turfShadow) => {
+  let konvaTreeShadow = [];
+  if (turfShadow === undefined) {
+    return konvaTreeShadow;
+  }
+  // console.log(turfShadow.geometry.coordinates[0][0]);
+  for (let coord in turfShadow.geometry.coordinates[0]) {
+
+    konvaTreeShadow.push(turfShadow.geometry.coordinates[0][coord][0]);
+    konvaTreeShadow.push(turfShadow.geometry.coordinates[0][coord][1]);
+  }
+  return konvaTreeShadow;
+} 

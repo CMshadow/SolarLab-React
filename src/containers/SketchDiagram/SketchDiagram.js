@@ -61,6 +61,7 @@ class SketchDiagram extends Component {
           height={window.innerHeight - 64}
           width={window.innerWidth}
         />
+        <Stage ref='1' />
       </Aux>
     );
   }

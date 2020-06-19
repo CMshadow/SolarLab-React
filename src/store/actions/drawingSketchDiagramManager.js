@@ -5,7 +5,7 @@ import axios from '../../axios-setup';
 import * as mathHelp from '../../infrastructure/math/SketchDiagramHelper';
 import * as actions from './index'
 import * as actionTypes from './actionTypes';
-
+import * as turf from '@turf/turf'
 
 export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) => (dispatch, getState) => {
     let currentBuilding = getState().undoable.present.buildingManager
@@ -18,15 +18,17 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
     .drawingKeepoutPolygonManager;
 
     let size_times = 5;
-    let gradient = 50;
-
+    let gradient = 100;
+    
     backgroundGrids(layer, size_times);
 
     if (currentBuilding != null) {
       let AutoScale = null;
       let startPosition = null;
       let startPosition_stage = null;
+      let buildingCenter = null;
       if (currentBuildingPara.type === 'FLAT') {
+        
         startPosition = currentBuilding.getRoofCoordinates()[0][0];
 
         let BuildingRoof = mathHelp.convertFlatFoundationto2D(currentBuilding.getRoofCoordinates()[0]);
@@ -34,7 +36,7 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
 
         let buildingOutline = drawFlatBuildingOutline(group, BuildingRoof[0],BuildingRoof[1], AutoScale, screenWidth, screenHeight);
         startPosition_stage = buildingOutline.startNodePosition;
-
+        buildingCenter = mathHelp.calculateCenterofPolygon(BuildingRoof[0], BuildingRoof[1], AutoScale, startPosition_stage);
         let BuildingRoofSetBack = mathHelp.convertFlatFoundationSetBackTo2D(startPosition,currentBuilding.getRoofExcludeStbCoordinates()[0]);
         let buildingSetBack = drawFlatBuildingSetBack(group, BuildingRoofSetBack[0],BuildingRoofSetBack[1], AutoScale, buildingOutline.startNodePosition);
 
@@ -137,6 +139,18 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
       }
       console.log("阴影")
       // console.log(currentBuilding.getShadowCoordinates())
+      if (currentBuilding.type === 'FLAT') {
+        
+        currentBuilding.getParapetShadowCoordinates().forEach(element => {
+          console.log("女儿墙");
+
+          let ParaetShadow = mathHelp.convertParapetShadowto2D(startPosition, element.shadowCoordinates, element.keepoutCoordinates);
+          
+          let ParapetShadowSketch = drawParapetShadow(group, ParaetShadow[0], ParaetShadow[1], AutoScale, startPosition_stage, buildingCenter, gradient);
+          
+
+        })
+      }
       currentBuilding.getShadowCoordinates().forEach(element => {
         console.log(' - ' + element)
         if (element.keepoutType === 'normal') {
@@ -181,13 +195,6 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
         }
       })
 
-      if (currentBuilding.type === 'FLAT') {
-        currentBuilding.getParapetShadowCoordinates().forEach(element => {
-          let ParaetShadow = mathHelp.convertParapetShadowto2D(startPosition, element.shadowCoordinates, element.keepoutCoordinates);
-          console.log(element.shadowCoordinates)
-          let ParapetShadowSketch = drawParapetShadow(group, ParaetShadow[0], ParaetShadow[1], AutoScale, startPosition_stage, ParaetShadow[2], ParaetShadow[3], gradient);
-        })
-      }
       if (keekoutCollections.normalKeepout.length > 0) {
         // console.log(keekoutCollections.normalKeepout)
         keekoutCollections.normalKeepout.forEach(element => {
@@ -601,7 +608,7 @@ export const drawTree = (layer, AngleList, DistanceList, scale, start) => {
 }
 
 
-export const drawParapetShadow = (layer,AngleList, DistanceList, scale, start, centerNodesAngles, centerNodesDist ,gradient) => {
+export const drawParapetShadow = (layer,AngleList, DistanceList, scale, start, centerPoint ,gradient) => {
   // console.log(centerNode);
   let verticesList = [];
   for(let i = 0; i < AngleList.length; i++){
@@ -609,6 +616,23 @@ export const drawParapetShadow = (layer,AngleList, DistanceList, scale, start, c
           start[0], start[1] );
       verticesList.push(nextPosition[0], nextPosition[1]);
   }
+
+  let poly1 = new Konva.Line({
+      points: verticesList,
+      fill: '#ff1100',
+      stroke: '#84848a',
+      strokeWidth: 0,
+      closed : true,
+      opacity: 0.7,
+      blurRadius: 23,
+      // fillLinearGradientStartPoint: { x: verticesList[0][0], y: verticesList[0][1]},
+      // fillLinearGradientEndPoint: { x: centerPoint[0], y: centerPoint[1] },
+      // fillLinearGradientColorStops: [0, 'red', 1, 'yellow']
+  });
+  poly1.cache();
+  poly1.filters([Konva.Filters.Blur]);
+  layer.add(poly1);
+  // const shadowBase = turf.polygon([verticesList]);
   // let colorFull = mathHelp.calculateGradientColor(gradient);
   // console.log("color: "+colorFull)
   // let poly = new Konva.Line({
@@ -621,60 +645,61 @@ export const drawParapetShadow = (layer,AngleList, DistanceList, scale, start, c
   // });
   // layer.add(poly);
 
-  let centerNodesList = [];
-  for(let i = 0; i < centerNodesAngles.length; i++){
-    let nextPosition = mathHelp.calculateNextPosition(centerNodesAngles[i],centerNodesDist[i]*scale,
-        start[0], start[1] );
-    centerNodesList.push(nextPosition[0], nextPosition[1]);
-    // var circle = new Konva.Circle({
-    //   x: nextPosition[0],
-    //   y: nextPosition[1],
-    //   radius: 5,
-    //   fill: 'red',
-    //   stroke: 'black',
-    //   strokeWidth: 4
-    // });
 
-    // // add the shape to the layer
-    // layer.add(circle);
-    let newCoordXY = [];
-    for (let k = 0; k < verticesList.length; k+=2) {
-      let newCoordX = null;
-      let newCoordY = null;
-      // if(k <= (verticesList.length / 2)) {
-      //   newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],centerNodesList[0], gradient);
-      //   newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],centerNodesList[1], gradient);
-      // } else {
-        newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],nextPosition[0], gradient);
-        newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],nextPosition[1], gradient);
-      // }
+  // verticesList = verticesList.flatMap(element => element);
+  // let newCoordXY = [];
+  // for (let k = 0; k < verticesList.length; k+=2) {
+  //   let newCoordX = null;
+  //   let newCoordY = null;
+  //   newCoordX = mathHelp.calculateGradientCorrdinate(verticesList[k],centerPoint[0], gradient);
+  //   newCoordY = mathHelp.calculateGradientCorrdinate(verticesList[k+1],centerPoint[1], gradient);
+  //   newCoordXY.push(newCoordX);
+  //   newCoordXY.push(newCoordY);
+  // }
+   
+  // for (let level = 0; level < gradient - 1; level++) {
+  //   let newShadow = [];
+  //   const gradShadow = [];
+  //   for (let x = 0; x < newCoordXY.length; ++x) {
+  //     newShadow.push(newCoordXY[x][level]);
+  //   }
+  //   for (let i = 0; i < newShadow.length; i+=2) {
+  //     gradShadow.push([newShadow[i], newShadow[i+1]]);
+  //   }
+  //   // newShadow.push(centerNodesAngles[0]);
+  //   // newShadow.push(centerNodesDist[0]);
+  //   //console.log(colorList[gradient-level-1]);
+  //   console.log("原始渐层阴影： " + newShadow);
+  //   const gradInterShadow = turf.polygon([gradShadow]);
 
-      newCoordXY.push(newCoordX);
-      newCoordXY.push(newCoordY);
-    }
-    for (let level = 0; level < gradient; level++) {
-      let newShadow = [];
-      for (let x = 0; x < newCoordXY.length; ++x) {
-        newShadow.push(newCoordXY[x][level]);
-      }
-      // newShadow.push(centerNodesAngles[0]);
-      // newShadow.push(centerNodesDist[0]);
-      //console.log(colorList[gradient-level-1]);
-      let poly1 = new Konva.Line({
-          points: newShadow,
-          fill: '#ff0000',
-          stroke: '#84848a',
-          strokeWidth: 0,
-          closed : true,
-          opacity: 0 + level * (0.1 / gradient)
+  //   console.log("渐层阴影： " + gradInterShadow);
 
-      });
-      layer.add(poly1);
-    }
+  //   const interShadow = turf.intersect(shadowBase, gradInterShadow);
+  //   // console.log("属性: " + interShadow);
+  //   if (interShadow !== undefined && interShadow !== null) {
+  //     console.log("属性: " + interShadow);
+  //     for (let i in interShadow) {
+  //       console.log("属性: " + i);
+  //     }
+  //   }
 
-  }
+  //   // console.log("交集： "+ mathHelp.flatTurfShadow(interShadow));
+  //   const renderShadow = mathHelp.flatTurfShadow(interShadow);
+    
+  //   // newShadow.push(centerNodesAngles[0]);
+  //   // newShadow.push(centerNodesDist[0]);
+  //   //console.log(colorList[gradient-level-1]);
+  //   let poly1 = new Konva.Line({
+  //       points: renderShadow,
+  //       fill: '#ff0000',
+  //       stroke: '#84848a',
+  //       strokeWidth: 0,
+  //       closed : true,
+  //       opacity: 0 + level * (0.1 / gradient)
 
-
+  //   });
+  //   layer.add(poly1);
+  // }
 }
 
 
@@ -739,6 +764,9 @@ export const drawTreeShadow = (layer,AngleList, DistanceList, scale, start, cent
           start[0], start[1] );
       verticesList.push([nextPosition[0], nextPosition[1]]);
   }
+  // console.log("树阴影轮廓: "+verticesList);
+  const shadowBase = turf.polygon([verticesList]);
+  // console.log("Turf树阴影轮廓: "+shadowBase);
   let colorFull = mathHelp.calculateGradientColor(gradient);
   // console.log("color: "+colorFull)
   // let poly = new Konva.Line({
@@ -763,16 +791,30 @@ export const drawTreeShadow = (layer,AngleList, DistanceList, scale, start, cent
     newCoordXY.push(newCoordX);
     newCoordXY.push(newCoordY);
   }
-  for (let level = 0; level < gradient; level++) {
+  
+  for (let level = 0; level < gradient - 1; level++) {
     let newShadow = [];
+    const gradShadow = [];
     for (let x = 0; x < newCoordXY.length; ++x) {
       newShadow.push(newCoordXY[x][level]);
+    }
+    for (let i = 0; i < newShadow.length; i+=2) {
+      gradShadow.push([newShadow[i], newShadow[i+1]]);
     }
     // newShadow.push(centerNodesAngles[0]);
     // newShadow.push(centerNodesDist[0]);
     //console.log(colorList[gradient-level-1]);
+    // console.log("原始渐层阴影： " + newShadow);
+    const gradInterShadow = turf.polygon([gradShadow]);
+
+    // console.log("渐层阴影： " + gradInterShadow);
+
+    const interShadow = turf.intersect(shadowBase, gradInterShadow);
+    // console.log("交集： "+ mathHelp.flatTurfShadow(interShadow));
+    const renderShadow = mathHelp.flatTurfShadow(interShadow);
+    // console.log("交集： "+ renderShadow);
     let poly1 = new Konva.Line({
-        points: newShadow,
+        points: renderShadow,
         fill: '#ff0000',
         stroke: '#84848a',
         strokeWidth: 0,
