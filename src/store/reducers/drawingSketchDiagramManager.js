@@ -9,7 +9,8 @@ const initState = {
   state: null,
   stageWidth: 0,
   stageHeight: 0,
-  layer: null
+  layer: null,
+  spinON: false
 }
 
 
@@ -19,6 +20,7 @@ const initStage = (state, action) => {
 
     stageHeight: action.stageHeight,
     stageWidth: action.stageWidth,
+    spinON: action.spinOff,
     layer: action.layer
   }
 }

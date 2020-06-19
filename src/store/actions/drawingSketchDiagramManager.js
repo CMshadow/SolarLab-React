@@ -252,7 +252,8 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
           polygon.brng
         );
       }
-
+      layer.add(group);
+      
       axios.get('/calculate-poa', {
         params: {
           tilts: JSON.stringify(tilts),
@@ -267,22 +268,36 @@ export const initStageSketchDiagram = (layer, group ,screenWidth, screenHeight) 
       .then(poa => {
         console.log(poa)
         // let Monthly_Irradiance_List = [64.5, 91.6, 120, 149.4, 166.0, 152.9, 146.6, 130.2, 119.7, 90.4, 67.9, 53.8];
+        let Monthly_Irradiance_List = poa.everyRoofPOA[0];
+
+        drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient, [poa.minPOA, poa.maxPOA]);
+
+        HistogramDispaly(layer, window.innerWidth, window.innerHeight - 64, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
+        layer.draw();
+        dispatch({
+          type: actionTypes.INIT_STAGE_SKETCH_DIAGRAM,
+          stageWidth: window.innerWidth,
+          stageHeight: window.innerHeight,
+          spinOff: true,
+          layer: layer
+        });
       })
-      layer.add(group);
-      let Monthly_Irradiance_List = [64.5, 91.6, 120, 149.4, 166.0, 152.9, 146.6, 130.2, 119.7, 90.4, 67.9, 53.8];
-      drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient, [710, 1820]);
-      HistogramDispaly(layer, window.innerWidth, window.innerHeight - 64, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
+      
+      // let Monthly_Irradiance_List = [64.5, 91.6, 120, 149.4, 166.0, 152.9, 146.6, 130.2, 119.7, 90.4, 67.9, 53.8];
+      // drawColorBar(layer, screenWidth*0.9, screenHeight*0.2, gradient, [710, 1820]);
+      // HistogramDispaly(layer, window.innerWidth, window.innerHeight - 64, window.innerWidth * 0.3, window.innerHeight * 0.25, Monthly_Irradiance_List);
+
       // layer.add(group);
     }
 
 
 
-  return({
-    type: actionTypes.INIT_STAGE_SKETCH_DIAGRAM,
-    stageWidth: window.innerWidth,
-    stageHeight: window.innerHeight,
-    layer: layer
-  });
+  // dispatch({
+  //   type: actionTypes.INIT_STAGE_SKETCH_DIAGRAM,
+  //   stageWidth: window.innerWidth,
+  //   stageHeight: window.innerHeight,
+  //   // layer: layer
+  // });
 }
 
 export const backgroundGrids = (layer, size_times) => {
@@ -292,7 +307,7 @@ export const backgroundGrids = (layer, size_times) => {
     y: 0,
     width: window.innerWidth * size_times,
     height: window.innerHeight * size_times,
-    fill: '#15152e',
+    fill: '#171717',
   });
 
   layer.add(backgroundColor);
@@ -545,7 +560,7 @@ export const drawKeepOut = (layer, AngleList, DistanceList, scale, start) => {
     stroke: '#84848a',
     strokeWidth: 0,
     closed : true,
-    shadowColor: 'red',
+    shadowColor: '#bf0000',
     shadowBlur: 25,
     shadowOffset: { x: 0, y: 0 },
     shadowOpacity: 1
@@ -619,15 +634,12 @@ export const drawParapetShadow = (layer,AngleList, DistanceList, scale, start, c
 
   let poly1 = new Konva.Line({
       points: verticesList,
-      fill: '#ff1100',
+      fill: '#bf0000',
       stroke: '#84848a',
       strokeWidth: 0,
       closed : true,
       opacity: 0.7,
       blurRadius: 23,
-      // fillLinearGradientStartPoint: { x: verticesList[0][0], y: verticesList[0][1]},
-      // fillLinearGradientEndPoint: { x: centerPoint[0], y: centerPoint[1] },
-      // fillLinearGradientColorStops: [0, 'red', 1, 'yellow']
   });
   poly1.cache();
   poly1.filters([Konva.Filters.Blur]);
@@ -744,11 +756,11 @@ export const drawNormalShadow = (layer,AngleList, DistanceList, scale, start, ce
     //console.log(colorList[gradient-level-1]);
     let poly1 = new Konva.Line({
         points: newShadow,
-        fill: '#ff0000',
+        fill: '#bf0000',
         stroke: '#84848a',
         strokeWidth: 0,
         closed : true,
-        opacity: 0.001 + level * (0.4 / gradient)
+        opacity: 0.001 + level * (0.1 / gradient)
 
     });
     layer.add(poly1);
@@ -815,7 +827,7 @@ export const drawTreeShadow = (layer,AngleList, DistanceList, scale, start, cent
     // console.log("交集： "+ renderShadow);
     let poly1 = new Konva.Line({
         points: renderShadow,
-        fill: '#ff0000',
+        fill: '#bf0000',
         stroke: '#84848a',
         strokeWidth: 0,
         closed : true,
@@ -838,7 +850,7 @@ export const drawColorBar = (layer, Xwidth, Yheight, gradient, range) => {
   let poly = new Konva.Line({
         points: rect,
         fill: colorBar[0],
-        stroke: '#84848a',
+        stroke: '#bf0000',
         strokeWidth: 0,
         closed : true,
         opacity: 1
@@ -936,7 +948,7 @@ export const HistogramDispaly  = (layer, Histogram_X_Position, Histogram_Y_Posit
     y: Histogram_Position[1],
     width: Histogram_Width,
     height: Histogram_Height,
-    fill: '#706D6C',
+    fill: '#404040',
     shadowBlur: 10,
     cornerRadius: 10,
     opacity: 0.5

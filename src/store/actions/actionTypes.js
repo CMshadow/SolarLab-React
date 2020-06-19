@@ -245,6 +245,7 @@ export const DRAW_SOLAR_PANEL = 'DRAW_SOLAR_PANEL';
 export const DRAW_WIRING = 'DRAW_WIRING';
 export const DRAW_PITCHED_BUILDING_SET_BACK = 'DRAW_PITCHED_BUILDING_SET_BACK';
 export const DRAW_KEEPOUT ='DRAW_KEEPOUT';
+export const UPDATE_IRRADIANCE = 'UPDATE_IRRADIANCE';
 
  /**
  *  drawingSingleLineDiagram.js

@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
-import { Layout, Button } from 'antd';
+import { Layout, Button, Spin } from 'antd';
 import Konva from 'konva';
 import { Stage, Layer, Rect, Text } from 'react-konva';
 
@@ -50,18 +50,29 @@ class SketchDiagram extends Component {
     this.stage.add(this.Sketch);
   }
 
-
   render(){
+    console.log(window.innerWidth)
     return (
       <Aux>
         {/* {this.state.button} */}
-        <Stage
-          ref="stage"
-          style={{position: "absolute", top: 64, left: 0, right: 0, bottom: 0}}
-          height={window.innerHeight - 64}
-          width={window.innerWidth}
-        />
-        <Stage ref='1' />
+        <Spin 
+          
+          tip={<h1 style={{paddingTop: "10px", color: "#4b77bf"} }>  
+            Loading POA Irradiance... </h1>}
+          size = "large"
+          spinning={!this.props.spinON}
+          style = {{position: "absolute", top: (window.innerHeight/2)}}
+        >
+        
+          <Stage
+            ref="stage"
+            style={{position: "absolute", top:64, left:0, right:0, bottom:0}}
+            height={window.innerHeight - 64}
+            width={window.innerWidth}
+          />
+        </Spin>
+          
+        
       </Aux>
     );
   }
@@ -75,7 +86,8 @@ const mapStateToProps = state => {
     //   state.drawingSingleLineDiagramReducer.stageHeight,
     // buildingDiagramLayer:
     // state.drawingSingleLineDiagramReducer.layer
-
+    spinON: 
+      state.undoable.present.drawingSketchDiagramManager.spinON
   };
 };
 
